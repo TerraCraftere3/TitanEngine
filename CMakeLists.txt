@@ -15,5 +15,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTO
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # ---- Subdirectories ----
+add_subdirectory(Vendor)
 add_subdirectory(Engine)
 add_subdirectory(Sandbox)

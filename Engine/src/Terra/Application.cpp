@@ -9,9 +9,6 @@ namespace Terra
 
     Application::~Application() {}
 
-    void Application::Run()
-    {
-        printf("Hello from Engine.dll\n");
-    }
+    void Application::Run() {}
 
 } // namespace Terra

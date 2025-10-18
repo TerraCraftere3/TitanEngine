@@ -10,6 +10,9 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
 # ---- Library ----
 add_library(engine SHARED ${ENGINE_SRC})
 
+# ---- Dependencies ----
+target_link_libraries(engine PUBLIC spdlog)
+
 # ---- Include directories ----
 target_include_directories(engine PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
@@ -26,6 +29,14 @@ elseif(APPLE)
 elseif(UNIX)
     target_compile_definitions(engine PUBLIC TERRA_PLATFORM_LINUX)
 endif()
+
+# ---- Debug/Release detection ----
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(engine PUBLIC TERRA_BUILD_DEBUG)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(engine PUBLIC TERRA_BUILD_RELEASE)
+endif()
+
 
 # ---- DLL export macro ----
 target_compile_definitions(engine PRIVATE TERRA_BUILD_DLL)
