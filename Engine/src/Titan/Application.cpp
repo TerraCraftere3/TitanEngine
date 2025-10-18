@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Input.h"
+#include "KeyCodes.h"
 #include "Log.h"
 
 namespace Titan
@@ -31,7 +32,7 @@ namespace Titan
 
             m_Window->OnUpdate();
 
-            if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+            if (Input::IsKeyPressed(TI_KEY_ESCAPE))
                 m_Running = false;
         }
     }

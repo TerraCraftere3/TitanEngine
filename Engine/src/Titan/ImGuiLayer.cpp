@@ -7,6 +7,8 @@
 // clang-format on
 
 #include "Application.h"
+#include "KeyCodes.h"
+#include "MouseButtonCodes.h"
 #include "PCH.h"
 
 ImGuiKey ImGui_ImplGlfw_KeyToImGuiKey(int keycode)
@@ -368,7 +370,7 @@ namespace Titan
     bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& event)
     {
         ImGuiIO& io = ImGui::GetIO();
-        auto keycode = ImGui_ImplGlfw_KeyToImGuiKey(event.GetKeyCode());
+        auto keycode = ImGui_ImplGlfw_KeyToImGuiKey(TI_KEY_CODE_TO_GLFW_KEY_CODE(event.GetKeyCode()));
         io.AddKeyEvent(keycode, true);
 
         // TODO: Add Modifier Keys using Input and ImGui_ImplGlfw_UpdateKeyModifiers
@@ -378,7 +380,7 @@ namespace Titan
     bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& event)
     {
         ImGuiIO& io = ImGui::GetIO();
-        auto keycode = ImGui_ImplGlfw_KeyToImGuiKey(event.GetKeyCode());
+        auto keycode = ImGui_ImplGlfw_KeyToImGuiKey(TI_KEY_CODE_TO_GLFW_KEY_CODE(event.GetKeyCode()));
         io.AddKeyEvent(keycode, false);
         // TODO: Add Modifier Keys using Input and ImGui_ImplGlfw_UpdateKeyModifiers
         return false;

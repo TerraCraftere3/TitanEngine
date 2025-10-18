@@ -1,0 +1,21 @@
+#pragma once
+
+/// @brief TI Mouse Btn -> Glfw Mouse Btn
+#define TI_MOUSE_BTN_TO_GLFW_MOUSE_BTN(btn) btn
+/// @brief Glfw Mouse Btn -> TI Mouse Btn
+#define GLFW_MOUSE_BTN_TO_TI_MOUSE_BTN(btn) btn
+
+// FROM GLFW3
+
+#define TI_MOUSE_BUTTON_1         0
+#define TI_MOUSE_BUTTON_2         1
+#define TI_MOUSE_BUTTON_3         2
+#define TI_MOUSE_BUTTON_4         3
+#define TI_MOUSE_BUTTON_5         4
+#define TI_MOUSE_BUTTON_6         5
+#define TI_MOUSE_BUTTON_7         6
+#define TI_MOUSE_BUTTON_8         7
+#define TI_MOUSE_BUTTON_LAST      TI_MOUSE_BUTTON_8
+#define TI_MOUSE_BUTTON_LEFT      TI_MOUSE_BUTTON_1
+#define TI_MOUSE_BUTTON_RIGHT     TI_MOUSE_BUTTON_2
+#define TI_MOUSE_BUTTON_MIDDLE    TI_MOUSE_BUTTON_3

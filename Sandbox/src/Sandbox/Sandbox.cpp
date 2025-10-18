@@ -7,7 +7,14 @@ public:
 
     void OnUpdate() override {}
 
-    void OnEvent(Titan::Event& event) override {}
+    void OnEvent(Titan::Event& event) override
+    {
+        if (event.GetEventType() == Titan::EventType::KeyPressed)
+        {
+            auto keyEvent = (Titan::KeyPressedEvent&)event;
+            LOG_TRACE("Pressed Key {}", (char)keyEvent.GetKeyCode());
+        }
+    }
 };
 
 class Sandbox : public Titan::Application
