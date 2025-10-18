@@ -40,7 +40,9 @@ target_compile_definitions(engine PUBLIC
     $<$<CONFIG:Debug>:TI_BUILD_DEBUG>
     $<$<CONFIG:Release>:TI_BUILD_RELEASE>
     $<$<CONFIG:RelWithDebInfo>:TI_BUILD_RELEASE>
+    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_RELEASE_WITH_DEBUG_INFO>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
+    $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
 )
 
 

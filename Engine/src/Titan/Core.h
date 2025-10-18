@@ -20,7 +20,7 @@
 #endif
 
 #ifdef TI_ENABLE_ASSERTS
-#define ASSERT(x, ...)                                       \
+#define TI_ASSERT(x, ...)                                    \
     {                                                        \
         if (!(x))                                            \
         {                                                    \
@@ -28,7 +28,7 @@
             __debugbreak();                                  \
         }                                                    \
     }
-#define CORE_ASSERT(x, ...)                                       \
+#define TI_CORE_ASSERT(x, ...)                                    \
     {                                                             \
         if (!(x))                                                 \
         {                                                         \
@@ -37,8 +37,8 @@
         }                                                         \
     }
 #else
-#define ASSERT(x, ...)
-#define CORE_ASSERT(x, ...)
+#define TI_ASSERT(x, ...)
+#define TI_CORE_ASSERT(x, ...)
 #endif
 
 #define BIT(x) (1 << x)

@@ -17,8 +17,6 @@
 
   * Use `#pragma once` as the header guard.
   * Keep includes minimal: include only what is necessary.
-  * Public API goes first (classes, structs, enums).
-  * Implementation details (private functions, members) go after public API.
 
 * **Source files (`.cpp`)**
 
