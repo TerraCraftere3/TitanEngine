@@ -13,7 +13,11 @@ public:
 class Sandbox : public Titan::Application
 {
 public:
-    Sandbox() { PushLayer(new ExampleLayer()); }
+    Sandbox()
+    {
+        PushLayer(new ExampleLayer());
+        PushOverlay(new Titan::ImGuiLayer());
+    }
     ~Sandbox() {}
 };
 

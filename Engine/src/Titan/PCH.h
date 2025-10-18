@@ -25,6 +25,8 @@
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 
+#include <imgui.h>
+
 // ---- Internal ----
 #include "Titan/Core.h"
 #include "Titan/Log.h"
