@@ -8,14 +8,17 @@ namespace Titan
 
     void Log::Init()
     {
+        std::string format = "[%T] [%^%l%$] %n: %v";
+        spdlog::level::level_enum level = spdlog::level::trace;
+
         // Core Logger
         s_CoreLogger = spdlog::stdout_color_mt("CORE");
-        s_CoreLogger->set_level(spdlog::level::trace);
-        s_CoreLogger->set_pattern("[%T] [%^%l%$] %v");
+        s_CoreLogger->set_level(level);
+        s_CoreLogger->set_pattern(format);
 
         // Client Logger
         s_ClientLogger = spdlog::stdout_color_mt("APP");
-        s_ClientLogger->set_level(spdlog::level::trace);
-        s_ClientLogger->set_pattern("[%T] [%^%l%$] %v");
+        s_ClientLogger->set_level(level);
+        s_ClientLogger->set_pattern(format);
     }
 } // namespace Titan

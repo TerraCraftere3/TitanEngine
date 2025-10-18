@@ -8,6 +8,7 @@
 ## Dependencies
 - `spdlog`: https://github.com/gabime/spdlog
 - `glfw`: https://github.com/glfw/glfw
+- `glad`: https://glad.dav1d.de/
 
 ## Styleguide
 

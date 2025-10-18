@@ -11,7 +11,7 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
 add_library(engine SHARED ${ENGINE_SRC})
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw)
+target_link_libraries(engine PUBLIC spdlog glfw glad)
 
 # ---- Include directories ----
 target_include_directories(engine PUBLIC

@@ -1,4 +1,5 @@
 #pragma once
+// clang-format off
 
 // ---- Standard library ----
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 
 // ---- Internal ----
@@ -31,3 +33,4 @@
 #ifdef TI_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif
+// clang-format on

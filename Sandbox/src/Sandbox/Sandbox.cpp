@@ -5,12 +5,9 @@ class ExampleLayer : public Titan::Layer
 public:
     ExampleLayer() : Layer("Example") {}
 
-    void OnUpdate() override
-    {
-        // LOG_TRACE("ExampleLayer::Update");
-    }
+    void OnUpdate() override {}
 
-    void OnEvent(Titan::Event& event) override { LOG_TRACE("{0}", event.ToString()); }
+    void OnEvent(Titan::Event& event) override {}
 };
 
 class Sandbox : public Titan::Application

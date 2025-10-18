@@ -22,6 +22,9 @@ namespace Titan
                 layer->OnUpdate();
 
             m_Window->OnUpdate();
+
+            glClearColor(0.1, 0.1, 0.1, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT);
         }
     }
 
