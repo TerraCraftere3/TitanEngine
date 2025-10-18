@@ -1,1 +1,128 @@
 # TerraEngine
+
+## Styleguide
+
+### 1. File Structure
+
+* **Header files (`.h` / `.hpp`)**
+
+  * Use `#pragma once` as the header guard.
+  * Keep includes minimal: include only what is necessary.
+  * Public API goes first (classes, structs, enums).
+  * Implementation details (private functions, members) go after public API.
+
+* **Source files (`.cpp`)**
+
+  * Include the corresponding header first.
+  * Then include standard library headers and third-party headers.
+  * Implementation of functions and methods goes inside the matching namespace.
+
+### 2. Namespaces
+
+* Wrap all code in the project namespace, e.g., `Terra`.
+* Close namespaces explicitly with comments:
+
+```cpp
+} // namespace Terra
+```
+
+### 3. Classes
+
+* Class names use **PascalCase**.
+* Member variables:
+
+  * Prefix with `m_`
+  * Use PascalCase after `m_`
+* Public, protected, and private sections:
+
+  * Group logically; declare `public` first if it is the primary interface.
+  * Use multiple `private:` sections if needed for clarity (optional).
+* Virtual destructor for base classes.
+
+```cpp
+class Application
+{
+public:
+    Application();
+    virtual ~Application();
+
+    void Run();
+
+public:
+    int PublicInt;
+
+private:
+    void PrivateFunction();
+
+private:
+    int m_Member;
+};
+```
+
+### 4. Functions / Methods
+
+* **Naming:** PascalCase.
+* **Implementation:**
+
+  * Scope function definitions within the namespace.
+  * Use the fully qualified name in `.cpp` files:
+
+```cpp
+void Application::Run()
+{
+}
+```
+
+* Always use braces for consistency, even on single-line blocks.
+
+### 5. Variables
+
+* Member variables: `m_MemberName`
+* Local variables: `camelCase` or `snake_case` (choose one and be consistent)
+* Constants: `ALL_CAPS` or `kPascalCase` for constants (choose a consistent style)
+
+### 6. Includes
+
+* Order:
+
+  1. Corresponding header file
+  2. Standard library headers
+  3. Third-party library headers
+  4. Project headers
+
+```cpp
+#include "Application.h"
+#include <stdio.h>
+#include <SomeLib/SomeHeader.h>
+#include "Core.h"
+```
+
+* Prefer forward declarations in headers when possible to reduce compilation dependencies.
+
+### 7. Formatting
+
+* Indentation: **4 spaces** per level, **no tabs**.
+* Braces:
+
+  * Opening brace on the same line for classes, functions, and control statements.
+* One blank line between functions.
+* Maximum line length: 120 characters.
+
+```cpp
+Application::Application()
+{
+}
+
+Application::~Application()
+{
+}
+```
+
+### 8. Miscellaneous
+
+* Logging, macros, and utility functions should follow the same naming conventions.
+* Comments:
+
+  * Use `//` for single-line comments.
+  * Explain “why”, not “what” when commenting.
+* Avoid `using namespace` in headers.
