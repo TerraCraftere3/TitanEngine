@@ -51,4 +51,19 @@ namespace Titan
 
         EVENT_CLASS_TYPE(KeyReleased)
     };
+
+    class TI_API KeyTypedEvent : public KeyEvent
+    {
+    public:
+        KeyTypedEvent(int keycode) : KeyEvent(keycode) {}
+
+        std::string ToString() const override
+        {
+            std::stringstream ss;
+            ss << "KeyTippedEvent: " << m_KeyCode;
+            return ss.str();
+        }
+
+        EVENT_CLASS_TYPE(KeyTyped)
+    };
 } // namespace Titan
