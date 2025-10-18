@@ -1,4 +1,4 @@
-name: CMake on Windows (with submodules, CMake >= 4.0)
+name: CMake on Windows
 
 on:
   push:
