@@ -86,6 +86,7 @@ void Application::Run()
 ### 5. Variables
 
 * Member variables: `m_MemberName`
+* Static Member variables: `s_MemberName`
 * Local variables: `camelCase` or `snake_case` (choose one and be consistent)
 * Constants: `ALL_CAPS` or `kPascalCase` for constants (choose a consistent style)
 
@@ -97,6 +98,8 @@ void Application::Run()
   2. Standard library headers
   3. Third-party library headers
   4. Project headers
+
+* The Order should only be changed if dependencies break (e.g. glfw and glad)
 
 ```cpp
 #include "Application.h"

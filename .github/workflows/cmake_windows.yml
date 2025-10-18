@@ -21,11 +21,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # Ensure we have the latest CMake (>= 4.0)
-      - name: Install latest CMake
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
-          cmake --version
+      # Ensure CMake installed
+      - name: Setup CMake
+        uses: lukka/get-cmake@latest
+
 
       # Configure CMake
       - name: Configure CMake
