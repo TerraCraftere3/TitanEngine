@@ -1,22 +1,25 @@
 #pragma once
 
-#ifdef TERRA_PLATFORM_WINDOWS
-#ifdef TERRA_BUILD_DLL
-#define TERRA_API _declspec(dllexport)
+#ifdef TI_PLATFORM_WINDOWS
+#ifdef TI_BUILD_DLL
+#define TI_API _declspec(dllexport)
 #else
-#define TERRA_API _declspec(dllimport)
+#define TI_API _declspec(dllimport)
 #endif
 #else
-#error Terra Engine only supports Windows for now!
+#error Titan Engine only supports Windows for now!
 #endif
 
-#ifdef TERRA_BUILD_DEBUG
-#ifndef TERRA_ENABLE_ASSERTS
-#define TERRA_ENABLE_ASSERTS
+#ifdef TI_BUILD_DEBUG
+#ifndef TI_ENABLE_ASSERTS
+#define TI_ENABLE_ASSERTS
+#endif
+#ifndef TI_ENABLE_LOGGING
+#define TI_ENABLE_LOGGING
 #endif
 #endif
 
-#ifdef TERRA_ENABLE_ASSERTS
+#ifdef TI_ENABLE_ASSERTS
 #define ASSERT(x, ...)                                       \
     {                                                        \
         if (!(x))                                            \

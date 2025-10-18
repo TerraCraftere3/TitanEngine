@@ -1,15 +1,14 @@
 #pragma once
-#include "Terra/PCH.h"
 #include "Event.h"
+#include "Titan/PCH.h"
 
-namespace Terra
+namespace Titan
 {
 
-    class TERRA_API WindowResizeEvent : public Event
+    class TI_API WindowResizeEvent : public Event
     {
     public:
-        WindowResizeEvent(unsigned int width, unsigned int height)
-            : m_Width(width), m_Height(height) {}
+        WindowResizeEvent(unsigned int width, unsigned int height) : m_Width(width), m_Height(height) {}
 
         inline unsigned int GetWidth() const { return m_Width; }
         inline unsigned int GetHeight() const { return m_Height; }
@@ -27,7 +26,7 @@ namespace Terra
         unsigned int m_Width, m_Height;
     };
 
-    class TERRA_API WindowCloseEvent : public Event
+    class TI_API WindowCloseEvent : public Event
     {
     public:
         WindowCloseEvent() {}
@@ -36,7 +35,7 @@ namespace Terra
         EVENT_CLASS_CATEGORY(EventCategoryApplication)
     };
 
-    class TERRA_API AppTickEvent : public Event
+    class TI_API AppTickEvent : public Event
     {
     public:
         AppTickEvent() {}
@@ -45,7 +44,7 @@ namespace Terra
         EVENT_CLASS_CATEGORY(EventCategoryApplication)
     };
 
-    class TERRA_API AppUpdateEvent : public Event
+    class TI_API AppUpdateEvent : public Event
     {
     public:
         AppUpdateEvent() {}
@@ -54,7 +53,7 @@ namespace Terra
         EVENT_CLASS_CATEGORY(EventCategoryApplication)
     };
 
-    class TERRA_API AppRenderEvent : public Event
+    class TI_API AppRenderEvent : public Event
     {
     public:
         AppRenderEvent() {}
@@ -62,4 +61,4 @@ namespace Terra
         EVENT_CLASS_TYPE(AppRender)
         EVENT_CLASS_CATEGORY(EventCategoryApplication)
     };
-}
+} // namespace Titan

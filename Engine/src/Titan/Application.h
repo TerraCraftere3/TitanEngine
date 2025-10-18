@@ -3,12 +3,12 @@
 #include "Core.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
-#include "Terra/PCH.h"
+#include "PCH.h"
 #include "Window.h"
 
-namespace Terra
+namespace Titan
 {
-    class TERRA_API Application
+    class TI_API Application
     {
     public:
         Application();
@@ -28,4 +28,4 @@ namespace Terra
     // Declared by Client
     Application* CreateApplication();
 
-} // namespace Terra
+} // namespace Titan

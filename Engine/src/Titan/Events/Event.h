@@ -1,8 +1,8 @@
 #pragma once
-#include "Terra/Core.h"
-#include "Terra/PCH.h"
+#include "Titan/Core.h"
+#include "Titan/PCH.h"
 
-namespace Terra
+namespace Titan
 {
 
     enum class EventType
@@ -54,7 +54,7 @@ namespace Terra
         return category;                          \
     }
 
-    class TERRA_API Event
+    class TI_API Event
     {
         friend class EventDispatcher;
 
@@ -97,4 +97,4 @@ namespace Terra
     {
         return os << e.ToString();
     }
-} // namespace Terra
+} // namespace Titan

@@ -3,8 +3,8 @@ project(engine LANGUAGES CXX)
 
 # ---- Sources ----
 file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Terra/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Terra/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Titan/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Titan/*.c"
 )
 
 # ---- Library ----
@@ -23,24 +23,26 @@ target_compile_features(engine PUBLIC cxx_std_23)
 
 # ---- Precompiled Headers ----
 target_precompile_headers(engine PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Terra/PCH.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Titan/PCH.h"
 )
 
 # ---- Platform detection ----
 if(WIN32)
-    target_compile_definitions(engine PUBLIC TERRA_PLATFORM_WINDOWS)
+    target_compile_definitions(engine PUBLIC TI_PLATFORM_WINDOWS)
 elseif(APPLE)
-    target_compile_definitions(engine PUBLIC TERRA_PLATFORM_MAC)
+    target_compile_definitions(engine PUBLIC TI_PLATFORM_MAC)
 elseif(UNIX)
-    target_compile_definitions(engine PUBLIC TERRA_PLATFORM_LINUX)
+    target_compile_definitions(engine PUBLIC TI_PLATFORM_LINUX)
 endif()
 
 # ---- Debug/Release detection ----
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(engine PUBLIC TERRA_BUILD_DEBUG)
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(engine PUBLIC TERRA_BUILD_RELEASE)
-endif()
+target_compile_definitions(engine PUBLIC
+    $<$<CONFIG:Debug>:TI_BUILD_DEBUG>
+    $<$<CONFIG:Release>:TI_BUILD_RELEASE>
+    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_RELEASE>
+    $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
+)
+
 
 # ---- DLL export macro ----
-target_compile_definitions(engine PRIVATE TERRA_BUILD_DLL)
+target_compile_definitions(engine PRIVATE TI_BUILD_DLL)

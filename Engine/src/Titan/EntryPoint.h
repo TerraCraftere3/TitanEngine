@@ -1,18 +1,18 @@
 #pragma once
 
-#include "PCH.h"
 #include "Application.h"
 #include "Log.h"
+#include "PCH.h"
 
-#ifdef TERRA_PLATFORM_WINDOWS
+#ifdef TI_PLATFORM_WINDOWS
 
-extern Terra::Application *Terra::CreateApplication();
+extern Titan::Application* Titan::CreateApplication();
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    Terra::Log::Init();
+    Titan::Log::Init();
     LOG_CORE_INFO("Initialized Logger");
-    Terra::Application *app = Terra::CreateApplication();
+    Titan::Application* app = Titan::CreateApplication();
     LOG_CORE_INFO("Initialized Application");
     app->Run();
     delete app;

@@ -1,10 +1,10 @@
 #include "WindowsWindow.h"
-#include "Terra/Events/ApplicationEvent.h"
-#include "Terra/Events/KeyEvent.h"
-#include "Terra/Events/MouseEvent.h"
-#include "Terra/PCH.h"
+#include "Titan/Events/ApplicationEvent.h"
+#include "Titan/Events/KeyEvent.h"
+#include "Titan/Events/MouseEvent.h"
+#include "Titan/PCH.h"
 
-namespace Terra
+namespace Titan
 {
     static bool s_GLFWInitialized = false;
 
@@ -163,4 +163,4 @@ namespace Terra
         return m_Data.VSync;
     }
 
-} // namespace Terra
+} // namespace Titan

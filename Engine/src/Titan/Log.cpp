@@ -1,7 +1,7 @@
-#include "PCH.h"
 #include "Log.h"
+#include "PCH.h"
 
-namespace Terra
+namespace Titan
 {
     std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
     std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
@@ -18,4 +18,4 @@ namespace Terra
         s_ClientLogger->set_level(spdlog::level::trace);
         s_ClientLogger->set_pattern("[%T] [%^%l%$] %v");
     }
-} // namespace Terra
+} // namespace Titan

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0)
-project(TerraEngine C CXX)
+project(TitanEngine C CXX)
 
 # ---- Defaults ----
 set(CMAKE_CXX_STANDARD 23)

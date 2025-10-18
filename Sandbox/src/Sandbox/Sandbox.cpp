@@ -1,17 +1,13 @@
-#include <TerraEngine.h>
+#include <Titan.h>
 
-class Sandbox : public Terra::Application
+class Sandbox : public Titan::Application
 {
 public:
-    Sandbox()
-    {
-    }
-    ~Sandbox()
-    {
-    }
+    Sandbox() {}
+    ~Sandbox() {}
 };
 
-Terra::Application *Terra::CreateApplication()
+Titan::Application* Titan::CreateApplication()
 {
     return new Sandbox();
 }

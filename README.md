@@ -1,4 +1,4 @@
-# TerraEngine [![CMake on Windows (with submodules, CMake >= 4.0)](https://github.com/TerraCraftere3/TerraEngine/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/TerraCraftere3/TerraEngine/actions/workflows/cmake_windows.yml)
+# Titan Engine [![CMake on Windows (with submodules, CMake >= 4.0)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml)
 
 ## Folder Structure
 - `Engine` contains the code for the Engine that is used by the Game and the Editor
@@ -7,6 +7,7 @@
 
 ## Dependencies
 - `spdlog`: https://github.com/gabime/spdlog
+- `glfw`: https://github.com/glfw/glfw
 
 ## Styleguide
 
@@ -27,11 +28,11 @@
 
 ### 2. Namespaces
 
-* Wrap all code in the project namespace, e.g., `Terra`.
+* Wrap all code in the project namespace, e.g., `Titan`.
 * Close namespaces explicitly with comments:
 
 ```cpp
-} // namespace Terra
+} // namespace Titan
 ```
 
 ### 3. Classes

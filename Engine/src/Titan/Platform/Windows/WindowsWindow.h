@@ -2,10 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Terra/PCH.h"
-#include "Terra/Window.h"
+#include "Titan/PCH.h"
+#include "Titan/Window.h"
 
-namespace Terra
+namespace Titan
 {
 
     class WindowsWindow : public Window
@@ -43,4 +43,4 @@ namespace Terra
         WindowData m_Data;
     };
 
-} // namespace Terra
+} // namespace Titan
