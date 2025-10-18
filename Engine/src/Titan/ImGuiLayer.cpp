@@ -314,6 +314,8 @@ namespace Titan
         ImGui::InputText("Text Input", text, IM_ARRAYSIZE(text));
         static float fltest = 0.0f;
         ImGui::DragFloat("Float Input", &fltest, 0.01f, -1.0f, 1.0f);
+        static float coltest[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+        ImGui::ColorEdit4("Color Input", coltest);
         ImGui::End();
 
         // End Frame

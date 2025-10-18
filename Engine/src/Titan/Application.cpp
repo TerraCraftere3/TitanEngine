@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include "Input.h"
 #include "Log.h"
 
 namespace Titan
@@ -22,13 +23,16 @@ namespace Titan
     {
         while (m_Running)
         {
+            glClearColor(0.1, 0.1, 0.1, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT);
+
             for (Layer* layer : m_LayerStack)
                 layer->OnUpdate();
 
             m_Window->OnUpdate();
 
-            glClearColor(0.1, 0.1, 0.1, 1.0);
-            glClear(GL_COLOR_BUFFER_BIT);
+            if (Input::IsKeyPressed(GLFW_KEY_ESCAPE))
+                m_Running = false;
         }
     }
 
