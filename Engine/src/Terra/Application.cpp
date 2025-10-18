@@ -3,21 +3,21 @@
 #include "Log.h"
 #include "Events/ApplicationEvent.h"
 
-#include <stdio.h>
-
 namespace Terra
 {
 
-    Application::Application() {}
+    Application::Application()
+    {
+        m_Window = std::unique_ptr<Window>(Window::Create());
+    }
 
     Application::~Application() {}
 
     void Application::Run()
     {
-        WindowResizeEvent e(1280, 720);
-        if (e.IsInCategory(EventCategoryApplication))
+        while (m_Running)
         {
-            LOG_TRACE(e.ToString());
+            m_Window->OnUpdate();
         }
     }
 

@@ -1,9 +1,6 @@
 #pragma once
-
+#include "Terra/PCH.h"
 #include "Terra/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Terra
 {

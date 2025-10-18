@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Terra/PCH.h"
 #include "Event.h"
-
-#include <sstream>
 
 namespace Terra
 {

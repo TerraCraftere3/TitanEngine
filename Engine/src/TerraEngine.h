@@ -5,6 +5,7 @@
 // Core
 #include "Terra/EntryPoint.h"
 #include "Terra/Application.h"
+#include "Terra/Window.h"
 #include "Terra/Log.h"
 
 // Events

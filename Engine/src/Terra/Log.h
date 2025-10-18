@@ -1,9 +1,5 @@
 #pragma once
-
-#include <memory>
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
-
+#include "PCH.h"
 #include "Core.h"
 
 namespace Terra
