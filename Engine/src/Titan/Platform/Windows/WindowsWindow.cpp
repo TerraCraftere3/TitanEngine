@@ -48,11 +48,8 @@ namespace Titan
         }
 
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-        glfwMakeContextCurrent(m_Window);
-        {
-            int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-            TI_CORE_ASSERT(success, "Couldnt load Glad (OpenGL)!")
-        }
+        m_Context = new OpenGLContext(m_Window);
+        m_Context->Init();
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
 
@@ -160,7 +157,7 @@ namespace Titan
     void WindowsWindow::OnUpdate()
     {
         glfwPollEvents();
-        glfwSwapBuffers(m_Window);
+        m_Context->Swapbuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)

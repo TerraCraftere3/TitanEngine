@@ -6,6 +6,7 @@
 - `Engine` contains the code for the Engine that is used by the Game and the Editor
   - `src/Titan/Events` contains all code for the Event System
   - `src/Titan/Platform` contains platform specific code (os and graphics api specific)
+  - `src/Titan/Renderer` contains platform independent code for the Renderer
 - `Sandbox` contains the code of the Game
 - `Vendor` contains all Dependencies of `Engine` (and `Sandbox`)
 

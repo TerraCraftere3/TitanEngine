@@ -19,4 +19,4 @@ target_include_directories(sandbox PRIVATE
 target_compile_features(sandbox PUBLIC cxx_std_23)
 
 # ---- Libraries ----
-target_link_libraries(sandbox PUBLIC engine)
+target_link_libraries(sandbox PRIVATE engine glad)

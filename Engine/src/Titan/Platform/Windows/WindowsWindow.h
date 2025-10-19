@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLContext.h"
 #include "Titan/Window.h"
 
 namespace Titan
@@ -31,6 +32,7 @@ namespace Titan
 
     private:
         GLFWwindow* m_Window;
+        GraphicsContext* m_Context;
 
         struct WindowData
         {
