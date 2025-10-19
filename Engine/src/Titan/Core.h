@@ -1,22 +1,27 @@
 #pragma once
 
+// clang-format off
 #ifdef TI_PLATFORM_WINDOWS
-#ifdef TI_BUILD_DLL
-#define TI_API _declspec(dllexport)
+    #ifdef TI_DYNAMIC_LINK
+        #ifdef TI_BUILD_DLL
+            #define TI_API _declspec(dllexport)
+        #else
+            #define TI_API _declspec(dllimport)
+        #endif
+    #else
+        
+    #endif
 #else
-#define TI_API _declspec(dllimport)
-#endif
-#else
-#error Titan Engine only supports Windows for now!
+    #error Titan Engine only supports Windows for now!
 #endif
 
 #ifdef TI_BUILD_DEBUG
-#ifndef TI_ENABLE_ASSERTS
-#define TI_ENABLE_ASSERTS
-#endif
-#ifndef TI_ENABLE_LOGGING
-#define TI_ENABLE_LOGGING
-#endif
+    #ifndef TI_ENABLE_ASSERTS
+        #define TI_ENABLE_ASSERTS
+    #endif
+    #ifndef TI_ENABLE_LOGGING
+        #define TI_ENABLE_LOGGING
+    #endif
 #endif
 
 #ifdef TI_ENABLE_ASSERTS
@@ -37,9 +42,10 @@
         }                                                         \
     }
 #else
-#define TI_ASSERT(x, ...)
-#define TI_CORE_ASSERT(x, ...)
+    #define TI_ASSERT(x, ...)
+    #define TI_CORE_ASSERT(x, ...)
 #endif
 
 #define BIT(x) (1 << x)
 #define TI_BIND_EVENT_FN(fn) std::bind(&##fn, this, std::placeholders::_1)
+// clang-format on

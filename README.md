@@ -1,14 +1,19 @@
 # Titan Engine [![CMake on Windows (with submodules, CMake >= 4.0)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml)
 
+**A Remake of my old Engine**
+
 ## Folder Structure
 - `Engine` contains the code for the Engine that is used by the Game and the Editor
+  - `src/Titan/Events` contains all code for the Event System
+  - `src/Titan/Platform` contains platform specific code (os and graphics api specific)
 - `Sandbox` contains the code of the Game
-- `Vendor` contains all Dependencies of `Engine`
+- `Vendor` contains all Dependencies of `Engine` (and `Sandbox`)
 
 ## Dependencies
 - `spdlog`: https://github.com/gabime/spdlog
 - `glfw`: https://github.com/glfw/glfw
 - `glad`: https://glad.dav1d.de/
+- `imgui`: https://github.com/ocornut/imgui
 
 ## Styleguide
 

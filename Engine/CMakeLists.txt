@@ -47,4 +47,5 @@ target_compile_definitions(engine PUBLIC
 
 
 # ---- DLL export macro ----
+target_compile_definitions(engine PUBLIC TI_DYNAMIC_LINK)
 target_compile_definitions(engine PRIVATE TI_BUILD_DLL)
