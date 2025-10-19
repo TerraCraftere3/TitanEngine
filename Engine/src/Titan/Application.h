@@ -6,6 +6,7 @@
 #include "Titan/ImGuiLayer.h"
 #include "Titan/LayerStack.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Window.h"
 
@@ -36,8 +37,10 @@ namespace Titan
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
 
-        unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+        unsigned int m_VertexArray;
         std::unique_ptr<Shader> m_Shader;
+        std::unique_ptr<VertexBuffer> m_VertexBuffer;
+        std::unique_ptr<IndexBuffer> m_IndexBuffer;
     };
 
     // Declared by Client
