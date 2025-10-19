@@ -23,12 +23,6 @@ namespace Titan
         void Begin();
         void End();
 
-        void OnImGuiRender(ImGuiContext* ctx) override
-        {
-            static bool show = true;
-            ImGui::ShowDemoWindow(&show);
-        }
-
     private:
         float m_Time = 0.0f;
     };
