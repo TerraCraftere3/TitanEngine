@@ -2,43 +2,12 @@
 #include "Titan/Core/Input.h"
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
+#include "Titan/PCH.h"
 
 namespace Titan
 {
 
     Application* Application::s_Instance = nullptr;
-
-    static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
-    {
-        switch (type)
-        {
-            case Titan::ShaderDataType::Float:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Float2:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Float3:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Float4:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Mat3:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Mat4:
-                return GL_FLOAT;
-            case Titan::ShaderDataType::Int:
-                return GL_INT;
-            case Titan::ShaderDataType::Int2:
-                return GL_INT;
-            case Titan::ShaderDataType::Int3:
-                return GL_INT;
-            case Titan::ShaderDataType::Int4:
-                return GL_INT;
-            case Titan::ShaderDataType::Bool:
-                return GL_BOOL;
-        }
-
-        TI_CORE_ASSERT(false, "Unknown ShaderDataType!");
-        return 0;
-    }
 
     Application::Application()
     {
@@ -58,8 +27,11 @@ namespace Titan
     {
         while (m_Running)
         {
+            float time = (float)glfwGetTime(); // TODO: Platform Indepentend Time Query (Time::GetCurrent()???)
+            Timestep timestep = time - m_LastFrameTime;
+            m_LastFrameTime = time;
             for (Layer* layer : m_LayerStack)
-                layer->OnUpdate();
+                layer->OnUpdate(timestep);
 
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack)

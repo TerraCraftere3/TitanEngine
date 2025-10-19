@@ -4,6 +4,7 @@
 
 ## Folder Structure
 - `Engine` contains the code for the Engine that is used by the Game and the Editor
+  - `src/Titan/Core` contains the core code used by all Systems
   - `src/Titan/Events` contains all code for the Event System
   - `src/Titan/Platform` contains platform specific code (os and graphics api specific)
   - `src/Titan/Renderer` contains platform independent code for the Renderer

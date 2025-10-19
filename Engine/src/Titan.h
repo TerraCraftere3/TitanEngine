@@ -9,6 +9,7 @@
 #include "Titan/Core/Layer.h"
 #include "Titan/Core/Log.h"
 #include "Titan/Core/MouseButtonCodes.h"
+#include "Titan/Core/Timestep.h"
 #include "Titan/ImGuiLayer.h"
 // Renderer
 #include "Titan/Renderer/Buffer.h"

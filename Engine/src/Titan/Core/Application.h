@@ -1,17 +1,12 @@
 #pragma once
 
 #include "Titan/Core.h"
-#include "Titan/Events/ApplicationEvent.h"
+#include "Titan/Core/LayerStack.h"
+#include "Titan/Core/Timestep.h"
+#include "Titan/Core/Window.h"
 #include "Titan/Events/Event.h"
 #include "Titan/ImGuiLayer.h"
-#include "Titan/Core/LayerStack.h"
 #include "Titan/PCH.h"
-#include "Titan/Renderer/Buffer.h"
-#include "Titan/Renderer/Camera.h"
-#include "Titan/Renderer/Renderer.h"
-#include "Titan/Renderer/Shader.h"
-#include "Titan/Renderer/VertexArray.h"
-#include "Titan/Core/Window.h"
 
 namespace Titan
 {
@@ -39,6 +34,7 @@ namespace Titan
         bool m_Running = true;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
+        float m_LastFrameTime = 0.0f;
     };
 
     // Declared by Client

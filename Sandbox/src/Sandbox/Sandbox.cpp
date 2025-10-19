@@ -105,7 +105,7 @@ public:
         m_BlueShader.reset(new Titan::Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
     }
 
-    virtual void OnUpdate() override
+    virtual void OnUpdate(Titan::Timestep ts) override
     {
         Titan::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Titan::RenderCommand::Clear();
@@ -119,7 +119,7 @@ public:
             movement += glm::vec3(0.0f, 1.0f, 0.0f);
         if (Titan::Input::IsKeyPressed(TI_KEY_S))
             movement += glm::vec3(0.0f, -1.0f, 0.0f);
-        m_Camera.SetPosition(m_Camera.GetPosition() + movement * 0.01f);
+        m_Camera.SetPosition(m_Camera.GetPosition() + movement * ts * m_MovementSpeed);
 
         Titan::Renderer::BeginScene(m_Camera);
         Titan::Renderer::Submit(m_SquareVA, m_BlueShader);
@@ -132,13 +132,9 @@ public:
     virtual void OnImGuiRender(ImGuiContext* ctx) override
     {
         ImGui::SetCurrentContext(ctx);
-        ImGui::Begin("Test");
-        static char text[1024] = "Hello, world!";
-        ImGui::InputText("Text Input", text, IM_ARRAYSIZE(text));
+        ImGui::Begin("Controller");
         static float fltest = 0.0f;
-        ImGui::DragFloat("Float Input", &fltest, 0.01f, -1.0f, 1.0f);
-        static float coltest[4] = {1.0f, 0.0f, 1.0f, 1.0f};
-        ImGui::ColorEdit4("Color Input", coltest);
+        ImGui::DragFloat("Movement Speed", &m_MovementSpeed, 0.01f, 0.5f, 5.0f);
         ImGui::End();
     }
 
@@ -150,6 +146,8 @@ private:
     std::shared_ptr<Titan::VertexArray> m_SquareVA;
 
     Titan::OrthographicCamera m_Camera;
+
+    float m_MovementSpeed = 1.0f;
 };
 
 class Sandbox : public Titan::Application

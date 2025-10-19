@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Titan/Core.h"
+#include "Titan/Core/Timestep.h"
 #include "Titan/Events/Event.h"
 
 namespace Titan
@@ -14,7 +15,7 @@ namespace Titan
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(Timestep ts) {}
         virtual void OnImGuiRender(ImGuiContext* ctx) {}
         virtual void OnEvent(Event& event) {}
 
