@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.h"
+#include "MathLog.h"
 #include "PCH.h"
 
 namespace Titan

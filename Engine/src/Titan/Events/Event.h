@@ -1,7 +1,7 @@
 #pragma once
+#include <spdlog/fmt/bundled/format.h>
 #include "Titan/Core.h"
 #include "Titan/PCH.h"
-
 namespace Titan
 {
 
@@ -93,9 +93,13 @@ namespace Titan
     private:
         Event& m_Event;
     };
-
-    inline std::ostream& operator<<(std::ostream& os, const Event& e)
-    {
-        return os << e.ToString();
-    }
 } // namespace Titan
+
+template <>
+struct fmt::formatter<Titan::Event> : fmt::formatter<std::string>
+{
+    auto format(const Titan::Event& event, format_context& ctx) const -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "{}", event.ToString());
+    }
+    };

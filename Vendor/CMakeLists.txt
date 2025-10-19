@@ -1,6 +1,7 @@
 # ---- Subdirectories ----
 add_subdirectory(spdlog)
 add_subdirectory(glfw)
+add_subdirectory(glm)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS
