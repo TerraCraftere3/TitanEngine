@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 
 namespace Titan
 {
@@ -16,8 +17,8 @@ namespace Titan
                           const glm::mat4& transform)
     {
         shader->Bind();
-        shader->SetUniformMat4("u_ViewProjection", m_Data->ViewProjMatrix);
-        shader->SetUniformMat4("u_Model", transform);
+        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection", m_Data->ViewProjMatrix);
+        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", transform);
         vertexArray->Bind();
         RenderCommand::DrawIndexed(vertexArray);
     }

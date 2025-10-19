@@ -65,8 +65,7 @@ public:
 
         m_SquareVA.reset(Titan::VertexArray::Create());
 
-        float squareVertices[3 * 4] = {-0.75f, -0.75f, 0.0f, 0.75f,  -0.75f, 0.0f,
-                                       0.75f,  0.75f,  0.0f, -0.75f, 0.75f,  0.0f};
+        float squareVertices[3 * 4] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
 
         std::shared_ptr<Titan::VertexBuffer> squareVB;
         squareVB.reset(Titan::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -113,7 +112,7 @@ public:
 			}
 		)";
 
-        m_Shader.reset(new Titan::Shader(vertexSrc, fragmentSrc));
+        m_Shader.reset(Titan::Shader::Create(vertexSrc, fragmentSrc));
 
         std::string blueShaderVertexSrc = R"(
 			#version 330 core
@@ -145,7 +144,7 @@ public:
 			}
 		)";
 
-        m_BlueShader.reset(new Titan::Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+        m_BlueShader.reset(Titan::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
     }
 
     virtual void OnUpdate(Titan::Timestep ts) override
@@ -162,11 +161,28 @@ public:
             movement += glm::vec3(0.0f, 1.0f, 0.0f);
         if (Titan::Input::IsKeyPressed(TI_KEY_S))
             movement += glm::vec3(0.0f, -1.0f, 0.0f);
+
         m_Camera.SetPosition(m_Camera.GetPosition() + movement * ts * m_MovementSpeed);
 
         Titan::Renderer::BeginScene(m_Camera);
-        Titan::Renderer::Submit(m_SquareVA, m_BlueShader, transformationMatrix);
+
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+        float spacing = 0.11f;
+        int gridSize = 20;
+        glm::vec2 gridOffset = glm::vec2(gridSize, gridSize) * spacing * 0.5f;
+
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
+            {
+                glm::vec3 pos(x * spacing - gridOffset.x, y * spacing - gridOffset.y, 0.0f);
+                glm::mat4 transform = transformationMatrix * glm::translate(glm::mat4(1.0f), pos) * scale;
+                Titan::Renderer::Submit(m_SquareVA, m_BlueShader, transform);
+            }
+        }
+
         Titan::Renderer::Submit(m_VertexArray, m_Shader, transformationMatrix);
+
         Titan::Renderer::EndScene();
     }
 
