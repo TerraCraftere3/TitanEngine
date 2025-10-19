@@ -90,4 +90,9 @@ namespace Titan
         glUseProgram(0);
     }
 
+    void Shader::SetUniformMat4(std::string location, const glm::mat4& matrix)
+    {
+        glUniformMatrix4fv(glGetUniformLocation(m_ID, location.c_str()), 1, false, glm::value_ptr(matrix));
+    }
+
 } // namespace Titan

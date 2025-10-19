@@ -14,6 +14,8 @@ namespace Titan
         void Bind() const;
         void Unbind() const;
 
+        void SetUniformMat4(std::string location, const glm::mat4& matrix);
+
     private:
         uint32_t m_ID;
     };

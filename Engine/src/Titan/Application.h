@@ -7,6 +7,7 @@
 #include "Titan/LayerStack.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Buffer.h"
+#include "Titan/Renderer/Camera.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/VertexArray.h"
@@ -44,6 +45,8 @@ namespace Titan
 
         std::shared_ptr<Shader> m_BlueShader;
         std::shared_ptr<VertexArray> m_SquareVA;
+
+        OrthographicCamera m_Camera;
     };
 
     // Declared by Client
