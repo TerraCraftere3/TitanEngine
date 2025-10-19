@@ -38,7 +38,7 @@
 
 // ---- Internal ----
 #include "Titan/Core.h"
-#include "Titan/Log.h"
+#include "Titan/Core/Log.h"
 
 // ---- Platform ----
 #ifdef TI_PLATFORM_WINDOWS

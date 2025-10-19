@@ -1,7 +1,7 @@
 #include "Titan/Platform/Windows/WindowsInput.h"
-#include "Titan/Application.h"
-#include "Titan/KeyCodes.h"
-#include "Titan/MouseButtonCodes.h"
+#include "Titan/Core/Application.h"
+#include "Titan/Core/KeyCodes.h"
+#include "Titan/Core/MouseButtonCodes.h"
 #include "Titan/PCH.h"
 
 namespace Titan

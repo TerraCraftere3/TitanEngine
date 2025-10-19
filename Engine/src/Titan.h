@@ -1,15 +1,16 @@
 #pragma once
 
+// Core
 #include "Titan/Core.h"
-
-#include "Titan/Application.h"
-#include "Titan/EntryPoint.h"
+#include "Titan/Core/Application.h"
+#include "Titan/Core/EntryPoint.h"
+#include "Titan/Core/Input.h"
+#include "Titan/Core/KeyCodes.h"
+#include "Titan/Core/Layer.h"
+#include "Titan/Core/Log.h"
+#include "Titan/Core/MouseButtonCodes.h"
 #include "Titan/ImGuiLayer.h"
-#include "Titan/Input.h"
-#include "Titan/KeyCodes.h"
-#include "Titan/Layer.h"
-#include "Titan/Log.h"
-#include "Titan/MouseButtonCodes.h"
+// Renderer
 #include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer.h"

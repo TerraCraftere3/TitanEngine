@@ -2,9 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Titan/Core/Window.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLContext.h"
-#include "Titan/Window.h"
 
 namespace Titan
 {

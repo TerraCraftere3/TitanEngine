@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Titan/Application.h"
-#include "Titan/Log.h"
+#include "Titan/Core/Application.h"
+#include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
 
 #ifdef TI_PLATFORM_WINDOWS

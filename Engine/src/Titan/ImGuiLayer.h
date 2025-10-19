@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Titan/Core.h"
-#include "Titan/Layer.h"
+#include "Titan/Core/Layer.h"
 #include "Titan/PCH.h"
 
 #include "Titan/Events/ApplicationEvent.h"

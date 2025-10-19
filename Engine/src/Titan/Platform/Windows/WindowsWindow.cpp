@@ -1,9 +1,9 @@
 #include "Titan/Platform/Windows/WindowsWindow.h"
+#include "Titan/Core/KeyCodes.h"
+#include "Titan/Core/MouseButtonCodes.h"
 #include "Titan/Events/ApplicationEvent.h"
 #include "Titan/Events/KeyEvent.h"
 #include "Titan/Events/MouseEvent.h"
-#include "Titan/KeyCodes.h"
-#include "Titan/MouseButtonCodes.h"
 #include "Titan/PCH.h"
 
 namespace Titan

@@ -4,14 +4,14 @@
 #include "Titan/Events/ApplicationEvent.h"
 #include "Titan/Events/Event.h"
 #include "Titan/ImGuiLayer.h"
-#include "Titan/LayerStack.h"
+#include "Titan/Core/LayerStack.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/Camera.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/VertexArray.h"
-#include "Titan/Window.h"
+#include "Titan/Core/Window.h"
 
 namespace Titan
 {

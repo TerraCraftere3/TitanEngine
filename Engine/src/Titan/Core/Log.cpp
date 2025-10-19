@@ -1,4 +1,4 @@
-#include "Titan/Log.h"
+#include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
 
 namespace Titan
