@@ -11,10 +11,15 @@
 - `Vendor` contains all Dependencies of `Engine` (and `Sandbox`)
 
 ## Dependencies
-- `spdlog`: https://github.com/gabime/spdlog
-- `glfw`: https://github.com/glfw/glfw
-- `glad`: https://glad.dav1d.de/
-- `imgui`: https://github.com/ocornut/imgui
+
+| Dependency | Usage                 | Link                             |
+| ---------- | --------------------- | -------------------------------- |
+| spdlog     | Logging               | https://github.com/gabime/spdlog |
+| glfw       | Windowing / Input     | https://github.com/glfw/glfw     |
+| glad       | OpenGL Loader         | https://glad.dav1d.de/           |
+| imgui      | GUI                   | https://github.com/ocornut/imgui |
+| glm        | Math / Linear Algebra | https://github.com/g-truc/glm    |
+
 
 ## Styleguide
 
