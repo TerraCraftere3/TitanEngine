@@ -31,7 +31,7 @@
     {                                                        \
         if (!(x))                                            \
         {                                                    \
-            TI_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
+            TI_ERROR("Assertion Failed: " __VA_ARGS__); \
             __debugbreak();                                  \
         }                                                    \
     }
@@ -39,7 +39,7 @@
     {                                                             \
         if (!(x))                                                 \
         {                                                         \
-            TI_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); \
+            TI_CORE_ERROR("Assertion Failed: " __VA_ARGS__); \
             __debugbreak();                                       \
         }                                                         \
     }

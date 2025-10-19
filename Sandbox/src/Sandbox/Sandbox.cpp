@@ -66,40 +66,7 @@ public:
         squareIB.reset(Titan::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVA->SetIndexBuffer(squareIB);
 
-        std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_UV;
-
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Model;
-
-			out vec2 v_UV;
-
-			void main()
-			{
-				v_UV = a_UV;
-				gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);	
-			}
-		)";
-
-        std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_UV;
-
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				color = texture(u_Texture, v_UV);
-			}
-		)";
-
-        m_Shader.reset(Titan::Shader::Create(vertexSrc, fragmentSrc));
+        m_Shader.reset(Titan::Shader::Create("shaders/texture.glsl"));
 
         m_Texture = Titan::Texture2D::Create("textures/checkerboard.png");
         m_LogoTexture = Titan::Texture2D::Create("textures/google_logo.png");
