@@ -3,6 +3,7 @@
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Renderer.h"
 
 namespace Titan
 {
@@ -16,6 +17,9 @@ namespace Titan
 
         m_Window = std::unique_ptr<Window>(Window::Create());
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
+        m_Window->SetVSync(false);
+
+        Renderer::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);

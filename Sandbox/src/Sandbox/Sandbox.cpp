@@ -101,7 +101,8 @@ public:
 
         m_Shader.reset(Titan::Shader::Create(vertexSrc, fragmentSrc));
 
-        m_Texture = Titan::Texture2D::Create("textures/Checkerboard.png");
+        m_Texture = Titan::Texture2D::Create("textures/checkerboard.png");
+        m_LogoTexture = Titan::Texture2D::Create("textures/google_logo.png");
 
         std::dynamic_pointer_cast<Titan::OpenGLShader>(m_Shader)->Bind();
         std::dynamic_pointer_cast<Titan::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
@@ -128,6 +129,8 @@ public:
 
         m_Texture->Bind();
         Titan::Renderer::Submit(m_SquareVA, m_Shader, transformationMatrix);
+        m_LogoTexture->Bind();
+        Titan::Renderer::Submit(m_SquareVA, m_Shader, transformationMatrix);
 
         Titan::Renderer::EndScene();
     }
@@ -146,7 +149,7 @@ public:
 private:
     Titan::Ref<Titan::Shader> m_Shader;
     Titan::Ref<Titan::VertexArray> m_SquareVA;
-    Titan::Ref<Titan::Texture2D> m_Texture;
+    Titan::Ref<Titan::Texture2D> m_Texture, m_LogoTexture;
 
     Titan::OrthographicCamera m_Camera;
     glm::mat4 transformationMatrix = glm::mat4(1.0f);
