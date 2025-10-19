@@ -28,7 +28,7 @@ namespace Titan
             glm::mat4 ViewProjMatrix;
         };
 
-        static SceneData* s_SceneData;
+        static Scope<SceneData> s_SceneData;
     };
 
 } // namespace Titan

@@ -46,7 +46,7 @@ class ExampleLayer : public Titan::Layer
 public:
     ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f)
     {
-        m_SquareVA.reset(Titan::VertexArray::Create());
+        m_SquareVA = Titan::VertexArray::Create();
 
         float squareVertices[5 * 4] = {
             // Position (x, y, z)    UV (u, v)
