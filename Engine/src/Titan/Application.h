@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
+#include "ImGuiLayer.h"
 #include "LayerStack.h"
 #include "PCH.h"
 #include "Window.h"
@@ -32,6 +33,7 @@ namespace Titan
         std::unique_ptr<Window> m_Window;
         bool m_Running = true;
         LayerStack m_LayerStack;
+        ImGuiLayer* m_ImGuiLayer;
     };
 
     // Declared by Client

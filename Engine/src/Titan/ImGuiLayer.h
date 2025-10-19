@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Core.h"
+#include "Layer.h"
+#include "PCH.h"
+
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
-#include "Layer.h"
-#include "PCH.h"
 
 namespace Titan
 {
@@ -15,20 +17,17 @@ namespace Titan
         ImGuiLayer();
         ~ImGuiLayer();
 
-        void OnAttach();
-        void OnDetach();
-        void OnUpdate();
-        void OnEvent(Event& event);
+        virtual void OnAttach() override;
+        virtual void OnDetach() override;
 
-    private:
-        bool OnMouseButtonPressed(MouseButtonPressedEvent& event);
-        bool OnMouseButtonReleased(MouseButtonReleasedEvent& event);
-        bool OnMouseMoveEvent(MouseMovedEvent& event);
-        bool OnMouseScrollEvent(MouseScrolledEvent& event);
-        bool OnKeyPressedEvent(KeyPressedEvent& event);
-        bool OnKeyReleasedEvent(KeyReleasedEvent& event);
-        bool OnKeyTypedEvent(KeyTypedEvent& event);
-        bool OnWindowResize(WindowResizeEvent& event);
+        void Begin();
+        void End();
+
+        void OnImGuiRender(ImGuiContext* ctx) override
+        {
+            static bool show = true;
+            ImGui::ShowDemoWindow(&show);
+        }
 
     private:
         float m_Time = 0.0f;
