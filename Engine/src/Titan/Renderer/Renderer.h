@@ -8,7 +8,7 @@
 namespace Titan
 {
 
-    class Renderer
+    class TI_API Renderer
     {
     public:
         static void BeginScene(OrthographicCamera& camera);

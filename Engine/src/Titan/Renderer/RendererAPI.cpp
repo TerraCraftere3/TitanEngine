@@ -1,8 +1,9 @@
-#include "Titan/PCH.h"
 #include "RendererAPI.h"
+#include "Titan/PCH.h"
 
-namespace Titan {
+namespace Titan
+{
 
-	RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
+    RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
 
 }

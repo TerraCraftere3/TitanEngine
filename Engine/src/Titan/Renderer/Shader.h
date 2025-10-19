@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Titan/Core.h"
 #include "Titan/PCH.h"
 
 namespace Titan
 {
 
-    class Shader
+    class TI_API Shader
     {
     public:
         Shader(const std::string& vertexSrc, const std::string& fragmentSrc);

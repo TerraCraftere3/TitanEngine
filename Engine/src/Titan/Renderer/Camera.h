@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Titan/Core.h"
 #include "Titan/PCH.h"
 
 namespace Titan
 {
 
-    class OrthographicCamera
+    class TI_API OrthographicCamera
     {
     public:
         OrthographicCamera(float left, float right, float bottom, float top);

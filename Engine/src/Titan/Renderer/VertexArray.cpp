@@ -1,15 +1,16 @@
-#include "Titan/PCH.h"
 #include "Titan/Renderer/VertexArray.h"
+#include "Titan/PCH.h"
 
-#include "Titan/Renderer/Renderer.h"
 #include "Titan/Platform/OpenGL/OpenGLVertexArray.h"
+#include "Titan/Renderer/Renderer.h"
 
-namespace Titan {
+namespace Titan
+{
 
-	VertexArray* VertexArray::Create()
-	{
-		switch (Renderer::GetAPI())
-		{
+    VertexArray* VertexArray::Create()
+    {
+        switch (Renderer::GetAPI())
+        {
             case RendererAPI::API::None:
                 TI_CORE_ASSERT(false, "Graphics API None is currently not supported!");
                 return nullptr;
@@ -21,4 +22,4 @@ namespace Titan {
         return nullptr;
     }
 
-}
+} // namespace Titan

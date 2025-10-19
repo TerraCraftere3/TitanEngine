@@ -99,7 +99,7 @@ namespace Titan
         }
     };
 
-    class BufferLayout
+    class TI_API BufferLayout
     {
     public:
         BufferLayout() {}
@@ -135,7 +135,7 @@ namespace Titan
         uint32_t m_Stride = 0;
     };
 
-    class VertexBuffer
+    class TI_API VertexBuffer
     {
     public:
         virtual ~VertexBuffer() {}
@@ -149,7 +149,7 @@ namespace Titan
         static VertexBuffer* Create(float* vertices, uint32_t size);
     };
 
-    class IndexBuffer
+    class TI_API IndexBuffer
     {
     public:
         virtual ~IndexBuffer() {}
