@@ -26,12 +26,14 @@ namespace Titan
         inline static Application* GetInstance() { return s_Instance; };
 
     private:
-        bool OnWindowClosed(WindowCloseEvent event);
+        bool OnWindowClosed(WindowCloseEvent& e);
+        bool OnWindowResize(WindowResizeEvent& e);
 
     private:
         static Application* s_Instance;
         std::unique_ptr<Window> m_Window;
         bool m_Running = true;
+        bool m_Minimized = false;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
         float m_LastFrameTime = 0.0f;

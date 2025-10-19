@@ -1,4 +1,5 @@
 #include "Titan/Core/Application.h"
+#include "Application.h"
 #include "Titan/Core/Input.h"
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
@@ -34,8 +35,11 @@ namespace Titan
             float time = (float)glfwGetTime(); // TODO: Platform Indepentend Time Query (Time::GetCurrent()???)
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
-            for (Layer* layer : m_LayerStack)
-                layer->OnUpdate(timestep);
+            if (!m_Minimized)
+            {
+                for (Layer* layer : m_LayerStack)
+                    layer->OnUpdate(timestep);
+            }
 
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack)
@@ -53,6 +57,7 @@ namespace Titan
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(TI_BIND_EVENT_FN(Application::OnWindowClosed));
+        dispatcher.Dispatch<WindowResizeEvent>(TI_BIND_EVENT_FN(Application::OnWindowResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
         {
@@ -72,7 +77,21 @@ namespace Titan
         m_LayerStack.PushOverlay(layer);
     }
 
-    bool Application::OnWindowClosed(WindowCloseEvent event)
+    bool Application::OnWindowResize(WindowResizeEvent& e)
+    {
+        if (e.GetWidth() == 0 || e.GetHeight() == 0)
+        {
+            m_Minimized = true;
+            return false;
+        }
+
+        m_Minimized = false;
+        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+        return false;
+    }
+
+    bool Application::OnWindowClosed(WindowCloseEvent& e)
     {
         m_Running = false;
         return true;

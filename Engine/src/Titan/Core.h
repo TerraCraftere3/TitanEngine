@@ -48,6 +48,14 @@
     #define TI_CORE_ASSERT(x, ...)
 #endif
 
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 #define BIT(x) (1 << x)
 #define TI_BIND_EVENT_FN(fn) std::bind(&##fn, this, std::placeholders::_1)
 // clang-format on
