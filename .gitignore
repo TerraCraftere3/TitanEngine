@@ -13,7 +13,8 @@ CMakeUserPresets.json
 build
 .vscode
 
-Runtime/*.dll
-Runtime/*.exe
-Runtime/*.pdb
-Runtime/imgui.ini
+**.dll
+**.exe
+**.pdb
+**.log
+*/imgui.ini

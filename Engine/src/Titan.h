@@ -3,7 +3,6 @@
 // Core
 #include "Titan/Core.h"
 #include "Titan/Core/Application.h"
-#include "Titan/Core/EntryPoint.h"
 #include "Titan/Core/Input.h"
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Layer.h"
