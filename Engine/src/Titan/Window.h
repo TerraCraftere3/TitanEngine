@@ -1,9 +1,8 @@
 #pragma once
 
-#include "PCH.h"
-
-#include "Core.h"
-#include "Events/Event.h"
+#include "Titan/Core.h"
+#include "Titan/Events/Event.h"
+#include "Titan/PCH.h"
 
 namespace Titan
 {

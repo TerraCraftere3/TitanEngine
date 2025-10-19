@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event.h"
+#include "Titan/Events/Event.h"
 #include "Titan/PCH.h"
 
 namespace Titan

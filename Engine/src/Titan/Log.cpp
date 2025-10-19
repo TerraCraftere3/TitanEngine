@@ -1,5 +1,5 @@
-#include "Log.h"
-#include "PCH.h"
+#include "Titan/Log.h"
+#include "Titan/PCH.h"
 
 namespace Titan
 {

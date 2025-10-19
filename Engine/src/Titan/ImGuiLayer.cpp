@@ -1,11 +1,10 @@
-#include "ImGuiLayer.h"
-#include "PCH.h"
+#include "Titan/ImGuiLayer.h"
+#include "Titan/Application.h"
+#include "Titan/PCH.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <imgui.h>
-
-#include "Application.h"
 
 namespace Titan
 {
@@ -22,8 +21,8 @@ namespace Titan
         ImGuiIO& io = ImGui::GetIO();
         (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
         ImGui::StyleColorsDark();
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core.h"
-#include "Events/Event.h"
+#include "Titan/Core.h"
+#include "Titan/Events/Event.h"
 
 namespace Titan
 {

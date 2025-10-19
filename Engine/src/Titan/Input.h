@@ -1,6 +1,7 @@
 #pragma once
 
-#include "PCH.h"
+#include "Titan/Core.h"
+#include "Titan/PCH.h"
 
 namespace Titan
 {

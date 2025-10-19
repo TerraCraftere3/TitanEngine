@@ -1,8 +1,8 @@
-#include "Application.h"
+#include "Titan/Application.h"
 
-#include "Input.h"
-#include "KeyCodes.h"
-#include "Log.h"
+#include "Titan/Input.h"
+#include "Titan/KeyCodes.h"
+#include "Titan/Log.h"
 
 namespace Titan
 {

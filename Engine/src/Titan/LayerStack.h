@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core.h"
-#include "Layer.h"
+#include "Titan/Core.h"
+#include "Titan/Layer.h"
 
 #include <vector>
 

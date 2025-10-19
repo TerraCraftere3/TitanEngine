@@ -102,4 +102,4 @@ struct fmt::formatter<Titan::Event> : fmt::formatter<std::string>
     {
         return fmt::format_to(ctx.out(), "{}", event.ToString());
     }
-    };
+};

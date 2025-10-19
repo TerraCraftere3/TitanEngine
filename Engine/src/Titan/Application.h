@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Core.h"
-#include "Events/ApplicationEvent.h"
-#include "Events/Event.h"
-#include "ImGuiLayer.h"
-#include "LayerStack.h"
-#include "PCH.h"
-#include "Window.h"
+#include "Titan/Core.h"
+#include "Titan/Events/ApplicationEvent.h"
+#include "Titan/Events/Event.h"
+#include "Titan/ImGuiLayer.h"
+#include "Titan/LayerStack.h"
+#include "Titan/PCH.h"
+#include "Titan/Window.h"
 
 namespace Titan
 {

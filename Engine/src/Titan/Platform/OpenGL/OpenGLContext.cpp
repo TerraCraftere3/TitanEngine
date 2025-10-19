@@ -1,4 +1,4 @@
-#include "OpenGLContext.h"
+#include "Titan/Platform/OpenGL/OpenGLContext.h"
 
 namespace Titan
 {
