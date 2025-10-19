@@ -29,10 +29,10 @@ namespace Titan
         ImGuiStyle& style = ImGui::GetStyle();
         style.WindowRounding = 5.0f;
         style.Colors[ImGuiCol_WindowBg].w = 0.8f;
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        /*if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        }
+        }*/
 
         Application* app = Application::GetInstance();
         GLFWwindow* window = static_cast<GLFWwindow*>(app->GetWindow().GetNativeWindow());

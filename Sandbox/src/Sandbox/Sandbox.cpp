@@ -1,4 +1,45 @@
 #include <Titan.h>
+#include <algorithm>
+#include <glm/gtx/matrix_decompose.hpp>
+
+bool EditTransformImGui(glm::mat4& transform)
+{
+    using namespace glm;
+
+    vec3 scale, translation, skew;
+    vec4 perspective;
+    quat orientation;
+
+    if (!decompose(transform, scale, orientation, translation, skew, perspective))
+        return false;
+
+    vec3 rotation = degrees(eulerAngles(orientation));
+
+    bool changed = false;
+    if (ImGui::DragFloat3("Position", &translation.x, 0.1f))
+        changed = true;
+    if (ImGui::DragFloat3("Rotation", &rotation.x, 0.5f))
+        changed = true;
+    if (ImGui::DragFloat3("Scale", &scale.x, 0.01f))
+        changed = true;
+
+    // --- Fix: Prevent scale from becoming 0 or negative ---
+    const float minScale = 1e-4f;
+    scale.x = max(scale.x, minScale);
+    scale.y = max(scale.y, minScale);
+    scale.z = max(scale.z, minScale);
+
+    if (changed)
+    {
+        quat q = quat(radians(rotation));
+        mat4 rotMat = toMat4(q);
+        mat4 transMat = translate(mat4(1.0f), translation);
+        mat4 scaleMat = glm::scale(mat4(1.0f), scale);
+        transform = transMat * rotMat * scaleMat;
+    }
+
+    return changed;
+}
 
 class ExampleLayer : public Titan::Layer
 {
@@ -44,6 +85,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Model;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -52,7 +94,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -79,13 +121,14 @@ public:
 			layout(location = 0) in vec3 a_Position;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Model;
 
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -122,8 +165,8 @@ public:
         m_Camera.SetPosition(m_Camera.GetPosition() + movement * ts * m_MovementSpeed);
 
         Titan::Renderer::BeginScene(m_Camera);
-        Titan::Renderer::Submit(m_SquareVA, m_BlueShader);
-        Titan::Renderer::Submit(m_VertexArray, m_Shader);
+        Titan::Renderer::Submit(m_SquareVA, m_BlueShader, transformationMatrix);
+        Titan::Renderer::Submit(m_VertexArray, m_Shader, transformationMatrix);
         Titan::Renderer::EndScene();
     }
 
@@ -135,6 +178,7 @@ public:
         ImGui::Begin("Controller");
         static float fltest = 0.0f;
         ImGui::DragFloat("Movement Speed", &m_MovementSpeed, 0.01f, 0.5f, 5.0f);
+        EditTransformImGui(transformationMatrix);
         ImGui::End();
     }
 
@@ -146,7 +190,7 @@ private:
     std::shared_ptr<Titan::VertexArray> m_SquareVA;
 
     Titan::OrthographicCamera m_Camera;
-
+    glm::mat4 transformationMatrix = glm::mat4(1.0f);
     float m_MovementSpeed = 1.0f;
 };
 
