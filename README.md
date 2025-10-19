@@ -26,8 +26,16 @@
 ## ⚙️ Features
 <p align="center">Empty for Now</p>
 
+## 🧪 Builds
+| Tool  | Operating System | Badge                                                                                                                                                                                                                                 |
+| ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CMake | Windows          | [![CMake on Windows (with submodules, CMake >= 4.0)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml) |
 
-## ⚠️ Styleguide
+(only supports Windows for now)
+
+
+
+## 🖌️ Styleguide
 
 ### 1. File Structure
 

@@ -44,7 +44,7 @@ bool EditTransformImGui(glm::mat4& transform)
 class ExampleLayer : public Titan::Layer
 {
 public:
-    ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+    ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f)
     {
         m_SquareVA.reset(Titan::VertexArray::Create());
 
@@ -80,19 +80,9 @@ public:
         Titan::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Titan::RenderCommand::Clear();
 
-        glm::vec3 movement(0.0f);
-        if (Titan::Input::IsKeyPressed(TI_KEY_A))
-            movement += glm::vec3(-1.0f, 0.0f, 0.0f);
-        if (Titan::Input::IsKeyPressed(TI_KEY_D))
-            movement += glm::vec3(1.0f, 0.0f, 0.0f);
-        if (Titan::Input::IsKeyPressed(TI_KEY_W))
-            movement += glm::vec3(0.0f, 1.0f, 0.0f);
-        if (Titan::Input::IsKeyPressed(TI_KEY_S))
-            movement += glm::vec3(0.0f, -1.0f, 0.0f);
+        m_CameraController.OnUpdate(ts);
 
-        m_Camera.SetPosition(m_Camera.GetPosition() + movement * ts * m_MovementSpeed);
-
-        Titan::Renderer::BeginScene(m_Camera);
+        Titan::Renderer::BeginScene(m_CameraController.GetCamera());
 
         m_Texture->Bind();
         Titan::Renderer::Submit(m_SquareVA, m_Shader, transformationMatrix);
@@ -102,13 +92,12 @@ public:
         Titan::Renderer::EndScene();
     }
 
-    virtual void OnEvent(Titan::Event& event) override {}
+    virtual void OnEvent(Titan::Event& event) override { m_CameraController.OnEvent(event); }
 
     virtual void OnImGuiRender(ImGuiContext* ctx) override
     {
         ImGui::SetCurrentContext(ctx);
-        ImGui::Begin("Controller");
-        ImGui::DragFloat("Movement Speed", &m_MovementSpeed, 0.01f, 0.5f, 5.0f);
+        ImGui::Begin("Test");
         EditTransformImGui(transformationMatrix);
         ImGui::End();
     }
@@ -119,9 +108,8 @@ private:
     Titan::Ref<Titan::VertexArray> m_SquareVA;
     Titan::Ref<Titan::Texture2D> m_Texture, m_LogoTexture;
 
-    Titan::OrthographicCamera m_Camera;
+    Titan::OrthographicCameraController m_CameraController;
     glm::mat4 transformationMatrix = glm::mat4(1.0f);
-    float m_MovementSpeed = 1.0f;
 };
 
 class Sandbox : public Titan::Application
