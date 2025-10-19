@@ -2,16 +2,17 @@
 
 **A Remake of my old Engine**
 
-## Folder Structure
+## 📝 Folder Structure
 - `Engine` contains the code for the Engine that is used by the Game and the Editor
-  - `src/Titan/Core` contains the core code used by all Systems
-  - `src/Titan/Events` contains all code for the Event System
-  - `src/Titan/Platform` contains platform specific code (os and graphics api specific)
-  - `src/Titan/Renderer` contains platform independent code for the Renderer
+  - `src/Titan` contains the engine code
+    - `Core` contains the core code used by all Systems
+    - `Events` contains all code for the Event System
+    - `Platform` contains platform specific code (os and graphics api specific)
+    - `Renderer` contains platform independent code for the Renderer
 - `Sandbox` contains the code of the Game
 - `Vendor` contains all Dependencies of `Engine` (and `Sandbox`)
 
-## Dependencies
+## 📦 Dependencies
 
 | Dependency | Usage                 | Link                             |
 | ---------- | --------------------- | -------------------------------- |
@@ -22,8 +23,11 @@
 | glm        | Math / Linear Algebra | https://github.com/g-truc/glm    |
 | stb_image  | Texture Loader        | https://github.com/nothings/stb  |
 
+## ⚙️ Features
+<p align="center">Empty for Now</p>
 
-## Styleguide
+
+## ⚠️ Styleguide
 
 ### 1. File Structure
 
@@ -150,3 +154,6 @@ Application::~Application()
   * Use `//` for single-line comments.
   * Explain “why”, not “what” when commenting.
 * Avoid `using namespace` in headers.
+
+## 📜 License
+GNU General Public License V3

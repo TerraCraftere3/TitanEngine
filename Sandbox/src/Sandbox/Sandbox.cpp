@@ -66,7 +66,7 @@ public:
         squareIB.reset(Titan::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVA->SetIndexBuffer(squareIB);
 
-        m_Shader.reset(Titan::Shader::Create("shaders/texture.glsl"));
+        m_Shader = m_Shaders.Load("shaders/texture.glsl");
 
         m_Texture = Titan::Texture2D::Create("textures/checkerboard.png");
         m_LogoTexture = Titan::Texture2D::Create("textures/google_logo.png");
@@ -114,6 +114,7 @@ public:
     }
 
 private:
+    Titan::ShaderLibrary m_Shaders;
     Titan::Ref<Titan::Shader> m_Shader;
     Titan::Ref<Titan::VertexArray> m_SquareVA;
     Titan::Ref<Titan::Texture2D> m_Texture, m_LogoTexture;

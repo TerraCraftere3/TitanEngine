@@ -1,4 +1,5 @@
 #include "OpenGLShader.h"
+#include <filesystem>
 #include "Titan/PCH.h"
 
 namespace Titan
@@ -39,6 +40,12 @@ void main() {
         return result;
     }
 
+    std::string GetPathWithoutExtension(const std::string& pathStr)
+    {
+        std::filesystem::path path(pathStr);
+        return (path.parent_path() / path.stem()).string();
+    }
+
     static GLenum ShaderTypeFromString(const std::string& type)
     {
         if (type == "vertex")
@@ -52,6 +59,8 @@ void main() {
 
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
+        m_Name = GetPathWithoutExtension(filepath);
+
         std::string source = ReadFile(filepath);
         std::unordered_map<GLenum, std::string> shaderSources;
 
@@ -82,8 +91,9 @@ void main() {
         Compile(shaderSources);
     }
 
-    OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
+        m_Name = name;
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
         sources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -150,7 +160,8 @@ void main() {
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
     {
         GLuint program = glCreateProgram();
-        std::vector<GLenum> glShaderIDs(shaderSources.size());
+        std::vector<GLenum> glShaderIDs;
+        glShaderIDs.reserve(shaderSources.size());
         for (auto& kv : shaderSources)
         {
             GLenum type = kv.first;
