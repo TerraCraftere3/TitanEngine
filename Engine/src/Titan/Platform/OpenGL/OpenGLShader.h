@@ -6,7 +6,7 @@
 namespace Titan
 {
 
-    class OpenGLShader : public Shader
+    class TI_API OpenGLShader : public Shader
     {
     public:
         OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);

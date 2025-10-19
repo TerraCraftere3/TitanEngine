@@ -21,3 +21,5 @@ target_include_directories(imgui PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
 )
 target_link_libraries(imgui PRIVATE glfw)
+# ---- STB Directory ----
+set(STB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stb" PARENT_SCOPE)

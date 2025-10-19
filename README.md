@@ -20,6 +20,7 @@
 | glad       | OpenGL Loader         | https://glad.dav1d.de/           |
 | imgui      | GUI                   | https://github.com/ocornut/imgui |
 | glm        | Math / Linear Algebra | https://github.com/g-truc/glm    |
+| stb_image  | Texture Loader        | https://github.com/nothings/stb  |
 
 
 ## Styleguide
