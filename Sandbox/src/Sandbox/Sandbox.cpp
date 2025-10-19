@@ -12,7 +12,7 @@ public:
         if (event.GetEventType() == Titan::EventType::KeyPressed)
         {
             auto keyEvent = (Titan::KeyPressedEvent&)event;
-            LOG_TRACE("Pressed Key {}", (char)keyEvent.GetKeyCode());
+            TI_TRACE("Pressed Key {}", (char)keyEvent.GetKeyCode());
         }
     }
 

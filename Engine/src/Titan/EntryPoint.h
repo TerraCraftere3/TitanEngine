@@ -11,12 +11,12 @@ extern Titan::Application* Titan::CreateApplication();
 int main(int argc, char** argv)
 {
     Titan::Log::Init();
-    LOG_CORE_INFO("Initialized Logger");
+    TI_CORE_INFO("Initialized Logger");
     Titan::Application* app = Titan::CreateApplication();
-    LOG_CORE_INFO("Initialized Application");
+    TI_CORE_INFO("Initialized Application");
     app->Run();
     delete app;
-    LOG_CORE_INFO("Shutdown Application");
+    TI_CORE_INFO("Shutdown Application");
 }
 
 #endif

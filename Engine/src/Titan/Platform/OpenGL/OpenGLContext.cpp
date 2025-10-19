@@ -15,10 +15,10 @@ namespace Titan
         int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         TI_CORE_ASSERT(success, "Couldnt load Glad (OpenGL)!")
 
-        LOG_CORE_TRACE("OpenGL Info:");
-        LOG_CORE_TRACE("\tVendor: {0}", (const char*)glGetString(GL_VENDOR));
-        LOG_CORE_TRACE("\tRenderer: {0}", (const char*)glGetString(GL_RENDERER));
-        LOG_CORE_TRACE("\tVersion: {0}", (const char*)glGetString(GL_VERSION));
+        TI_CORE_TRACE("OpenGL Info:");
+        TI_CORE_TRACE("\tVendor: {0}", (const char*)glGetString(GL_VENDOR));
+        TI_CORE_TRACE("\tRenderer: {0}", (const char*)glGetString(GL_RENDERER));
+        TI_CORE_TRACE("\tVersion: {0}", (const char*)glGetString(GL_VERSION));
     }
 
     void OpenGLContext::Swapbuffers()
