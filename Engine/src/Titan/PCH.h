@@ -1,6 +1,13 @@
 #pragma once
 // clang-format off
 
+/*===========================================
+        Precompiled Headers that include:
+        - Dependencies (most common)
+        - Standard Library
+        - Core Parts of the Engine
+===========================================*/
+
 // ---- Standard library ----
 #include <algorithm>
 #include <array>

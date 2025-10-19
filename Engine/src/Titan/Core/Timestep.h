@@ -8,8 +8,7 @@ namespace Titan
     class TI_API Timestep
     {
     public:
-        Timestep(float seconds = 0.0f)
-            : m_Time(seconds) {}
+        Timestep(float seconds = 0.0f) : m_Time(seconds) {}
 
         operator float() const { return m_Time; }
 
@@ -64,23 +63,22 @@ namespace Titan
         return Timestep(ts.GetSeconds() * scalar);
     }
 
-    template<glm::length_t L, typename T, glm::qualifier Q>
+    template <glm::length_t L, typename T, glm::qualifier Q>
     inline glm::vec<L, T, Q> operator*(const glm::vec<L, T, Q>& v, const Timestep& ts)
     {
         return v * ts.GetSeconds();
     }
 
-    template<glm::length_t L, typename T, glm::qualifier Q>
+    template <glm::length_t L, typename T, glm::qualifier Q>
     inline glm::vec<L, T, Q> operator*(const Timestep& ts, const glm::vec<L, T, Q>& v)
     {
         return ts.GetSeconds() * v;
     }
 
-    template<glm::length_t L, typename T, glm::qualifier Q>
+    template <glm::length_t L, typename T, glm::qualifier Q>
     inline glm::vec<L, T, Q> operator/(const glm::vec<L, T, Q>& v, const Timestep& ts)
     {
         return v / ts.GetSeconds();
     }
-
 
 } // namespace Titan

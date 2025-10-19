@@ -51,7 +51,7 @@ public:
         float vertices[3 * 7] = {-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f, 0.5f, -0.5f, 0.0f, 0.2f,
                                  0.3f,  0.8f,  1.0f, 0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f,  1.0f};
 
-        std::shared_ptr<Titan::VertexBuffer> vertexBuffer;
+        Titan::Ref<Titan::VertexBuffer> vertexBuffer;
         vertexBuffer.reset(Titan::VertexBuffer::Create(vertices, sizeof(vertices)));
         Titan::BufferLayout layout = {{Titan::ShaderDataType::Float3, "a_Position"},
                                       {Titan::ShaderDataType::Float4, "a_Color"}};
@@ -59,7 +59,7 @@ public:
         m_VertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[3] = {0, 1, 2};
-        std::shared_ptr<Titan::IndexBuffer> indexBuffer;
+        Titan::Ref<Titan::IndexBuffer> indexBuffer;
         indexBuffer.reset(Titan::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -67,13 +67,13 @@ public:
 
         float squareVertices[3 * 4] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
 
-        std::shared_ptr<Titan::VertexBuffer> squareVB;
+        Titan::Ref<Titan::VertexBuffer> squareVB;
         squareVB.reset(Titan::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
         squareVB->SetLayout({{Titan::ShaderDataType::Float3, "a_Position"}});
         m_SquareVA->AddVertexBuffer(squareVB);
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-        std::shared_ptr<Titan::IndexBuffer> squareIB;
+        Titan::Ref<Titan::IndexBuffer> squareIB;
         squareIB.reset(Titan::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVA->SetIndexBuffer(squareIB);
 
@@ -199,11 +199,11 @@ public:
     }
 
 private:
-    std::shared_ptr<Titan::Shader> m_Shader;
-    std::shared_ptr<Titan::VertexArray> m_VertexArray;
+    Titan::Ref<Titan::Shader> m_Shader;
+    Titan::Ref<Titan::VertexArray> m_VertexArray;
 
-    std::shared_ptr<Titan::Shader> m_BlueShader;
-    std::shared_ptr<Titan::VertexArray> m_SquareVA;
+    Titan::Ref<Titan::Shader> m_BlueShader;
+    Titan::Ref<Titan::VertexArray> m_SquareVA;
 
     Titan::OrthographicCamera m_Camera;
     glm::mat4 transformationMatrix = glm::mat4(1.0f);
