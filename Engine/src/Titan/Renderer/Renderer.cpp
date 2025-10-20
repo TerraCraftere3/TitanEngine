@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Renderer2D.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
 
@@ -9,6 +10,7 @@ namespace Titan
     void Renderer::Init()
     {
         RenderCommand::Init();
+        Renderer2D::Init();
     }
 
     void Renderer::BeginScene(OrthographicCamera& camera)

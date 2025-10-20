@@ -1,4 +1,6 @@
 #include "Sandbox2D.h"
+#include <algorithm>
+#include <glm/gtx/matrix_decompose.hpp>
 
 bool EditTransformImGui(glm::mat4& transform)
 {
@@ -42,33 +44,8 @@ Sandbox2D::Sandbox2D() : Layer("Sandbox2D Test"), m_CameraController(1280.0f / 7
 
 void Sandbox2D::OnAttach()
 {
-    m_SquareVA = Titan::VertexArray::Create();
-
-    float squareVertices[5 * 4] = {
-        // Position (x, y, z)    UV (u, v)
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // Bottom-left
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, // Bottom-right
-        0.5f,  0.5f,  0.0f, 1.0f, 1.0f, // Top-right
-        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f  // Top-left
-    };
-
-    Titan::Ref<Titan::VertexBuffer> squareVB;
-    squareVB.reset(Titan::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-    squareVB->SetLayout({{Titan::ShaderDataType::Float3, "a_Position"}, {Titan::ShaderDataType::Float2, "a_UV"}});
-    m_SquareVA->AddVertexBuffer(squareVB);
-
-    uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-    Titan::Ref<Titan::IndexBuffer> squareIB;
-    squareIB.reset(Titan::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-    m_SquareVA->SetIndexBuffer(squareIB);
-
-    m_Shader = m_Shaders.Load("shaders/texture.glsl");
-
-    m_Texture = Titan::Texture2D::Create("textures/checkerboard.png");
+    m_Texture = Titan::Texture2D::Create("textures/uv_test.jpg");
     m_LogoTexture = Titan::Texture2D::Create("textures/google_logo.png");
-
-    std::dynamic_pointer_cast<Titan::OpenGLShader>(m_Shader)->Bind();
-    std::dynamic_pointer_cast<Titan::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);
 }
 
 void Sandbox2D::OnDetach() {}
@@ -80,14 +57,9 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
 
     m_CameraController.OnUpdate(ts);
 
-    Titan::Renderer::BeginScene(m_CameraController.GetCamera());
-
-    m_Texture->Bind();
-    Titan::Renderer::Submit(m_SquareVA, m_Shader, transformationMatrix);
-    m_LogoTexture->Bind();
-    Titan::Renderer::Submit(m_SquareVA, m_Shader, transformationMatrix);
-
-    Titan::Renderer::EndScene();
+    Titan::Renderer2D::BeginScene(m_CameraController.GetCamera());
+    Titan::Renderer2D::DrawQuad(position, size, color);
+    Titan::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnEvent(Titan::Event& event)
@@ -99,6 +71,9 @@ void Sandbox2D::OnImGuiRender(ImGuiContext* ctx)
 {
     ImGui::SetCurrentContext(ctx);
     ImGui::Begin("Test");
-    EditTransformImGui(transformationMatrix);
+    ImGui::SeparatorText("Quad (Renderer2D)");
+    ImGui::DragFloat2("Position", glm::value_ptr(position), 0.025f);
+    ImGui::DragFloat2("Size", glm::value_ptr(size), 0.025f, 0.01f, 10.0f);
+    ImGui::ColorEdit4("Color", glm::value_ptr(color));
     ImGui::End();
 }

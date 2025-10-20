@@ -1,8 +1,5 @@
 #pragma once
 #include <Titan.h>
-#include <Titan/Platform/OpenGL/OpenGLShader.h>
-#include <algorithm>
-#include <glm/gtx/matrix_decompose.hpp>
 class Sandbox2D : public Titan::Layer
 {
 public:
@@ -16,11 +13,10 @@ public:
     virtual void OnImGuiRender(ImGuiContext* ctx) override;
 
 private:
-    Titan::ShaderLibrary m_Shaders;
-    Titan::Ref<Titan::Shader> m_Shader;
-    Titan::Ref<Titan::VertexArray> m_SquareVA;
+    glm::vec2 position = glm::vec2(0.0f);
+    glm::vec2 size = glm::vec2(0.8f, 1.0f);
+    glm::vec4 color = glm::vec4(0.8f, 0.2f, 0.1f, 1.0f);
     Titan::Ref<Titan::Texture2D> m_Texture, m_LogoTexture;
 
     Titan::OrthographicCameraController m_CameraController;
-    glm::mat4 transformationMatrix = glm::mat4(1.0f);
 };

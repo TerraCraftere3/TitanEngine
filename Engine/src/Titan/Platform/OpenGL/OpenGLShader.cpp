@@ -59,7 +59,7 @@ void main() {
 
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
-        m_Name = GetPathWithoutExtension(filepath);
+        m_Name = filepath;
 
         std::string source = ReadFile(filepath);
         std::unordered_map<GLenum, std::string> shaderSources;
