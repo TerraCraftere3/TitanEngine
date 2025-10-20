@@ -28,11 +28,7 @@ namespace Titan
         TI_PROFILE_END_SESSION();
     }
 
-    Application::~Application()
-    {
-        TI_PROFILE_BEGIN_SESSION("Shutdown", "profile-shutdown.json");
-        TI_PROFILE_END_SESSION();
-    }
+    Application::~Application() {}
 
     void Application::Run()
     {
@@ -120,6 +116,13 @@ namespace Titan
 
         m_Running = false;
         return true;
+    }
+
+    void TI_API Titan::DeleteApplication(Application* app)
+    {
+        TI_PROFILE_BEGIN_SESSION("Shutdown", "profile-shutdown.json");
+        delete app;
+        TI_PROFILE_END_SESSION();
     }
 
 } // namespace Titan

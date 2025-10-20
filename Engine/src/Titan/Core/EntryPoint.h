@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 
     app->Run();
 
-    delete app;
+    Titan::DeleteApplication(app);
     TI_CORE_INFO("Shutdown Application");
 }
 

@@ -39,6 +39,8 @@ namespace Titan
         float m_LastFrameTime = 0.0f;
     };
 
+    void TI_API DeleteApplication(Application* app);
+
     // Declared by Client
     Application* CreateApplication();
 

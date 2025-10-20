@@ -41,7 +41,7 @@ namespace Titan
 
         if (!s_GLFWInitialized)
         {
-            TI_PROFILE_SCOPE("glfwInit()");
+            TI_PROFILE_SCOPE("glfwInit");
             int success = glfwInit();
             TI_CORE_ASSERT(success, "Could not intialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
@@ -50,7 +50,7 @@ namespace Titan
         }
 
         {
-            TI_PROFILE_SCOPE("glfwCreateWindow()");
+            TI_PROFILE_SCOPE("glfwCreateWindow");
             m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         }
         m_Context = CreateScope<OpenGLContext>(m_Window);
@@ -157,7 +157,10 @@ namespace Titan
     void WindowsWindow::Shutdown()
     {
         TI_PROFILE_FUNCTION();
-        glfwDestroyWindow(m_Window);
+        {
+            TI_PROFILE_SCOPE("glfwDestroyWindow");
+            glfwDestroyWindow(m_Window);
+        }
     }
 
     void WindowsWindow::OnUpdate()
