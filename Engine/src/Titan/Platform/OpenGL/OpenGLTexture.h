@@ -13,6 +13,10 @@ namespace Titan
 
         virtual uint32_t GetWidth() const override { return m_Width; }
         virtual uint32_t GetHeight() const override { return m_Height; }
+        inline void* GetNativeTexture() const override
+        {
+            return reinterpret_cast<void*>(static_cast<uintptr_t>(m_RendererID));
+        }
 
         virtual void Bind(uint32_t slot = 0) const override;
 
