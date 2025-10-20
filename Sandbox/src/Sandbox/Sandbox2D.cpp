@@ -58,8 +58,8 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
     m_CameraController.OnUpdate(ts);
 
     Titan::Renderer2D::BeginScene(m_CameraController.GetCamera());
-    Titan::Renderer2D::DrawQuad(position, size, m_CheckerboardTexture);
-    Titan::Renderer2D::DrawQuad(position, size, m_LogoTexture);
+    Titan::Renderer2D::DrawQuad(position, size, rotation, m_CheckerboardTexture);
+    Titan::Renderer2D::DrawQuad(position, size, rotation, m_LogoTexture);
     Titan::Renderer2D::EndScene();
 }
 
@@ -74,7 +74,8 @@ void Sandbox2D::OnImGuiRender(ImGuiContext* ctx)
     ImGui::Begin("Test");
     ImGui::SeparatorText("Quad (Renderer2D)");
     ImGui::DragFloat2("Position", glm::value_ptr(position), 0.025f);
-    ImGui::DragFloat2("Size", glm::value_ptr(size), 0.025f, 0.01f, 10.0f);
+    ImGui::DragFloat2("Size", glm::value_ptr(size), 0.025f, -10.0f, 10.0f);
+    ImGui::DragFloat3("Rotation", glm::value_ptr(rotation), 1.0f, -FLT_MAX, FLT_MAX, "%.0f deg");
     ImGui::SeparatorText("Textures");
     ImGui::Image(m_CheckerboardTexture->GetNativeTexture(), {128, 128}, ImVec2(0, 1), ImVec2(1, 0));
     ImGui::SameLine();

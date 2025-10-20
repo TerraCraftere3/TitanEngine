@@ -56,15 +56,20 @@ namespace Titan
 
     void Renderer2D::EndScene() {}
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
+                              const glm::vec4& color)
     {
-        DrawQuad({position.x, position.y, 0.0f}, size, color);
+        DrawQuad({position.x, position.y, 0.0f}, size, rotation, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
+                              const glm::vec4& color)
     {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, position);
+        transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(-1.0f, 0.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, -1.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, -1.0f));
         transform = glm::scale(transform, glm::vec3(size, 1.0f));
         s_Data->FlatColorShader->Bind();
         s_Data->FlatColorShader->SetFloat4("u_Color", color);
@@ -74,16 +79,22 @@ namespace Titan
         RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
+                              const Ref<Texture2D>& texture)
     {
-        DrawQuad({position.x, position.y, 0.0f}, size, texture);
+        DrawQuad({position.x, position.y, 0.0f}, size, rotation, texture);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
+                              const Ref<Texture2D>& texture)
     {
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, position);
+        transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(-1.0f, 0.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, -1.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, -1.0f));
         transform = glm::scale(transform, glm::vec3(size, 1.0f));
+
         s_Data->TextureShader->Bind();
         s_Data->TextureShader->SetMat4("u_Model", transform);
 

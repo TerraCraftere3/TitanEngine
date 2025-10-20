@@ -14,7 +14,8 @@ public:
 
 private:
     glm::vec2 position = glm::vec2(0.0f);
-    glm::vec2 size = glm::vec2(1.0f, 1.0f);
+    glm::vec2 size = glm::vec2(1.0f);
+    glm::vec3 rotation = glm::vec3(0.0f);
     Titan::Ref<Titan::Texture2D> m_CheckerboardTexture, m_LogoTexture;
 
     Titan::OrthographicCameraController m_CameraController;
