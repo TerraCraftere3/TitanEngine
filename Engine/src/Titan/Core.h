@@ -21,6 +21,10 @@
     #ifndef TI_ENABLE_ASSERTS
         #define TI_ENABLE_ASSERTS
     #endif
+    // I AM NOT TO SURE ABOUT THAT. i dont want to have 8GB of data after on Debug Session
+    #ifndef TI_PROFILE
+        #define TI_PROFILE
+    #endif
     #ifndef TI_ENABLE_LOGGING
         #define TI_ENABLE_LOGGING
     #endif

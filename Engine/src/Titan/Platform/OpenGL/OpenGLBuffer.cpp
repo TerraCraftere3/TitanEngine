@@ -12,6 +12,7 @@ namespace Titan
 
     OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
     {
+        TI_PROFILE_FUNCTION();
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -19,6 +20,7 @@ namespace Titan
 
     OpenGLVertexBuffer::~OpenGLVertexBuffer()
     {
+        TI_PROFILE_FUNCTION();
         glDeleteBuffers(1, &m_RendererID);
     }
 

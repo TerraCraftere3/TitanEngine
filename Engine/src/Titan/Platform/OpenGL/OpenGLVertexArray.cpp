@@ -40,11 +40,13 @@ namespace Titan
 
     OpenGLVertexArray::OpenGLVertexArray()
     {
+        TI_PROFILE_FUNCTION();
         glCreateVertexArrays(1, &m_RendererID);
     }
 
     OpenGLVertexArray::~OpenGLVertexArray()
     {
+        TI_PROFILE_FUNCTION();
         glDeleteVertexArrays(1, &m_RendererID);
     }
 
@@ -60,6 +62,7 @@ namespace Titan
 
     void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
     {
+        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
         glBindVertexArray(m_RendererID);
@@ -81,6 +84,7 @@ namespace Titan
 
     void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
     {
+        TI_PROFILE_FUNCTION();
         glBindVertexArray(m_RendererID);
         indexBuffer->Bind();
 

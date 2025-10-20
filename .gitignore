@@ -18,3 +18,4 @@ build
 **.pdb
 **.log
 */imgui.ini
+**profile-*.json

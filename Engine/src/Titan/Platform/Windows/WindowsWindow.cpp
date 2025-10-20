@@ -32,6 +32,7 @@ namespace Titan
 
     void WindowsWindow::Init(const WindowProps& props)
     {
+        TI_PROFILE_FUNCTION();
         m_Data.Title = props.Title;
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
@@ -40,6 +41,7 @@ namespace Titan
 
         if (!s_GLFWInitialized)
         {
+            TI_PROFILE_SCOPE("glfwInit()");
             int success = glfwInit();
             TI_CORE_ASSERT(success, "Could not intialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
@@ -47,7 +49,10 @@ namespace Titan
             s_GLFWInitialized = true;
         }
 
-        m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+        {
+            TI_PROFILE_SCOPE("glfwCreateWindow()");
+            m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+        }
         m_Context = CreateScope<OpenGLContext>(m_Window);
         m_Context->Init();
         glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -151,11 +156,13 @@ namespace Titan
 
     void WindowsWindow::Shutdown()
     {
+        TI_PROFILE_FUNCTION();
         glfwDestroyWindow(m_Window);
     }
 
     void WindowsWindow::OnUpdate()
     {
+        TI_PROFILE_FUNCTION();
         glfwPollEvents();
         m_Context->Swapbuffers();
     }

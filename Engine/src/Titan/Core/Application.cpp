@@ -13,6 +13,7 @@ namespace Titan
 
     Application::Application()
     {
+        TI_PROFILE_BEGIN_SESSION("Startup", "profile-startup.json");
         TI_CORE_ASSERT(!s_Instance, "Application already exists! There can only be one");
         s_Instance = this;
 
@@ -24,26 +25,39 @@ namespace Titan
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
+        TI_PROFILE_END_SESSION();
     }
 
-    Application::~Application() {}
+    Application::~Application()
+    {
+        TI_PROFILE_BEGIN_SESSION("Shutdown", "profile-shutdown.json");
+        TI_PROFILE_END_SESSION();
+    }
 
     void Application::Run()
     {
+        TI_PROFILE_BEGIN_SESSION("Runtime", "profile-runtime.json");
+
         while (m_Running)
         {
+            TI_PROFILE_SCOPE("Application::Run Gameloop");
+
             float time = (float)glfwGetTime(); // TODO: Platform Indepentend Time Query (Time::GetCurrent()???)
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
             if (!m_Minimized)
             {
+                TI_PROFILE_SCOPE("Application::Run layer->OnUpdate");
                 for (Layer* layer : m_LayerStack)
                     layer->OnUpdate(timestep);
             }
 
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack)
+            {
+                TI_PROFILE_SCOPE("Application::Run layer->OnImGuiRender");
                 layer->OnImGuiRender(ImGui::GetCurrentContext());
+            }
             m_ImGuiLayer->End();
 
             m_Window->OnUpdate();
@@ -51,10 +65,13 @@ namespace Titan
             if (Input::IsKeyPressed(TI_KEY_ESCAPE))
                 m_Running = false;
         }
+        TI_PROFILE_END_SESSION();
     }
 
     void Application::OnEvent(Event& e)
     {
+        TI_PROFILE_FUNCTION();
+
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(TI_BIND_EVENT_FN(Application::OnWindowClosed));
         dispatcher.Dispatch<WindowResizeEvent>(TI_BIND_EVENT_FN(Application::OnWindowResize));
@@ -69,16 +86,22 @@ namespace Titan
 
     void Application::PushLayer(Layer* layer)
     {
+        TI_PROFILE_FUNCTION();
+
         m_LayerStack.PushLayer(layer);
     }
 
     void Application::PushOverlay(Layer* layer)
     {
+        TI_PROFILE_FUNCTION();
+
         m_LayerStack.PushOverlay(layer);
     }
 
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
+        TI_PROFILE_FUNCTION();
+
         if (e.GetWidth() == 0 || e.GetHeight() == 0)
         {
             m_Minimized = true;
@@ -93,6 +116,8 @@ namespace Titan
 
     bool Application::OnWindowClosed(WindowCloseEvent& e)
     {
+        TI_PROFILE_FUNCTION();
+
         m_Running = false;
         return true;
     }

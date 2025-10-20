@@ -15,7 +15,8 @@ namespace Titan
 
     void ImGuiLayer::OnAttach()
     {
-        // Setup Dear ImGui context
+        TI_PROFILE_FUNCTION();
+
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
@@ -43,6 +44,8 @@ namespace Titan
 
     void ImGuiLayer::OnDetach()
     {
+        TI_PROFILE_FUNCTION();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -50,6 +53,8 @@ namespace Titan
 
     void ImGuiLayer::Begin()
     {
+        TI_PROFILE_FUNCTION();
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -57,6 +62,8 @@ namespace Titan
 
     void ImGuiLayer::End()
     {
+        TI_PROFILE_FUNCTION();
+
         ImGuiIO& io = ImGui::GetIO();
         Application* app = Application::GetInstance();
         io.DisplaySize = ImVec2(app->GetWindow().GetWidth(), app->GetWindow().GetHeight());

@@ -19,4 +19,12 @@ private:
     Titan::Ref<Titan::Texture2D> m_CheckerboardTexture, m_LogoTexture;
 
     Titan::OrthographicCameraController m_CameraController;
+
+    struct ProfileResult
+    {
+        const char* Name;
+        float Time;
+    };
+
+    std::vector<ProfileResult> m_ProfileResults;
 };

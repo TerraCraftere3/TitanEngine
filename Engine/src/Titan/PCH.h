@@ -45,6 +45,7 @@
 
 // ---- Internal ----
 #include "Titan/Core.h"
+#include "Titan/Debug/Instrumentor.h"
 #include "Titan/Core/Log.h"
 
 // ---- Platform ----

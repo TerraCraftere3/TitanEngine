@@ -19,6 +19,8 @@ namespace Titan
 
     void Renderer2D::Init()
     {
+        TI_PROFILE_FUNCTION();
+
         s_Data = new Renderer2DStorage();
         s_Data->QuadVertexArray = VertexArray::Create();
 
@@ -65,6 +67,7 @@ namespace Titan
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
                               const glm::vec4& color)
     {
+        TI_PROFILE_FUNCTION();
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, position);
         transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(-1.0f, 0.0f, 0.0f));
@@ -91,6 +94,7 @@ namespace Titan
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
                               const Ref<Texture2D>& texture)
     {
+        TI_PROFILE_FUNCTION();
         glm::mat4 transform(1.0f);
         transform = glm::translate(transform, position);
         transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(-1.0f, 0.0f, 0.0f));

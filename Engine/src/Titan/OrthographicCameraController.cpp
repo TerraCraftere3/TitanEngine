@@ -16,6 +16,7 @@ namespace Titan
 
     void OrthographicCameraController::OnUpdate(Timestep ts)
     {
+        TI_PROFILE_FUNCTION();
         if (Input::IsKeyPressed(TI_KEY_A))
             m_CameraPosition.x -= m_CameraTranslationSpeed * ts;
         else if (Input::IsKeyPressed(TI_KEY_D))

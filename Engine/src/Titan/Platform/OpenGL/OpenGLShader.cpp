@@ -59,6 +59,7 @@ void main() {
 
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
+        TI_PROFILE_FUNCTION();
         m_Name = filepath;
 
         std::string source = ReadFile(filepath);
@@ -93,6 +94,7 @@ void main() {
 
     OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
+        TI_PROFILE_FUNCTION();
         m_Name = name;
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -102,6 +104,7 @@ void main() {
 
     OpenGLShader::~OpenGLShader()
     {
+        TI_PROFILE_FUNCTION();
         glDeleteProgram(m_RendererID);
     }
 
