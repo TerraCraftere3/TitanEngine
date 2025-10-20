@@ -11,7 +11,7 @@ namespace Titan
     struct Renderer2DStorage
     {
         Ref<VertexArray> QuadVertexArray;
-        Ref<Shader> FlatColorShader;
+        Ref<Texture> WhiteTexture;
         Ref<Shader> TextureShader;
     };
 
@@ -34,7 +34,10 @@ namespace Titan
         auto squareIB = (IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         s_Data->QuadVertexArray->SetIndexBuffer(squareIB);
 
-        s_Data->FlatColorShader = Shader::Create("shader/color.glsl");
+        s_Data->WhiteTexture = Texture2D::Create(1, 1);
+        uint32_t whiteTextureData = 0xffffffff;
+        s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
         s_Data->TextureShader = Shader::Create("shader/texture.glsl");
         s_Data->TextureShader->Bind();
         s_Data->TextureShader->SetInt("u_Texture", 0);
@@ -47,9 +50,6 @@ namespace Titan
 
     void Renderer2D::BeginScene(const OrthographicCamera& camera)
     {
-        s_Data->FlatColorShader->Bind();
-        s_Data->FlatColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
         s_Data->TextureShader->Bind();
         s_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
     }
@@ -71,9 +71,12 @@ namespace Titan
         transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.0f, -1.0f, 0.0f));
         transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, -1.0f));
         transform = glm::scale(transform, glm::vec3(size, 1.0f));
-        s_Data->FlatColorShader->Bind();
-        s_Data->FlatColorShader->SetFloat4("u_Color", color);
-        s_Data->FlatColorShader->SetMat4("u_Model", transform);
+
+        s_Data->TextureShader->Bind();
+        s_Data->TextureShader->SetFloat4("u_Color", color);
+        s_Data->TextureShader->SetMat4("u_Model", transform);
+
+        s_Data->WhiteTexture->Bind();
 
         s_Data->QuadVertexArray->Bind();
         RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
@@ -96,6 +99,7 @@ namespace Titan
         transform = glm::scale(transform, glm::vec3(size, 1.0f));
 
         s_Data->TextureShader->Bind();
+        s_Data->TextureShader->SetFloat4("u_Color", glm::vec4(1.0f));
         s_Data->TextureShader->SetMat4("u_Model", transform);
 
         texture->Bind();
