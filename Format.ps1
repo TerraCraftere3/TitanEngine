@@ -3,7 +3,9 @@ function Format-FilesInDirectory {
         [string]$Path
     )
 
-    Get-ChildItem -Path $Path -Recurse -Include *.cpp,*.h,*.glsl | ForEach-Object {
+    $extensions = "*.cpp","*.c","*.cc","*.cxx","*.h","*.hpp","*.hxx","*.inl","*.glsl","*.vert","*.frag","*.comp","*.geom","*.tesc","*.tese","*.proto"
+
+    Get-ChildItem -Path $Path -Recurse -Include $extensions | ForEach-Object {
         $original = Get-Content $_.FullName -Raw
         clang-format -i $_.FullName
         $formatted = Get-Content $_.FullName -Raw

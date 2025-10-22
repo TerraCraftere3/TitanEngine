@@ -13,6 +13,7 @@ public:
     virtual void OnImGuiRender(ImGuiContext* ctx) override;
 
 private:
+    float m_FPS = 0.0f;
     glm::vec2 position = glm::vec2(0.0f);
     glm::vec2 size = glm::vec2(1.0f);
     glm::vec3 rotation = glm::vec3(0.0f);
@@ -27,4 +28,15 @@ private:
     };
 
     std::vector<ProfileResult> m_ProfileResults;
+
+    struct QuadData
+    {
+        glm::vec2 Position;
+        glm::vec2 Size;
+        glm::vec3 Rotation;
+        bool HasTexture;
+        Titan::Ref<Titan::Texture2D> Texture;
+        glm::vec4 Color;
+    };
+    std::vector<QuadData> m_Quads;
 };
