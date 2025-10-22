@@ -65,9 +65,13 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
     for (auto& quad : m_Quads)
     {
         if (quad.HasTexture)
+        {
             Titan::Renderer2D::DrawQuad(quad.Position, quad.Size, quad.Rotation, quad.Texture);
+        }
         else
+        {
             Titan::Renderer2D::DrawQuad(quad.Position, quad.Size, quad.Rotation, quad.Color);
+        }
     }
 
     Titan::Renderer2D::EndScene();
