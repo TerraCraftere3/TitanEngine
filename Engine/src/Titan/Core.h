@@ -21,10 +21,6 @@
     #ifndef TI_ENABLE_ASSERTS
         #define TI_ENABLE_ASSERTS
     #endif
-    // I AM NOT TO SURE ABOUT THAT. i dont want to have 8GB of data after on Debug Session
-    #ifndef TI_PROFILE
-        #define TI_PROFILE
-    #endif
     #ifndef TI_ENABLE_LOGGING
         #define TI_ENABLE_LOGGING
     #endif
@@ -62,6 +58,9 @@
 
 #define BIT(x) (1 << x)
 #define TI_BIND_EVENT_FN(fn) std::bind(&##fn, this, std::placeholders::_1)
+
+#define TI_CONCAT_INNER(a, b) a##b
+#define TI_CONCAT(a, b) TI_CONCAT_INNER(a, b)
 // clang-format on
 
 namespace Titan

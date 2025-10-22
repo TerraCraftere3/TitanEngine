@@ -9,7 +9,8 @@ uniform mat4 u_Model;
 
 out vec2 v_UV;
 
-void main() {
+void main()
+{
     v_UV = a_UV;
     gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
 }
@@ -21,9 +22,11 @@ layout(location = 0) out vec4 color;
 
 in vec2 v_UV;
 
+uniform float u_TilingFactor;
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 
-void main() {
-    color = texture(u_Texture, v_UV) * u_Color;
+void main()
+{
+    color = texture(u_Texture, v_UV * u_TilingFactor) * u_Color;
 }

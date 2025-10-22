@@ -20,7 +20,7 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
     Titan::RenderCommand::Clear();
 
     Titan::Renderer2D::BeginScene(m_CameraController.GetCamera());
-    Titan::Renderer2D::DrawQuad(position, size, rotation, m_CheckerboardTexture);
+    Titan::Renderer2D::DrawQuad(position, size, rotation, m_CheckerboardTexture, 2.0f);
     Titan::Renderer2D::DrawQuad(position, size, rotation, m_LogoTexture);
     Titan::Renderer2D::EndScene();
 }

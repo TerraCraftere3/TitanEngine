@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 
+#include "Macros.h"
 #include "Titan/PCH.h"
 
 namespace Titan
@@ -124,14 +125,17 @@ namespace Titan
     };
 } // namespace Titan
 
+// clang-format off
+
 #ifdef TI_PROFILE
-#define TI_PROFILE_BEGIN_SESSION(name, filepath) ::Titan::Instrumentor::Get().BeginSession(name, filepath)
-#define TI_PROFILE_END_SESSION() ::Titan::Instrumentor::Get().EndSession()
-#define TI_PROFILE_SCOPE(name) ::Titan::InstrumentationTimer timer##__LINE__(name)
-#define TI_PROFILE_FUNCTION() TI_PROFILE_SCOPE(__FUNCSIG__)
+    #define TI_PROFILE_BEGIN_SESSION(name, filepath) ::Titan::Instrumentor::Get().BeginSession(name, filepath)
+    #define TI_PROFILE_END_SESSION() ::Titan::Instrumentor::Get().EndSession()
+    #define TI_PROFILE_SCOPE(name) ::Titan::InstrumentationTimer TI_CONCAT(timer, __LINE__)(name)
+    #define TI_PROFILE_FUNCTION() TI_PROFILE_SCOPE(TI_FUNC_NAME)
 #else
-#define TI_PROFILE_BEGIN_SESSION(name, filepath)
-#define TI_PROFILE_END_SESSION()
-#define TI_PROFILE_SCOPE(name)
-#define TI_PROFILE_FUNCTION()
+    #define TI_PROFILE_BEGIN_SESSION(name, filepath)
+    #define TI_PROFILE_END_SESSION()
+    #define TI_PROFILE_SCOPE(name)
+    #define TI_PROFILE_FUNCTION()
 #endif
+// clang-format on

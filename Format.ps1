@@ -3,7 +3,7 @@ function Format-FilesInDirectory {
         [string]$Path
     )
 
-    Get-ChildItem -Path $Path -Recurse -Include *.cpp,*.h | ForEach-Object {
+    Get-ChildItem -Path $Path -Recurse -Include *.cpp,*.h,*.glsl | ForEach-Object {
         $original = Get-Content $_.FullName -Raw
         clang-format -i $_.FullName
         $formatted = Get-Content $_.FullName -Raw
@@ -20,5 +20,6 @@ Write-Host "Starting Formatting..." -ForegroundColor Cyan
 
 Format-FilesInDirectory -Path ".\Engine\src"
 Format-FilesInDirectory -Path ".\Sandbox\src"
+Format-FilesInDirectory -Path ".\Runtime"
 
 Write-Host "Finished Formatting!" -ForegroundColor Cyan

@@ -86,13 +86,13 @@ namespace Titan
     }
 
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
-                              const Ref<Texture2D>& texture)
+                              const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
     {
-        DrawQuad({position.x, position.y, 0.0f}, size, rotation, texture);
+        DrawQuad({position.x, position.y, 0.0f}, size, rotation, texture, tilingFactor, tintColor);
     }
 
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
-                              const Ref<Texture2D>& texture)
+                              const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
     {
         TI_PROFILE_FUNCTION();
         glm::mat4 transform(1.0f);
@@ -103,7 +103,8 @@ namespace Titan
         transform = glm::scale(transform, glm::vec3(size, 1.0f));
 
         s_Data->TextureShader->Bind();
-        s_Data->TextureShader->SetFloat4("u_Color", glm::vec4(1.0f));
+        s_Data->TextureShader->SetFloat("u_TilingFactor", tilingFactor);
+        s_Data->TextureShader->SetFloat4("u_Color", tintColor);
         s_Data->TextureShader->SetMat4("u_Model", transform);
 
         texture->Bind();
