@@ -37,6 +37,7 @@ private:
         bool HasTexture;
         Titan::Ref<Titan::Texture2D> Texture;
         glm::vec4 Color;
+        bool isRotated = true;
     };
     std::vector<QuadData> m_Quads;
 };
