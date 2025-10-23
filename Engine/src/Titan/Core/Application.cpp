@@ -19,7 +19,6 @@ namespace Titan
 
         m_Window = std::unique_ptr<Window>(Window::Create());
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
-        m_Window->SetVSync(false);
 
         Renderer::Init();
 

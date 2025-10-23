@@ -17,7 +17,7 @@ private:
     glm::vec2 position = glm::vec2(0.0f);
     glm::vec2 size = glm::vec2(1.0f);
     glm::vec3 rotation = glm::vec3(0.0f);
-    Titan::Ref<Titan::Texture2D> m_CheckerboardTexture, m_LogoTexture;
+    Titan::Ref<Titan::Texture2D> m_FirstTexture, m_SecondTexture;
 
     Titan::OrthographicCameraController m_CameraController;
 
@@ -37,7 +37,6 @@ private:
         bool HasTexture;
         Titan::Ref<Titan::Texture2D> Texture;
         glm::vec4 Color;
-        bool isRotated = true;
     };
     std::vector<QuadData> m_Quads;
 };
