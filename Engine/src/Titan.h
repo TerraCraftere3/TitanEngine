@@ -13,6 +13,7 @@
 #include "Titan/OrthographicCameraController.h"
 // Renderer
 #include "Titan/Renderer/Buffer.h"
+#include "Titan/Renderer/Framebuffer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Renderer2D.h"

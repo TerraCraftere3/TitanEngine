@@ -60,6 +60,11 @@ void Sandbox2D::OnAttach()
     m_CameraController.SetZoomLevel(3.0f);
 
     Titan::Application::GetInstance()->GetWindow().SetVSync(false);
+
+    Titan::FramebufferSpecification fbSpec;
+    fbSpec.Width = 1280;
+    fbSpec.Height = 720;
+    m_Framebuffer = Titan::Framebuffer::Create(fbSpec);
 }
 
 void Sandbox2D::OnDetach() {}
@@ -71,6 +76,7 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
 
     m_CameraController.OnUpdate(ts);
 
+    m_Framebuffer->Bind();
     Titan::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
     Titan::RenderCommand::Clear();
 
@@ -99,6 +105,7 @@ void Sandbox2D::OnUpdate(Titan::Timestep ts)
 #endif
 
     Titan::Renderer2D::EndScene();
+    m_Framebuffer->Unbind();
 }
 
 void Sandbox2D::OnEvent(Titan::Event& event)
@@ -166,4 +173,16 @@ void Sandbox2D::OnImGuiRender(ImGuiContext* ctx)
     ImGui::SameLine();
     ImGui::Image(m_SecondTexture->GetNativeTexture(), {128, 128}, ImVec2(0, 1), ImVec2(1, 0));
     ImGui::End();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Remove padding
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);      // Remove border
+
+    ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+    ImGui::Image((ImTextureID)(uintptr_t)m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1),
+                 ImVec2(1, 0)); // TODO: Fix aspect, etc.
+
+    ImGui::End();
+    ImGui::PopStyleVar(2);
 }
