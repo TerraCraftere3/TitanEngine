@@ -3,14 +3,15 @@
 **A Remake of my old Engine**
 
 ## 📝 Folder Structure
-- `Engine` contains the code for the Engine that is used by the Game and the Editor
+- `Engine` contains the code for Titan Engine that is used by the Game and the Editor
   - `src/Titan` contains the engine code
     - `Core` contains the core code used by all Systems
     - `Events` contains all code for the Event System
     - `Platform` contains platform specific code (os and graphics api specific)
     - `Renderer` contains platform independent code for the Renderer
+- `Editor` contains the code for Atlas (The Editor)
 - `Sandbox` contains the code of the Game
-- `Vendor` contains all Dependencies of `Engine` (and `Sandbox`)
+- `Vendor` contains all Dependencies of `Engine`, `Editor` and `Sandbox`
 
 ## 📦 Dependencies
 

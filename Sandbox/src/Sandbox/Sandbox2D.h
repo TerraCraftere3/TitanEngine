@@ -18,7 +18,6 @@ private:
     glm::vec2 size = glm::vec2(1.0f);
     glm::vec3 rotation = glm::vec3(0.0f);
     Titan::Ref<Titan::Texture2D> m_FirstTexture, m_SecondTexture;
-    Titan::Ref<Titan::Framebuffer> m_Framebuffer;
 
     Titan::OrthographicCameraController m_CameraController;
 

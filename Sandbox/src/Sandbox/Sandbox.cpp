@@ -5,7 +5,7 @@
 class Sandbox : public Titan::Application
 {
 public:
-    Sandbox() { PushLayer(new Sandbox2D()); }
+    Sandbox() : Application("Sandbox App") { PushLayer(new Sandbox2D()); }
     ~Sandbox() {}
 };
 

@@ -13,7 +13,7 @@ namespace Titan
     class TI_API Application
     {
     public:
-        Application();
+        Application(const std::string& name = "Titan App");
         virtual ~Application();
 
         void Close();

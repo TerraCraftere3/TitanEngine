@@ -20,3 +20,6 @@ target_compile_features(sandbox PUBLIC cxx_std_23)
 
 # ---- Libraries ----
 target_link_libraries(sandbox PRIVATE engine glad)
+
+# ---- Output Name ----
+set_target_properties(sandbox PROPERTIES OUTPUT_NAME "Sandbox")

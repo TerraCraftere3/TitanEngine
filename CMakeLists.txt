@@ -26,4 +26,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DIST ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 # ---- Subdirectories ----
 add_subdirectory(Vendor)
 add_subdirectory(Engine)
+add_subdirectory(Editor)
 add_subdirectory(Sandbox)

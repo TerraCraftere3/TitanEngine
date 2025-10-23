@@ -107,7 +107,7 @@ namespace Titan
                            });
 
         glfwSetCharCallback(m_Window,
-                            [](GLFWwindow* window, unsigned int c)
+                            [](GLFWwindow* window, uint32_t c)
                             {
                                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 

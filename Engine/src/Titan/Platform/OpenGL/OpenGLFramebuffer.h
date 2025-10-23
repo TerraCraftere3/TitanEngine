@@ -16,7 +16,7 @@ namespace Titan
         virtual void Bind() override;
         virtual void Unbind() override;
 
-        virtual void* GetColorAttachment() const override { return (void*)m_ColorAttachment; }
+        virtual void* GetColorAttachment() const override { return (void*)(intptr_t)m_ColorAttachment; }
 
         virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 

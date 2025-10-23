@@ -20,8 +20,9 @@ function Format-FilesInDirectory {
 
 Write-Host "Starting Formatting..." -ForegroundColor Cyan
 
-Format-FilesInDirectory -Path ".\Engine\src"
-Format-FilesInDirectory -Path ".\Sandbox\src"
+Format-FilesInDirectory -Path ".\Engine"
+Format-FilesInDirectory -Path ".\Editor"
+Format-FilesInDirectory -Path ".\Sandbox"
 Format-FilesInDirectory -Path ".\Runtime"
 
 Write-Host "Finished Formatting!" -ForegroundColor Cyan
