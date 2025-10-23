@@ -29,6 +29,12 @@ namespace Titan
 
     Application::~Application() {}
 
+    void Application::Close()
+    {
+        TI_PROFILE_FUNCTION();
+        m_Running = false;
+    }
+
     void Application::Run()
     {
         TI_PROFILE_BEGIN_SESSION("Runtime", "profile-runtime.json");
@@ -58,7 +64,7 @@ namespace Titan
             m_Window->OnUpdate();
 
             if (Input::IsKeyPressed(TI_KEY_ESCAPE))
-                m_Running = false;
+                Close();
         }
         TI_PROFILE_END_SESSION();
     }

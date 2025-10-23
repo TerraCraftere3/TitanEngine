@@ -34,6 +34,7 @@ private:
         glm::vec2 Position;
         glm::vec2 Size;
         glm::vec3 Rotation;
+        float RotationSpeed;
         bool HasTexture;
         Titan::Ref<Titan::Texture2D> Texture;
         glm::vec4 Color;

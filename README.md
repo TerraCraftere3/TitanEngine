@@ -24,7 +24,8 @@
 | stb_image  | Texture Loader        | https://github.com/nothings/stb  |
 
 ## ⚙️ Features
-<p align="center">Empty for Now</p>
+- Platform Independent Code
+- 2D Batch Renderer
 
 ## 🧪 Builds
 | Tool  | Operating System | Badge                                                                                                                                                                                                                                 |
