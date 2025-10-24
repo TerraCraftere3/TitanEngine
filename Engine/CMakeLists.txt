@@ -37,16 +37,30 @@ elseif(UNIX)
     target_compile_definitions(engine PUBLIC TI_PLATFORM_LINUX)
 endif()
 
-# ---- Debug/Release detection ----
+# ---- Definitions ----
 target_compile_definitions(engine PUBLIC
     $<$<CONFIG:Debug>:TI_BUILD_DEBUG>
+    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_DEBUG>
     $<$<CONFIG:Release>:TI_BUILD_RELEASE>
-    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_RELEASE>
-    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_RELEASE_WITH_DEBUG_INFO>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
     NOMINMAX
+    GLM_FORCE_INTRINSICS
+    GLM_FORCE_AVX2
+    GLM_FORCE_INLINE
 )
+
+if (MSVC)
+    target_compile_options(engine PRIVATE
+        $<$<CONFIG:Debug>:/arch:AVX2>
+    )
+else()
+    target_compile_options(engine PRIVATE
+        $<$<CONFIG:Debug>:-mavx2>
+        $<$<CONFIG:Debug>:-mfma>
+    )
+endif()
+
 
 # ---- DLL export macro ----
 target_compile_definitions(engine PUBLIC TI_DYNAMIC_LINK)

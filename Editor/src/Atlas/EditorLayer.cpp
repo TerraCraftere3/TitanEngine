@@ -9,7 +9,7 @@ namespace Titan
     EditorLayer::EditorLayer() : Layer("EditorLayer Test"), m_CameraController(1280.0f / 720.0f) {}
 
 #define TEST_QUADS_COUNT 10000
-#define TEST_QUADS_HAS_ROTATED 0
+#define TEST_QUADS_HAS_ROTATED 1
 
     void EditorLayer::OnAttach()
     {
@@ -33,7 +33,7 @@ namespace Titan
         for (int i = 0; i < quadCount; i++)
         {
             QuadData quad;
-            quad.Position = {posDist(rng), posDist(rng)};
+            quad.Position = {posDist(rng), posDist(rng), posDist(rng)};
             quad.Size = {sizeDist(rng), sizeDist(rng)};
 #if TEST_QUADS_HAS_ROTATED == 1
             quad.Rotation = {0.0f, 0.0f, rotDist(rng)};
@@ -91,19 +91,20 @@ namespace Titan
         {
             quad.Rotation += glm::vec3(0.0f, 0.0f, ts * quad.RotationSpeed);
             if (quad.HasTexture)
-                Renderer2D::DrawRotatedQuad(quad.Position + position, quad.Size * size, quad.Rotation + rotation,
-                                            quad.Texture, 1.0f, quad.Color);
+                Renderer2D::DrawRotatedQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size,
+                                            quad.Rotation + rotation, quad.Texture, 1.0f, quad.Color);
             else
-                Renderer2D::DrawRotatedQuad(quad.Position + position, quad.Size * size, quad.Rotation + rotation,
-                                            quad.Color);
+                Renderer2D::DrawRotatedQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size,
+                                            quad.Rotation + rotation, quad.Color);
         }
 #else
         for (auto& quad : m_Quads)
         {
             if (quad.HasTexture)
-                Renderer2D::DrawQuad(quad.Position + position, quad.Size * size, quad.Texture, 1.0f, quad.Color);
+                Renderer2D::DrawQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size, quad.Texture, 1.0f,
+                                     quad.Color);
             else
-                Renderer2D::DrawQuad(quad.Position + position, quad.Size * size, quad.Color);
+                Renderer2D::DrawQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size, quad.Color);
         }
 #endif
 
@@ -181,10 +182,15 @@ namespace Titan
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);      // Remove border
 
         ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        ImGui::Image((ImTextureID)(uintptr_t)m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1),
-                     ImVec2(1, 0)); // TODO: Fix aspect, etc.
+        if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+        {
+            m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
+            m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
+
+            m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
+        }
+        ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
 
         ImGui::End();
         ImGui::PopStyleVar(2);

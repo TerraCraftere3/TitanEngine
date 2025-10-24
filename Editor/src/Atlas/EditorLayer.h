@@ -36,7 +36,7 @@ namespace Titan
 
         struct QuadData
         {
-            glm::vec2 Position;
+            glm::vec3 Position;
             glm::vec2 Size;
             glm::vec3 Rotation;
             float RotationSpeed;
@@ -45,5 +45,6 @@ namespace Titan
             glm::vec4 Color;
         };
         std::vector<QuadData> m_Quads;
+        glm::vec2 m_ViewportSize = {0.0f, 0.0f};
     };
 } // namespace Titan
