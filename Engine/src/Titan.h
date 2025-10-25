@@ -23,3 +23,4 @@
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Entity.h"
 #include "Titan/Scene/Scene.h"
+#include "Titan/Scene/SceneCamera.h"

@@ -18,10 +18,7 @@ namespace Titan
 
     private:
         float m_FPS = 0.0f;
-        glm::vec2 position = glm::vec2(0.0f);
-        glm::vec2 size = glm::vec2(1.0f);
-        glm::vec3 rotation = glm::vec3(0.0f);
-        Ref<Texture2D> m_FirstTexture, m_SecondTexture;
+        Ref<Texture2D> m_FirstTexture, m_SecondTexture, m_WhiteTexture;
         Ref<Framebuffer> m_Framebuffer;
 
         struct ProfileResult

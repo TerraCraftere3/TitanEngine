@@ -15,6 +15,7 @@ namespace Titan
     {
         m_FirstTexture = Texture2D::Create("textures/checkerboard.png");
         m_SecondTexture = Texture2D::Create("textures/uv_test.jpg");
+        m_WhiteTexture = Renderer2D::GetWhiteTexture();
 
         // Precompute quads
         const int quadCount = TEST_QUADS_COUNT; // how many quads to render
@@ -31,10 +32,10 @@ namespace Titan
 
         m_ActiveScene = CreateRef<Scene>();
         auto cam = m_ActiveScene->CreateEntity("Camera Entity");
-        cam.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, FLT_MAX));
+        cam.AddComponent<CameraComponent>();
 
         auto secondCam = m_ActiveScene->CreateEntity("Clip-Space Entity");
-        auto& cc = secondCam.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        auto& cc = secondCam.AddComponent<CameraComponent>();
         cc.Primary = false;
 
         for (int i = 0; i < quadCount; i++)
@@ -48,26 +49,16 @@ namespace Titan
 #endif
             matrix = glm::scale(matrix, glm::vec3(sizeDist(rng), sizeDist(rng), 1.0f));
             transform.Transform = matrix;
-            /*if (texChoice == 0)
-            {
-                quad.HasTexture = true;
-                quad.Texture = m_FirstTexture;
-                quad.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
-            }
-            else if (texChoice == 1)
-            {
-                quad.HasTexture = true;
-                quad.Texture = m_SecondTexture;
-                quad.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
-            }
-            else
-            {
-                quad.HasTexture = false;
-                quad.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
-            }
-            m_Quads.push_back(quad);*/
-            auto& sprite = quad.AddComponent<SpriteRendererComponent>();
+
+            int texChoice = texDist(rng);
+            SpriteRendererComponent& sprite = quad.AddComponent<SpriteRendererComponent>();
             sprite.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
+            if (texChoice == 0)
+                sprite.Tex = m_FirstTexture;
+            else if (texChoice == 1)
+                sprite.Tex = m_SecondTexture;
+            else
+                sprite.Tex = m_WhiteTexture;
         }
 
         Application::GetInstance()->GetWindow().SetVSync(false);
@@ -145,10 +136,6 @@ namespace Titan
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         ImGui::Text("Triangles: %d", stats.GetTotalTriangleCount());
         ImGui::Text("FPS: %.1f", m_FPS);
-        ImGui::SeparatorText("Quads");
-        ImGui::DragFloat2("Position", glm::value_ptr(position));
-        ImGui::DragFloat2("Size", glm::value_ptr(size), 0.05f, 0.1f, 1.5f);
-        ImGui::DragFloat3("Rotation", glm::value_ptr(rotation), 1.0f, -FLT_MAX, FLT_MAX, "%.0f deg");
         ImGui::SeparatorText("Textures");
         ImGui::Image(m_FirstTexture->GetNativeTexture(), {128, 128}, ImVec2(0, 1), ImVec2(1, 0));
         ImGui::SameLine();
@@ -164,6 +151,7 @@ namespace Titan
         {
             m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
             m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
         ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
 

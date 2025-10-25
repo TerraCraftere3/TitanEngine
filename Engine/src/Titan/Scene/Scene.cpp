@@ -26,7 +26,6 @@ namespace Titan
         Camera* mainCamera = nullptr;
         glm::mat4* cameraTransform = nullptr;
         {
-            TI_PROFILE_SCOPE("Scene::OnUpdate Find Camera")
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view)
             {
@@ -43,18 +42,32 @@ namespace Titan
 
         if (mainCamera)
         {
-            TI_PROFILE_SCOPE("Scene::OnUpdate Render")
-            Renderer2D::BeginScene(mainCamera->GetProjectionMatrix(), *cameraTransform);
+            Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);
 
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group)
             {
                 auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                Renderer2D::DrawTransformedQuad(transform, sprite.Color);
+                Renderer2D::DrawTransformedQuad(transform, sprite.Tex, 1.0f, sprite.Color);
             }
 
             Renderer2D::EndScene();
+        }
+    }
+
+    void Scene::OnViewportResize(uint32_t width, uint32_t height)
+    {
+        m_ViewportWidth = width;
+        m_ViewportHeight = height;
+
+        // Resize our non-FixedAspectRatio cameras
+        auto view = m_Registry.view<CameraComponent>();
+        for (auto entity : view)
+        {
+            auto& cameraComponent = view.get<CameraComponent>(entity);
+            if (!cameraComponent.FixedAspectRatio)
+                cameraComponent.Camera.SetViewportSize(width, height);
         }
     }
 

@@ -122,7 +122,7 @@ namespace Titan
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetProjectionMatrix() * glm::inverse(transform));
+        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -151,6 +151,11 @@ namespace Titan
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
         s_Data.Stats.DrawCalls++;
+    }
+
+    Ref<Texture2D> Renderer2D::GetWhiteTexture()
+    {
+        return s_Data.WhiteTexture;
     }
 
     void Renderer2D::FlushAndReset()

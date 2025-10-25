@@ -17,6 +17,8 @@ namespace Titan
         static void EndScene();
         static void Flush();
 
+        static Ref<Texture2D> GetWhiteTexture();
+
         // Quads
         static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
 

@@ -9,13 +9,13 @@ namespace Titan
     {
     public:
         Camera() = default;
-        Camera(const glm::mat4& projection) : m_ProjectionMatrix(projection) {}
+        Camera(const glm::mat4& projection) : m_Projection(projection) {}
         virtual ~Camera() = default;
 
-        const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+        const glm::mat4& GetProjection() const { return m_Projection; }
 
     protected:
-        glm::mat4 m_ProjectionMatrix{1.0f};
+        glm::mat4 m_Projection{1.0f};
     };
 
 } // namespace Titan

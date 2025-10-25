@@ -17,7 +17,7 @@ namespace Titan
     void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
     {
         TI_PROFILE_FUNCTION();
-        s_SceneData->ViewProjMatrix = camera.GetProjectionMatrix() * glm::inverse(transform);
+        s_SceneData->ViewProjMatrix = camera.GetProjection() * glm::inverse(transform);
     }
 
     void Renderer::EndScene()
