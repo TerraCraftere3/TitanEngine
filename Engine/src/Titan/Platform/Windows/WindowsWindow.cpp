@@ -185,4 +185,10 @@ namespace Titan
         return m_Data.VSync;
     }
 
+    void WindowsWindow::Maximize()
+    {
+        TI_PROFILE_FUNCTION();
+        glfwMaximizeWindow(m_Window);
+    }
+
 } // namespace Titan

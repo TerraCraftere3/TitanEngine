@@ -18,24 +18,6 @@ target_include_directories(sandbox PRIVATE
 # ---- C++ Standard ----
 target_compile_features(sandbox PUBLIC cxx_std_23)
 
-# ---- Definitions ----
-target_compile_definitions(engine PUBLIC
-    GLM_FORCE_INTRINSICS
-    GLM_FORCE_AVX2
-    GLM_FORCE_INLINE
-)
-
-if (MSVC)
-    target_compile_options(engine PRIVATE
-        $<$<CONFIG:Debug>:/arch:AVX2>
-    )
-else()
-    target_compile_options(engine PRIVATE
-        $<$<CONFIG:Debug>:-mavx2>
-        $<$<CONFIG:Debug>:-mfma>
-    )
-endif()
-
 
 # ---- Libraries ----
 target_link_libraries(sandbox PRIVATE engine glad)

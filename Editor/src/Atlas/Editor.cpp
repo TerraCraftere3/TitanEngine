@@ -7,7 +7,11 @@ namespace Titan
     class AtlasApp : public Titan::Application
     {
     public:
-        AtlasApp() : Application("Atlas Editor") { PushLayer(new EditorLayer()); }
+        AtlasApp() : Application("Atlas Editor")
+        {
+            PushLayer(new EditorLayer());
+            Application::GetInstance()->GetWindow().Maximize();
+        }
         ~AtlasApp() {}
     };
 } // namespace Titan

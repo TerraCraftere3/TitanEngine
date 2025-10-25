@@ -6,6 +6,7 @@
         - Dependencies (most common)
         - Standard Library
         - Core Parts of the Engine
+        - Platform Dependent Libraries
 ===========================================*/
 
 // ---- Standard library ----
@@ -24,11 +25,19 @@
 #include <utility>
 #include <vector>
 
+// ---- Platform ----
+#ifdef TI_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 // ---- Dependencies ----
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#ifdef APIENTRY
+#undef APIENTRY
+#endif
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 
@@ -43,14 +52,11 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <entt/entt.hpp>
+
 // ---- Internal ----
 #include "Titan/Core.h"
 #include "Titan/Debug/Macros.h"
 #include "Titan/Debug/Instrumentor.h"
 #include "Titan/Core/Log.h"
-
-// ---- Platform ----
-#ifdef TI_PLATFORM_WINDOWS
-#include <Windows.h>
-#endif
 // clang-format on

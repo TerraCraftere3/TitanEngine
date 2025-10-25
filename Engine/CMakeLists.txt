@@ -11,7 +11,7 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
 add_library(engine SHARED ${ENGINE_SRC})
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT)
 target_link_libraries(engine PRIVATE glad)
 
 # ---- Include directories ----
@@ -45,9 +45,6 @@ target_compile_definitions(engine PUBLIC
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
     NOMINMAX
-    GLM_FORCE_INTRINSICS
-    GLM_FORCE_AVX2
-    GLM_FORCE_INLINE
 )
 
 if (MSVC)
