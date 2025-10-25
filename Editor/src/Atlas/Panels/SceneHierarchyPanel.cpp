@@ -148,10 +148,21 @@ for (auto entity : view)
 
 				ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
 
-
-				ImGui::TreePop();
-			}
-		}
+                ImGui::TreePop();
+            }
+        }
+        if (entity.HasComponent<SpriteRendererComponent>())
+        {
+            if (ImGui::TreeNodeEx((void*)typeid(SpriteRendererComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen,
+                                  "Sprite Renderer"))
+            {
+                auto& src = entity.GetComponent<SpriteRendererComponent>();
+                ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
+                ImGui::Text("Texture: ");
+                ImGui::Image(src.Tex->GetNativeTexture(), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::TreePop();
+            }
+        }
     }
 
 } // namespace Titan

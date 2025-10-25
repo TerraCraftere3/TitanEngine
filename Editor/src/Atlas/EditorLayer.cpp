@@ -167,8 +167,7 @@ namespace Titan
 
         m_SceneHierarchyPanel.OnImGuiRender();
 
-        ImGui::Begin("Test");
-        ImGui::SeparatorText("Renderer");
+        ImGui::Begin("Statistics");
         auto stats = Renderer2D::GetStats();
         ImGui::Text("Draw Calls: %d", stats.GetTotalDrawCalls());
         ImGui::Text("Quads: %d", stats.GetTotalQuadCount());
@@ -176,10 +175,6 @@ namespace Titan
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         ImGui::Text("Triangles: %d", stats.GetTotalTriangleCount());
         ImGui::Text("FPS: %.1f", m_FPS);
-        ImGui::SeparatorText("Textures");
-        ImGui::Image(m_FirstTexture->GetNativeTexture(), {128, 128}, ImVec2(0, 1), ImVec2(1, 0));
-        ImGui::SameLine();
-        ImGui::Image(m_SecondTexture->GetNativeTexture(), {128, 128}, ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Remove padding
