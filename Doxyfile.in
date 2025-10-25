@@ -1,11 +1,89 @@
+#---------------------------------------------------------------------------
+# Project
+#---------------------------------------------------------------------------
 PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_BRIEF          = "Documentation for @PROJECT_NAME@"
+PROJECT_NUMBER         = "1.0"
 OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@/docs"
-INPUT                  = "@CMAKE_CURRENT_SOURCE_DIR@/Engine/src"
-EXTRACT_ALL            = YES     # Extract docs even if no comment
-EXTRACT_PRIVATE        = YES     # Include private members if needed
-EXTRACT_STATIC         = YES     # Include static functions
-EXTRACT_LOCAL_CLASSES  = YES     # Include classes in cpp files
-EXTRACT_LOCAL_METHODS  = YES     # Include methods in cpp files
-GENERATE_HTML           = YES
-GENERATE_LATEX          = NO
-RECURSIVE               = YES     # Scan subdirectories
+CREATE_SUBDIRS         = YES
+
+#---------------------------------------------------------------------------
+# Input
+#---------------------------------------------------------------------------
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/Engine/src @CMAKE_CURRENT_SOURCE_DIR@/Editor/src
+RECURSIVE              = YES
+FILE_PATTERNS          = *.h *.hpp *.cpp *.c
+EXCLUDE_PATTERNS       = */external/* */vendor/* */third_party/*
+EXCLUDE_SYMBOLS        = 
+
+#---------------------------------------------------------------------------
+# Extract options
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES       # Extract docs even if no comment
+EXTRACT_PRIVATE        = YES       # Include private members
+EXTRACT_STATIC         = YES       # Include static functions
+EXTRACT_LOCAL_CLASSES  = YES       # Include classes in cpp files
+EXTRACT_LOCAL_METHODS  = YES       # Include methods in cpp files
+EXTRACT_ANON_NSPACES   = YES       # Include anonymous namespaces
+
+#---------------------------------------------------------------------------
+# Build options
+#---------------------------------------------------------------------------
+FULL_PATH_NAMES        = YES       # Show full paths
+STRIP_FROM_PATH        = "@CMAKE_CURRENT_SOURCE_DIR@"
+INLINE_SIMPLE_STRUCTS  = YES
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES
+SORT_BY_SCOPE_NAME     = YES
+
+#---------------------------------------------------------------------------
+# Source Browser
+#---------------------------------------------------------------------------
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+SHOW_INCLUDE_FILES     = YES
+SHOW_USED_FILES        = YES
+VERBATIM_HEADERS       = YES
+
+#---------------------------------------------------------------------------
+# HTML options
+#---------------------------------------------------------------------------
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HTML_OUTPUT            = html
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_SECTIONS  = YES
+DISABLE_INDEX          = NO
+GENERATE_TREEVIEW      = YES
+
+#---------------------------------------------------------------------------
+# Graphs / diagrams (requires Graphviz)
+#---------------------------------------------------------------------------
+HAVE_DOT               = YES
+DOT_PATH               = "dot"           # Adjust if needed
+DOT_IMAGE_FORMAT       = svg
+CLASS_DIAGRAMS         = YES
+COLLABORATION_GRAPH    = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_CLEANUP            = YES
+
+#---------------------------------------------------------------------------
+# Modules / grouping
+#---------------------------------------------------------------------------
+EXTRACT_GROUPS         = YES
+MAX_INITIALIZER_LINES  = 30
+
+#---------------------------------------------------------------------------
+# Misc
+#---------------------------------------------------------------------------
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_NO_PARAMDOC       = YES
+QUIET                  = NO
+GENERATE_TAGFILE       = "@CMAKE_CURRENT_BINARY_DIR@/docs/tags.tag"

@@ -25,6 +25,13 @@ jobs:
       - name: Setup CMake
         uses: lukka/get-cmake@latest
 
+      # Ensure Doxygen installed
+      - name: Install Doxygen
+        uses: lukka/get-doxygen@v1
+
+      # Ensure graphviz installed
+      - name: Install Graphviz
+        run: choco install graphviz --no-progress -y
 
       # Configure CMake
       - name: Configure CMake
@@ -36,6 +43,9 @@ jobs:
       # Build
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Generate docs
+        run: cmake --build ${{github.workspace}}/build --target doc
 
       # Run Tests
       - name: Test
