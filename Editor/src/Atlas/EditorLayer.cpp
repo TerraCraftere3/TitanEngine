@@ -10,10 +10,12 @@ namespace Titan
 
     void EditorLayer::OnAttach()
     {
+        // Textures
         m_FirstTexture = Texture2D::Create("textures/checkerboard.png");
         m_SecondTexture = Texture2D::Create("textures/uv_test.jpg");
         m_WhiteTexture = Renderer2D::GetWhiteTexture();
 
+        // Quads
         const int quadCount = 10'000;
         std::mt19937 rng(1337);
         std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
@@ -45,6 +47,7 @@ namespace Titan
                 sprite.Tex = m_WhiteTexture;
         }
 
+        // Setup
         Application::GetInstance()->GetWindow().SetVSync(false);
 
         FramebufferSpecification fbSpec;
@@ -78,14 +81,8 @@ namespace Titan
                     translation.z -= speed * ts;*/
             }
         };
-        {
-            auto perspectiveCam = m_ActiveScene->CreateEntity("Perspective Camera");
-            auto& cc = perspectiveCam.AddComponent<CameraComponent>();
-            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
 
-            perspectiveCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        }
-
+        // Cameras
         {
             auto orthographicCam = m_ActiveScene->CreateEntity("Orthographic Camera");
             auto& cc = orthographicCam.AddComponent<CameraComponent>();
@@ -93,6 +90,13 @@ namespace Titan
             cc.Primary = false;
 
             orthographicCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        }
+        {
+            auto perspectiveCam = m_ActiveScene->CreateEntity("Perspective Camera");
+            auto& cc = perspectiveCam.AddComponent<CameraComponent>();
+            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
+
+            perspectiveCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
         }
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }

@@ -2,17 +2,18 @@
 
 #include "Entity.h"
 
-namespace Titan {
+namespace Titan
+{
 
-	class ScriptableEntity
-	{
+    class ScriptableEntity
+    {
     public:
         virtual ~ScriptableEntity() {}
 
         template <typename T>
         T& GetComponent()
         {
-			return m_Entity.GetComponent<T>();
+            return m_Entity.GetComponent<T>();
         }
 
     protected:
@@ -23,6 +24,6 @@ namespace Titan {
     private:
         Entity m_Entity;
         friend class Scene;
-	};
+    };
 
-}
+} // namespace Titan
