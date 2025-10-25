@@ -24,3 +24,4 @@
 #include "Titan/Scene/Entity.h"
 #include "Titan/Scene/Scene.h"
 #include "Titan/Scene/SceneCamera.h"
+#include "Titan/Scene/ScriptableEntity.h"

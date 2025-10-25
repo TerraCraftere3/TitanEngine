@@ -23,6 +23,26 @@ namespace Titan
     void Scene::OnUpdate(Timestep ts)
     {
         TI_PROFILE_FUNCTION()
+        // NATIVE SCRIPTS
+        {
+            m_Registry.view<NativeScriptComponent>().each(
+                [=](auto entity, auto& nsc)
+                {
+                    if (!nsc.Instance)
+                    {
+                        nsc.InstantiateFunction(nsc.Instance);
+                        nsc.Instance->m_Entity = Entity{entity, this};
+
+                        if (nsc.OnCreateFunction)
+                            nsc.OnCreateFunction(nsc.Instance);
+                    }
+
+                    if (nsc.OnUpdateFunction)
+                        nsc.OnUpdateFunction(nsc.Instance, ts);
+                });
+        }
+
+        // FIND CAMERA
         Camera* mainCamera = nullptr;
         glm::mat4* cameraTransform = nullptr;
         {
@@ -40,6 +60,7 @@ namespace Titan
             }
         }
 
+        // RENDER
         if (mainCamera)
         {
             Renderer2D::BeginScene(mainCamera->GetProjection(), *cameraTransform);

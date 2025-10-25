@@ -67,6 +67,31 @@ namespace Titan
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
+
+        class CameraController : public ScriptableEntity
+        {
+        public:
+            void OnCreate() {}
+
+            void OnDestroy() {}
+
+            void OnUpdate(Timestep ts)
+            {
+                auto& transform = GetComponent<TransformComponent>().Transform;
+                float speed = 5.0f;
+
+                if (Input::IsKeyPressed(TI_KEY_A))
+                    transform[3][0] -= speed * ts;
+                if (Input::IsKeyPressed(TI_KEY_D))
+                    transform[3][0] += speed * ts;
+                if (Input::IsKeyPressed(TI_KEY_W))
+                    transform[3][1] += speed * ts;
+                if (Input::IsKeyPressed(TI_KEY_S))
+                    transform[3][1] -= speed * ts;
+            }
+        };
+
+        cam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
     }
 
     void EditorLayer::OnDetach() {}
