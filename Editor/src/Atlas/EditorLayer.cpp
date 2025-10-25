@@ -8,27 +8,21 @@ namespace Titan
 
     EditorLayer::EditorLayer() : Layer("EditorLayer Test") {}
 
-#define TEST_QUADS_COUNT 10000
-#define TEST_QUADS_HAS_ROTATED 1
-
     void EditorLayer::OnAttach()
     {
         m_FirstTexture = Texture2D::Create("textures/checkerboard.png");
         m_SecondTexture = Texture2D::Create("textures/uv_test.jpg");
         m_WhiteTexture = Renderer2D::GetWhiteTexture();
 
-        // Precompute quads
-        const int quadCount = TEST_QUADS_COUNT; // how many quads to render
-        std::mt19937 rng(1337);                 // fixed seed for consistency
+        const int quadCount = 10'000;
+        std::mt19937 rng(1337);
         std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
         std::uniform_real_distribution<float> sizeDist(0.1f, 0.5f);
         std::uniform_real_distribution<float> rotDist(0.0f, 360.0f);
         std::uniform_real_distribution<float> rotSpeedDist(1.0f, 15.0f);
         std::uniform_real_distribution<float> colorDist(0.0f, 1.0f);
         std::uniform_int_distribution<int> texDist(0, 2); // 0 = checkerboard, 1 = logo, 2 = color
-#if TEST_QUADS_HAS_ROTATED == 1
         std::uniform_int_distribution<int> rotateDist(0, 1);
-#endif
 
         m_ActiveScene = CreateRef<Scene>();
 
@@ -36,13 +30,9 @@ namespace Titan
         {
             auto quad = m_ActiveScene->CreateEntity("Quad #" + std::to_string(i));
             auto& transform = quad.GetComponent<TransformComponent>();
-            glm::mat4 matrix = glm::mat4(1.0f);
-            matrix = glm::translate(matrix, glm::vec3(posDist(rng), posDist(rng), posDist(rng)));
-#if TEST_QUADS_HAS_ROTATED == 1
-            matrix = glm::rotate(matrix, glm::radians(rotDist(rng)), glm::vec3(0.0f, 0.0f, 1.0f));
-#endif
-            matrix = glm::scale(matrix, glm::vec3(sizeDist(rng), sizeDist(rng), 1.0f));
-            transform.Transform = matrix;
+            transform.Translation = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
+            transform.Rotation = glm::vec3(0.0f, 0.0f, rotDist(rng));
+            transform.Scale = glm::vec3(sizeDist(rng), sizeDist(rng), 1.0f);
 
             int texChoice = texDist(rng);
             SpriteRendererComponent& sprite = quad.AddComponent<SpriteRendererComponent>();
@@ -71,21 +61,21 @@ namespace Titan
 
             void OnUpdate(Timestep ts)
             {
-                auto& transform = GetComponent<TransformComponent>().Transform;
+                auto& translation = GetComponent<TransformComponent>().Translation;
                 float speed = 5.0f;
 
                 if (Input::IsKeyPressed(KeyCode::A))
-                    transform[3][0] -= speed * ts;
+                    translation.x -= speed * ts;
                 if (Input::IsKeyPressed(KeyCode::D))
-                    transform[3][0] += speed * ts;
+                    translation.x += speed * ts;
                 if (Input::IsKeyPressed(KeyCode::W))
-                    transform[3][1] += speed * ts;
+                    translation.y += speed * ts;
                 if (Input::IsKeyPressed(KeyCode::S))
-                    transform[3][1] -= speed * ts;
+                    translation.y -= speed * ts;
                 /*if (Input::IsKeyPressed(KeyCode::Space))
-                    transform[3][2] += speed * ts;
+                    translation.z += speed * ts;
                 if (Input::IsKeyPressed(KeyCode::LeftShift))
-                    transform[3][2] -= speed * ts;*/
+                    translation.z -= speed * ts;*/
             }
         };
         {
