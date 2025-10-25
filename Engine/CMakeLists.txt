@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(engine LANGUAGES CXX)
 
+# ---- Options ----
+option(TI_BUILD_SHARED "Build Titan Engine as a shared library" ON)
+
 # ---- Sources ----
 file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Titan/*.cpp"
@@ -8,7 +11,14 @@ file(GLOB_RECURSE ENGINE_SRC CONFIGURE_DEPENDS
 )
 
 # ---- Library ----
-add_library(engine SHARED ${ENGINE_SRC})
+if (TI_BUILD_SHARED)
+    add_library(engine SHARED ${ENGINE_SRC})
+    target_compile_definitions(engine PUBLIC TI_DYNAMIC_LINK)
+    target_compile_definitions(engine PRIVATE TI_BUILD_DLL)
+else()
+    add_library(engine STATIC ${ENGINE_SRC})
+    target_compile_definitions(engine PUBLIC TI_STATIC_LINK)
+endif()
 
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT)
@@ -57,11 +67,6 @@ else()
         $<$<CONFIG:Debug>:-mfma>
     )
 endif()
-
-
-# ---- DLL export macro ----
-target_compile_definitions(engine PUBLIC TI_DYNAMIC_LINK)
-target_compile_definitions(engine PRIVATE TI_BUILD_DLL)
 
 # ---- Output Name ----
 set_target_properties(engine PROPERTIES OUTPUT_NAME "Titan")

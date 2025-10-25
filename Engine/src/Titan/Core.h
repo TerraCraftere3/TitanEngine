@@ -11,7 +11,7 @@
             #define TI_API _declspec(dllimport)
         #endif
     #else
-        
+        #define TI_API
     #endif
 #else
     #error Titan Engine only supports Windows for now!
