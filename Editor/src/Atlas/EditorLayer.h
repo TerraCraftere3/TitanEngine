@@ -1,5 +1,6 @@
 #pragma once
 #include <Titan.h>
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace Titan
 {
@@ -30,5 +31,8 @@ namespace Titan
         std::vector<ProfileResult> m_ProfileResults;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         Ref<Scene> m_ActiveScene;
+
+        // Panels
+        SceneHierarchyPanel m_SceneHierarchyPanel;
     };
 } // namespace Titan

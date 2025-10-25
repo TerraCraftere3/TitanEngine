@@ -31,16 +31,10 @@ namespace Titan
 #endif
 
         m_ActiveScene = CreateRef<Scene>();
-        auto cam = m_ActiveScene->CreateEntity("Camera Entity");
-        cam.AddComponent<CameraComponent>();
-
-        auto secondCam = m_ActiveScene->CreateEntity("Clip-Space Entity");
-        auto& cc = secondCam.AddComponent<CameraComponent>();
-        cc.Primary = false;
 
         for (int i = 0; i < quadCount; i++)
         {
-            auto quad = m_ActiveScene->CreateEntity("Quad #" + std::to_string(quadCount));
+            auto quad = m_ActiveScene->CreateEntity("Quad #" + std::to_string(i));
             auto& transform = quad.GetComponent<TransformComponent>();
             glm::mat4 matrix = glm::mat4(1.0f);
             matrix = glm::translate(matrix, glm::vec3(posDist(rng), posDist(rng), posDist(rng)));
@@ -90,8 +84,15 @@ namespace Titan
                     transform[3][1] -= speed * ts;
             }
         };
+        auto cam = m_ActiveScene->CreateEntity("Camera Entity");
+        cam.AddComponent<CameraComponent>();
+
+        auto secondCam = m_ActiveScene->CreateEntity("Clip-Space Entity");
+        auto& cc = secondCam.AddComponent<CameraComponent>();
+        cc.Primary = false;
 
         cam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnDetach() {}
@@ -151,6 +152,8 @@ namespace Titan
         }
 
         ImGui::End();
+
+        m_SceneHierarchyPanel.OnImGuiRender();
 
         ImGui::Begin("Test");
         ImGui::SeparatorText("Renderer");
