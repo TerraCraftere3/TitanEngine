@@ -24,6 +24,9 @@ namespace Titan
         void End();
 
     private:
+        void SetupStyles();
+
+    private:
         float m_Time = 0.0f;
     };
 

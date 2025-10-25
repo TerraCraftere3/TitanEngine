@@ -82,16 +82,28 @@ namespace Titan
                     transform[3][1] += speed * ts;
                 if (Input::IsKeyPressed(KeyCode::S))
                     transform[3][1] -= speed * ts;
+                /*if (Input::IsKeyPressed(KeyCode::Space))
+                    transform[3][2] += speed * ts;
+                if (Input::IsKeyPressed(KeyCode::LeftShift))
+                    transform[3][2] -= speed * ts;*/
             }
         };
-        auto cam = m_ActiveScene->CreateEntity("Camera Entity");
-        cam.AddComponent<CameraComponent>();
+        {
+            auto perspectiveCam = m_ActiveScene->CreateEntity("Perspective Camera");
+            auto& cc = perspectiveCam.AddComponent<CameraComponent>();
+            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
 
-        auto secondCam = m_ActiveScene->CreateEntity("Clip-Space Entity");
-        auto& cc = secondCam.AddComponent<CameraComponent>();
-        cc.Primary = false;
+            perspectiveCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        }
 
-        cam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        {
+            auto orthographicCam = m_ActiveScene->CreateEntity("Orthographic Camera");
+            auto& cc = orthographicCam.AddComponent<CameraComponent>();
+            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Orthographic);
+            cc.Primary = false;
+
+            orthographicCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+        }
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
