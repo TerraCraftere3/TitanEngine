@@ -1,24 +1,22 @@
 #include "Titan/Platform/Windows/WindowsInput.h"
 #include "Titan/Core/Application.h"
-#include "Titan/Core/KeyCodes.h"
-#include "Titan/Core/MouseButtonCodes.h"
 #include "Titan/PCH.h"
 
 namespace Titan
 {
     Scope<Input> Input::s_Instance = CreateScope<WindowsInput>();
 
-    bool WindowsInput::IsKeyPressedImpl(int keycode)
+    bool WindowsInput::IsKeyPressedImpl(KeyCode keycode)
     {
         GLFWwindow* window = static_cast<GLFWwindow*>(Application::GetInstance()->GetWindow().GetNativeWindow());
-        auto state = glfwGetKey(window, TI_KEY_CODE_TO_GLFW_KEY_CODE(keycode));
+        auto state = glfwGetKey(window, static_cast<int32_t>(keycode));
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool WindowsInput::IsMouseButtonPressedImpl(int button)
+    bool WindowsInput::IsMouseButtonPressedImpl(MouseButton button)
     {
         GLFWwindow* window = static_cast<GLFWwindow*>(Application::GetInstance()->GetWindow().GetNativeWindow());
-        auto state = glfwGetMouseButton(window, TI_MOUSE_BTN_TO_GLFW_MOUSE_BTN(button));
+        auto state = glfwGetMouseButton(window, static_cast<int32_t>(button));
         return state == GLFW_PRESS;
     }
 

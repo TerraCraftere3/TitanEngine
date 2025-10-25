@@ -62,9 +62,6 @@ namespace Titan
             m_ImGuiLayer->End();
 
             m_Window->OnUpdate();
-
-            if (Input::IsKeyPressed(TI_KEY_ESCAPE))
-                Close();
         }
         TI_PROFILE_END_SESSION();
     }

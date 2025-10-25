@@ -1,6 +1,6 @@
 #include "Titan/Platform/Windows/WindowsWindow.h"
 #include "Titan/Core/KeyCodes.h"
-#include "Titan/Core/MouseButtonCodes.h"
+#include "Titan/Core/MouseButtons.h"
 #include "Titan/Events/ApplicationEvent.h"
 #include "Titan/Events/KeyEvent.h"
 #include "Titan/Events/MouseEvent.h"
@@ -86,20 +86,20 @@ namespace Titan
                                {
                                    case GLFW_PRESS:
                                    {
-                                       KeyPressedEvent event(GLFW_KEY_CODE_TO_TI_KEY_CODE(key), 0);
+                                       KeyPressedEvent event(key, 0);
                                        data.EventCallback(event);
                                        break;
                                    }
                                    case GLFW_RELEASE:
                                    {
-                                       KeyReleasedEvent event(GLFW_KEY_CODE_TO_TI_KEY_CODE(key));
+                                       KeyReleasedEvent event(key);
                                        data.EventCallback(event);
                                        break;
                                    }
                                    case GLFW_REPEAT:
                                    {
                                        // TODO: Count repeat count for key
-                                       KeyPressedEvent event(GLFW_KEY_CODE_TO_TI_KEY_CODE(key), 1);
+                                       KeyPressedEvent event(key, 1);
                                        data.EventCallback(event);
                                        break;
                                    }
