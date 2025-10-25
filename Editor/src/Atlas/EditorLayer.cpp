@@ -68,6 +68,8 @@ namespace Titan
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
+
+        m_ActiveScene = CreateRef<Scene>();
     }
 
     void EditorLayer::OnDetach() {}

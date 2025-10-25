@@ -46,5 +46,6 @@ namespace Titan
         };
         std::vector<QuadData> m_Quads;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
+        Ref<Scene> m_ActiveScene;
     };
 } // namespace Titan

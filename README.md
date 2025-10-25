@@ -2,6 +2,17 @@
 
 **A Remake of my old Engine**
 
+
+## 🧰 How to Build
+### Windows (x86_64)
+1. Clone the repo using `git clone --recursive https://github.com/TerraCraftere3/TitanEngine`
+2. Open the repo in the terminal (`cd TitanEngine`)
+3. run `.\Scripts\Configure.bat` and `.\Scripts\Build.bat` in the terminal
+4. Your done 🚀
+
+### Linux
+For now there is no linux support
+
 ## 📝 Folder Structure
 - `Engine` contains the code for Titan Engine that is used by the Game and the Editor
   - `src/Titan` contains the engine code
@@ -9,9 +20,12 @@
     - `Events` contains all code for the Event System
     - `Platform` contains platform specific code (os and graphics api specific)
     - `Renderer` contains platform independent code for the Renderer
+    - `Scene` contains code used by the ecs and scene renderer
+    - `Debug` contains profiling and debugging code
 - `Editor` contains the code for Atlas (The Editor)
 - `Sandbox` contains the code of the Game
 - `Vendor` contains all Dependencies of `Engine`, `Editor` and `Sandbox`
+- `Script` contains build scripts for the CMake Project
 
 ## 📦 Dependencies
 
