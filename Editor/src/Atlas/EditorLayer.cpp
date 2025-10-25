@@ -6,7 +6,7 @@
 namespace Titan
 {
 
-    EditorLayer::EditorLayer() : Layer("EditorLayer Test"), m_CameraController(1280.0f / 720.0f) {}
+    EditorLayer::EditorLayer() : Layer("EditorLayer Test") {}
 
 #define TEST_QUADS_COUNT 10000
 #define TEST_QUADS_HAS_ROTATED 1
@@ -29,18 +29,26 @@ namespace Titan
         std::uniform_int_distribution<int> rotateDist(0, 1);
 #endif
 
-        m_Quads.clear();
+        m_ActiveScene = CreateRef<Scene>();
+        auto cam = m_ActiveScene->CreateEntity("Camera Entity");
+        cam.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, FLT_MAX));
+
+        auto secondCam = m_ActiveScene->CreateEntity("Clip-Space Entity");
+        auto& cc = secondCam.AddComponent<CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f));
+        cc.Primary = false;
+
         for (int i = 0; i < quadCount; i++)
         {
-            QuadData quad;
-            quad.Position = {posDist(rng), posDist(rng), posDist(rng)};
-            quad.Size = {sizeDist(rng), sizeDist(rng)};
+            auto quad = m_ActiveScene->CreateEntity("Quad #" + std::to_string(quadCount));
+            auto& transform = quad.GetComponent<TransformComponent>();
+            glm::mat4 matrix = glm::mat4(1.0f);
+            matrix = glm::translate(matrix, glm::vec3(posDist(rng), posDist(rng), posDist(rng)));
 #if TEST_QUADS_HAS_ROTATED == 1
-            quad.Rotation = {0.0f, 0.0f, rotDist(rng)};
-            quad.RotationSpeed = rotSpeedDist(rng);
+            matrix = glm::rotate(matrix, glm::radians(rotDist(rng)), glm::vec3(0.0f, 0.0f, 1.0f));
 #endif
-            int texChoice = texDist(rng);
-            if (texChoice == 0)
+            matrix = glm::scale(matrix, glm::vec3(sizeDist(rng), sizeDist(rng), 1.0f));
+            transform.Transform = matrix;
+            /*if (texChoice == 0)
             {
                 quad.HasTexture = true;
                 quad.Texture = m_FirstTexture;
@@ -57,10 +65,10 @@ namespace Titan
                 quad.HasTexture = false;
                 quad.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
             }
-            m_Quads.push_back(quad);
+            m_Quads.push_back(quad);*/
+            auto& sprite = quad.AddComponent<SpriteRendererComponent>();
+            sprite.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
         }
-
-        m_CameraController.SetZoomLevel(3.0f);
 
         Application::GetInstance()->GetWindow().SetVSync(false);
 
@@ -68,8 +76,6 @@ namespace Titan
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
-
-        m_ActiveScene = CreateRef<Scene>();
     }
 
     void EditorLayer::OnDetach() {}
@@ -79,45 +85,16 @@ namespace Titan
         if (ts.GetSeconds() > 0.0f)
             m_FPS = 1.0f / ts.GetSeconds();
 
-        m_CameraController.OnUpdate(ts);
-
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         RenderCommand::Clear();
 
         Renderer2D::ResetStats();
-        Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-#if TEST_QUADS_HAS_ROTATED == 1
-        for (auto& quad : m_Quads)
-        {
-            quad.Rotation += glm::vec3(0.0f, 0.0f, ts * quad.RotationSpeed);
-            if (quad.HasTexture)
-                Renderer2D::DrawRotatedQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size,
-                                            quad.Rotation + rotation, quad.Texture, 1.0f, quad.Color);
-            else
-                Renderer2D::DrawRotatedQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size,
-                                            quad.Rotation + rotation, quad.Color);
-        }
-#else
-        for (auto& quad : m_Quads)
-        {
-            if (quad.HasTexture)
-                Renderer2D::DrawQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size, quad.Texture, 1.0f,
-                                     quad.Color);
-            else
-                Renderer2D::DrawQuad(quad.Position + glm::vec3(position, 0.0f), quad.Size * size, quad.Color);
-        }
-#endif
-
-        Renderer2D::EndScene();
+        m_ActiveScene->OnUpdate(ts);
         m_Framebuffer->Unbind();
     }
 
-    void EditorLayer::OnEvent(Event& event)
-    {
-        m_CameraController.OnEvent(event);
-    }
+    void EditorLayer::OnEvent(Event& event) {}
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
     {
@@ -160,8 +137,6 @@ namespace Titan
         ImGui::End();
 
         ImGui::Begin("Test");
-        ImGui::SeparatorText("Camera");
-        ImGui::Text("Zoom: %f", m_CameraController.GetZoomLevel());
         ImGui::SeparatorText("Renderer");
         auto stats = Renderer2D::GetStats();
         ImGui::Text("Draw Calls: %d", stats.GetTotalDrawCalls());
@@ -189,8 +164,6 @@ namespace Titan
         {
             m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
             m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
-
-            m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
         }
         ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
 

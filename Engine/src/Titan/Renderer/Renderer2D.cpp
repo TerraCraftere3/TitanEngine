@@ -117,12 +117,12 @@ namespace Titan
             slot.reset();
     }
 
-    void Renderer2D::BeginScene(const OrthographicCamera& camera)
+    void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetProjectionMatrix() * glm::inverse(transform));
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -290,14 +290,6 @@ namespace Titan
     void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
                                      const glm::vec4& color)
     {
-        TI_PROFILE_FUNCTION();
-
-        if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
-            FlushAndReset();
-
-        const float texIndex = 0.0f; // White Texture
-        const float tilingFactor = 1.0f;
-
         glm::vec3 rotationRad = glm::radians(rotation);
 
         glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), rotationRad.x, {1.0f, 0.0f, 0.0f});
@@ -306,6 +298,40 @@ namespace Titan
 
         glm::mat4 transform =
             glm::translate(glm::mat4(1.0f), position) * rotMatrix * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+
+        DrawTransformedQuad(transform, color);
+    }
+
+    void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
+                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+    {
+        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, texture, tilingFactor, tintColor);
+    }
+
+    void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
+                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+    {
+        glm::vec3 rotationRad = glm::radians(rotation);
+
+        glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), rotationRad.x, {1.0f, 0.0f, 0.0f});
+        rotMatrix = glm::rotate(rotMatrix, rotationRad.y, {0.0f, 1.0f, 0.0f});
+        rotMatrix = glm::rotate(rotMatrix, rotationRad.z, {0.0f, 0.0f, 1.0f});
+
+        glm::mat4 transform =
+            glm::translate(glm::mat4(1.0f), position) * rotMatrix * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+
+        DrawTransformedQuad(transform, texture, tilingFactor, tintColor);
+    }
+
+    void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const glm::vec4& color)
+    {
+        TI_PROFILE_FUNCTION();
+
+        if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
+            FlushAndReset();
+
+        const float texIndex = 0.0f; // White Texture
+        const float tilingFactor = 1.0f;
 
         glm::vec3 transformedPositions[4];
         for (int i = 0; i < 4; i++)
@@ -344,14 +370,8 @@ namespace Titan
         s_Data.Stats.QuadCount++;
     }
 
-    void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
-    {
-        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, texture, tilingFactor, tintColor);
-    }
-
-    void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+    void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor,
+                                         const glm::vec4& tintColor)
     {
         TI_PROFILE_FUNCTION();
 
@@ -374,15 +394,6 @@ namespace Titan
             s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
             s_Data.TextureSlotIndex++;
         }
-
-        glm::vec3 rotationRad = glm::radians(rotation);
-
-        glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), rotationRad.x, {1.0f, 0.0f, 0.0f});
-        rotMatrix = glm::rotate(rotMatrix, rotationRad.y, {0.0f, 1.0f, 0.0f});
-        rotMatrix = glm::rotate(rotMatrix, rotationRad.z, {0.0f, 0.0f, 1.0f});
-
-        glm::mat4 transform =
-            glm::translate(glm::mat4(1.0f), position) * rotMatrix * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
         glm::vec3 transformedPositions[4];
         for (int i = 0; i < 4; i++)

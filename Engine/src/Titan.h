@@ -10,7 +10,6 @@
 #include "Titan/Core/MouseButtonCodes.h"
 #include "Titan/Core/Timestep.h"
 #include "Titan/ImGuiLayer.h"
-#include "Titan/OrthographicCameraController.h"
 // Renderer
 #include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/Framebuffer.h"

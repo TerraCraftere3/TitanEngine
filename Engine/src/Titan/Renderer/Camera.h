@@ -5,47 +5,17 @@
 
 namespace Titan
 {
-
-    class TI_API OrthographicCamera
+    class TI_API Camera
     {
     public:
-        OrthographicCamera(float left, float right, float bottom, float top);
-
-        void SetProjection(float left, float right, float bottom, float top);
+        Camera() = default;
+        Camera(const glm::mat4& projection) : m_ProjectionMatrix(projection) {}
+        virtual ~Camera() = default;
 
         const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
-        const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
-        const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
-        const glm::vec3& GetPosition() const { return m_Position; }
-        const glm::vec3& GetRotation() const { return m_Rotation; }
-        float GetZRotation() const { return m_Rotation.z; }
 
-        void SetPosition(const glm::vec3& position)
-        {
-            m_Position = position;
-            RecalculateViewMatrix();
-        }
-        void SetRotation(const glm::vec3& rotation)
-        {
-            m_Rotation = rotation;
-            RecalculateViewMatrix();
-        }
-        void SetRotation(float rotationZ)
-        {
-            m_Rotation.z = rotationZ;
-            RecalculateViewMatrix();
-        }
-
-    private:
-        void RecalculateViewMatrix();
-
-    private:
-        glm::mat4 m_ProjectionMatrix;
-        glm::mat4 m_ViewMatrix;
-        glm::mat4 m_ViewProjectionMatrix;
-
-        glm::vec3 m_Position;
-        glm::vec3 m_Rotation;
+    protected:
+        glm::mat4 m_ProjectionMatrix{1.0f};
     };
 
 } // namespace Titan

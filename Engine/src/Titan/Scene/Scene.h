@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Titan/Core/Timestep.h"
 #include "Titan/PCH.h"
 
 namespace Titan
@@ -13,6 +14,8 @@ namespace Titan
         ~Scene();
 
         Entity CreateEntity(const std::string& name = std::string());
+
+        void OnUpdate(Timestep ts);
 
     private:
         entt::registry m_Registry;

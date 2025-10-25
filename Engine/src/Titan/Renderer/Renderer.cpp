@@ -14,10 +14,10 @@ namespace Titan
         Renderer2D::Init();
     }
 
-    void Renderer::BeginScene(OrthographicCamera& camera)
+    void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
     {
         TI_PROFILE_FUNCTION();
-        s_SceneData->ViewProjMatrix = camera.GetViewProjectionMatrix();
+        s_SceneData->ViewProjMatrix = camera.GetProjectionMatrix() * glm::inverse(transform);
     }
 
     void Renderer::EndScene()
