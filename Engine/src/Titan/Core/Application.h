@@ -10,20 +10,36 @@
 
 namespace Titan
 {
+    /// @brief The Application that manages Render Context, Window, Scenes, etc.
     class TI_API Application
     {
     public:
+        /// @brief Creates the Application (which manages window, etc)
+        /// @param name The Window Title
         Application(const std::string& name = "Titan App");
+        /// @brief Destructs the Application
         virtual ~Application();
 
+        /// @brief Closes the window on the next update
         void Close();
+        /// @brief Starts the runtime loop
         void Run();
-        void OnEvent(Event& e);
+        /// @brief Triggers on a event
+        /// @param event the event
+        void OnEvent(Event& event);
 
+        /// @brief Pushes a layer to the stack
+        /// @param layer the layer
         void PushLayer(Layer* layer);
+        /// @brief Pushes a layer to the back of the stack
+        /// @param layer the layer
         void PushOverlay(Layer* layer);
 
+        /// @brief Gets the window (not native)
+        /// @return the window of this instance
         inline Window& GetWindow() { return *m_Window; }
+        /// @brief Gets the current public instance
+        /// @return the instance
         inline static Application* GetInstance() { return s_Instance; };
 
     private:

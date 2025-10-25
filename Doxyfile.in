@@ -1,0 +1,11 @@
+PROJECT_NAME           = "@PROJECT_NAME@"
+OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@/docs"
+INPUT                  = "@CMAKE_CURRENT_SOURCE_DIR@/Engine/src"
+EXTRACT_ALL            = YES     # Extract docs even if no comment
+EXTRACT_PRIVATE        = YES     # Include private members if needed
+EXTRACT_STATIC         = YES     # Include static functions
+EXTRACT_LOCAL_CLASSES  = YES     # Include classes in cpp files
+EXTRACT_LOCAL_METHODS  = YES     # Include methods in cpp files
+GENERATE_HTML           = YES
+GENERATE_LATEX          = NO
+RECURSIVE               = YES     # Scan subdirectories
