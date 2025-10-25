@@ -54,6 +54,8 @@
 
 #include <entt/entt.hpp>
 
+#include "yaml-cpp/yaml.h"
+
 // ---- Internal ----
 #include "Titan/Core.h"
 #include "Titan/Debug/Macros.h"

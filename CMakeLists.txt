@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 4.0..3.5)
 project(TitanEngine C CXX)
 
 # ---- Defaults ----

@@ -1,8 +1,12 @@
+# ---- Configs ----
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "Disable yaml-cpp tests")
+
 # ---- Subdirectories ----
 add_subdirectory(spdlog)
 add_subdirectory(glfw)
 add_subdirectory(glm)
 add_subdirectory(entt)
+add_subdirectory(yaml-cpp)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS
