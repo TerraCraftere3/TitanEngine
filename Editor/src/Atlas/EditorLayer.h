@@ -39,6 +39,7 @@ namespace Titan
         std::vector<ProfileResult> m_ProfileResults;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         Ref<Scene> m_ActiveScene;
+        EditorCamera m_EditorCamera;
 
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
