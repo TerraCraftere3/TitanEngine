@@ -152,6 +152,17 @@ namespace Titan
                 {
                     Application::GetInstance()->Close();
                 }
+                if (ImGui::MenuItem("Serialize"))
+                {
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Serialize("scenes/Example.scene");
+                }
+
+                if (ImGui::MenuItem("Deserialize"))
+                {
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Deserialize("scenes/Example.scene");
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();

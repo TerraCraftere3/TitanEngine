@@ -45,6 +45,8 @@ For now there is no linux support
 ## ⚙️ Features
 - Platform Independent Code
 - 2D Batch Renderer
+- Entity Component System
+- Scene Renderer
 
 ## 🧪 Builds
 | Tool  | Operating System | Badge                                                                                                                                                                                                                                 |
