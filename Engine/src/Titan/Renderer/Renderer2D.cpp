@@ -15,6 +15,7 @@ namespace Titan
         glm::vec2 TexCoord;
         float TexIndex;
         float TilingFactor;
+        int EntityID;
     };
 
     struct Renderer2DData
@@ -50,11 +51,16 @@ namespace Titan
         s_Data.QuadVertexArray = VertexArray::Create();
 
         s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
-        s_Data.QuadVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
-                                            {ShaderDataType::Float4, "a_Color"},
-                                            {ShaderDataType::Float2, "a_UV"},
-                                            {ShaderDataType::Float, "a_TexIndex"},
-                                            {ShaderDataType::Float, "a_TilingFactor"}});
+        // clang-format off
+        s_Data.QuadVertexBuffer->SetLayout({
+            {ShaderDataType::Float3, "a_Position"},
+            {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float2, "a_UV"},
+            {ShaderDataType::Float,  "a_TexIndex"},
+            {ShaderDataType::Float,  "a_TilingFactor"},
+            {ShaderDataType::Int,    "a_EntityID"}
+        });
+        // clang-format on
         s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
         s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
@@ -188,12 +194,12 @@ namespace Titan
         s_IsRendering = true;
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, int entityID)
     {
-        DrawQuad({position.x, position.y, 0.0f}, size, color);
+        DrawQuad({position.x, position.y, 0.0f}, size, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
     {
         TI_PROFILE_FUNCTION();
 
@@ -208,6 +214,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x + size.x, position.y, 0.0f};
@@ -215,6 +222,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x + size.x, position.y + size.y, 0.0f};
@@ -222,6 +230,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x, position.y + size.y, 0.0f};
@@ -229,6 +238,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
@@ -237,13 +247,13 @@ namespace Titan
     }
 
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture2D>& texture,
-                              float tilingFactor, const glm::vec4& tintColor)
+                              float tilingFactor, const glm::vec4& tintColor, int entityID)
     {
-        DrawQuad({position.x, position.y, 0.0f}, size, texture, tilingFactor, tintColor);
+        DrawQuad({position.x, position.y, 0.0f}, size, texture, tilingFactor, tintColor, entityID);
     }
 
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture,
-                              float tilingFactor, const glm::vec4& tintColor)
+                              float tilingFactor, const glm::vec4& tintColor, int entityID)
     {
         TI_PROFILE_FUNCTION();
 
@@ -272,6 +282,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x + size.x, position.y, 0.0f};
@@ -279,6 +290,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x + size.x, position.y + size.y, 0.0f};
@@ -286,6 +298,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = {position.x, position.y + size.y,
@@ -294,6 +307,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
@@ -302,13 +316,13 @@ namespace Titan
     }
 
     void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const glm::vec4& color)
+                                     const glm::vec4& color, int entityID)
     {
-        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, color);
+        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, color, entityID);
     }
 
     void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const glm::vec4& color)
+                                     const glm::vec4& color, int entityID)
     {
         glm::vec3 rotationRad = glm::radians(rotation);
 
@@ -323,13 +337,15 @@ namespace Titan
     }
 
     void Renderer2D::DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor,
+                                     int entityID)
     {
-        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, texture, tilingFactor, tintColor);
+        DrawRotatedQuad({position.x, position.y, 0.0f}, size, rotation, texture, tilingFactor, tintColor, entityID);
     }
 
     void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec3& rotation,
-                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+                                     const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor,
+                                     int entityID)
     {
         glm::vec3 rotationRad = glm::radians(rotation);
 
@@ -340,10 +356,10 @@ namespace Titan
         glm::mat4 transform =
             glm::translate(glm::mat4(1.0f), position) * rotMatrix * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-        DrawTransformedQuad(transform, texture, tilingFactor, tintColor);
+        DrawTransformedQuad(transform, texture, tilingFactor, tintColor, entityID);
     }
 
-    void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const glm::vec4& color)
+    void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
     {
         TI_PROFILE_FUNCTION();
 
@@ -362,6 +378,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[1];
@@ -369,6 +386,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[2];
@@ -376,6 +394,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[3];
@@ -383,6 +402,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
@@ -391,7 +411,7 @@ namespace Titan
     }
 
     void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor,
-                                         const glm::vec4& tintColor)
+                                         const glm::vec4& tintColor, int entityID)
     {
         TI_PROFILE_FUNCTION();
 
@@ -424,6 +444,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[1];
@@ -431,6 +452,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[2];
@@ -438,6 +460,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadVertexBufferPtr->Position = transformedPositions[3];
@@ -445,6 +468,7 @@ namespace Titan
         s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
         s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
         s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;

@@ -56,17 +56,9 @@ namespace Titan
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
         {
             int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-            TI_CORE_WARN("Pixel data = {0}", pixelData);
+            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
         }
         m_Framebuffer->Unbind();
-    }
-
-    void EditorLayer::OnEvent(Event& event)
-    {
-        m_EditorCamera.OnEvent(event);
-
-        EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
     }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
@@ -118,6 +110,10 @@ namespace Titan
         m_SceneHierarchyPanel.OnImGuiRender();
 
         ImGui::Begin("Statistics");
+        std::string name = "None";
+        if (m_HoveredEntity)
+            name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+        ImGui::Text("Hovered Entity: %s", name.c_str());
         auto stats = Renderer2D::GetStats();
         ImGui::Text("Draw Calls: %d", stats.GetTotalDrawCalls());
         ImGui::Text("Quads: %d", stats.GetTotalQuadCount());
@@ -142,6 +138,9 @@ namespace Titan
         ImVec2 maxBound = {minBound.x + m_ViewportSize.x, minBound.y + m_ViewportSize.y};
         m_ViewportBounds[0] = {minBound.x, minBound.y};
         m_ViewportBounds[1] = {maxBound.x, maxBound.y};
+
+        m_ViewportFocused = ImGui::IsWindowFocused();
+        m_ViewportHovered = ImGui::IsWindowHovered();
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
@@ -236,6 +235,15 @@ namespace Titan
         ImGui::PopStyleVar(2);
     }
 
+    void EditorLayer::OnEvent(Event& event)
+    {
+        m_EditorCamera.OnEvent(event);
+
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+    }
+
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
     {
         // Shortcuts
@@ -279,6 +287,16 @@ namespace Titan
             case Key::R:
                 m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
+        }
+        return false;
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+    {
+        if (e.GetMouseButton() == (int)MouseButton::ButtonLeft) // TODO: Change to MouseButton in Events
+        {
+            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+                m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
         }
         return false;
     }

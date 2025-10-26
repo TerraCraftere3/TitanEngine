@@ -19,6 +19,7 @@ namespace Titan
 
     private:
         bool OnKeyPressed(KeyPressedEvent& e);
+        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
         void NewScene();
         void OpenScene();
@@ -43,6 +44,7 @@ namespace Titan
         glm::vec2 m_ViewportBounds[2];
 
         Ref<Scene> m_ActiveScene;
+        Entity m_HoveredEntity;
         EditorCamera m_EditorCamera;
 
         // Panels
