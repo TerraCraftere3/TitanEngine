@@ -86,20 +86,20 @@ namespace Titan
                                {
                                    case GLFW_PRESS:
                                    {
-                                       KeyPressedEvent event(key, 0);
+                                       KeyPressedEvent event((KeyCode)key, 0);
                                        data.EventCallback(event);
                                        break;
                                    }
                                    case GLFW_RELEASE:
                                    {
-                                       KeyReleasedEvent event(key);
+                                       KeyReleasedEvent event((KeyCode)key);
                                        data.EventCallback(event);
                                        break;
                                    }
                                    case GLFW_REPEAT:
                                    {
                                        // TODO: Count repeat count for key
-                                       KeyPressedEvent event(key, 1);
+                                       KeyPressedEvent event((KeyCode)key, 1);
                                        data.EventCallback(event);
                                        break;
                                    }
@@ -111,7 +111,7 @@ namespace Titan
                             {
                                 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-                                KeyTypedEvent event(c);
+                                KeyTypedEvent event((KeyCode)c);
                                 data.EventCallback(event);
                             });
 

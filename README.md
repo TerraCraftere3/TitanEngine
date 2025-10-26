@@ -22,6 +22,7 @@ For now there is no linux support
     - `Renderer` contains platform independent code for the Renderer
     - `Scene` contains code used by the ecs and scene renderer
     - `Debug` contains profiling and debugging code
+    - `Utils` contains small utilities like save dialogs, etc
 - `Editor` contains the code for Atlas (The Editor)
   - `src/Atlas` contains the editor code
     - `Panels` contains the code for each panel (asset viewer, etc.)

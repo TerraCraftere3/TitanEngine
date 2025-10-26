@@ -18,6 +18,13 @@ namespace Titan
         virtual void OnImGuiRender(ImGuiContext* ctx) override;
 
     private:
+        bool OnKeyPressed(KeyPressedEvent& e);
+
+        void NewScene();
+        void OpenScene();
+        void SaveSceneAs();
+
+    private:
         float m_FPS = 0.0f;
         Ref<Texture2D> m_FirstTexture, m_SecondTexture, m_WhiteTexture;
         Ref<Framebuffer> m_Framebuffer;

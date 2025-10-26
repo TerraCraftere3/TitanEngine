@@ -26,3 +26,5 @@
 #include "Titan/Scene/SceneCamera.h"
 #include "Titan/Scene/SceneSerializer.h"
 #include "Titan/Scene/ScriptableEntity.h"
+// Utils
+#include "Titan/Utils/PlatformUtils.h"

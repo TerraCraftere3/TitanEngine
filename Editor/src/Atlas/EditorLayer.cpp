@@ -117,7 +117,11 @@ namespace Titan
         m_Framebuffer->Unbind();
     }
 
-    void EditorLayer::OnEvent(Event& event) {}
+    void EditorLayer::OnEvent(Event& event)
+    {
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+    }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
     {
@@ -152,17 +156,12 @@ namespace Titan
                 {
                     Application::GetInstance()->Close();
                 }
-                if (ImGui::MenuItem("Serialize"))
-                {
-                    SceneSerializer serializer(m_ActiveScene);
-                    serializer.Serialize("scenes/Example.scene");
-                }
-
-                if (ImGui::MenuItem("Deserialize"))
-                {
-                    SceneSerializer serializer(m_ActiveScene);
-                    serializer.Deserialize("scenes/Example.scene");
-                }
+                if (ImGui::MenuItem("New", "Ctrl+N"))
+                    NewScene();
+                if (ImGui::MenuItem("Open...", "Ctrl+O"))
+                    OpenScene();
+                if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+                    SaveSceneAs();
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -197,5 +196,70 @@ namespace Titan
 
         ImGui::End();
         ImGui::PopStyleVar(2);
+    }
+
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+    {
+        // Shortcuts
+        if (e.GetRepeatCount() > 0)
+            return false;
+
+        bool control = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
+        bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
+        switch (e.GetKeyCode())
+        {
+            case KeyCode::N:
+            {
+                if (control)
+                    NewScene();
+
+                break;
+            }
+            case KeyCode::O:
+            {
+                if (control)
+                    OpenScene();
+
+                break;
+            }
+            case KeyCode::S:
+            {
+                if (control && shift)
+                    SaveSceneAs();
+
+                break;
+            }
+        }
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    }
+
+    void EditorLayer::OpenScene()
+    {
+        std::string filepath = FileDialogs::OpenFile("Titan Scene (*.titan)\0*.titan\0");
+        if (!filepath.empty())
+        {
+            m_ActiveScene = CreateRef<Scene>();
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Deserialize(filepath);
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        std::string filepath = FileDialogs::SaveFile("Titan Scene (*.titan)\0*.titan\0");
+        if (!filepath.empty())
+        {
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Serialize(filepath);
+        }
     }
 } // namespace Titan
