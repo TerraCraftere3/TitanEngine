@@ -2,18 +2,20 @@
 // clang-format off
 
 /*===========================================
-        Precompiled Headers that include:
-        - Dependencies (most common)
+        Precompiled Header (PCH)
+        Includes:
         - Standard Library
-        - Core Parts of the Engine
-        - Platform Dependent Libraries
+        - Platform Specific Headers
+        - Dependencies
+        - Core Engine Headers
 ===========================================*/
 
-// ---- Standard library ----
+// ---- Standard Library ----
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -27,23 +29,26 @@
 
 // ---- Platform ----
 #ifdef TI_PLATFORM_WINDOWS
-#include <Windows.h>
+    #include <Windows.h>
 #endif
 
-// ---- Dependencies ----
+// ---- Logging (spdlog) ----
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+// ---- OpenGL (glad + glfw) ----
 #ifdef APIENTRY
-#undef APIENTRY
+    #undef APIENTRY
 #endif
-#include <glad/glad.h> 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+// ---- ImGui + ImGuizmo ----
 #include <imgui.h>
 #include <ImGuizmo.h>
 
+// ---- Math (GLM) ----
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -53,11 +58,23 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+// ---- ECS (EnTT) ----
 #include <entt/entt.hpp>
 
-#include "yaml-cpp/yaml.h"
+// ---- Serialization (YAML-CPP) ----
+#include <yaml-cpp/yaml.h>
 
-// ---- Internal ----
+// ---- Vulkan + Shader Toolchain ----
+#include <shaderc/shaderc.hpp>
+
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
+
+#include <spirv_cross/spirv_cross.hpp>
+#include <spirv_cross/spirv_glsl.hpp>
+#include <spirv_cross/spirv_msl.hpp>
+
+// ---- Internal Engine Includes ----
 #include "Titan/Core.h"
 #include "Titan/Debug/Macros.h"
 #include "Titan/Debug/Instrumentor.h"

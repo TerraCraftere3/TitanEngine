@@ -32,18 +32,22 @@ For now there is no linux support
 
 ## 📦 Dependencies
 
-| Dependency | Usage                   | Link                                                          |
-| ---------- | ----------------------- | ------------------------------------------------------------- |
-| spdlog     | Logging                 | https://github.com/gabime/spdlog                              |
-| glfw       | Windowing / Input       | https://github.com/glfw/glfw                                  |
-| glad       | OpenGL Loader           | https://glad.dav1d.de/                                        |
-| Vulkan SDK | Vulkan                  | [https://glad.dav1d.de/ ](https://vulkan.lunarg.com/sdk/home) |
-| imgui      | GUI                     | https://github.com/ocornut/imgui                              |
-| imguizmo   | Guizmos                 | https://github.com/CedricGuillemet/ImGuizmo                   |
-| glm        | Math / Linear Algebra   | https://github.com/g-truc/glm                                 |
-| entt       | Entity Component System | https://github.com/skypjack/entt                              |
-| stb_image  | Texture Loader          | https://github.com/nothings/stb                               |
-| yaml_cpp   | Yaml Serializer         | https://github.com/jbeder/yaml-cpp                            |
+| Name              | Usage / Purpose                                                 | Repository Link                                                             |
+| ----------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **spdlog**        | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                           |
+| **glfw**          | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                   |
+| **imgui**         | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                           |
+| **glm**           | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                                 |
+| **stb**           | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                             |
+| **entt**          | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                           |
+| **yaml-cpp**      | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                       |
+| **ImGuizmo**      | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)     |
+| **SPIRV-Cross**   | SPIR-V reflection and cross-compilation library                 | [KhronosGroup/SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)     |
+| **SPIRV-Tools**   | Tools and libraries for processing SPIR-V modules               | [KhronosGroup/SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)     |
+| **SPIRV-Headers** | SPIR-V header files defining the instruction set                | [KhronosGroup/SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) |
+| **glslang**       | GLSL to SPIR-V reference compiler                               | [KhronosGroup/glslang](https://github.com/KhronosGroup/glslang)             |
+| **shaderc**       | Shader compilation tools and libraries for Vulkan/GLSL          | [google/shaderc](https://github.com/google/shaderc)                         |
+
 
 ## ⚙️ Features
 - Platform Independent Code

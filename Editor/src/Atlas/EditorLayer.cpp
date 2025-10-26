@@ -111,8 +111,6 @@ namespace Titan
 
         ImGui::Begin("Statistics");
         std::string name = "None";
-        if (m_HoveredEntity)
-            name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
         ImGui::Text("Hovered Entity: %s", name.c_str());
         auto stats = Renderer2D::GetStats();
         ImGui::Text("Draw Calls: %d", stats.GetTotalDrawCalls());
