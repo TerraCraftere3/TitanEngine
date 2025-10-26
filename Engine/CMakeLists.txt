@@ -21,8 +21,9 @@ else()
 endif()
 
 # ---- Dependencies ----
+find_package(Vulkan REQUIRED)
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo)
-target_link_libraries(engine PRIVATE glad)
+target_link_libraries(engine PRIVATE glad Vulkan)
 
 # ---- Include directories ----
 target_include_directories(engine PUBLIC

@@ -25,6 +25,16 @@ jobs:
       - name: Setup CMake
         uses: lukka/get-cmake@latest
 
+      # Setup Vulkan SDK
+      - name: Install Vulkan SDK
+        run: |
+          $version = "1.3.261.1"
+          $url = "https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe"
+          Invoke-WebRequest -Uri $url -OutFile "VulkanSDK-Installer.exe"
+          Start-Process "VulkanSDK-Installer.exe" -ArgumentList "/S" -Wait
+          echo "VULKAN_SDK=C:\VulkanSDK\$version" >> $env:GITHUB_ENV
+          echo "PATH=C:\VulkanSDK\$version\Bin;$env:PATH" >> $env:GITHUB_ENV
+
       # Configure CMake
       - name: Configure CMake
         run: >
