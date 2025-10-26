@@ -28,6 +28,7 @@ namespace Titan
         float m_FPS = 0.0f;
         Ref<Texture2D> m_FirstTexture, m_SecondTexture, m_WhiteTexture;
         Ref<Framebuffer> m_Framebuffer;
+        int m_GizmoType = -1;
 
         struct ProfileResult
         {

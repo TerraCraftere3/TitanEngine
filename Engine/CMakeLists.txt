@@ -21,7 +21,7 @@ else()
 endif()
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo)
 target_link_libraries(engine PRIVATE glad)
 
 # ---- Include directories ----

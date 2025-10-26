@@ -19,3 +19,6 @@
 [submodule "Vendor/yaml-cpp"]
 	path = Vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "Vendor/ImGuizmo"]
+	path = Vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

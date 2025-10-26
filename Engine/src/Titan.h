@@ -27,4 +27,5 @@
 #include "Titan/Scene/SceneSerializer.h"
 #include "Titan/Scene/ScriptableEntity.h"
 // Utils
+#include "Titan/Utils/Math.h"
 #include "Titan/Utils/PlatformUtils.h"

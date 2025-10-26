@@ -32,16 +32,17 @@ For now there is no linux support
 
 ## 📦 Dependencies
 
-| Dependency | Usage                   | Link                               |
-| ---------- | ----------------------- | ---------------------------------- |
-| spdlog     | Logging                 | https://github.com/gabime/spdlog   |
-| glfw       | Windowing / Input       | https://github.com/glfw/glfw       |
-| glad       | OpenGL Loader           | https://glad.dav1d.de/             |
-| imgui      | GUI                     | https://github.com/ocornut/imgui   |
-| glm        | Math / Linear Algebra   | https://github.com/g-truc/glm      |
-| entt       | Entity Component System | https://github.com/skypjack/entt   |
-| stb_image  | Texture Loader          | https://github.com/nothings/stb    |
-| yaml_cpp   | Yaml Serializer         | https://github.com/jbeder/yaml-cpp |
+| Dependency | Usage                   | Link                                        |
+| ---------- | ----------------------- | ------------------------------------------- |
+| spdlog     | Logging                 | https://github.com/gabime/spdlog            |
+| glfw       | Windowing / Input       | https://github.com/glfw/glfw                |
+| glad       | OpenGL Loader           | https://glad.dav1d.de/                      |
+| imgui      | GUI                     | https://github.com/ocornut/imgui            |
+| imguizmo   | Guizmos                 | https://github.com/CedricGuillemet/ImGuizmo |
+| glm        | Math / Linear Algebra   | https://github.com/g-truc/glm               |
+| entt       | Entity Component System | https://github.com/skypjack/entt            |
+| stb_image  | Texture Loader          | https://github.com/nothings/stb             |
+| yaml_cpp   | Yaml Serializer         | https://github.com/jbeder/yaml-cpp          |
 
 ## ⚙️ Features
 - Platform Independent Code

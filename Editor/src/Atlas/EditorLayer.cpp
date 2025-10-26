@@ -10,43 +10,6 @@ namespace Titan
 
     void EditorLayer::OnAttach()
     {
-        // Textures
-        m_FirstTexture = Texture2D::Create("textures/checkerboard.png");
-        m_SecondTexture = Texture2D::Create("textures/uv_test.jpg");
-        m_WhiteTexture = Renderer2D::GetWhiteTexture();
-
-        // Quads
-        const int quadCount = 10'000;
-        std::mt19937 rng(1337);
-        std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> sizeDist(0.1f, 0.5f);
-        std::uniform_real_distribution<float> rotDist(0.0f, 360.0f);
-        std::uniform_real_distribution<float> rotSpeedDist(1.0f, 15.0f);
-        std::uniform_real_distribution<float> colorDist(0.0f, 1.0f);
-        std::uniform_int_distribution<int> texDist(0, 2); // 0 = checkerboard, 1 = logo, 2 = color
-        std::uniform_int_distribution<int> rotateDist(0, 1);
-
-        m_ActiveScene = CreateRef<Scene>();
-
-        for (int i = 0; i < quadCount; i++)
-        {
-            auto quad = m_ActiveScene->CreateEntity("Quad #" + std::to_string(i));
-            auto& transform = quad.GetComponent<TransformComponent>();
-            transform.Translation = glm::vec3(posDist(rng), posDist(rng), posDist(rng));
-            transform.Rotation = glm::vec3(0.0f, 0.0f, rotDist(rng));
-            transform.Scale = glm::vec3(sizeDist(rng), sizeDist(rng), 1.0f);
-
-            int texChoice = texDist(rng);
-            SpriteRendererComponent& sprite = quad.AddComponent<SpriteRendererComponent>();
-            sprite.Color = {colorDist(rng), colorDist(rng), colorDist(rng), colorDist(rng)};
-            if (texChoice == 0)
-                sprite.Tex = m_FirstTexture;
-            else if (texChoice == 1)
-                sprite.Tex = m_SecondTexture;
-            else
-                sprite.Tex = m_WhiteTexture;
-        }
-
         // Setup
         Application::GetInstance()->GetWindow().SetVSync(false);
 
@@ -55,49 +18,9 @@ namespace Titan
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        class CameraController : public ScriptableEntity
-        {
-        public:
-            void OnCreate() {}
+        m_ActiveScene = CreateRef<Scene>();
+        SceneSerializer(m_ActiveScene).Deserialize("scenes/Cube.titan");
 
-            void OnDestroy() {}
-
-            void OnUpdate(Timestep ts)
-            {
-                auto& translation = GetComponent<TransformComponent>().Translation;
-                float speed = 5.0f;
-
-                if (Input::IsKeyPressed(KeyCode::A))
-                    translation.x -= speed * ts;
-                if (Input::IsKeyPressed(KeyCode::D))
-                    translation.x += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::W))
-                    translation.y += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::S))
-                    translation.y -= speed * ts;
-                /*if (Input::IsKeyPressed(KeyCode::Space))
-                    translation.z += speed * ts;
-                if (Input::IsKeyPressed(KeyCode::LeftShift))
-                    translation.z -= speed * ts;*/
-            }
-        };
-
-        // Cameras
-        {
-            auto orthographicCam = m_ActiveScene->CreateEntity("Orthographic Camera");
-            auto& cc = orthographicCam.AddComponent<CameraComponent>();
-            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Orthographic);
-            cc.Primary = false;
-
-            orthographicCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        }
-        {
-            auto perspectiveCam = m_ActiveScene->CreateEntity("Perspective Camera");
-            auto& cc = perspectiveCam.AddComponent<CameraComponent>();
-            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
-
-            perspectiveCam.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        }
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
@@ -109,7 +32,7 @@ namespace Titan
             m_FPS = 1.0f / ts.GetSeconds();
 
         m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
+        RenderCommand::SetClearColor({0.0f, 0.0f, 0.0f, 1});
         RenderCommand::Clear();
 
         Renderer2D::ResetStats();
@@ -181,8 +104,9 @@ namespace Titan
         ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::End();
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Remove padding
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);      // Remove border
+        // Push styles
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -192,7 +116,83 @@ namespace Titan
             m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
             m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
         }
+
+        // ---------------- Toolbar for Gizmo ----------------
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 contentPos = ImGui::GetWindowContentRegionMin();
+        ImVec2 toolbarPos;
+        toolbarPos.x = windowPos.x + contentPos.x + 10.0f; // 10 px offset from content
+        toolbarPos.y = windowPos.y + contentPos.y + 10.0f;
+
+        ImGui::SetNextWindowPos(toolbarPos, ImGuiCond_Always);
+        ImGui::SetNextWindowBgAlpha(0.75f); // Semi-transparent background
+
+        // --- Create a small child window as toolbar ---
+        ImGuiWindowFlags toolbarFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                                        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar |
+                                        ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse;
+
+        ImGui::Begin("GizmoToolbar", nullptr, toolbarFlags);
+
+        // Optional: rounded corners via style
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);          // 6 px rounding
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16, 16)); // small padding inside toolbar
+
+        // --- Horizontal buttons ---
+        float buttonSize = 25.0f;
+        if (ImGui::Button("T", ImVec2(buttonSize, buttonSize)))
+            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+        ImGui::SameLine();
+        if (ImGui::Button("R", ImVec2(buttonSize, buttonSize)))
+            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+        ImGui::SameLine();
+        if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
+            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+
+        ImGui::PopStyleVar(2); // pop rounding & padding
+        ImGui::End();
+
+        // ---------------- End Toolbar ----------------
+
         ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
+
+        // ImGuizmo logic (unchanged)
+        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        if (selectedEntity && m_GizmoType != -1)
+        {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+
+            float windowWidth = (float)ImGui::GetWindowWidth();
+            float windowHeight = (float)ImGui::GetWindowHeight();
+            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+            auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+            const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+            const glm::mat4& cameraProjection = camera.GetProjection();
+            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+            auto& tc = selectedEntity.GetComponent<TransformComponent>();
+            glm::mat4 transform = tc.GetTransform();
+
+            bool snap = Input::IsKeyPressed(Key::LeftControl);
+            float snapValue = (m_GizmoType == ImGuizmo::OPERATION::ROTATE) ? 45.0f : 0.5f;
+            float snapValues[3] = {snapValue, snapValue, snapValue};
+
+            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+                                 (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr,
+                                 snap ? snapValues : nullptr);
+
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 translation, rotation, scale;
+                Math::DecomposeTransform(transform, translation, rotation, scale);
+                glm::vec3 deltaRotation = rotation - tc.Rotation;
+                tc.Translation = translation;
+                tc.Rotation += deltaRotation;
+                tc.Scale = scale;
+            }
+        }
 
         ImGui::End();
         ImGui::PopStyleVar(2);
@@ -229,6 +229,18 @@ namespace Titan
 
                 break;
             }
+            case Key::Q:
+                m_GizmoType = -1;
+                break;
+            case Key::W:
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                break;
+            case Key::E:
+                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                break;
+            case Key::R:
+                m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                break;
         }
     }
 

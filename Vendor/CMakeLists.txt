@@ -25,6 +25,16 @@ add_library(imgui STATIC ${IMGUI_SRC})
 target_include_directories(imgui PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
 )
+# ---- ImGuizmo Directory ----
+file(GLOB IMGUIZMO_SRC CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo/*.cpp"
+)
+add_library(imguizmo STATIC ${IMGUIZMO_SRC})
+target_include_directories(imguizmo PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo"
+)
+target_link_libraries(imguizmo PRIVATE imgui)
+
 target_link_libraries(imgui PRIVATE glfw)
 # ---- STB Directory ----
 set(STB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stb" PARENT_SCOPE)
