@@ -8,8 +8,8 @@
 #include "Titan/Core/Layer.h"
 #include "Titan/Core/Log.h"
 #include "Titan/Core/MouseButtons.h"
+#include "Titan/Core/Timer.h"
 #include "Titan/Core/Timestep.h"
-#include "Titan/ImGuiLayer.h"
 // Renderer
 #include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/Framebuffer.h"
@@ -18,6 +18,7 @@
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
+#include "Titan/Renderer/UniformBuffer.h"
 #include "Titan/Renderer/VertexArray.h"
 // Scene
 #include "Titan/Scene/Components.h"
@@ -29,3 +30,5 @@
 // Utils
 #include "Titan/Utils/Math.h"
 #include "Titan/Utils/PlatformUtils.h"
+// Other
+#include "Titan/ImGuiLayer.h"
