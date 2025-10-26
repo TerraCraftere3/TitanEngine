@@ -29,6 +29,8 @@ namespace Titan
 
     void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
     {
+        if (width < 1 || height < 1)
+            return;
         m_AspectRatio = (float)width / (float)height;
         RecalculateProjection();
     }

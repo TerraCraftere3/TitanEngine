@@ -14,8 +14,10 @@ namespace Titan
         Application::GetInstance()->GetWindow().SetVSync(false);
 
         FramebufferSpecification fbSpec;
+        fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
+        fbSpec.Samples = 1;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
@@ -251,6 +253,7 @@ namespace Titan
                 m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
         }
+        return false;
     }
 
     void EditorLayer::NewScene()

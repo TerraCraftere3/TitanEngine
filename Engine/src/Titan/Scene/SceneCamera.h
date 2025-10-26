@@ -71,7 +71,7 @@ namespace Titan
     private:
         void RecalculateProjection();
 
-    private:
+    public:
         ProjectionType m_ProjectionType = ProjectionType::Orthographic;
 
         float m_PerspectiveFOV = glm::radians(45.0f);
@@ -80,7 +80,7 @@ namespace Titan
         float m_OrthographicSize = 10.0f;
         float m_OrthographicNear = -1.0f, m_OrthographicFar = 1000.0f;
 
-        float m_AspectRatio = 0.0f;
+        float m_AspectRatio = 1.0f;
     };
 
 } // namespace Titan
