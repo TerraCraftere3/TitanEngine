@@ -1,7 +1,7 @@
 #include "SceneSerializer.h"
-#include "Titan/PCH.h"
 #include "Components.h"
 #include "Entity.h"
+#include "Titan/PCH.h"
 #include "Titan/Renderer/Renderer2D.h"
 
 namespace YAML

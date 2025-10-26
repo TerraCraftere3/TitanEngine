@@ -47,8 +47,8 @@ namespace Titan
     {
         m_EditorCamera.OnEvent(event);
 
-        /*EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));*/
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
     }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
