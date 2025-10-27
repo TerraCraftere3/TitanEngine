@@ -29,6 +29,7 @@ target_link_libraries(engine PRIVATE glad)
 target_include_directories(engine PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     "${STB_INCLUDE_DIR}"
+    "${NANOSVG_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----

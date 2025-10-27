@@ -6,10 +6,9 @@ namespace Titan
 
     ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(s_AssetPath)
     {
-        m_DirectoryIcon = Texture2D::Create("resources/icons/contentbrowser/folder.png");
-        m_FileTextIcon = Texture2D::Create("resources/icons/contentbrowser/file-text.png");
-        m_FileCodeIcon = Texture2D::Create("resources/icons/contentbrowser/file-code.png");
-        m_FileImageIcon = Texture2D::Create("resources/icons/contentbrowser/file-image.png");
+        m_DirectoryIcon = Texture2D::Create("resources/icons/contentbrowser/folder.svg");
+        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/contentbrowser/folder-open.svg");
+        m_FileTextIcon = Texture2D::Create("resources/icons/contentbrowser/file-text.svg");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
@@ -70,15 +69,14 @@ namespace Titan
     Ref<Texture2D> ContentBrowserPanel::GetIconForFile(const std::filesystem::path& filePath)
     {
         if (std::filesystem::is_directory(filePath))
-            return m_DirectoryIcon;
+        {
+            if (!std::filesystem::is_empty(filePath))
+                return m_DirectoryOpenIcon;
+            else
+                return m_DirectoryIcon;
+        }
 
         auto extension = filePath.extension().string();
-
-        if (extension == ".png" || extension == ".jpg" || extension == ".jpeg" || extension == ".bmp")
-            return m_FileImageIcon;
-        else if (extension == ".cpp" || extension == ".h" || extension == ".cs" || extension == ".glsl")
-            return m_FileCodeIcon;
-
         return m_FileTextIcon;
     }
 

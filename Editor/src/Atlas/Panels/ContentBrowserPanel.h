@@ -21,9 +21,8 @@ namespace Titan
 
         // Icons
         Ref<Texture2D> m_DirectoryIcon;
+        Ref<Texture2D> m_DirectoryOpenIcon;
         Ref<Texture2D> m_FileTextIcon;
-        Ref<Texture2D> m_FileCodeIcon;
-        Ref<Texture2D> m_FileImageIcon;
     };
 
 } // namespace Titan

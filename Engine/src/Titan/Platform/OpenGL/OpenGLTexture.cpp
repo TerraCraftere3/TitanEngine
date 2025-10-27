@@ -1,5 +1,7 @@
 #include "OpenGLTexture.h"
 #include "Titan/PCH.h"
+#include "nanosvg.h"
+#include "nanosvgrast.h"
 #include "stb_image.h"
 
 namespace Titan
@@ -8,38 +10,79 @@ namespace Titan
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path)
     {
         TI_PROFILE_FUNCTION();
-        int width, height, channels;
-        stbi_set_flip_vertically_on_load(1);
-        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-        TI_CORE_ASSERT(data, "Failed to load image!");
-        m_Width = width;
-        m_Height = height;
 
-        if (channels == 4)
+        int width = 0, height = 0, channels = 4;
+        unsigned char* data = nullptr;
+
+        // Check file extension
+        auto ext = path.substr(path.find_last_of(".") + 1);
+        for (auto& c : ext)
+            c = std::tolower(c);
+        if (ext == "svg")
         {
+            width = height = 256;
+            data = new unsigned char[width * height * 4]; // RGBA
+
+            NSVGimage* image = nsvgParseFromFile(path.c_str(), "px", 96);
+            TI_CORE_ASSERT(image, "Failed to load SVG!");
+
+            NSVGrasterizer* rast = nsvgCreateRasterizer();
+
+            float scale = float(width) / image->width;
+            nsvgRasterize(rast, image, 0, 0, scale, data, width, height, width * 4);
+
+            // --- Flip vertically ---
+            for (int y = 0; y < height / 2; y++)
+            {
+                int opposite = height - y - 1;
+                for (int x = 0; x < width * 4; x++)
+                    std::swap(data[y * width * 4 + x], data[opposite * width * 4 + x]);
+            }
+
+            nsvgDeleteRasterizer(rast);
+            nsvgDelete(image);
+
             m_InternalFormat = GL_RGBA8;
             m_DataFormat = GL_RGBA;
         }
-        else if (channels == 3)
+
+        else
         {
-            m_InternalFormat = GL_RGB8;
-            m_DataFormat = GL_RGB;
+            stbi_set_flip_vertically_on_load(1);
+            data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+            TI_CORE_ASSERT(data, "Failed to load image!");
+
+            if (channels == 4)
+            {
+                m_InternalFormat = GL_RGBA8;
+                m_DataFormat = GL_RGBA;
+            }
+            else if (channels == 3)
+            {
+                m_InternalFormat = GL_RGB8;
+                m_DataFormat = GL_RGB;
+            }
+
+            TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
         }
 
-        TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
+        m_Width = width;
+        m_Height = height;
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 
-        stbi_image_free(data);
+        if (ext == "svg")
+            delete[] data;
+        else
+            stbi_image_free(data);
     }
 
     OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height)

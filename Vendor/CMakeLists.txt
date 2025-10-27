@@ -71,3 +71,4 @@ target_link_libraries(imguizmo PRIVATE imgui)
 target_link_libraries(imgui PRIVATE glfw)
 # ---- STB Directory ----
 set(STB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stb" PARENT_SCOPE)
+set(NANOSVG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/nanosvg/src" PARENT_SCOPE)

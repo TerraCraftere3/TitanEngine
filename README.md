@@ -47,6 +47,7 @@ For now there is no linux support
 | **SPIRV-Headers** | SPIR-V header files defining the instruction set                | [KhronosGroup/SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) |
 | **glslang**       | GLSL to SPIR-V reference compiler                               | [KhronosGroup/glslang](https://github.com/KhronosGroup/glslang)             |
 | **shaderc**       | Shader compilation tools and libraries for Vulkan/GLSL          | [google/shaderc](https://github.com/google/shaderc)                         |
+| **nanosvg** | SVG Software Rendering | [memononen/nanosvg](https://github.com/memononen/nanosvg) |
 
 
 ## ⚙️ Features
