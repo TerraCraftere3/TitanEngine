@@ -243,6 +243,10 @@ namespace Titan
                 {
                     auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
                     src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+                    if (spriteRendererComponent["Texture"])
+                    {
+                        src.Tex = Texture2D::Create(spriteRendererComponent["Texture"].as<std::string>());
+                    }
                 }
             }
         }

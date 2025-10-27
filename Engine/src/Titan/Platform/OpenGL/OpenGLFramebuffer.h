@@ -15,6 +15,7 @@ namespace Titan
 
         virtual void Bind() override;
         virtual void Unbind() override;
+        virtual void Resolve() override;
         virtual void Resize(uint32_t width, uint32_t height) override;
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
@@ -24,6 +25,10 @@ namespace Titan
         virtual void* GetColorAttachment(uint32_t index = 0) const override
         {
             TI_CORE_ASSERT(index < m_ColorAttachments.size());
+
+            if (m_Specification.Samples > 1 && !m_ResolvedColorAttachments.empty())
+                return (void*)(intptr_t)m_ResolvedColorAttachments[index];
+
             return (void*)(intptr_t)m_ColorAttachments[index];
         }
 
@@ -38,6 +43,9 @@ namespace Titan
 
         std::vector<uint32_t> m_ColorAttachments;
         uint32_t m_DepthAttachment = 0;
+
+        uint32_t m_ResolvedRendererID = 0;
+        std::vector<uint32_t> m_ResolvedColorAttachments;
     };
 
 } // namespace Titan

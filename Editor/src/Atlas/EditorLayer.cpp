@@ -19,7 +19,7 @@ namespace Titan
                               FramebufferTextureFormat::Depth};
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
-        fbSpec.Samples = 1;
+        fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
@@ -89,7 +89,6 @@ namespace Titan
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
-        // Show demo options and help
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -130,6 +129,7 @@ namespace Titan
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
+        ImGui::SetNextWindowSizeConstraints(ImVec2(256, 256), ImVec2(8192, 8192));
         ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         auto viewportOffset = ImGui::GetCursorPos();
 
@@ -169,28 +169,30 @@ namespace Titan
                                         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar |
                                         ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse;
 
-        ImGui::Begin("GizmoToolbar", nullptr, toolbarFlags);
+        if (m_SceneState == SceneState::Edit)
+        {
+            ImGui::Begin("GizmoToolbar", nullptr, toolbarFlags);
 
-        // Optional: rounded corners via style
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);          // 6 px rounding
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16, 16)); // small padding inside toolbar
+            // Optional: rounded corners via style
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);          // 6 px rounding
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16, 16)); // small padding inside toolbar
 
-        // --- Horizontal buttons ---
-        float buttonSize = 25.0f;
-        if (ImGui::Button("T", ImVec2(buttonSize, buttonSize)))
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-        ImGui::SameLine();
-        if (ImGui::Button("R", ImVec2(buttonSize, buttonSize)))
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
-        ImGui::SameLine();
-        if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            // --- Horizontal buttons ---
+            float buttonSize = 25.0f;
+            if (ImGui::Button("T", ImVec2(buttonSize, buttonSize)))
+                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            ImGui::SameLine();
+            if (ImGui::Button("R", ImVec2(buttonSize, buttonSize)))
+                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            ImGui::SameLine();
+            if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
+                m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
-        ImGui::PopStyleVar(2); // pop rounding & padding
-        ImGui::End();
+            ImGui::PopStyleVar(2); // pop rounding & padding
+            ImGui::End();
+        }
 
-        // ---------------- End Toolbar ----------------
-
+        m_Framebuffer->Resolve();
         ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportPanelSize, ImVec2(0, 1), ImVec2(1, 0));
         if (ImGui::BeginDragDropTarget())
         {

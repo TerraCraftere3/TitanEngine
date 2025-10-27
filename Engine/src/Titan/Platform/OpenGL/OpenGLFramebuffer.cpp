@@ -1,4 +1,5 @@
 #include "Titan/Platform/OpenGL/OpenGLFramebuffer.h"
+#include "OpenGLFramebuffer.h"
 #include "Titan/PCH.h"
 
 namespace Titan
@@ -123,7 +124,14 @@ namespace Titan
             glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
             glDeleteTextures(1, &m_DepthAttachment);
 
+            if (m_ResolvedRendererID)
+            {
+                glDeleteFramebuffers(1, &m_ResolvedRendererID);
+                glDeleteTextures(m_ResolvedColorAttachments.size(), m_ResolvedColorAttachments.data());
+            }
+
             m_ColorAttachments.clear();
+            m_ResolvedColorAttachments.clear();
             m_DepthAttachment = 0;
         }
 
@@ -178,12 +186,46 @@ namespace Titan
         }
         else if (m_ColorAttachments.empty())
         {
-            // Only depth-pass
             glDrawBuffer(GL_NONE);
         }
 
         TI_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
                        "Framebuffer is incomplete!");
+
+        if (multisample && m_ColorAttachmentSpecifications.size())
+        {
+            glCreateFramebuffers(1, &m_ResolvedRendererID);
+            glBindFramebuffer(GL_FRAMEBUFFER, m_ResolvedRendererID);
+
+            m_ResolvedColorAttachments.resize(m_ColorAttachmentSpecifications.size());
+            Utils::CreateTextures(false, m_ResolvedColorAttachments.data(), m_ResolvedColorAttachments.size());
+
+            for (size_t i = 0; i < m_ResolvedColorAttachments.size(); i++)
+            {
+                Utils::BindTexture(false, m_ResolvedColorAttachments[i]);
+                switch (m_ColorAttachmentSpecifications[i].TextureFormat)
+                {
+                    case FramebufferTextureFormat::RGBA8:
+                        Utils::AttachColorTexture(m_ResolvedColorAttachments[i], 1, GL_RGBA8, GL_RGBA,
+                                                  m_Specification.Width, m_Specification.Height, i);
+                        break;
+                    case FramebufferTextureFormat::RED_INTEGER:
+                        Utils::AttachColorTexture(m_ResolvedColorAttachments[i], 1, GL_R32I, GL_RED_INTEGER,
+                                                  m_Specification.Width, m_Specification.Height, i);
+                        break;
+                }
+            }
+
+            if (m_ResolvedColorAttachments.size() > 1)
+            {
+                GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+                                     GL_COLOR_ATTACHMENT3};
+                glDrawBuffers(m_ResolvedColorAttachments.size(), buffers);
+            }
+
+            TI_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
+                           "Resolved framebuffer is incomplete!");
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -196,6 +238,30 @@ namespace Titan
 
     void OpenGLFramebuffer::Unbind()
     {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void OpenGLFramebuffer::Resolve()
+    {
+        if (m_Specification.Samples <= 1 || !m_ResolvedRendererID)
+            return;
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ResolvedRendererID);
+
+        for (size_t i = 0; i < m_ColorAttachments.size(); i++)
+        {
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+            glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+
+            GLenum filter = GL_NEAREST;
+            if (m_ColorAttachmentSpecifications[i].TextureFormat == FramebufferTextureFormat::RGBA8)
+                filter = GL_LINEAR;
+
+            glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width,
+                              m_Specification.Height, GL_COLOR_BUFFER_BIT, filter);
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -216,6 +282,49 @@ namespace Titan
     {
         TI_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
+        if (m_Specification.Samples > 1)
+        {
+            uint32_t tempFBO, tempTexture;
+            glCreateFramebuffers(1, &tempFBO);
+            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+
+            Utils::CreateTextures(false, &tempTexture, 1);
+            Utils::BindTexture(false, tempTexture);
+
+            auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+            if (spec.TextureFormat == FramebufferTextureFormat::RED_INTEGER)
+            {
+                Utils::AttachColorTexture(tempTexture, 1, GL_R32I, GL_RED_INTEGER, m_Specification.Width,
+                                          m_Specification.Height, 0);
+            }
+            else
+            {
+                Utils::AttachColorTexture(tempTexture, 1, GL_RGBA8, GL_RGBA, m_Specification.Width,
+                                          m_Specification.Height, 0);
+            }
+
+            // Blit from multisampled to single-sample
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tempFBO);
+            glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+            glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+            glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width,
+                              m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+            // Now read from the resolved framebuffer
+            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+            glReadBuffer(GL_COLOR_ATTACHMENT0);
+            int pixelData;
+            glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+
+            glDeleteFramebuffers(1, &tempFBO);
+            glDeleteTextures(1, &tempTexture);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+            return pixelData;
+        }
+
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
         int pixelData;
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
@@ -227,8 +336,18 @@ namespace Titan
         TI_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
         auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
-        glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TitanFBTextureFormatToGL(spec.TextureFormat),
-                        GL_INT, &value);
+
+        if (m_Specification.Samples > 1)
+        {
+            // For multisampled textures, use glClearBufferiv instead
+            glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+            glClearBufferiv(GL_COLOR, attachmentIndex, &value);
+        }
+        else
+        {
+            glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TitanFBTextureFormatToGL(spec.TextureFormat),
+                            GL_INT, &value);
+        }
     }
 
 } // namespace Titan

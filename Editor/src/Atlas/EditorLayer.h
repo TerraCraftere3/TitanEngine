@@ -27,13 +27,6 @@ namespace Titan
         void OpenScene(const std::filesystem::path& path);
         void SaveSceneAs();
 
-        void OnScenePlay();
-        void OnSceneStop();
-
-        void RenderDockspace();
-        void RenderViewport();
-        void RenderToolbar();
-
     private:
         float m_FPS = 0.0f;
         Ref<Framebuffer> m_Framebuffer;

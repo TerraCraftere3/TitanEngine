@@ -4,11 +4,12 @@
 
 
 ## 🧰 How to Build
-### Windows (x86_64)
-1. Clone the repo using `git clone --recursive https://github.com/TerraCraftere3/TitanEngine`
-2. Open the repo in the terminal (`cd TitanEngine`)
-3. run `.\Scripts\Configure.bat` and `.\Scripts\Build.bat` in the terminal
-4. Your done 🚀
+### Windows
+1. Install the Vulkan SDK and restart your PC
+2. Clone the repo using `git clone --recursive https://github.com/TerraCraftere3/TitanEngine`
+3. Open the repo in the terminal (`cd TitanEngine`)
+4. run `.\Scripts\Configure.bat` and `.\Scripts\Build.bat` in the terminal
+5. Your done 🚀
 
 ### Linux
 For now there is no linux support
