@@ -6,11 +6,11 @@ namespace Titan
 
     ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath)
     {
-        m_DirectoryIcon = Texture2D::Create("resources/icons/contentbrowser/folder.svg");
-        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/contentbrowser/folder-opened.svg");
-        m_FileTextIcon = Texture2D::Create("resources/icons/contentbrowser/file.svg");
-        m_FileCodeIcon = Texture2D::Create("resources/icons/contentbrowser/file-code.svg");
-        m_FileImageIcon = Texture2D::Create("resources/icons/contentbrowser/file-media.svg");
+        m_DirectoryIcon = Texture2D::Create("resources/icons/folder.svg");
+        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/folder-opened.svg");
+        m_FileTextIcon = Texture2D::Create("resources/icons/file.svg");
+        m_FileCodeIcon = Texture2D::Create("resources/icons/file-code.svg");
+        m_FileImageIcon = Texture2D::Create("resources/icons/file-media.svg");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
@@ -19,12 +19,38 @@ namespace Titan
 
         try
         {
-            if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
             {
-                if (ImGui::Button("<-"))
+                std::filesystem::path relativePath = std::filesystem::relative(m_CurrentDirectory, g_AssetPath);
+
+                if (ImGui::InvisibleButton("##root_btn", ImVec2(0, 0)))
                 {
-                    m_CurrentDirectory = m_CurrentDirectory.parent_path();
                 }
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.1f));
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.15f));
+
+                if (ImGui::Button("assets"))
+                    m_CurrentDirectory = g_AssetPath;
+
+                std::filesystem::path accumulatedPath = g_AssetPath;
+                for (const auto& part : relativePath)
+                {
+                    if (part == ".")
+                        continue;
+
+                    accumulatedPath /= part;
+
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted(">");
+                    ImGui::SameLine();
+
+                    std::string partStr = part.string();
+                    if (ImGui::Button(partStr.c_str()))
+                        m_CurrentDirectory = accumulatedPath;
+                }
+
+                ImGui::PopStyleColor(3);
+                ImGui::Separator();
             }
 
             static float padding = 28.0f;

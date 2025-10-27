@@ -9,7 +9,7 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [0.87644786, 0, 0.8347128, 1]
-      Texture: assets\textures\Checkerboard.png
+      Texture: assets\textures\checkerboard.png
   - Entity: 2
     TagComponent:
       Tag: Right
@@ -19,7 +19,7 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [0.54842025, 0, 0.5868726, 1]
-      Texture: assets\textures\Checkerboard.png
+      Texture: assets\textures\checkerboard.png
   - Entity: 1
     TagComponent:
       Tag: Left
@@ -29,13 +29,13 @@ Entities:
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [1, 0, 0.94980717, 1]
-      Texture: assets\textures\Checkerboard.png
+      Texture: assets\textures\checkerboard.png
   - Entity: 0
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Translation: [0, 2.7, 5.8]
+      Rotation: [-0.47123888, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:

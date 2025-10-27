@@ -27,24 +27,30 @@ namespace Titan
         void OpenScene(const std::filesystem::path& path);
         void SaveSceneAs();
 
+        void OnScenePlay();
+        void OnSceneStop();
+
+        void RenderDockspace();
+        void RenderViewport();
+        void RenderToolbar();
+
     private:
         float m_FPS = 0.0f;
-        Ref<Texture2D> m_FirstTexture, m_SecondTexture, m_WhiteTexture;
         Ref<Framebuffer> m_Framebuffer;
-        int m_GizmoType = -1;
 
-        struct ProfileResult
+        enum class SceneState
         {
-            const char* Name;
-            float Time;
+            Edit = 0,
+            Play = 1
         };
+        SceneState m_SceneState = SceneState::Edit;
 
-        std::vector<ProfileResult> m_ProfileResults;
-
+        int m_GizmoType = -1;
         bool m_ViewportFocused = false, m_ViewportHovered = false;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         glm::vec2 m_ViewportBounds[2];
 
+        Ref<Texture2D> m_StartIcon, m_StopIcon;
         Ref<Scene> m_ActiveScene;
         Entity m_HoveredEntity;
         EditorCamera m_EditorCamera;
