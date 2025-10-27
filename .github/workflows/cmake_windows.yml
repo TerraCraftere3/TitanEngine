@@ -33,13 +33,6 @@ jobs:
           version: latest
           cache: true
 
-      - name: Export Vulkan environment
-        run: |
-          echo "VULKAN_SDK=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $env:GITHUB_ENV
-          echo "Vulkan_INCLUDE_DIR=${{ steps.vulkan.outputs.vulkan_sdk_path }}/Include" >> $env:GITHUB_ENV
-          echo "Vulkan_LIBRARY=${{ steps.vulkan.outputs.vulkan_sdk_path }}/Lib/vulkan-1.lib" >> $env:GITHUB_ENV
-          echo "${{ steps.vulkan.outputs.vulkan_sdk_path }}\Bin" >> $env:GITHUB_PATH
-
       # Configure CMake
       - name: Configure CMake
         run: >
