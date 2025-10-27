@@ -5,6 +5,7 @@
 
 namespace Titan
 {
+    extern const std::filesystem::path g_AssetPath;
 
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
     {
@@ -60,7 +61,6 @@ namespace Titan
                 if (ImGui::MenuItem("Sprite Renderer"))
                 {
                     auto& src = m_SelectionContext.AddComponent<SpriteRendererComponent>();
-                    src.Tex = Renderer2D::GetWhiteTexture();
                     ImGui::CloseCurrentPopup();
                 }
 
@@ -195,8 +195,21 @@ namespace Titan
             {
                 auto& src = entity.GetComponent<SpriteRendererComponent>();
                 ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
-                ImGui::Text("Texture: ");
-                ImGui::Image(src.Tex->GetNativeTexture(), ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                if (src.Tex)
+                    ImGui::ImageButton("Texture", src.Tex->GetNativeTexture(), {64, 64}, ImVec2(0, 1), ImVec2(1, 0));
+                else
+                    ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
+                        src.Tex = Texture2D::Create(texturePath.string());
+                    }
+                    ImGui::EndDragDropTarget();
+                }
                 ImGui::TreePop();
             }
         }

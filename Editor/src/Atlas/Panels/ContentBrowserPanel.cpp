@@ -7,8 +7,10 @@ namespace Titan
     ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath)
     {
         m_DirectoryIcon = Texture2D::Create("resources/icons/contentbrowser/folder.svg");
-        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/contentbrowser/folder-open.svg");
-        m_FileTextIcon = Texture2D::Create("resources/icons/contentbrowser/file-text.svg");
+        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/contentbrowser/folder-opened.svg");
+        m_FileTextIcon = Texture2D::Create("resources/icons/contentbrowser/file.svg");
+        m_FileCodeIcon = Texture2D::Create("resources/icons/contentbrowser/file-code.svg");
+        m_FileImageIcon = Texture2D::Create("resources/icons/contentbrowser/file-media.svg");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
@@ -43,9 +45,14 @@ namespace Titan
                 std::string filenameString = relativePath.filename().string();
 
                 Ref<Texture2D> icon = GetIconForFile(path);
+
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                ImGui::BeginGroup();
+
+                // --- Image ---
                 ImGui::ImageButton(filenameString.c_str(), icon->GetNativeTexture(), {thumbnailSize, thumbnailSize},
                                    {0, 1}, {1, 0});
+
                 if (ImGui::BeginDragDropSource())
                 {
                     const wchar_t* itemPath = relativePath.c_str();
@@ -61,7 +68,15 @@ namespace Titan
                         m_CurrentDirectory /= path.filename();
                 }
 
-                ImGui::TextWrapped(filenameString.c_str());
+                // --- Centered Text ---
+                float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
+                float textOffset = (thumbnailSize - textWidth) * 0.5f;
+                if (textOffset > 0.0f)
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffset);
+
+                ImGui::TextWrapped("%s", filenameString.c_str());
+
+                ImGui::EndGroup();
                 ImGui::NextColumn();
             }
         }
@@ -83,7 +98,16 @@ namespace Titan
                 return m_DirectoryIcon;
         }
 
-        auto extension = filePath.extension().string();
+        std::string ext = filePath.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga")
+            return m_FileImageIcon;
+
+        if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
+            ext == ".hlsl")
+            return m_FileCodeIcon;
+
         return m_FileTextIcon;
     }
 

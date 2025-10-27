@@ -85,7 +85,8 @@ namespace Titan
             stbi_image_free(data);
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) : m_Width(width), m_Height(height)
+    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+        : m_Width(width), m_Height(height), m_Path("[internal]")
     {
         TI_PROFILE_FUNCTION();
         m_InternalFormat = GL_RGBA8;

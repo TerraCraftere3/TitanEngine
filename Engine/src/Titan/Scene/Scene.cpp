@@ -73,8 +73,11 @@ namespace Titan
             {
                 auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                (uint32_t)entity);
+                if (sprite.Tex)
+                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                    (uint32_t)entity);
+
+                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
             }
 
             Renderer2D::EndScene();
@@ -90,7 +93,11 @@ namespace Titan
         {
             auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-            Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color, (uint32_t)entity);
+            if (sprite.Tex)
+                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                (uint32_t)entity);
+            else
+                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
         }
 
         Renderer2D::EndScene();

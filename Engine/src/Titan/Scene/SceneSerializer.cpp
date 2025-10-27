@@ -138,7 +138,8 @@ namespace Titan
 
             auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
             out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
-            // TODO: Add Textures
+            if (spriteRendererComponent.Tex)
+                out << YAML::Key << "Texture" << YAML::Value << spriteRendererComponent.Tex->GetPath();
 
             out << YAML::EndMap; // SpriteRendererComponent
         }
@@ -242,7 +243,6 @@ namespace Titan
                 {
                     auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
                     src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
-                    src.Tex = Renderer2D::GetWhiteTexture();
                 }
             }
         }

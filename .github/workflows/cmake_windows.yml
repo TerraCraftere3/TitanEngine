@@ -35,15 +35,17 @@ jobs:
 
       - name: Export Vulkan environment
         run: |
-          echo "VULKAN_SDK=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $GITHUB_ENV
-          echo "${{ steps.vulkan.outputs.vulkan_sdk_path }}\\Bin" >> $GITHUB_PATH
+          echo "VULKAN_SDK=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $env:GITHUB_ENV
+          echo "Vulkan_INCLUDE_DIR=${{ steps.vulkan.outputs.vulkan_sdk_path }}/Include" >> $env:GITHUB_ENV
+          echo "Vulkan_LIBRARY=${{ steps.vulkan.outputs.vulkan_sdk_path }}/Lib/vulkan-1.lib" >> $env:GITHUB_ENV
+          echo "${{ steps.vulkan.outputs.vulkan_sdk_path }}\Bin" >> $env:GITHUB_PATH
 
       # Configure CMake
       - name: Configure CMake
         run: >
           cmake -B ${{github.workspace}}/build
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          -DVULKAN_SDK=${{env.VULKAN_SDK}}
           -G "Visual Studio 17 2022"
 
       # Build
