@@ -22,7 +22,7 @@ namespace Titan
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
-        SceneSerializer(m_ActiveScene).Deserialize("scenes/Cube.titan");
+        SceneSerializer(m_ActiveScene).Deserialize("assets/scenes/Cube.titan");
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -108,6 +108,7 @@ namespace Titan
         ImGui::End();
 
         m_SceneHierarchyPanel.OnImGuiRender();
+        m_ContentBrowserPanel.OnImGuiRender();
 
         ImGui::Begin("Statistics");
         std::string name = "None";

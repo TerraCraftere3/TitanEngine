@@ -101,7 +101,7 @@ namespace Titan
             samplers[i] = i;
 
         // Shader
-        s_Data.TextureShader = Shader::Create("shader/texture.glsl");
+        s_Data.TextureShader = Shader::Create("assets/shader/texture.glsl");
         s_Data.TextureShader->Bind();
         s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 

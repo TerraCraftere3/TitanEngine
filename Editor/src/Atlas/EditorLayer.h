@@ -1,5 +1,6 @@
 #pragma once
 #include <Titan.h>
+#include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace Titan
@@ -49,5 +50,6 @@ namespace Titan
 
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
+        ContentBrowserPanel m_ContentBrowserPanel;
     };
 } // namespace Titan

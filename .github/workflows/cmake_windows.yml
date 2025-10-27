@@ -27,6 +27,7 @@ jobs:
 
       # Setup Vulkan SDK
       - name: Install Vulkan SDK
+        id: vulkan
         uses: humbletim/install-vulkan-sdk@v1.2
         with:
           version: latest
@@ -34,9 +35,9 @@ jobs:
 
       - name: Export Vulkan environment
         run: |
-          echo "VULKAN_SDK=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $env:GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $env:GITHUB_ENV
-          echo "${{ steps.vulkan.outputs.vulkan_sdk_path }}/bin" >> $env:GITHUB_PATH
+          echo "VULKAN_SDK=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=${{ steps.vulkan.outputs.vulkan_sdk_path }}" >> $GITHUB_ENV
+          echo "${{ steps.vulkan.outputs.vulkan_sdk_path }}\\Bin" >> $GITHUB_PATH
 
       # Configure CMake
       - name: Configure CMake
