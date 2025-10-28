@@ -1,6 +1,16 @@
-Scene: Cube
+Scene: Untitled
 Entities:
-  - Entity: 12837192831273
+  - Entity: 9873447866222989036
+    TagComponent:
+      Tag: Right Back
+    TransformComponent:
+      Translation: [0.35, 7.450581e-09, -0.35]
+      Rotation: [0, -0.78539824, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0.9490196, 1]
+      Texture: assets\textures\checkerboard.png
+  - Entity: 7699089306053012404
     TagComponent:
       Tag: Top
     TransformComponent:
@@ -10,7 +20,7 @@ Entities:
     SpriteRendererComponent:
       Color: [0.87644786, 0, 0.8347128, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 12837192831273
+  - Entity: 11247935261222943542
     TagComponent:
       Tag: Right
     TransformComponent:
@@ -20,17 +30,17 @@ Entities:
     SpriteRendererComponent:
       Color: [0.54842025, 0, 0.5868726, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 12837192831273
+  - Entity: 7290517115680376727
     TagComponent:
       Tag: Left
     TransformComponent:
-      Translation: [-0.355, 0, 0.35]
-      Rotation: [0, -0.7853982, 0]
+      Translation: [-0.355, 1.8626451e-09, 0.35]
+      Rotation: [0, -0.78539824, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
       Color: [1, 0, 0.94980717, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 12837192831273
+  - Entity: 9670210303759270861
     TagComponent:
       Tag: Camera
     TransformComponent:

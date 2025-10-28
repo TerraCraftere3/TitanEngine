@@ -2,11 +2,20 @@
 
 #include "SceneCamera.h"
 #include "ScriptableEntity.h"
+#include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Texture.h"
 
 namespace Titan
 {
+    struct IDComponent
+    {
+        UUID ID;
+
+        IDComponent() = default;
+        IDComponent(UUID uuid) : ID(uuid) {};
+        IDComponent(const IDComponent&) = default;
+    };
 
     struct TagComponent
     {

@@ -58,22 +58,6 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-// ---- ECS (EnTT) ----
-#include <entt/entt.hpp>
-
-// ---- Serialization (YAML-CPP) ----
-#include <yaml-cpp/yaml.h>
-
-// ---- Vulkan + Shader Toolchain ----
-#include <shaderc/shaderc.hpp>
-
-#include <glslang/Public/ShaderLang.h>
-#include <glslang/SPIRV/GlslangToSpv.h>
-
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
-#include <spirv_cross/spirv_msl.hpp>
-
 // ---- Internal Engine Includes ----
 #include "Titan/Core.h"
 #include "Titan/Debug/Macros.h"

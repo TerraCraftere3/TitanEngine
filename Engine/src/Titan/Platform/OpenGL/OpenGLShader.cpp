@@ -2,6 +2,15 @@
 #include <filesystem>
 #include "Titan/PCH.h"
 
+#include <shaderc/shaderc.hpp>
+
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
+
+#include <spirv_cross/spirv_cross.hpp>
+#include <spirv_cross/spirv_glsl.hpp>
+#include <spirv_cross/spirv_msl.hpp>
+
 namespace Titan
 {
 

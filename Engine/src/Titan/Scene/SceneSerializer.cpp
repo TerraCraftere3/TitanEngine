@@ -4,6 +4,8 @@
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Renderer2D.h"
 
+#include <yaml-cpp/yaml.h>
+
 namespace YAML
 {
 
@@ -138,8 +140,10 @@ namespace Titan
 
     static void SerializeEntity(YAML::Emitter& out, Entity entity)
     {
+        TI_CORE_ASSERT(entity.HasComponent<IDComponent>());
+
         out << YAML::BeginMap; // Entity
-        out << YAML::Key << "Entity" << YAML::Value << (uint32_t)entity;
+        out << YAML::Key << "Entity" << YAML::Value << (size_t)entity.GetUUID();
 
         if (entity.HasComponent<TagComponent>())
         {
@@ -286,7 +290,7 @@ namespace Titan
         {
             for (auto entity : entities)
             {
-                uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+                uint64_t uuid = entity["Entity"].as<uint64_t>();
 
                 std::string name;
                 auto tagComponent = entity["TagComponent"];
@@ -295,7 +299,7 @@ namespace Titan
 
                 TI_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-                Entity deserializedEntity = m_Scene->CreateEntity(name);
+                Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
                 auto transformComponent = entity["TransformComponent"];
                 if (transformComponent)

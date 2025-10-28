@@ -1,6 +1,8 @@
 #pragma once
 
+#include <entt/entt.hpp>
 #include "Titan/Core/Timestep.h"
+#include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/EditorCamera.h"
 
@@ -18,7 +20,8 @@ namespace Titan
 
         void Clear();
 
-        Entity CreateEntity(const std::string& name = std::string());
+        Entity CreateEntity(const std::string& name = "");
+        Entity CreateEntityWithUUID(UUID uuid, const std::string& name = "");
         void DestroyEntity(Entity entity);
 
         void OnRuntimeStart();
