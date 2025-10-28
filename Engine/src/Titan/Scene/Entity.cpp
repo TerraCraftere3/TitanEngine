@@ -11,4 +11,8 @@ namespace Titan
     {
         return GetComponent<IDComponent>().ID;
     }
+    std::string Entity::GetName()
+    {
+        return GetComponent<TagComponent>().Tag;
+    }
 } // namespace Titan

@@ -25,26 +25,22 @@ namespace Titan
         virtual void OnImGuiRender(ImGuiContext* ctx) override;
 
     private:
-        // Event Handlers
         bool OnKeyPressed(KeyPressedEvent& e);
         bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
-        // Scene Management
         void NewScene();
         void OpenScene();
         void OpenScene(const std::filesystem::path& path);
+        void SaveScene();
         void SaveSceneAs();
 
-        // Update Methods
         void UpdateHoveredEntity();
 
-        // ImGui Rendering Methods
         void RenderDockspace();
         void RenderMenuBar();
         void RenderStatisticsPanel();
         void RenderViewport();
 
-        // Viewport Helper Methods
         void UpdateViewportBounds();
         void HandleViewportResize();
         void RenderSceneControlToolbar();
@@ -53,9 +49,11 @@ namespace Titan
         void HandleSceneDragDrop();
         void HandleGizmoManipulation();
 
-        // Scene Start Methods
+        void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
         void OnScenePlay();
         void OnSceneStop();
+
+        void OnDuplicateEntity();
 
     private:
         enum class SceneState
@@ -84,6 +82,8 @@ namespace Titan
 
         // Scene
         Ref<Scene> m_ActiveScene;
+        Ref<Scene> m_EditorScene;
+        std::filesystem::path m_EditorScenePath;
         Entity m_HoveredEntity;
         EditorCamera m_EditorCamera;
 
