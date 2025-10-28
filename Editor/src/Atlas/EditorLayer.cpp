@@ -1,7 +1,13 @@
 #include "EditorLayer.h"
-#include <algorithm>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <random>
+
+#include <Titan/Core/Application.h>
+#include <Titan/Core/Input.h>
+#include <Titan/Renderer/RenderCommand.h>
+#include <Titan/Renderer/Renderer2D.h>
+#include <Titan/Scene/Components.h>
+#include <Titan/Scene/SceneSerializer.h>
+#include <Titan/Utils/Math.h>
+#include <Titan/Utils/PlatformUtils.h>
 
 namespace Titan
 {
@@ -90,24 +96,32 @@ namespace Titan
     // ============================================================================
     // Private Helper Methods
     // ============================================================================
-
     void EditorLayer::UpdateHoveredEntity()
     {
-        auto [mx, my] = ImGui::GetMousePos();
-        mx -= m_ViewportBounds[0].x;
-        my -= m_ViewportBounds[0].y;
+        if (!m_ViewportHovered || m_ViewportImageSize.x <= 0 || m_ViewportImageSize.y <= 0)
+        {
+            m_HoveredEntity = {};
+            return;
+        }
 
-        glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-        my = viewportSize.y - my;
+        ImVec2 mouse = ImGui::GetMousePos();
+        float mx = mouse.x - m_ViewportImagePos.x;
+        float my = mouse.y - m_ViewportImagePos.y;
+
+        my = m_ViewportImageSize.y - my;
 
         int mouseX = static_cast<int>(mx);
         int mouseY = static_cast<int>(my);
 
-        if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(viewportSize.x) &&
-            mouseY < static_cast<int>(viewportSize.y))
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
+            mouseY < static_cast<int>(m_ViewportImageSize.y))
         {
-            int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+            int pixel = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+            m_HoveredEntity = (pixel == -1) ? Entity() : Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
+        }
+        else
+        {
+            m_HoveredEntity = {};
         }
     }
 
@@ -323,6 +337,9 @@ namespace Titan
 
     void EditorLayer::RenderViewportImage()
     {
+        m_ViewportImagePos = ImGui::GetCursorScreenPos();
+        m_ViewportImageSize = ImGui::GetContentRegionAvail();
+
         m_Framebuffer->Resolve();
         ImVec2 viewportSize = ImGui::GetContentRegionAvail();
         ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
@@ -343,40 +360,40 @@ namespace Titan
 
     void EditorLayer::HandleGizmoManipulation()
     {
-        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-        if (!selectedEntity || m_GizmoType == -1)
+        if (m_SceneState != SceneState::Edit)
+            return;
+
+        Entity selected = m_SceneHierarchyPanel.GetSelectedEntity();
+        if (!selected || m_GizmoType == -1)
             return;
 
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
 
-        float windowWidth = static_cast<float>(ImGui::GetWindowWidth());
-        float windowHeight = static_cast<float>(ImGui::GetWindowHeight());
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+        ImGuizmo::SetRect(m_ViewportImagePos.x, m_ViewportImagePos.y, m_ViewportImageSize.x, m_ViewportImageSize.y);
 
-        const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
-        glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
+        const glm::mat4& proj = m_EditorCamera.GetProjection();
+        glm::mat4 view = m_EditorCamera.GetViewMatrix();
 
-        auto& tc = selectedEntity.GetComponent<TransformComponent>();
+        auto& tc = selected.GetComponent<TransformComponent>();
         glm::mat4 transform = tc.GetTransform();
 
         bool snap = Input::IsKeyPressed(Key::LeftControl);
         float snapValue = (m_GizmoType == ImGuizmo::OPERATION::ROTATE) ? 45.0f : 0.5f;
         float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-                             static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL, glm::value_ptr(transform),
-                             nullptr, snap ? snapValues : nullptr);
+        ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), static_cast<ImGuizmo::OPERATION>(m_GizmoType),
+                             ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
 
         if (ImGuizmo::IsUsing())
         {
-            glm::vec3 translation, rotation, scale;
-            Math::DecomposeTransform(transform, translation, rotation, scale);
+            glm::vec3 t, r, s;
+            Math::DecomposeTransform(transform, t, r, s);
 
-            glm::vec3 deltaRotation = rotation - tc.Rotation;
-            tc.Translation = translation;
-            tc.Rotation += deltaRotation;
-            tc.Scale = scale;
+            glm::vec3 deltaRot = r - tc.Rotation;
+            tc.Translation = t;
+            tc.Rotation += deltaRot;
+            tc.Scale = s;
         }
     }
 
@@ -453,13 +470,20 @@ namespace Titan
 
     void EditorLayer::OpenScene(const std::filesystem::path& path)
     {
-        m_ActiveScene = CreateRef<Scene>();
-        m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewportSize.x),
-                                        static_cast<uint32_t>(m_ViewportSize.y));
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        if (path.extension().string() != ".titan")
+        {
+            TI_WARN("Could not load {0} - not a scene file", path.filename().string());
+            return;
+        }
 
-        SceneSerializer serializer(m_ActiveScene);
-        serializer.Deserialize(path.string());
+        Ref<Scene> newScene = CreateRef<Scene>();
+        SceneSerializer serializer(newScene);
+        if (serializer.Deserialize(path.string()))
+        {
+            m_ActiveScene = newScene;
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        }
     }
 
     void EditorLayer::OpenScene()

@@ -1,4 +1,4 @@
-#include <Titan.h>
+#include <Titan/Core/Application.h>
 #include <Titan/Core/EntryPoint.h>
 #include "EditorLayer.h"
 

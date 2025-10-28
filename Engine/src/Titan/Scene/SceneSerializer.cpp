@@ -181,13 +181,15 @@ namespace Titan
 
     bool SceneSerializer::Deserialize(const std::string& filepath)
     {
-        std::ifstream stream(filepath);
-        std::stringstream strStream;
-        strStream << stream.rdbuf();
-
-        YAML::Node data = YAML::Load(strStream.str());
-        if (!data["Scene"])
+        YAML::Node data;
+        try
+        {
+            data = YAML::LoadFile(filepath);
+        }
+        catch (YAML::ParserException e)
+        {
             return false;
+        }
 
         std::string sceneName = data["Scene"].as<std::string>();
         TI_CORE_TRACE("Deserializing scene '{0}'", sceneName);

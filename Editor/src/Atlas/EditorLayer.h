@@ -1,5 +1,12 @@
 #pragma once
-#include <Titan.h>
+#include <Titan/Core/Layer.h>
+#include <Titan/Core/Timer.h>
+#include <Titan/Events/Event.h>
+#include <Titan/Events/KeyEvent.h>
+#include <Titan/Events/MouseEvent.h>
+#include <Titan/Renderer/Framebuffer.h>
+#include <Titan/Renderer/Texture.h>
+#include <Titan/Scene/Scene.h>
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
@@ -63,6 +70,8 @@ namespace Titan
         bool m_ViewportHovered = false;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         glm::vec2 m_ViewportBounds[2];
+        ImVec2 m_ViewportImagePos;
+        ImVec2 m_ViewportImageSize;
 
         // Resources
         Ref<Framebuffer> m_Framebuffer;
