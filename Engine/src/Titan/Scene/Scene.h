@@ -16,6 +16,8 @@ namespace Titan
         Scene();
         ~Scene();
 
+        void Clear();
+
         Entity CreateEntity(const std::string& name = std::string());
         void DestroyEntity(Entity entity);
 

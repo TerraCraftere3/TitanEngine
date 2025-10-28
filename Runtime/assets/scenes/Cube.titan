@@ -1,6 +1,6 @@
-Scene: Untitled
+Scene: Cube
 Entities:
-  - Entity: 3
+  - Entity: 12837192831273
     TagComponent:
       Tag: Top
     TransformComponent:
@@ -10,7 +10,7 @@ Entities:
     SpriteRendererComponent:
       Color: [0.87644786, 0, 0.8347128, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 2
+  - Entity: 12837192831273
     TagComponent:
       Tag: Right
     TransformComponent:
@@ -20,7 +20,7 @@ Entities:
     SpriteRendererComponent:
       Color: [0.54842025, 0, 0.5868726, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 1
+  - Entity: 12837192831273
     TagComponent:
       Tag: Left
     TransformComponent:
@@ -30,7 +30,7 @@ Entities:
     SpriteRendererComponent:
       Color: [1, 0, 0.94980717, 1]
       Texture: assets\textures\checkerboard.png
-  - Entity: 0
+  - Entity: 12837192831273
     TagComponent:
       Tag: Camera
     TransformComponent:

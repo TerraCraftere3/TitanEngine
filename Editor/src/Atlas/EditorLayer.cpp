@@ -471,9 +471,11 @@ namespace Titan
         }
 
         if (m_SceneState == SceneState::Play)
-        {
             OnSceneStop();
-        }
+
+        if (m_ActiveScene)
+            m_ActiveScene->Clear();
+
         Ref<Scene> newScene = CreateRef<Scene>();
         SceneSerializer serializer(newScene);
         if (serializer.Deserialize(path.string()))

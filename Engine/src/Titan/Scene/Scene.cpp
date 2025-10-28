@@ -27,7 +27,25 @@ namespace Titan
 
     Scene::Scene() {}
 
-    Scene::~Scene() {}
+    Scene::~Scene()
+    {
+        delete m_PhysicsWorld;
+        m_PhysicsWorld = nullptr;
+    }
+
+    void Scene::Clear()
+    {
+        m_Registry.clear();
+
+        if (m_PhysicsWorld)
+        {
+            delete m_PhysicsWorld;
+            m_PhysicsWorld = nullptr;
+        }
+
+        m_ViewportWidth = 0;
+        m_ViewportHeight = 0;
+    }
 
     Entity Scene::CreateEntity(const std::string& name)
     {
