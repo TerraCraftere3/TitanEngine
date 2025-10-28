@@ -40,6 +40,7 @@ namespace Titan
         // Viewport Helper Methods
         void UpdateViewportBounds();
         void HandleViewportResize();
+        void RenderSceneControlToolbar();
         void RenderGizmoToolbar();
         void RenderViewportImage();
         void HandleSceneDragDrop();

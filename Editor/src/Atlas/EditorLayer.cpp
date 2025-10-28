@@ -39,15 +39,27 @@ namespace Titan
         if (ts.GetSeconds() > 0.0f)
             m_FPS = 1.0f / ts.GetSeconds();
 
-        m_EditorCamera.OnUpdate(ts);
-
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
         RenderCommand::Clear();
 
         Renderer2D::ResetStats();
         m_Framebuffer->ClearAttachment(1, -1);
-        m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+        switch (m_SceneState)
+        {
+            case SceneState::Edit:
+            {
+                m_EditorCamera.OnUpdate(ts);
+
+                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                break;
+            }
+            case SceneState::Play:
+            {
+                m_ActiveScene->OnUpdateRuntime(ts);
+                break;
+            }
+        }
 
         UpdateHoveredEntity();
         m_Framebuffer->Unbind();
@@ -182,8 +194,12 @@ namespace Titan
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         ImGui::SetNextWindowSizeConstraints(ImVec2(256, 256), ImVec2(8192, 8192));
-        ImGui::Begin((m_SceneState == SceneState::Edit ? "Viewport" : "Game" + std::string("##Viewport")).c_str(),
-                     nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        const char* windowLabel = m_SceneState == SceneState::Edit ? "Viewport" : "Game";
+        ImGui::Begin((std::string(windowLabel) + "##Viewport").c_str(), nullptr,
+                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+        // Render the scene control toolbar at the top
+        RenderSceneControlToolbar();
 
         UpdateViewportBounds();
         HandleViewportResize();
@@ -197,6 +213,49 @@ namespace Titan
 
         ImGui::End();
         ImGui::PopStyleVar(2);
+    }
+
+    void EditorLayer::RenderSceneControlToolbar()
+    {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 0));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+        ImGui::BeginChild("##toolbar", ImVec2(0, 40), false,
+                          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
+
+        // Center the toolbar buttons
+        float buttonSize = 32.0f;
+        float totalWidth = buttonSize; // Just one button for now
+        float offsetX = (ImGui::GetContentRegionAvail().x - totalWidth) * 0.5f;
+        ImGui::SetCursorPosX(offsetX);
+
+        // Display play or stop button based on scene state
+        Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_StartIcon : m_StopIcon;
+
+        if (ImGui::ImageButton("SceneStateBTN", icon->GetNativeTexture(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0),
+                               ImVec2(1, 1)))
+        {
+            if (m_SceneState == SceneState::Edit)
+            {
+                // Start playing
+                m_SceneState = SceneState::Play;
+            }
+            else
+            {
+                // Stop playing
+                m_SceneState = SceneState::Edit;
+            }
+        }
+
+        ImGui::EndChild();
+
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar(2);
+
+        ImGui::Separator();
     }
 
     void EditorLayer::UpdateViewportBounds()
