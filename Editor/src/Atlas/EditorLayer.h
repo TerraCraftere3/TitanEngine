@@ -53,6 +53,10 @@ namespace Titan
         void HandleSceneDragDrop();
         void HandleGizmoManipulation();
 
+        // Scene Start Methods
+        void OnScenePlay();
+        void OnSceneStop();
+
     private:
         enum class SceneState
         {

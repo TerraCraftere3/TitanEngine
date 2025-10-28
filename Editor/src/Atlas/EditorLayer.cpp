@@ -13,7 +13,7 @@ namespace Titan
 {
     extern const std::filesystem::path g_AssetPath;
 
-    EditorLayer::EditorLayer() : Layer("EditorLayer Test") {}
+    EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
     void EditorLayer::OnAttach()
     {
@@ -29,7 +29,7 @@ namespace Titan
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
-        SceneSerializer(m_ActiveScene).Deserialize("assets/scenes/Cube.titan");
+        SceneSerializer(m_ActiveScene).Deserialize("assets/scenes/Physics.titan");
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -163,10 +163,10 @@ namespace Titan
                 if (ImGui::MenuItem("New", "Ctrl+N"))
                     NewScene();
 
-                if (ImGui::MenuItem("Open...", "Ctrl+O"))
+                if (ImGui::MenuItem("Open", "Ctrl+O"))
                     OpenScene();
 
-                if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+                if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
                     SaveSceneAs();
 
                 ImGui::Separator();
@@ -253,15 +253,9 @@ namespace Titan
                                ImVec2(1, 1)))
         {
             if (m_SceneState == SceneState::Edit)
-            {
-                // Start playing
-                m_SceneState = SceneState::Play;
-            }
+                OnScenePlay();
             else
-            {
-                // Stop playing
-                m_SceneState = SceneState::Edit;
-            }
+                OnSceneStop();
         }
 
         ImGui::EndChild();
@@ -476,6 +470,10 @@ namespace Titan
             return;
         }
 
+        if (m_SceneState == SceneState::Play)
+        {
+            OnSceneStop();
+        }
         Ref<Scene> newScene = CreateRef<Scene>();
         SceneSerializer serializer(newScene);
         if (serializer.Deserialize(path.string()))
@@ -503,6 +501,18 @@ namespace Titan
             SceneSerializer serializer(m_ActiveScene);
             serializer.Serialize(filepath);
         }
+    }
+
+    void EditorLayer::OnScenePlay()
+    {
+        m_SceneState = SceneState::Play;
+        m_ActiveScene->OnRuntimeStart();
+    }
+
+    void EditorLayer::OnSceneStop()
+    {
+        m_SceneState = SceneState::Edit;
+        m_ActiveScene->OnRuntimeStop();
     }
 
 } // namespace Titan
