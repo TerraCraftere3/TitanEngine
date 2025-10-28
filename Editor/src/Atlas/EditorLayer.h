@@ -5,7 +5,6 @@
 
 namespace Titan
 {
-
     class EditorLayer : public Layer
     {
     public:
@@ -19,31 +18,57 @@ namespace Titan
         virtual void OnImGuiRender(ImGuiContext* ctx) override;
 
     private:
+        // Event Handlers
         bool OnKeyPressed(KeyPressedEvent& e);
         bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+        // Scene Management
         void NewScene();
         void OpenScene();
         void OpenScene(const std::filesystem::path& path);
         void SaveSceneAs();
 
-    private:
-        float m_FPS = 0.0f;
-        Ref<Framebuffer> m_Framebuffer;
+        // Update Methods
+        void UpdateHoveredEntity();
 
+        // ImGui Rendering Methods
+        void RenderDockspace();
+        void RenderMenuBar();
+        void RenderStatisticsPanel();
+        void RenderViewport();
+
+        // Viewport Helper Methods
+        void UpdateViewportBounds();
+        void HandleViewportResize();
+        void RenderGizmoToolbar();
+        void RenderViewportImage();
+        void HandleSceneDragDrop();
+        void HandleGizmoManipulation();
+
+    private:
         enum class SceneState
         {
             Edit = 0,
             Play = 1
         };
-        SceneState m_SceneState = SceneState::Edit;
 
+        // State
+        SceneState m_SceneState = SceneState::Edit;
+        float m_FPS = 0.0f;
         int m_GizmoType = -1;
-        bool m_ViewportFocused = false, m_ViewportHovered = false;
+
+        // Viewport State
+        bool m_ViewportFocused = false;
+        bool m_ViewportHovered = false;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
         glm::vec2 m_ViewportBounds[2];
 
-        Ref<Texture2D> m_StartIcon, m_StopIcon;
+        // Resources
+        Ref<Framebuffer> m_Framebuffer;
+        Ref<Texture2D> m_StartIcon;
+        Ref<Texture2D> m_StopIcon;
+
+        // Scene
         Ref<Scene> m_ActiveScene;
         Entity m_HoveredEntity;
         EditorCamera m_EditorCamera;
