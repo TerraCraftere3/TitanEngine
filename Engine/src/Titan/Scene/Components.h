@@ -54,6 +54,16 @@ namespace Titan
         SpriteRendererComponent(const Ref<Texture2D> texture, const glm::vec4& color) : Tex(texture), Color(color) {}
     };
 
+    struct CircleRendererComponent
+    {
+        glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
+        float Thickness = 1.0f;
+        float Fade = 0.005f;
+
+        CircleRendererComponent() = default;
+        CircleRendererComponent(const CircleRendererComponent&) = default;
+    };
+
     struct CameraComponent
     {
         SceneCamera Camera;

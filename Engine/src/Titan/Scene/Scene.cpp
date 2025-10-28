@@ -78,6 +78,7 @@ namespace Titan
 
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -227,16 +228,28 @@ namespace Titan
         {
             Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
-            auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-            for (auto entity : group)
             {
-                auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+                for (auto entity : spriteView)
+                {
+                    auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                if (sprite.Tex)
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                    (uint32_t)entity);
-                else
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+                    if (sprite.Tex)
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                        (uint32_t)entity);
+                    else
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+                }
+            }
+            {
+                auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+                for (auto entity : circleView)
+                {
+                    auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+
+                    Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
+                                           (uint32_t)entity);
+                }
             }
 
             Renderer2D::EndScene();
@@ -247,16 +260,28 @@ namespace Titan
     {
         Renderer2D::BeginScene(camera);
 
-        auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-        for (auto entity : group)
         {
-            auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+            auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+            for (auto entity : spriteView)
+            {
+                auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
 
-            if (sprite.Tex)
-                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                (uint32_t)entity);
-            else
-                Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+                if (sprite.Tex)
+                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                    (uint32_t)entity);
+                else
+                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+            }
+        }
+        {
+            auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+            for (auto entity : circleView)
+            {
+                auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+
+                Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
+                                       (uint32_t)entity);
+            }
         }
 
         Renderer2D::EndScene();
@@ -267,7 +292,6 @@ namespace Titan
         m_ViewportWidth = width;
         m_ViewportHeight = height;
 
-        // Resize our non-FixedAspectRatio cameras
         auto view = m_Registry.view<CameraComponent>();
         for (auto entity : view)
         {
@@ -313,6 +337,11 @@ namespace Titan
 
     template <>
     void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+    {
+    }
+
+    template <>
+    void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
     {
     }
 

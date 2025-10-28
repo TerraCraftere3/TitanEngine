@@ -32,6 +32,7 @@ namespace Titan
         SceneSerializer(m_ActiveScene).Deserialize("assets/scenes/Physics.titan");
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_EditorScene = m_ActiveScene;
 
         m_StartIcon = Texture2D::Create("resources/icons/play.svg");
         m_StopIcon = Texture2D::Create("resources/icons/stop.svg");
