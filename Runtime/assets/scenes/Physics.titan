@@ -5,7 +5,7 @@ Entities:
       Tag: Floor
     TransformComponent:
       Translation: [0, -1.4128001, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [0, 0, -0.48694685]
       Scale: [6.741967, 0.46067804, 1]
     SpriteRendererComponent:
       Color: [0.9498069, 0.4553014, 0.06600974, 1]
@@ -21,13 +21,13 @@ Entities:
       RestitutionThreshold: 0.5
   - Entity: 17060105638395738331
     TagComponent:
-      Tag: Sprite
+      Tag: Circle
     TransformComponent:
-      Translation: [0.04957062, 0.2715039, 0.02251478]
-      Rotation: [0, 0, -0.23508453]
+      Translation: [-2.692449, 1.036984, 0.02251478]
+      Rotation: [0, 0, 0]
       Scale: [0.3611597, 0.36, 0.36]
     CircleRendererComponent:
-      Color: [1, 1, 1, 1]
+      Color: [0.32745242, 0.23487544, 1, 1]
       Thickness: 1
       Fade: 0.005
     Rigidbody2DComponent:

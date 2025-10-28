@@ -45,11 +45,8 @@ namespace Titan
         if (ts.GetSeconds() > 0.0f)
             m_FPS = 1.0f / ts.GetSeconds();
 
-        m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
-        RenderCommand::Clear();
-
         Renderer2D::ResetStats();
+        m_Framebuffer->Bind();
         m_Framebuffer->ClearAttachment(1, -1);
         switch (m_SceneState)
         {
@@ -358,8 +355,6 @@ namespace Titan
             return;
 
         Entity selected = m_SceneHierarchyPanel.GetSelectedEntity();
-        if (!selected || m_GizmoType == -1)
-            return;
 
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
@@ -369,25 +364,31 @@ namespace Titan
         const glm::mat4& proj = m_EditorCamera.GetProjection();
         glm::mat4 view = m_EditorCamera.GetViewMatrix();
 
-        auto& tc = selected.GetComponent<TransformComponent>();
-        glm::mat4 transform = tc.GetTransform();
-
         bool snap = Input::IsKeyPressed(Key::LeftControl);
         float snapValue = (m_GizmoType == ImGuizmo::OPERATION::ROTATE) ? 45.0f : 0.5f;
         float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), static_cast<ImGuizmo::OPERATION>(m_GizmoType),
-                             ImGuizmo::LOCAL, glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
-
-        if (ImGuizmo::IsUsing())
+        glm::mat4 gridTransform = glm::mat4(1.0f);
+        ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), glm::value_ptr(gridTransform), 10.0f);
+        if (selected && selected.HasComponent<TransformComponent>() && m_GizmoType != -1)
         {
-            glm::vec3 t, r, s;
-            Math::DecomposeTransform(transform, t, r, s);
+            auto& tc = selected.GetComponent<TransformComponent>();
+            glm::mat4 transform = tc.GetTransform();
 
-            glm::vec3 deltaRot = r - tc.Rotation;
-            tc.Translation = t;
-            tc.Rotation += deltaRot;
-            tc.Scale = s;
+            ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
+                                 static_cast<ImGuizmo::OPERATION>(m_GizmoType), ImGuizmo::LOCAL,
+                                 glm::value_ptr(transform), nullptr, snap ? snapValues : nullptr);
+
+            if (ImGuizmo::IsUsing())
+            {
+                glm::vec3 t, r, s;
+                Math::DecomposeTransform(transform, t, r, s);
+
+                glm::vec3 deltaRot = r - tc.Rotation;
+                tc.Translation = t;
+                tc.Rotation += deltaRot;
+                tc.Scale = s;
+            }
         }
     }
 

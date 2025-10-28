@@ -2,6 +2,7 @@
 #include "Components.h"
 #include "Entity.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
 
 #include "box2d/box2d.h"
@@ -245,6 +246,8 @@ namespace Titan
         // RENDER
         if (mainCamera)
         {
+            RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
+            RenderCommand::Clear();
             Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
             {
@@ -277,6 +280,10 @@ namespace Titan
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
     {
+        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+        RenderCommand::Clear();
+        RenderCommand::SetLineWidth(2.0f);
+
         Renderer2D::BeginScene(camera);
 
         {
@@ -308,7 +315,17 @@ namespace Titan
             {
                 auto [transform, collider] = colliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
 
-                Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0f), (uint32_t)entity);
+                Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+            }
+        }
+        {
+            auto colliderView = GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+            for (auto entity : colliderView)
+            {
+                auto [transform, collider] = colliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+                // Renderer2D::DrawCircle(transform.GetTransform(), glm::vec4(0, 1, 0, 1), 0.05f);
+                Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
             }
         }
 
