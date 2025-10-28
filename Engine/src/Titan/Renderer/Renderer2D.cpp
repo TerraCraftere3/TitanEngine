@@ -132,8 +132,9 @@ namespace Titan
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
         s_Data.TextureSlotIndex = 1;
+
+        memset(s_Data.QuadVertexBufferPtr, 0, sizeof(QuadVertex) * s_Data.MaxVertices);
 
         s_IsRendering = true;
     }
@@ -147,8 +148,9 @@ namespace Titan
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
         s_Data.TextureSlotIndex = 1;
+
+        memset(s_Data.QuadVertexBufferPtr, 0, sizeof(QuadVertex) * s_Data.MaxVertices);
 
         s_IsRendering = true;
     }
@@ -156,9 +158,6 @@ namespace Titan
     void Renderer2D::EndScene()
     {
         TI_PROFILE_FUNCTION();
-        uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
         Flush();
         s_IsRendering = false;
     }
@@ -166,6 +165,12 @@ namespace Titan
     void Renderer2D::Flush()
     {
         TI_PROFILE_FUNCTION();
+        if (s_Data.QuadIndexCount == 0)
+            return;
+
+        uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
             s_Data.TextureSlots[i]->Bind(i);
 
