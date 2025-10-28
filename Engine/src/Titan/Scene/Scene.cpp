@@ -83,6 +83,7 @@ namespace Titan
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -113,6 +114,7 @@ namespace Titan
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
         CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+        CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
     }
 
     void Scene::DestroyEntity(Entity entity)
@@ -124,7 +126,7 @@ namespace Titan
     {
         m_PhysicsWorld = new b2World({0.0f, -9.8f});
 
-        auto view = m_Registry.view<Rigidbody2DComponent>();
+        auto view = GetAllEntitiesWith<Rigidbody2DComponent>();
         for (auto e : view)
         {
             Entity entity = {e, this};
@@ -155,6 +157,23 @@ namespace Titan
                 fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
                 body->CreateFixture(&fixtureDef);
             }
+
+            if (entity.HasComponent<CircleCollider2DComponent>())
+            {
+                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+                b2CircleShape circleShape;
+                circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
+                circleShape.m_radius = transform.Scale.x * cc2d.Radius;
+
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &circleShape;
+                fixtureDef.density = cc2d.Density;
+                fixtureDef.friction = cc2d.Friction;
+                fixtureDef.restitution = cc2d.Restitution;
+                fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
+                body->CreateFixture(&fixtureDef);
+            }
         }
     }
 
@@ -169,7 +188,7 @@ namespace Titan
         TI_PROFILE_FUNCTION()
         // NATIVE SCRIPTS
         {
-            m_Registry.view<NativeScriptComponent>().each(
+            GetAllEntitiesWith<NativeScriptComponent>().each(
                 [=](auto entity, auto& nsc)
                 {
                     if (!nsc.Instance)
@@ -190,7 +209,7 @@ namespace Titan
             const int32_t positionIterations = 2;
             m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
-            auto view = m_Registry.view<Rigidbody2DComponent>();
+            auto view = GetAllEntitiesWith<Rigidbody2DComponent>();
             for (auto e : view)
             {
                 Entity entity = {e, this};
@@ -209,7 +228,7 @@ namespace Titan
         Camera* mainCamera = nullptr;
         glm::mat4 cameraTransform;
         {
-            auto view = m_Registry.view<TransformComponent, CameraComponent>();
+            auto view = GetAllEntitiesWith<TransformComponent, CameraComponent>();
             for (auto entity : view)
             {
                 auto& transform = view.get<TransformComponent>(entity);
@@ -229,7 +248,7 @@ namespace Titan
             Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
 
             {
-                auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+                auto spriteView = GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
                 for (auto entity : spriteView)
                 {
                     auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
@@ -242,7 +261,7 @@ namespace Titan
                 }
             }
             {
-                auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+                auto circleView = GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
                 for (auto entity : circleView)
                 {
                     auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
@@ -261,7 +280,7 @@ namespace Titan
         Renderer2D::BeginScene(camera);
 
         {
-            auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+            auto spriteView = GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
             for (auto entity : spriteView)
             {
                 auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
@@ -274,7 +293,7 @@ namespace Titan
             }
         }
         {
-            auto circleView = m_Registry.view<TransformComponent, CircleRendererComponent>();
+            auto circleView = GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
             for (auto entity : circleView)
             {
                 auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
@@ -284,7 +303,7 @@ namespace Titan
             }
         }
         {
-            auto colliderView = m_Registry.view<TransformComponent, BoxCollider2DComponent>();
+            auto colliderView = GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
             for (auto entity : colliderView)
             {
                 auto [transform, collider] = colliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
@@ -301,7 +320,7 @@ namespace Titan
         m_ViewportWidth = width;
         m_ViewportHeight = height;
 
-        auto view = m_Registry.view<CameraComponent>();
+        auto view = GetAllEntitiesWith<CameraComponent>();
         for (auto entity : view)
         {
             auto& cameraComponent = view.get<CameraComponent>(entity);
@@ -312,7 +331,7 @@ namespace Titan
 
     Entity Scene::GetPrimaryCameraEntity()
     {
-        auto view = m_Registry.view<CameraComponent>();
+        auto view = GetAllEntitiesWith<CameraComponent>();
         for (auto entity : view)
         {
             const auto& camera = view.get<CameraComponent>(entity);
@@ -374,4 +393,8 @@ namespace Titan
     {
     }
 
+    template <>
+    void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {
+    }
 } // namespace Titan
