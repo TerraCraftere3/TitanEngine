@@ -283,6 +283,15 @@ namespace Titan
                                        (uint32_t)entity);
             }
         }
+        {
+            auto colliderView = m_Registry.view<TransformComponent, BoxCollider2DComponent>();
+            for (auto entity : colliderView)
+            {
+                auto [transform, collider] = colliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+                Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0f), (uint32_t)entity);
+            }
+        }
 
         Renderer2D::EndScene();
     }

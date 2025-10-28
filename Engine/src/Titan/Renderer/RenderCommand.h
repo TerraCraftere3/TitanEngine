@@ -19,6 +19,13 @@ namespace Titan
             s_RendererAPI->DrawIndexed(vertexArray, count);
         }
 
+        static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+        {
+            s_RendererAPI->DrawLines(vertexArray, vertexCount);
+        }
+
+        static void SetLineWidth(float width) { s_RendererAPI->SetLineWidth(width); }
+
         inline static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
         {
             s_RendererAPI->SetViewport(x, y, width, height);
