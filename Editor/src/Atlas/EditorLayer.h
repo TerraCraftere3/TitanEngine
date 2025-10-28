@@ -51,6 +51,7 @@ namespace Titan
 
         void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
         void OnScenePlay();
+        void OnSceneSimulate();
         void OnSceneStop();
 
         void OnDuplicateEntity();
@@ -59,7 +60,8 @@ namespace Titan
         enum class SceneState
         {
             Edit = 0,
-            Play = 1
+            Play = 1,
+            Simulate = 2
         };
 
         // State
@@ -78,6 +80,7 @@ namespace Titan
         // Resources
         Ref<Framebuffer> m_Framebuffer;
         Ref<Texture2D> m_StartIcon;
+        Ref<Texture2D> m_SimulateIcon;
         Ref<Texture2D> m_StopIcon;
 
         // Scene

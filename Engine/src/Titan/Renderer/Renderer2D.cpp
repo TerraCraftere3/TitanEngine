@@ -196,36 +196,24 @@ namespace Titan
 
     void Renderer2D::BeginScene(const EditorCamera& camera)
     {
-        TI_PROFILE_FUNCTION();
-        TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
-        s_Data.QuadShader->Bind();
-        s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-        s_Data.CircleShader->Bind();
-        s_Data.CircleShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-        s_Data.LineShader->Bind();
-        s_Data.LineShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-
-        s_Data.QuadIndexCount = 0;
-        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-        s_Data.CircleIndexCount = 0;
-        s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
-        s_Data.LineVertexCount = 0;
-        s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
-        s_Data.TextureSlotIndex = 1;
-
-        s_IsRendering = true;
+        BeginScene(camera.GetViewProjection());
     }
 
     void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
     {
+        BeginScene(camera.GetProjection() * glm::inverse(transform));
+    }
+
+    void Renderer2D::BeginScene(const glm::mat4& viewTransform)
+    {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.QuadShader->Bind();
-        s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
+        s_Data.QuadShader->SetMat4("u_ViewProjection", viewTransform);
         s_Data.CircleShader->Bind();
-        s_Data.CircleShader->SetMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
+        s_Data.CircleShader->SetMat4("u_ViewProjection", viewTransform);
         s_Data.LineShader->Bind();
-        s_Data.LineShader->SetMat4("u_ViewProjection", camera.GetProjection() * glm::inverse(transform));
+        s_Data.LineShader->SetMat4("u_ViewProjection", viewTransform);
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -299,6 +287,10 @@ namespace Titan
         // Start Scene
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+        s_Data.CircleIndexCount = 0;
+        s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
+        s_Data.LineVertexCount = 0;
+        s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
 
         s_Data.TextureSlotIndex = 1;
 

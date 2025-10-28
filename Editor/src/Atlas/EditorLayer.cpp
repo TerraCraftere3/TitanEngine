@@ -36,6 +36,7 @@ namespace Titan
 
         m_StartIcon = Texture2D::Create("resources/icons/play.svg");
         m_StopIcon = Texture2D::Create("resources/icons/stop.svg");
+        m_SimulateIcon = Texture2D::Create("resources/icons/simulate.svg");
     }
 
     void EditorLayer::OnDetach() {}
@@ -55,6 +56,13 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                break;
+            }
+            case SceneState::Simulate:
+            {
+                m_EditorCamera.OnUpdate(ts);
+
+                m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
                 break;
             }
             case SceneState::Play:
@@ -237,26 +245,49 @@ namespace Titan
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
 
-        // Center the toolbar buttons
-        float buttonSize = 32.0f;
-        float totalWidth = buttonSize; // Just one button for now
-        float offsetX = (ImGui::GetContentRegionAvail().x - totalWidth) * 0.5f;
-        ImGui::SetCursorPosX(offsetX);
+        bool isRunning = (m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
 
-        // Display play or stop button based on scene state
-        Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_StartIcon : m_StopIcon;
-
-        if (ImGui::ImageButton("SceneStateBTN", icon->GetNativeTexture(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0),
-                               ImVec2(1, 1)))
+        if (isRunning)
         {
-            if (m_SceneState == SceneState::Edit)
-                OnScenePlay();
-            else
+            float buttonSize = 32.0f;
+            float totalWidth = buttonSize * 1; // One Button
+            float offsetX = (ImGui::GetContentRegionAvail().x - totalWidth) * 0.5f;
+            ImGui::SetCursorPosX(offsetX);
+
+            // ----------------- STOP BUTTON -----------------
+            if (ImGui::ImageButton("ScenePlayButton", m_StopIcon->GetNativeTexture(), ImVec2(buttonSize, buttonSize),
+                                   ImVec2(0, 0), ImVec2(1, 1)))
                 OnSceneStop();
+        }
+        else
+        {
+            float buttonSize = 32.0f;
+            float totalWidth = buttonSize * 2 + 8; // Two buttons + spacing
+            float offsetX = (ImGui::GetContentRegionAvail().x - totalWidth) * 0.5f;
+            ImGui::SetCursorPosX(offsetX);
+
+            // ----------------- PLAY BUTTON -----------------
+            {
+                if (ImGui::ImageButton("ScenePlayButton", m_StartIcon->GetNativeTexture(),
+                                       ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1)))
+                {
+                    OnScenePlay();
+                }
+            }
+
+            ImGui::SameLine(0, 8);
+
+            // ----------------- SIMULATE BUTTON -----------------
+            {
+                if (ImGui::ImageButton("SceneSimulateButton", m_SimulateIcon->GetNativeTexture(),
+                                       ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1)))
+                {
+                    OnSceneSimulate();
+                }
+            }
         }
 
         ImGui::EndChild();
-
         ImGui::PopStyleColor();
         ImGui::PopStyleVar(2);
 
@@ -351,7 +382,7 @@ namespace Titan
 
     void EditorLayer::HandleGizmoManipulation()
     {
-        if (m_SceneState != SceneState::Edit)
+        if (m_SceneState == SceneState::Play)
             return;
 
         Entity selected = m_SceneHierarchyPanel.GetSelectedEntity();
@@ -527,6 +558,9 @@ namespace Titan
 
     void EditorLayer::OnScenePlay()
     {
+        if (m_SceneState == SceneState::Simulate)
+            OnSceneStop();
+
         m_SceneState = SceneState::Play;
 
         m_ActiveScene = Scene::Copy(m_EditorScene);
@@ -535,11 +569,29 @@ namespace Titan
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
+    void EditorLayer::OnSceneSimulate()
+    {
+        if (m_SceneState == SceneState::Play)
+            OnSceneStop();
+
+        m_SceneState = SceneState::Simulate;
+
+        m_ActiveScene = Scene::Copy(m_EditorScene);
+        m_ActiveScene->OnSimulationStart();
+
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    }
+
     void EditorLayer::OnSceneStop()
     {
-        m_SceneState = SceneState::Edit;
+        TI_ASSERT(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
 
-        m_ActiveScene->OnRuntimeStop();
+        if (m_SceneState == SceneState::Play)
+            m_ActiveScene->OnRuntimeStop();
+        else if (m_SceneState == SceneState::Simulate)
+            m_ActiveScene->OnSimulationStop();
+
+        m_SceneState = SceneState::Edit;
         m_ActiveScene = m_EditorScene;
 
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
