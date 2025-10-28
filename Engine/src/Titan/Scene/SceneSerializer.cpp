@@ -1,4 +1,5 @@
 #include "SceneSerializer.h"
+#include "Assets.h"
 #include "Components.h"
 #include "Entity.h"
 #include "Titan/PCH.h"
@@ -367,7 +368,7 @@ namespace Titan
                     src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
                     if (spriteRendererComponent["Texture"])
                     {
-                        src.Tex = Texture2D::Create(spriteRendererComponent["Texture"].as<std::string>());
+                        src.Tex = Assets::Load<Texture2D>(spriteRendererComponent["Texture"].as<std::string>());
                     }
                 }
 

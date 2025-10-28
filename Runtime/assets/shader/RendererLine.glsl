@@ -29,6 +29,6 @@ flat in int v_EntityID;
 
 void main()
 {
-	o_Color = v_Color;
-	o_EntityID = v_EntityID;
+    o_Color = v_Color;
+    o_EntityID = v_EntityID;
 }

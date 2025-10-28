@@ -3,6 +3,8 @@
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Components.h"
 
+#include "Titan/Scene/Assets.h"
+
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath;
@@ -284,7 +286,7 @@ namespace Titan
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                        component.Tex = Texture2D::Create(texturePath.string());
+                        component.Tex = Assets::Load<Texture2D>(texturePath.string());
                     }
                     ImGui::EndDragDropTarget();
                 }

@@ -1,16 +1,18 @@
 #include "ContentBrowserPanel.h"
 
+#include "Titan/Scene/Assets.h"
+
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
 
     ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath)
     {
-        m_DirectoryIcon = Texture2D::Create("resources/icons/folder.svg");
-        m_DirectoryOpenIcon = Texture2D::Create("resources/icons/folder-opened.svg");
-        m_FileTextIcon = Texture2D::Create("resources/icons/file.svg");
-        m_FileCodeIcon = Texture2D::Create("resources/icons/file-code.svg");
-        m_FileImageIcon = Texture2D::Create("resources/icons/file-media.svg");
+        m_DirectoryIcon = Assets::Load<Texture2D>("resources/icons/folder.svg");
+        m_DirectoryOpenIcon = Assets::Load<Texture2D>("resources/icons/folder-opened.svg");
+        m_FileTextIcon = Assets::Load<Texture2D>("resources/icons/file.svg");
+        m_FileCodeIcon = Assets::Load<Texture2D>("resources/icons/file-code.svg");
+        m_FileImageIcon = Assets::Load<Texture2D>("resources/icons/file-media.svg");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
@@ -67,6 +69,10 @@ namespace Titan
             for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
             {
                 const auto& path = directoryEntry.path();
+                std::string ext = path.extension().string();
+                if (ext == ".meta")
+                    continue;
+
                 auto relativePath = std::filesystem::relative(path, g_AssetPath);
                 std::string filenameString = relativePath.filename().string();
 

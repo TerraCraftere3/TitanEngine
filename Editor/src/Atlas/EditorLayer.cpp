@@ -4,6 +4,7 @@
 #include <Titan/Core/Input.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
+#include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
 #include <Titan/Scene/SceneSerializer.h>
 #include <Titan/Utils/Math.h>
@@ -28,15 +29,14 @@ namespace Titan
         fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = CreateRef<Scene>();
-        SceneSerializer(m_ActiveScene).Deserialize("assets/scenes/Physics.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Physics.titan");
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
-        m_StartIcon = Texture2D::Create("resources/icons/play.svg");
-        m_StopIcon = Texture2D::Create("resources/icons/stop.svg");
-        m_SimulateIcon = Texture2D::Create("resources/icons/simulate.svg");
+        m_StartIcon = Assets::Load<Texture2D>("resources/icons/play.svg");
+        m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
+        m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
     }
 
     void EditorLayer::OnDetach() {}
@@ -438,33 +438,49 @@ namespace Titan
         switch (e.GetKeyCode())
         {
             case KeyCode::N:
+            {
                 if (control)
                     NewScene();
                 break;
-
+            }
             case KeyCode::O:
+            {
                 if (control)
                     OpenScene();
                 break;
+            }
+            case Key::S:
+            {
+                if (control)
+                {
+                    if (shift)
+                        SaveSceneAs();
+                    else
+                        SaveScene();
+                }
 
-            case KeyCode::S:
-                if (control && shift)
-                    SaveSceneAs();
                 break;
+            }
+            case Key::D:
+            {
+                if (control)
+                    OnDuplicateEntity();
 
-            case Key::Q:
+                break;
+            }
+            case KeyCode::Q:
                 m_GizmoType = -1;
                 break;
 
-            case Key::W:
+            case KeyCode::W:
                 m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
                 break;
 
-            case Key::E:
+            case KeyCode::E:
                 m_GizmoType = ImGuizmo::OPERATION::ROTATE;
                 break;
 
-            case Key::R:
+            case KeyCode::R:
                 m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
         }
@@ -510,17 +526,15 @@ namespace Titan
         if (m_SceneState == SceneState::Play)
             OnSceneStop();
 
-        Ref<Scene> newScene = CreateRef<Scene>();
-        SceneSerializer serializer(newScene);
-        if (serializer.Deserialize(path.string()))
-        {
-            m_EditorScene = newScene;
-            m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-            m_SceneHierarchyPanel.SetContext(m_EditorScene);
+        Assets::Unload(m_EditorScenePath);
 
-            m_ActiveScene = m_EditorScene;
-            m_EditorScenePath = path;
-        }
+        Ref<Scene> newScene = Assets::Load<Scene>(path);
+        m_EditorScene = newScene;
+        m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+        m_ActiveScene = m_EditorScene;
+        m_EditorScenePath = path;
     }
 
     void EditorLayer::SaveScene()

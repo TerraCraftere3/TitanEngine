@@ -39,7 +39,6 @@ in float v_Thickness;
 in float v_Fade;
 flat in int v_EntityID;
 
-
 void main()
 {
     float distance = 1.0 - length(v_LocalPosition);

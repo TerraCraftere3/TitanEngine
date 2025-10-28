@@ -20,6 +20,7 @@
 #include "Titan/Renderer/Texture.h"
 #include "Titan/Renderer/VertexArray.h"
 // Scene
+#include "Titan/Scene/AssetFile.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Entity.h"
 #include "Titan/Scene/Scene.h"

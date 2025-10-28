@@ -2,31 +2,31 @@
 
 #include <xhash>
 
-namespace Titan {
+namespace Titan
+{
 
-	class UUID
-	{
-	public:
-		UUID();
-		UUID(uint64_t uuid);
-		UUID(const UUID&) = default;
+    class UUID
+    {
+    public:
+        UUID();
+        UUID(uint64_t uuid);
+        UUID(const UUID&) = default;
 
-		operator uint64_t() const { return m_UUID; }
-	private:
-		uint64_t m_UUID;
-	};
+        operator uint64_t() const { return m_UUID; }
 
-}
+    private:
+        uint64_t m_UUID;
+    };
 
-namespace std {
+} // namespace Titan
 
-	template<>
-	struct hash<Titan::UUID>
-	{
-		std::size_t operator()(const Titan::UUID& uuid) const
-		{
-			return hash<uint64_t>()((uint64_t)uuid);
-		}
-	};
+namespace std
+{
 
-}
+    template <>
+    struct hash<Titan::UUID>
+    {
+        std::size_t operator()(const Titan::UUID& uuid) const { return hash<uint64_t>()((uint64_t)uuid); }
+    };
+
+} // namespace std
