@@ -20,15 +20,19 @@ else()
     target_compile_definitions(engine PUBLIC TI_STATIC_LINK)
 endif()
 
+message(STATUS "Slang Libraries: ${SLANG_LIB_DIR}")
+message(STATUS "Slang Include: ${SLANG_INCLUDE_DIR}")
+
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d)
-target_link_libraries(engine PRIVATE glad)
+target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib")
 
 # ---- Include directories ----
 target_include_directories(engine PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     "${STB_INCLUDE_DIR}"
     "${NANOSVG_INCLUDE_DIR}"
+    "${SLANG_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----

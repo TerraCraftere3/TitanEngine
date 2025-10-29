@@ -1,4 +1,5 @@
 #include "OpenGLShader.h"
+#include <slang.h>
 #include <filesystem>
 #include "Titan/PCH.h"
 

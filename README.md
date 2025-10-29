@@ -48,15 +48,10 @@ For now there is no linux support
 | **entt**          | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                           |
 | **yaml-cpp**      | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                       |
 | **ImGuizmo**      | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)     |
-| **SPIRV-Cross**   | SPIR-V reflection and cross-compilation library                 | [KhronosGroup/SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross)     |
-| **SPIRV-Tools**   | Tools and libraries for processing SPIR-V modules               | [KhronosGroup/SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools)     |
-| **SPIRV-Headers** | SPIR-V header files defining the instruction set                | [KhronosGroup/SPIRV-Headers](https://github.com/KhronosGroup/SPIRV-Headers) |
-| **glslang**       | GLSL to SPIR-V reference compiler                               | [KhronosGroup/glslang](https://github.com/KhronosGroup/glslang)             |
-| **shaderc**       | Shader compilation tools and libraries for Vulkan/GLSL          | [google/shaderc](https://github.com/google/shaderc)                         |
 | **nanosvg**       | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                   |
 | **codicons**      | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons)   |
 | **Box2D**         | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                       |
-
+| **Slang**| Shader Compilation for multi APIs | [shader-slang/slang](https://github.com/shader-slang/slang) |
 
 ## ⚙️ Features
 - Platform Independent Code
