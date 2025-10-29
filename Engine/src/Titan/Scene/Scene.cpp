@@ -298,22 +298,24 @@ namespace Titan
             if (entity.HasComponent<BoxCollider2DComponent>())
             {
                 auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+                auto mat = bc2d.Material;
 
                 b2PolygonShape boxShape;
                 boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
 
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &boxShape;
-                fixtureDef.density = bc2d.Density;
-                fixtureDef.friction = bc2d.Friction;
-                fixtureDef.restitution = bc2d.Restitution;
-                fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
+                fixtureDef.density = mat->Density;
+                fixtureDef.friction = mat->Friction;
+                fixtureDef.restitution = mat->Restitution;
+                fixtureDef.restitutionThreshold = mat->RestitutionThreshold;
                 body->CreateFixture(&fixtureDef);
             }
 
             if (entity.HasComponent<CircleCollider2DComponent>())
             {
                 auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+                auto mat = cc2d.Material;
 
                 b2CircleShape circleShape;
                 circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
@@ -321,10 +323,10 @@ namespace Titan
 
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &circleShape;
-                fixtureDef.density = cc2d.Density;
-                fixtureDef.friction = cc2d.Friction;
-                fixtureDef.restitution = cc2d.Restitution;
-                fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
+                fixtureDef.density = mat->Density;
+                fixtureDef.friction = mat->Friction;
+                fixtureDef.restitution = mat->Restitution;
+                fixtureDef.restitutionThreshold = mat->RestitutionThreshold;
                 body->CreateFixture(&fixtureDef);
             }
         }

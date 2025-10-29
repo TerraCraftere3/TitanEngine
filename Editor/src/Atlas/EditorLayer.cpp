@@ -189,9 +189,7 @@ namespace Titan
     {
         ImGui::Begin("Statistics");
 
-        std::string hoveredName = m_HoveredEntity ? "Entity" : "None";
-        ImGui::Text("Hovered Entity: %s", hoveredName.c_str());
-
+        ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::Separator();
 
         auto stats = Renderer2D::GetStats();
@@ -200,9 +198,6 @@ namespace Titan
         ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
         ImGui::Text("Triangles: %d", stats.GetTotalTriangleCount());
-
-        ImGui::Separator();
-        ImGui::Text("FPS: %.1f", m_FPS);
 
         ImGui::End();
     }

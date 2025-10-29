@@ -1,21 +1,25 @@
 #include "ContentBrowserPanel.h"
-
-#include "Titan/Scene/Assets.h"
-
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
 
-    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath)
+    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath), m_Selected("")
     {
         m_DirectoryIcon = Assets::Load<Texture2D>("resources/icons/folder.svg");
         m_DirectoryOpenIcon = Assets::Load<Texture2D>("resources/icons/folder-opened.svg");
         m_FileTextIcon = Assets::Load<Texture2D>("resources/icons/file.svg");
         m_FileCodeIcon = Assets::Load<Texture2D>("resources/icons/file-code.svg");
         m_FileImageIcon = Assets::Load<Texture2D>("resources/icons/file-media.svg");
+        m_FileMaterialIcon = Assets::Load<Texture2D>("resources/icons/file-material.svg");
     }
 
     void ContentBrowserPanel::OnImGuiRender()
+    {
+        RenderBrowser();
+        RenderProperties();
+    }
+
+    void ContentBrowserPanel::RenderBrowser()
     {
         ImGui::Begin("Content Browser");
 
@@ -82,8 +86,11 @@ namespace Titan
                 ImGui::BeginGroup();
 
                 // --- Image ---
-                ImGui::ImageButton(filenameString.c_str(), icon->GetNativeTexture(), {thumbnailSize, thumbnailSize},
-                                   {0, 1}, {1, 0});
+                if (ImGui::ImageButton(filenameString.c_str(), icon->GetNativeTexture(), {thumbnailSize, thumbnailSize},
+                                       {0, 1}, {1, 0}))
+                {
+                    m_Selected = path;
+                }
 
                 if (ImGui::BeginDragDropSource())
                 {
@@ -120,6 +127,45 @@ namespace Titan
         ImGui::End();
     }
 
+    void ContentBrowserPanel::RenderProperties()
+    {
+        ImGui::Begin("File");
+        if (!m_Selected.empty())
+        {
+            std::string sel = m_Selected.string();
+            if (sel != m_LastSelectedStr)
+            {
+                if (sel.size() + 1 > m_SelectedBuf.size())
+                    m_SelectedBuf.resize(sel.size() + 1);
+                std::copy(sel.begin(), sel.end(), m_SelectedBuf.begin());
+                m_SelectedBuf[sel.size()] = '\0';
+                m_LastSelectedStr = sel;
+            }
+
+            ImGui::BeginDisabled();
+            ImGui::InputText("Tag", m_SelectedBuf.data(), m_SelectedBuf.size(), ImGuiInputTextFlags_ReadOnly);
+            ImGui::EndDisabled();
+
+            auto type = GetTypeForFile(m_Selected);
+            if (type != AssetType::None)
+            {
+                if (type == AssetType::Texture2D)
+                {
+                    ImGui::Text("Type: Texture");
+                }
+                else
+                {
+                    ImGui::Text("Type: Unsupported");
+                }
+            }
+            else
+            {
+                ImGui::Text("Type: Folder");
+            }
+        }
+        ImGui::End();
+    }
+
     Ref<Texture2D> ContentBrowserPanel::GetIconForFile(const std::filesystem::path& filePath)
     {
         if (std::filesystem::is_directory(filePath))
@@ -140,7 +186,33 @@ namespace Titan
             ext == ".hlsl")
             return m_FileCodeIcon;
 
+        if (ext == ".phys2d")
+            return m_FileMaterialIcon;
+
         return m_FileTextIcon;
+    }
+
+    AssetType ContentBrowserPanel::GetTypeForFile(const std::filesystem::path& filePath)
+    {
+        if (std::filesystem::is_directory(filePath))
+        {
+            return AssetType::None;
+        }
+
+        std::string ext = filePath.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga")
+            return AssetType::Texture2D;
+
+        if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
+            ext == ".hlsl")
+            return AssetType::Shader;
+
+        if (ext == ".titan")
+            return AssetType::Scene;
+
+        return AssetType::None;
     }
 
 } // namespace Titan

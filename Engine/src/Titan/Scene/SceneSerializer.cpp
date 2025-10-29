@@ -241,10 +241,7 @@ namespace Titan
             auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
             out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
             out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
-            out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
-            out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
-            out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
-            out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2dComponent.RestitutionThreshold;
+            out << YAML::Key << "Material" << YAML::Value << bc2dComponent.Material->SourcePath;
 
             out << YAML::EndMap; // BoxCollider2DComponent
         }
@@ -257,10 +254,7 @@ namespace Titan
             auto& cc2dComponent = entity.GetComponent<CircleCollider2DComponent>();
             out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.Offset;
             out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.Radius;
-            out << YAML::Key << "Density" << YAML::Value << cc2dComponent.Density;
-            out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.Friction;
-            out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.Restitution;
-            out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2dComponent.RestitutionThreshold;
+            out << YAML::Key << "Material" << YAML::Value << cc2dComponent.Material->SourcePath;
 
             out << YAML::EndMap; // CircleCollider2DComponent
         }
@@ -395,10 +389,8 @@ namespace Titan
                     auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
                     bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
                     bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-                    bc2d.Density = boxCollider2DComponent["Density"].as<float>();
-                    bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
-                    bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();
-                    bc2d.RestitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
+                    bc2d.Material =
+                        Assets::Load<Physics2DMaterial>(boxCollider2DComponent["Material"].as<std::string>());
                 }
 
                 auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
@@ -407,14 +399,11 @@ namespace Titan
                     auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
                     cc2d.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
                     cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
-                    cc2d.Density = circleCollider2DComponent["Density"].as<float>();
-                    cc2d.Friction = circleCollider2DComponent["Friction"].as<float>();
-                    cc2d.Restitution = circleCollider2DComponent["Restitution"].as<float>();
-                    cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+                    cc2d.Material =
+                        Assets::Load<Physics2DMaterial>(circleCollider2DComponent["Material"].as<std::string>());
                 }
             }
         }
-        TI_CORE_INFO("Loaded scene from {}", filepath);
 
         return true;
     }

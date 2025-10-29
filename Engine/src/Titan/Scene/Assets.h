@@ -1,7 +1,9 @@
 #pragma once
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
+#include "Titan/Scene/PhysicsMaterial.h"
 #include "Titan/Scene/Scene.h"
 
 #include <yaml-cpp/yaml.h>
@@ -16,6 +18,8 @@ namespace Titan
         None = 0,
         Texture2D,
         Scene,
+        Shader,
+        Physics2DMaterial
     };
 
     struct AssetMeta
@@ -39,15 +43,34 @@ namespace Titan
             return nullptr;
         }
 
-        template <typename T>
-        static void Add(const std::filesystem::path& path, const Ref<T>& asset)
+        static const AssetMeta* GetMeta(const std::filesystem::path& path)
         {
-            s_Assets[std::filesystem::absolute(path).string()] = asset;
+            auto absPath = std::filesystem::absolute(path);
+            auto it = s_AssetMeta.find(absPath.string());
+            if (it != s_AssetMeta.end())
+                return &it->second;
+            return nullptr;
+        }
+
+        template <typename T>
+        static void Add(const std::filesystem::path& path, const Ref<T>& asset, const AssetMeta& meta)
+        {
+            auto absPath = std::filesystem::absolute(path).string();
+            s_Assets[absPath] = asset;
+            s_AssetMeta[absPath] = meta;
+        }
+
+        static void AddMeta(const std::filesystem::path& path, const AssetMeta& meta)
+        {
+            auto absPath = std::filesystem::absolute(path).string();
+            s_AssetMeta[absPath] = meta;
         }
 
         static void Remove(const std::filesystem::path& path)
         {
-            s_Assets.erase(std::filesystem::absolute(path).string());
+            auto absPath = std::filesystem::absolute(path).string();
+            s_Assets.erase(absPath);
+            s_AssetMeta.erase(absPath);
         }
 
         static bool Exists(const std::filesystem::path& path)
@@ -55,10 +78,25 @@ namespace Titan
             return s_Assets.contains(std::filesystem::absolute(path).string());
         }
 
-        static void Clear() { s_Assets.clear(); }
+        static bool ExistsMeta(const std::filesystem::path& path)
+        {
+            return s_AssetMeta.contains(std::filesystem::absolute(path).string());
+        }
+
+        static void Clear()
+        {
+            s_Assets.clear();
+            s_AssetMeta.clear();
+        }
+
+        static void UpdateMeta(const std::filesystem::path& path, const AssetMeta& meta)
+        {
+            s_AssetMeta[std::filesystem::absolute(path).string()] = meta;
+        }
 
     private:
         inline static std::unordered_map<std::string, Ref<void>> s_Assets;
+        inline static std::unordered_map<std::string, AssetMeta> s_AssetMeta;
     };
 
     namespace Assets
@@ -90,6 +128,18 @@ namespace Titan
             fout << out.c_str();
         }
 
+        static void UpdateMeta(const std::filesystem::path& path, const AssetMeta& meta)
+        {
+            AssetLibrary::UpdateMeta(path, meta);
+        }
+
+        static void SaveMetaToDisk(const std::filesystem::path& path)
+        {
+            auto absPath = std::filesystem::absolute(path).string();
+            if (AssetLibrary::GetMeta(path) != nullptr)
+                SaveMeta(*AssetLibrary::GetMeta(path));
+        }
+
         template <typename T>
         AssetMeta GenerateDefaultMeta(const std::filesystem::path& assetPath)
         {
@@ -104,9 +154,17 @@ namespace Titan
                 meta.Properties["MinFilter"] = "Linear";
                 meta.Properties["MagFilter"] = "Linear";
             }
+            else if constexpr (std::is_same_v<T, Shader>)
+            {
+                meta.Type = AssetType::Shader;
+            }
             else if constexpr (std::is_same_v<T, Scene>)
             {
                 meta.Type = AssetType::Scene;
+            }
+            else if constexpr (std::is_same_v<T, Physics2DMaterial>)
+            {
+                meta.Type = AssetType::Physics2DMaterial;
             }
             else
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::GenerateDefaultMeta");
@@ -114,7 +172,7 @@ namespace Titan
         }
 
         template <typename T>
-        AssetMeta LoadMeta(const std::filesystem::path& assetPath)
+        AssetMeta LoadMetaFromDisk(const std::filesystem::path& assetPath)
         {
             auto metaPath = assetPath;
             metaPath += ".meta";
@@ -142,28 +200,47 @@ namespace Titan
         }
 
         template <typename T>
+        AssetMeta LoadMeta(const std::filesystem::path& assetPath)
+        {
+            if (AssetLibrary::ExistsMeta(assetPath))
+                return *AssetLibrary::GetMeta(assetPath);
+
+            auto meta = LoadMetaFromDisk<T>(assetPath);
+            AssetLibrary::AddMeta(assetPath, meta);
+            return meta;
+        }
+
+        template <typename T>
         Ref<T> Load(const std::filesystem::path& path)
         {
             if (AssetLibrary::Exists(path))
             {
-                TI_CORE_TRACE("Loading existing Asset {}", path.string());
+                TI_CORE_TRACE("Loading existing Asset {}", path.generic_string());
                 return AssetLibrary::Get<T>(path);
             }
 
-            TI_CORE_TRACE("Loading new Asset {}", path.string());
+            TI_CORE_TRACE("Loading new Asset {}", path.generic_string());
 
             AssetMeta meta = LoadMeta<T>(path);
             Ref<T> asset = nullptr;
 
             if constexpr (std::is_same_v<T, Texture2D>)
             {
-                asset = Texture2D::Create(path.string());
+                asset = Texture2D::Create(std::filesystem::absolute(path).string());
+            }
+            else if constexpr (std::is_same_v<T, Shader>)
+            {
+                asset = Shader::Create(std::filesystem::absolute(path).string());
             }
             else if constexpr (std::is_same_v<T, Scene>)
             {
                 asset = CreateRef<Scene>();
                 SceneSerializer serializer(asset);
-                serializer.Deserialize(path.string());
+                serializer.Deserialize(std::filesystem::absolute(path).string());
+            }
+            else if constexpr (std::is_same_v<T, Physics2DMaterial>)
+            {
+                asset = Physics2DMaterial::Create(std::filesystem::absolute(path).string());
             }
             else
             {
@@ -171,7 +248,7 @@ namespace Titan
             }
 
             if (asset)
-                AssetLibrary::Add(path, asset);
+                AssetLibrary::Add(path, asset, meta);
 
             return asset;
         }
@@ -181,6 +258,26 @@ namespace Titan
             if (AssetLibrary::Exists(path))
                 AssetLibrary::Remove(path);
         }
+
+        template <typename T>
+        void Reload(const std::filesystem::path& path)
+        {
+            if (!AssetLibrary::Exists(path))
+            {
+                Load<T>(path);
+                return;
+            }
+
+            Ref<T> existing = AssetLibrary::Get<T>(path);
+            AssetLibrary::Remove(path);
+            Ref<T> reloaded = Load<T>(path);
+
+            if (reloaded)
+                *existing = *reloaded;
+
+            AssetLibrary::Add(path, existing);
+        }
+
     } // namespace Assets
 
 } // namespace Titan

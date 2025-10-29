@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
+#include "Titan/Scene/Assets.h"
 #include "VertexArray.h"
 
 namespace Titan
@@ -170,9 +171,9 @@ namespace Titan
             samplers[i] = i;
 
         // Shader
-        s_Data.CircleShader = Shader::Create("assets/shader/RendererCircle.glsl");
-        s_Data.QuadShader = Shader::Create("assets/shader/RendererQuad.glsl");
-        s_Data.LineShader = Shader::Create("assets/shader/RendererLine.glsl");
+        s_Data.CircleShader = Assets::Load<Shader>("assets/shader/RendererCircle.glsl");
+        s_Data.QuadShader = Assets::Load<Shader>("assets/shader/RendererQuad.glsl");
+        s_Data.LineShader = Assets::Load<Shader>("assets/shader/RendererLine.glsl");
         s_Data.QuadShader->Bind();
         s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 

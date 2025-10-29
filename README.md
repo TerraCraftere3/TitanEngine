@@ -31,6 +31,11 @@ For now there is no linux support
 - `Vendor` contains all Dependencies of `Engine`, `Editor` and `Sandbox`
 - `Script` contains build scripts for the CMake Project
 
+## Dev Tools
+### Windows (Powershell)
+- `Format.ps1` formats all files in `Engine`, `Editor` and `Sandbox`
+- `ResetMeta.ps1` removes all .meta files
+
 ## 📦 Dependencies
 
 | Name              | Usage / Purpose                                                 | Repository Link                                                             |

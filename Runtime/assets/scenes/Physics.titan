@@ -1,45 +1,5 @@
 Scene: Untitled
 Entities:
-  - Entity: 14097135631244352751
-    TagComponent:
-      Tag: Floor
-    TransformComponent:
-      Translation: [0, -1.4128001, 0]
-      Rotation: [0, 0, -0.48694685]
-      Scale: [6.741967, 0.46067804, 1]
-    SpriteRendererComponent:
-      Color: [0.9498069, 0.4553014, 0.06600974, 1]
-    Rigidbody2DComponent:
-      BodyType: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
-  - Entity: 17060105638395738331
-    TagComponent:
-      Tag: Circle
-    TransformComponent:
-      Translation: [-2.692449, 1.036984, 0.02251478]
-      Rotation: [0, 0, 0]
-      Scale: [0.3611597, 0.36, 0.36]
-    CircleRendererComponent:
-      Color: [0.32745242, 0.23487544, 1, 1]
-      Thickness: 1
-      Fade: 0.005
-    Rigidbody2DComponent:
-      BodyType: Dynamic
-      FixedRotation: false
-    CircleCollider2DComponent:
-      Offset: [0, 0]
-      Radius: 0.5
-      Density: 1
-      Friction: 0.5
-      Restitution: 0
-      RestitutionThreshold: 0.5
   - Entity: 17215834544183327376
     TagComponent:
       Tag: Camera
@@ -58,3 +18,37 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
+  - Entity: 17060105638395738331
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Translation: [-2.692449, 1.036984, 0.02251478]
+      Rotation: [0, 0, 0]
+      Scale: [0.3611597, 0.36, 0.36]
+    CircleRendererComponent:
+      Color: [0.32745242, 0.23487544, 1, 1]
+      Thickness: 1
+      Fade: 0.005
+    Rigidbody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    CircleCollider2DComponent:
+      Offset: [0, 0]
+      Radius: 0.5
+      Material: E:\Libraries\TitanEngine\Runtime\assets\physics\Circle.phys2d
+  - Entity: 14097135631244352751
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [0, -1.4128001, 0]
+      Rotation: [0, 0, -0.48694685]
+      Scale: [6.741967, 0.46067804, 1]
+    SpriteRendererComponent:
+      Color: [0.9498069, 0.4553014, 0.06600974, 1]
+    Rigidbody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Material: E:\Libraries\TitanEngine\Runtime\assets\physics\Floor.phys2d
