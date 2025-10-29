@@ -21,8 +21,7 @@ else()
 endif()
 
 # ---- Dependencies ----
-find_package(Vulkan REQUIRED)
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo spirv-cross-core spirv-cross-glsl glslang shaderc Vulkan::Vulkan box2d)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d)
 target_link_libraries(engine PRIVATE glad)
 
 # ---- Include directories ----

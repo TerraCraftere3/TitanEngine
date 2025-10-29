@@ -1,6 +1,3 @@
-# ---- Find Packages ----
-find_package(Vulkan REQUIRED)
-
 # ---- Force Static Libraries and Static Runtime ----
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries" FORCE)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "MSVC runtime library" FORCE)
@@ -41,11 +38,6 @@ add_subdirectory(glm)
 add_subdirectory(entt)
 add_subdirectory(yaml-cpp)
 add_subdirectory(Box2D)
-add_subdirectory(SPIRV-Cross)
-add_subdirectory(SPIRV-Headers)
-add_subdirectory(SPIRV-Tools)
-add_subdirectory(glslang)
-add_subdirectory(shaderc)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS
