@@ -226,21 +226,21 @@ namespace Titan
 
             if constexpr (std::is_same_v<T, Texture2D>)
             {
-                asset = Texture2D::Create(std::filesystem::absolute(path).string());
+                asset = Texture2D::Create(std::filesystem::relative(path).string());
             }
             else if constexpr (std::is_same_v<T, Shader>)
             {
-                asset = Shader::Create(std::filesystem::absolute(path).string());
+                asset = Shader::Create(std::filesystem::relative(path).string());
             }
             else if constexpr (std::is_same_v<T, Scene>)
             {
                 asset = CreateRef<Scene>();
                 SceneSerializer serializer(asset);
-                serializer.Deserialize(std::filesystem::absolute(path).string());
+                serializer.Deserialize(std::filesystem::relative(path).string());
             }
             else if constexpr (std::is_same_v<T, Physics2DMaterial>)
             {
-                asset = Physics2DMaterial::Create(std::filesystem::absolute(path).string());
+                asset = Physics2DMaterial::Create(std::filesystem::relative(path).string());
             }
             else
             {

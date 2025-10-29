@@ -30,12 +30,12 @@ Entities:
       Thickness: 1
       Fade: 0.005
     Rigidbody2DComponent:
-      BodyType: Static
+      BodyType: Dynamic
       FixedRotation: false
     CircleCollider2DComponent:
       Offset: [0, 0]
       Radius: 0.5
-      Material: E:\Libraries\TitanEngine\Runtime\assets\physics\Circle.phys2d
+      Material: assets\physics\Circle.phys2d
   - Entity: 14097135631244352751
     TagComponent:
       Tag: Floor
@@ -51,4 +51,4 @@ Entities:
     BoxCollider2DComponent:
       Offset: [0, 0]
       Size: [0.5, 0.5]
-      Material: E:\Libraries\TitanEngine\Runtime\assets\physics\Floor.phys2d
+      Material: assets\physics\Floor.phys2d
