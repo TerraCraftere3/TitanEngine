@@ -332,8 +332,9 @@ namespace Titan
             {
                 ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
                 ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+                float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
-                              ImVec2(100.0f, 0.0f));
+                              ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
@@ -352,8 +353,9 @@ namespace Titan
             {
                 ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
                 ImGui::DragFloat("Radius", &component.Radius);
+                float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
-                              ImVec2(100.0f, 0.0f));
+                              ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))

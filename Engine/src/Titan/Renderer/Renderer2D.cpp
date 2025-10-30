@@ -2,8 +2,8 @@
 #include "RenderCommand.h"
 #include "Shader.h"
 #include "Titan/PCH.h"
-#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
+#include "UniformBuffer.h"
 #include "VertexArray.h"
 
 namespace Titan
@@ -74,6 +74,13 @@ namespace Titan
         std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
         uint32_t TextureSlotIndex = 1;
         glm::vec4 QuadVertexPositions[4];
+
+        struct CameraData
+        {
+            glm::mat4 ViewProjection;
+        };
+        CameraData CamBuffer;
+        Ref<UniformBuffer> CamUniformBuffer;
 
         Renderer2D::Statistics Stats;
     };
@@ -171,11 +178,12 @@ namespace Titan
             samplers[i] = i;
 
         // Shader
-        s_Data.CircleShader = Assets::Load<Shader>("assets/shader/RendererCircle.glsl");
-        s_Data.QuadShader = Assets::Load<Shader>("assets/shader/RendererQuad.glsl");
-        s_Data.LineShader = Assets::Load<Shader>("assets/shader/RendererLine.glsl");
+        s_Data.CircleShader = Assets::Load<Shader>("assets/shader/RendererCircle.slang");
+        s_Data.QuadShader = Assets::Load<Shader>("assets/shader/RendererQuad.slang");
+        s_Data.LineShader = Assets::Load<Shader>("assets/shader/RendererLine.slang");
+
         s_Data.QuadShader->Bind();
-        s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+        s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
     }
@@ -209,12 +217,8 @@ namespace Titan
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
-        s_Data.QuadShader->Bind();
-        s_Data.QuadShader->SetMat4("u_ViewProjection", viewTransform);
-        s_Data.CircleShader->Bind();
-        s_Data.CircleShader->SetMat4("u_ViewProjection", viewTransform);
-        s_Data.LineShader->Bind();
-        s_Data.LineShader->SetMat4("u_ViewProjection", viewTransform);
+        s_Data.CamBuffer.ViewProjection = viewTransform;
+        s_Data.CamUniformBuffer->SetData(&s_Data.CamBuffer, sizeof(Renderer2DData::CameraData));
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;

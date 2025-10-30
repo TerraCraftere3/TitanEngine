@@ -1,15 +1,13 @@
 #include "OpenGLShader.h"
-#include <slang.h>
 #include <filesystem>
 #include "Titan/PCH.h"
 
 namespace Titan
 {
-
     std::string ReadFile(const std::string& filepath)
     {
         std::string result;
-        std::ifstream in(filepath, std::ios::in, std::ios::binary);
+        std::ifstream in(filepath, std::ios::in | std::ios::binary);
         if (in)
         {
             in.seekg(0, std::ios::end);
@@ -21,23 +19,7 @@ namespace Titan
         else
         {
             TI_CORE_ERROR("Could not open file '{}'", filepath);
-            result = R"(#shader vertex
-#version 330 core
-layout(location = 0) in vec3 a_Position;
-uniform mat4 u_ViewProjection;
-uniform mat4 u_Model;
-void main() {
-    gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
-}
-#shader fragment
-#version 330 core
-layout(location = 0) out vec4 color;
-void main() {
-    color = vec4(1.0, 0.0, 1.0, 1.0);
-}
-        )";
         }
-
         return result;
     }
 
@@ -63,34 +45,19 @@ void main() {
         TI_PROFILE_FUNCTION();
         m_Name = filepath;
 
-        std::string source = ReadFile(filepath);
-        std::unordered_map<GLenum, std::string> shaderSources;
-
-        const char* typeToken = "#shader";
-        size_t typeTokenLength = strlen(typeToken);
-        size_t pos = source.find(typeToken, 0);
-
-        while (pos != std::string::npos)
+        // Check if it's a Slang shader
+        std::filesystem::path path(filepath);
+        if (path.extension() == ".slang")
         {
-            size_t eol = source.find_first_of("\r\n", pos);
-            TI_CORE_ASSERT(eol != std::string::npos, "Syntax error: missing end of line after {}", typeToken);
-
-            size_t begin = pos + typeTokenLength + 1;
-            std::string type = source.substr(begin, eol - begin);
-            GLenum shaderType = ShaderTypeFromString(type);
-            TI_CORE_ASSERT(shaderType, "Invalid shader type specified");
-
-            size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-            TI_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error: missing shader code after {} line",
-                           typeToken);
-
-            pos = source.find(typeToken, nextLinePos);
-            size_t endPos = (pos == std::string::npos) ? source.size() : pos;
-
-            shaderSources[shaderType] = source.substr(nextLinePos, endPos - nextLinePos);
+            CompileSlangShader(filepath);
         }
-
-        Compile(shaderSources);
+        else
+        {
+            // Legacy path for GLSL shaders
+            std::string source = ReadFile(filepath);
+            std::unordered_map<GLenum, std::string> shaderSources = ParseShaderFile(source);
+            Compile(shaderSources);
+        }
     }
 
     OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -179,46 +146,163 @@ void main() {
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void OpenGLShader::UploadUniformInt(const std::string& name, int value)
+    std::unordered_map<GLenum, std::string> OpenGLShader::ParseShaderFile(const std::string& source)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniform1i(location, value);
+        std::unordered_map<GLenum, std::string> shaderSources;
+
+        const char* typeToken = "#shader";
+        size_t typeTokenLength = strlen(typeToken);
+        size_t pos = source.find(typeToken, 0);
+
+        while (pos != std::string::npos)
+        {
+            size_t eol = source.find_first_of("\r\n", pos);
+            TI_CORE_ASSERT(eol != std::string::npos, "Syntax error: missing end of line after {}", typeToken);
+
+            size_t begin = pos + typeTokenLength + 1;
+            std::string type = source.substr(begin, eol - begin);
+            GLenum shaderType = ShaderTypeFromString(type);
+            TI_CORE_ASSERT(shaderType, "Invalid shader type specified");
+
+            size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+            TI_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error: missing shader code after {} line",
+                           typeToken);
+
+            pos = source.find(typeToken, nextLinePos);
+            size_t endPos = (pos == std::string::npos) ? source.size() : pos;
+
+            shaderSources[shaderType] = source.substr(nextLinePos, endPos - nextLinePos);
+        }
+
+        return shaderSources;
     }
 
-    void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
+    void OpenGLShader::CompileSlangShader(const std::string& filepath)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniform1f(location, value);
+        TI_PROFILE_FUNCTION();
+
+        // Create Slang global session
+        Slang::ComPtr<slang::IGlobalSession> globalSession;
+        if (SLANG_FAILED(slang::createGlobalSession(globalSession.writeRef())))
+        {
+            TI_CORE_ERROR("Failed to create Slang global session");
+            return;
+        }
+
+        // Create session description
+        slang::SessionDesc sessionDesc = {};
+        slang::TargetDesc targetDesc = {};
+        targetDesc.format = SLANG_GLSL;
+        targetDesc.profile = globalSession->findProfile("glsl_450");
+        targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_WHOLE_PROGRAM;
+
+        sessionDesc.targets = &targetDesc;
+        sessionDesc.targetCount = 1;
+
+        // Create session
+        Slang::ComPtr<slang::ISession> session;
+        if (SLANG_FAILED(globalSession->createSession(sessionDesc, session.writeRef())))
+        {
+            TI_CORE_ERROR("Failed to create Slang session");
+            return;
+        }
+
+        // Load the Slang module
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        slang::IModule* module = session->loadModule(filepath.c_str(), diagnosticsBlob.writeRef());
+
+        if (diagnosticsBlob)
+        {
+            TI_CORE_WARN("Slang diagnostics: {}", (const char*)diagnosticsBlob->getBufferPointer());
+        }
+
+        if (!module)
+        {
+            TI_CORE_ERROR("Failed to load Slang module: {}", filepath);
+            return;
+        }
+
+        // Find entry points (vertex and fragment shaders)
+        std::unordered_map<GLenum, std::string> compiledShaders;
+
+        // Compile vertex shader
+        Slang::ComPtr<slang::IEntryPoint> vertexEntry;
+        if (SLANG_SUCCEEDED(module->findEntryPointByName("vertexMain", vertexEntry.writeRef())))
+        {
+            std::string vertexCode = CompileSlangEntryPoint(session, module, vertexEntry, "vertexMain");
+            if (!vertexCode.empty())
+            {
+                compiledShaders[GL_VERTEX_SHADER] = vertexCode;
+            }
+        }
+
+        // Compile fragment shader
+        Slang::ComPtr<slang::IEntryPoint> fragmentEntry;
+        if (SLANG_SUCCEEDED(module->findEntryPointByName("fragmentMain", fragmentEntry.writeRef())))
+        {
+            std::string fragmentCode = CompileSlangEntryPoint(session, module, fragmentEntry, "fragmentMain");
+            if (!fragmentCode.empty())
+            {
+                compiledShaders[GL_FRAGMENT_SHADER] = fragmentCode;
+            }
+        }
+
+        if (compiledShaders.empty())
+        {
+            TI_CORE_ERROR("No valid entry points found in Slang shader: {}", filepath);
+            return;
+        }
+
+        // Compile the generated GLSL code
+        Compile(compiledShaders);
     }
 
-    void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
+    std::string OpenGLShader::CompileSlangEntryPoint(Slang::ComPtr<slang::ISession> session, slang::IModule* module,
+                                                     Slang::ComPtr<slang::IEntryPoint> entryPoint,
+                                                     const std::string& entryPointName)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniform2f(location, value.x, value.y);
-    }
+        slang::IComponentType* componentTypes[] = {module, entryPoint};
+        Slang::ComPtr<slang::IComponentType> program;
+        if (SLANG_FAILED(session->createCompositeComponentType(componentTypes, 2, program.writeRef())))
+        {
+            TI_CORE_ERROR("Failed to create composite component type");
+            return "";
+        }
 
-    void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
-    {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniform3f(location, value.x, value.y, value.z);
-    }
+        // Link the program
+        Slang::ComPtr<slang::IComponentType> linkedProgram;
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+        if (SLANG_FAILED(program->link(linkedProgram.writeRef(), diagnosticsBlob.writeRef())))
+        {
+            if (diagnosticsBlob)
+            {
+                TI_CORE_ERROR("Slang linking error: {}", (const char*)diagnosticsBlob->getBufferPointer());
+            }
+            return "";
+        }
 
-    void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
-    {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniform4f(location, value.x, value.y, value.z, value.w);
-    }
+        // Get the compiled code
+        Slang::ComPtr<slang::IBlob> codeBlob;
+        if (SLANG_FAILED(linkedProgram->getEntryPointCode(0, 0, codeBlob.writeRef(), diagnosticsBlob.writeRef())))
+        {
+            if (diagnosticsBlob)
+            {
+                TI_CORE_ERROR("Slang code generation error: {}", (const char*)diagnosticsBlob->getBufferPointer());
+            }
+            return "";
+        }
 
-    void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
-    {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-    }
+        std::string generatedCode((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
+        std::string outputPath = GetPathWithoutExtension(m_Name) + "_" + entryPointName + ".generated.glsl";
+        std::ofstream out(outputPath);
+        if (out)
+        {
+            out << generatedCode;
+            out.close();
+            TI_CORE_TRACE("Wrote generated GLSL to: {}", outputPath);
+        }
 
-    void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
-    {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+        return std::string((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
     }
 
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
@@ -226,6 +310,7 @@ void main() {
         GLuint program = glCreateProgram();
         std::vector<GLenum> glShaderIDs;
         glShaderIDs.reserve(shaderSources.size());
+
         for (auto& kv : shaderSources)
         {
             GLenum type = kv.first;

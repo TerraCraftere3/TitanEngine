@@ -20,3 +20,4 @@ build
 */imgui.ini
 **profile-*.json
 **.meta
+**.generated.**

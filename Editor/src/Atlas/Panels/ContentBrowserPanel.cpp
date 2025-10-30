@@ -183,7 +183,7 @@ namespace Titan
             return m_FileImageIcon;
 
         if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
-            ext == ".hlsl")
+            ext == ".hlsl" || ext == ".slang")
             return m_FileCodeIcon;
 
         if (ext == ".phys2d")

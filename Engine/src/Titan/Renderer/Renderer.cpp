@@ -29,9 +29,9 @@ namespace Titan
     {
         TI_PROFILE_FUNCTION();
         shader->Bind();
-        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection",
-                                                                           s_SceneData->ViewProjMatrix);
-        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Model", transform);
+        std::dynamic_pointer_cast<OpenGLShader>(shader)->SetMat4("u_ViewProjection",
+                                                                 s_SceneData->ViewProjMatrix); // LEGACY METHODS
+        std::dynamic_pointer_cast<OpenGLShader>(shader)->SetMat4("u_Model", transform);        // TODO: REMOVE!!!
         vertexArray->Bind();
         RenderCommand::DrawIndexed(vertexArray);
     }
