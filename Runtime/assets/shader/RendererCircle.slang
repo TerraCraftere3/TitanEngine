@@ -1,7 +1,8 @@
 // circle_shader.slang
-
-// Uniforms
-uniform column_major float4x4 u_ViewProjection;
+cbuffer GlobalUBO : register(b0)
+{
+    column_major float4x4 u_ViewProjection;
+};
 
 // Vertex shader input
 struct VertexInput

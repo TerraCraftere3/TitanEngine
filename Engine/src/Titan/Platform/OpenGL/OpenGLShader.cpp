@@ -88,61 +88,61 @@ namespace Titan
 
     void OpenGLShader::SetBool(const std::string& name, bool value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform1i(location, (int)value);
     }
 
     void OpenGLShader::SetInt(const std::string& name, int value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform1i(location, value);
     }
 
     void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform1iv(location, count, values);
     }
 
     void OpenGLShader::SetFloat(const std::string& name, float value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform1f(location, value);
     }
 
     void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform2f(location, value.x, value.y);
     }
 
     void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform3f(location, value.x, value.y, value.z);
     }
 
     void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
     void OpenGLShader::SetMat2(const std::string& name, const glm::mat2& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniformMatrix2fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
     void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
     void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& value)
     {
-        GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        GLint location = GetUniformLocation(name);
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
@@ -293,6 +293,8 @@ namespace Titan
         }
 
         std::string generatedCode((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
+
+#ifdef TI_BUILD_DEBUG
         std::string outputPath = GetPathWithoutExtension(m_Name) + "_" + entryPointName + ".generated.glsl";
         std::ofstream out(outputPath);
         if (out)
@@ -301,8 +303,14 @@ namespace Titan
             out.close();
             TI_CORE_TRACE("Wrote generated GLSL to: {}", outputPath);
         }
+#endif
 
-        return std::string((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
+        return generatedCode;
+    }
+
+    GLint OpenGLShader::GetUniformLocation(const std::string& name)
+    {
+        return glGetUniformLocation(m_RendererID, (name + "_0").c_str());
     }
 
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)

@@ -14,7 +14,7 @@ namespace Titan
         glm::vec3 Position;
         glm::vec4 Color;
         glm::vec2 TexCoord;
-        float TexIndex;
+        int TexIndex;
         float TilingFactor;
         int EntityID;
     };
@@ -100,7 +100,7 @@ namespace Titan
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"},
             {ShaderDataType::Float2, "a_UV"},
-            {ShaderDataType::Float,  "a_TexIndex"},
+            {ShaderDataType::Int,  "a_TexIndex"},
             {ShaderDataType::Float,  "a_TilingFactor"},
             {ShaderDataType::Int,    "a_EntityID"}
         });
@@ -172,17 +172,17 @@ namespace Titan
         uint32_t whiteTextureData = 0xffffffff;
         s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-        // Sampler / Textures
-        int32_t samplers[s_Data.MaxTextureSlots];
-        for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-            samplers[i] = i;
-
         // Shader
         s_Data.CircleShader = Assets::Load<Shader>("assets/shader/RendererCircle.slang");
         s_Data.QuadShader = Assets::Load<Shader>("assets/shader/RendererQuad.slang");
         s_Data.LineShader = Assets::Load<Shader>("assets/shader/RendererLine.slang");
 
         s_Data.QuadShader->Bind();
+        // Sampler / Textures
+        int32_t samplers[s_Data.MaxTextureSlots];
+        for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+            samplers[i] = i;
+        s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
         s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
@@ -307,7 +307,7 @@ namespace Titan
         if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
             FlushAndReset();
 
-        const float texIndex = 0.0f; // White Texture
+        const int texIndex = 0.0f; // White Texture
         const float tilingFactor = 1.0f;
 
         glm::vec3 transformedPositions[4];
@@ -357,12 +357,12 @@ namespace Titan
         if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
             FlushAndReset();
 
-        float textureIndex = 0.0f;
+        int textureIndex = 0.0f;
         for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
         {
             if (*s_Data.TextureSlots[i].get() == *texture.get())
             {
-                textureIndex = (float)i;
+                textureIndex = i;
                 break;
             }
         }

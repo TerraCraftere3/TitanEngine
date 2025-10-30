@@ -29,7 +29,7 @@ namespace Titan
         fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Physics.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Cube.titan");
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
