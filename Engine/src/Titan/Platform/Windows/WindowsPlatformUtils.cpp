@@ -2,6 +2,13 @@
 #include "Titan/PCH.h"
 #include "Titan/Utils/PlatformUtils.h"
 
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 

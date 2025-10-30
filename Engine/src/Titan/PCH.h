@@ -37,13 +37,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-// ---- OpenGL (glad + glfw) ----
-#ifdef APIENTRY
-    #undef APIENTRY
-#endif
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 // ---- ImGui + ImGuizmo ----
 #include <imgui.h>
 #include <ImGuizmo.h>

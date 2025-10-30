@@ -1,6 +1,12 @@
 #pragma once
 
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+// clang-format on
 
 #include "Titan/Core/Window.h"
 #include "Titan/PCH.h"

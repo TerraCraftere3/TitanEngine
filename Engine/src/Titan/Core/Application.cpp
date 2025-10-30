@@ -1,11 +1,17 @@
 #include "Titan/Core/Application.h"
-#include "Application.h"
 #include "Titan/Core/Input.h"
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Renderer.h"
-
+#include "Titan/Scripting/ScriptEngine.h"
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 namespace Titan
 {
 
@@ -21,13 +27,19 @@ namespace Titan
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
+        ScriptEngine::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
         TI_PROFILE_END_SESSION();
     }
 
-    Application::~Application() {}
+    Application::~Application()
+    {
+        TI_PROFILE_FUNCTION();
+
+        ScriptEngine::Shutdown();
+    }
 
     void Application::Close()
     {

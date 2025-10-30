@@ -18,15 +18,17 @@ For now there is no linux support
 - `Engine` contains the code for Titan Engine that is used by the Game and the Editor
   - `src/Titan` contains the engine code
     - `Core` contains the core code used by all Systems
+    - `Debug` contains profiling and debugging code
     - `Events` contains all code for the Event System
     - `Platform` contains platform specific code (os and graphics api specific)
     - `Renderer` contains platform independent code for the Renderer
     - `Scene` contains code used by the ecs and scene renderer
-    - `Debug` contains profiling and debugging code
+    - `Scripting` contains the code for the C# API of the Engine
     - `Utils` contains small utilities like save dialogs, etc
 - `Editor` contains the code for Atlas (The Editor)
   - `src/Atlas` contains the editor code
     - `Panels` contains the code for each panel (asset viewer, etc.)
+- `Script-Core` contains the C# Library / API
 - `Sandbox` contains the code of the Game
 - `Vendor` contains all Dependencies of `Engine`, `Editor` and `Sandbox`
 - `Script` contains build scripts for the CMake Project
@@ -38,20 +40,20 @@ For now there is no linux support
 
 ## 📦 Dependencies
 
-| Name              | Usage / Purpose                                                 | Repository Link                                                             |
-| ----------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **spdlog**        | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                           |
-| **glfw**          | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                   |
-| **imgui**         | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                           |
-| **glm**           | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                                 |
-| **stb**           | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                             |
-| **entt**          | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                           |
-| **yaml-cpp**      | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                       |
-| **ImGuizmo**      | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)     |
-| **nanosvg**       | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                   |
-| **codicons**      | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons)   |
-| **Box2D**         | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                       |
-| **Slang**| Shader Compilation for multi APIs | [shader-slang/slang](https://github.com/shader-slang/slang) |
+| Name         | Usage / Purpose                                                 | Repository Link                                                           |
+| ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **spdlog**   | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
+| **glfw**     | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
+| **imgui**    | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
+| **glm**      | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
+| **stb**      | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
+| **entt**     | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
+| **yaml-cpp** | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
+| **ImGuizmo** | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
+| **nanosvg**  | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
+| **codicons** | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
+| **Box2D**    | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
+| **Slang**    | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
 
 ## ⚙️ Features
 - Platform Independent Code

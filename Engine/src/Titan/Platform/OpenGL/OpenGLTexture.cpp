@@ -3,7 +3,13 @@
 #include "nanosvg.h"
 #include "nanosvgrast.h"
 #include "stb_image.h"
-
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 namespace Titan
 {
 

@@ -1,7 +1,13 @@
 #pragma once
 
 #include "Titan/Renderer/Framebuffer.h"
-
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 namespace Titan
 {
 

@@ -1,0 +1,60 @@
+Scene: Untitled
+Entities:
+  - Entity: 9670210303759270861
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 2.7, 5.8]
+      Rotation: [-0.47123888, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 7290517115680376727
+    TagComponent:
+      Tag: Left
+    TransformComponent:
+      Translation: [-0.355, 1.8626451e-09, 0.35]
+      Rotation: [0, -0.78539824, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0.94980717, 1]
+      Texture: assets\textures\Checkerboard.png
+  - Entity: 11247935261222943542
+    TagComponent:
+      Tag: Right
+    TransformComponent:
+      Translation: [0.352, 0, 0.35]
+      Rotation: [0, 0.7853982, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.54842025, 0, 0.5868726, 1]
+      Texture: assets\textures\uv_test.jpg
+  - Entity: 7699089306053012404
+    TagComponent:
+      Tag: Top
+    TransformComponent:
+      Translation: [0, 0.5, 0]
+      Rotation: [1.5707964, 0.7853982, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.87644786, 0, 0.8347128, 1]
+      Texture: assets\textures\google_logo.png
+  - Entity: 9873447866222989036
+    TagComponent:
+      Tag: Right Back
+    TransformComponent:
+      Translation: [0.35, 7.450581e-09, -0.35]
+      Rotation: [0, -0.78539824, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0.9490196, 1]
+      Texture: assets\textures\Checkerboard.png

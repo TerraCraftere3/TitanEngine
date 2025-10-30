@@ -1,7 +1,13 @@
 #include "OpenGLShader.h"
 #include <filesystem>
 #include "Titan/PCH.h"
-
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 namespace Titan
 {
     std::string ReadFile(const std::string& filepath)

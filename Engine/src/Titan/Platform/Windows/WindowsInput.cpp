@@ -2,6 +2,14 @@
 #include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
 
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
+
 namespace Titan
 {
     Scope<Input> Input::s_Instance = CreateScope<WindowsInput>();

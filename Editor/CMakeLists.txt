@@ -19,7 +19,7 @@ target_include_directories(editor PRIVATE
 target_compile_features(editor PUBLIC cxx_std_23)
 
 # ---- Libraries ----
-target_link_libraries(editor PRIVATE engine glad)
+target_link_libraries(editor PRIVATE engine)
 
 # ---- Output Name ----
 set_target_properties(editor PROPERTIES OUTPUT_NAME "Atlas")

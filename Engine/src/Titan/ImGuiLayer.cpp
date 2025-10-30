@@ -1,6 +1,13 @@
 #include "Titan/ImGuiLayer.h"
 #include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>

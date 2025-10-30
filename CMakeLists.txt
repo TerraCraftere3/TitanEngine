@@ -14,11 +14,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DIST ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" CACHE STRING "MSVC runtime library" FORCE)
+endif()
 
 # ---- Options ----
 set(TI_BUILD_SHARED OFF CACHE BOOL "Build Titan Engine as a shared library")
 
 # ---- Subdirectories ----
 add_subdirectory(Vendor)
+add_subdirectory(Script-Core)
 add_subdirectory(Engine)
 add_subdirectory(Editor)

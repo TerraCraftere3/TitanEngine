@@ -22,10 +22,30 @@ endif()
 
 message(STATUS "Slang Libraries: ${SLANG_LIB_DIR}")
 message(STATUS "Slang Include: ${SLANG_INCLUDE_DIR}")
+message(STATUS "Mono Libraries: ${MONO_LIB_DIR}")
+message(STATUS "Mono Include: ${MONO_INCLUDE_DIR}")
 
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d)
-target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib")
+target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib" "${MONO_LIB_DIR}/libmono-static-sgen.lib")
+if(MSVC)
+    target_link_libraries(engine PRIVATE
+    msvcrt.lib
+    ucrt.lib
+    oldnames.lib
+    ws2_32.lib
+    bcrypt.lib
+    kernel32.lib
+    user32.lib
+    advapi32.lib
+    version.lib
+    shell32.lib
+    ole32.lib
+    oleaut32.lib
+    winmm.lib
+    psapi.lib
+)
+endif()
 
 # ---- Include directories ----
 target_include_directories(engine PUBLIC
@@ -33,6 +53,7 @@ target_include_directories(engine PUBLIC
     "${STB_INCLUDE_DIR}"
     "${NANOSVG_INCLUDE_DIR}"
     "${SLANG_INCLUDE_DIR}"
+    "${MONO_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----

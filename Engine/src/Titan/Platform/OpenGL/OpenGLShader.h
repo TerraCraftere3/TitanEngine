@@ -4,7 +4,13 @@
 #include <slang.h>
 #include <glm/glm.hpp>
 #include "Titan/Renderer/Shader.h"
-
+// clang-format off
+#ifdef APIENTRY
+    #undef APIENTRY
+#endif
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 namespace slang
 {
     struct ISession;
