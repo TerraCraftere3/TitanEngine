@@ -504,6 +504,7 @@ namespace Titan
                                         static_cast<uint32_t>(m_ViewportSize.y));
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+        m_EditorScene = m_ActiveScene;
         m_EditorScenePath = std::filesystem::path();
     }
 

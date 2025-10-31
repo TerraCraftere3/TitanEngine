@@ -259,6 +259,16 @@ namespace Titan
             out << YAML::EndMap; // CircleCollider2DComponent
         }
 
+        if (entity.HasComponent<ScriptComponent>())
+        {
+            auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+
+            out << YAML::Key << "ScriptComponent";
+            out << YAML::BeginMap; // ScriptComponent
+            out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+            out << YAML::EndMap; // ScriptComponent
+        }
+
         out << YAML::EndMap; // Entity
     }
 
@@ -401,6 +411,13 @@ namespace Titan
                     cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
                     cc2d.Material =
                         Assets::Load<Physics2DMaterial>(circleCollider2DComponent["Material"].as<std::string>());
+                }
+
+                auto scriptComponent = entity["ScriptComponent"];
+                if (scriptComponent)
+                {
+                    auto& sc = deserializedEntity.AddComponent<ScriptComponent>();
+                    sc.ClassName = scriptComponent["ClassName"].as<std::string>();
                 }
             }
         }

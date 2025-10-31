@@ -4,6 +4,7 @@
 #include "Titan/PCH.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Scripting/ScriptEngine.h"
 
 #include "box2d/box2d.h"
 
@@ -85,6 +86,7 @@ namespace Titan
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<ScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -101,6 +103,9 @@ namespace Titan
         entity.AddComponent<TransformComponent>();
         auto& tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "Entity" : name;
+
+        m_EntityMap[uuid] = entity;
+
         return entity;
     }
 
@@ -116,21 +121,37 @@ namespace Titan
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
         CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
         CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+        CopyComponentIfExists<ScriptComponent>(newEntity, entity);
     }
 
     void Scene::DestroyEntity(Entity entity)
     {
         m_Registry.destroy(entity);
+        m_EntityMap.erase(entity.GetUUID());
     }
 
     void Scene::OnRuntimeStart()
     {
         OnPhysics2DStart();
+
+        {
+            ScriptEngine::OnRuntimeStart(this);
+            // Instantiate all script entities
+
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e : view)
+            {
+                Entity entity = {e, this};
+                ScriptEngine::OnCreateEntity(entity);
+            }
+        }
     }
 
     void Scene::OnRuntimeStop()
     {
         OnPhysics2DStop();
+
+        ScriptEngine::OnRuntimeStop();
     }
 
     void Scene::OnSimulationStart()
@@ -146,6 +167,17 @@ namespace Titan
     void Scene::OnUpdateRuntime(Timestep ts)
     {
         TI_PROFILE_FUNCTION()
+
+        // C# SCRIPTS
+        {
+            auto view = GetAllEntitiesWith<ScriptComponent>();
+            for (auto e : view)
+            {
+                Entity entity = {e, this};
+                ScriptEngine::OnUpdateEntity(entity, ts);
+            }
+        }
+
         // NATIVE SCRIPTS
         {
             GetAllEntitiesWith<NativeScriptComponent>().each(
@@ -261,6 +293,15 @@ namespace Titan
             if (!cameraComponent.FixedAspectRatio)
                 cameraComponent.Camera.SetViewportSize(width, height);
         }
+    }
+
+    Entity Scene::GetEntityByUUID(UUID uuid)
+    {
+        if (m_EntityMap.find(uuid) != m_EntityMap.end())
+            return {m_EntityMap.at(uuid), this};
+
+        TI_CORE_WARN("Couldnt find entity {}", (size_t)uuid);
+        return {};
     }
 
     Entity Scene::GetPrimaryCameraEntity()
@@ -405,6 +446,11 @@ namespace Titan
 
     template <>
     void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+    {
+    }
+
+    template <>
+    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
     {
     }
 

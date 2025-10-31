@@ -2,6 +2,7 @@
 #include "../Components.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Components.h"
+#include "Titan/Scripting/ScriptEngine.h"
 
 #include "Titan/Scene/Assets.h"
 
@@ -108,6 +109,16 @@ namespace Titan
                     if (ImGui::MenuItem("Circle Collider 2D"))
                     {
                         m_SelectionContext.AddComponent<CircleCollider2DComponent>();
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+
+                ImGui::SeparatorText("Scripts");
+                if (!m_SelectionContext.HasComponent<ScriptComponent>())
+                {
+                    if (ImGui::MenuItem("Script Component"))
+                    {
+                        m_SelectionContext.AddComponent<ScriptComponent>();
                         ImGui::CloseCurrentPopup();
                     }
                 }
@@ -367,6 +378,25 @@ namespace Titan
                     ImGui::EndDragDropTarget();
                 }
             });
+
+        DrawComponent<ScriptComponent>("Script", entity,
+                                       [](auto& component)
+                                       {
+                                           bool scriptClassExists =
+                                               ScriptEngine::EntityClassExists(component.ClassName);
+
+                                           static char buffer[64];
+                                           strcpy(buffer, component.ClassName.c_str());
+
+                                           if (!scriptClassExists)
+                                               ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+
+                                           if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+                                               component.ClassName = buffer;
+
+                                           if (!scriptClassExists)
+                                               ImGui::PopStyleColor();
+                                       });
     }
 
 } // namespace Titan

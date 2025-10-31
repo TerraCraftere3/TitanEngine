@@ -1,11 +1,13 @@
 #pragma once
 
-namespace Titan {
+namespace Titan
+{
 
-	class ScriptGlue
-	{
-	public:
-		static void RegisterFunctions();
-	};
+    class ScriptGlue
+    {
+    public:
+        static void RegisterComponents();
+        static void RegisterFunctions();
+    };
 
-}
+} // namespace Titan

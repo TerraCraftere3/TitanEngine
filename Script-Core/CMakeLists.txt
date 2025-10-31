@@ -1,7 +1,5 @@
-cmake_minimum_required(VERSION 3.8)
-
 project(Titan-ScriptCore LANGUAGES CSharp)
-file(GLOB_RECURSE SCRIPTCORE_SOURCES
+file(GLOB_RECURSE SCRIPTCORE_SOURCES CONFIGURE_DEPENDS
     "src/*.cs"
     "props/*.cs"
 )

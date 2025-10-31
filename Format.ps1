@@ -3,7 +3,7 @@ function Format-FilesInDirectory {
         [string]$Path
     )
 
-    $extensions = "*.cpp","*.c","*.cc","*.cxx","*.h","*.hpp","*.hxx","*.inl","*.glsl","*.vert","*.frag","*.comp","*.geom","*.tesc","*.tese","*.proto"
+    $extensions = "*.cpp", "*.c", "*.cc", "*.cxx", "*.h", "*.hpp", "*.hxx", "*.inl", "*.glsl", "*.vert", "*.frag", "*.comp", "*.geom", "*.tesc", "*.tese", "*.proto", "*.cs"
 
     Get-ChildItem -Path $Path -Recurse -Include $extensions | ForEach-Object {
         $original = Get-Content $_.FullName -Raw
@@ -12,7 +12,8 @@ function Format-FilesInDirectory {
 
         if ($original -ne $formatted) {
             Write-Host "$($_.FullName)" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "$($_.FullName)" -ForegroundColor Gray
         }
     }
@@ -21,6 +22,7 @@ function Format-FilesInDirectory {
 Write-Host "Starting Formatting..." -ForegroundColor Cyan
 
 Format-FilesInDirectory -Path ".\Engine"
+Format-FilesInDirectory -Path ".\Script-Core"
 Format-FilesInDirectory -Path ".\Editor"
 Format-FilesInDirectory -Path ".\Sandbox"
 Format-FilesInDirectory -Path ".\Runtime"
