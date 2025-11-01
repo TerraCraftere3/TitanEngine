@@ -63,6 +63,16 @@ For now there is no linux support
 - Entity Component System
 - Scene Renderer
 
+### TODO
+- Audio
+- 3D PBR Renderer
+  - Shadows
+  - Materials
+  - Custom Shader?
+- Exporting Projects
+- Project Files
+- Custom C# UIs
+
 ## 🧪 Builds
 | Tool  | Operating System | Badge                                                                                                                                                                                                                                 |
 | ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -18,6 +18,10 @@ Entities:
       Material: ""
     ScriptComponent:
       ClassName: Sandbox.Player
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.05
   - Entity: 15517832685634114817
     TagComponent:
       Tag: Camera
@@ -61,3 +65,5 @@ Entities:
       Scale: [1, 1, 1]
     ScriptComponent:
       ClassName: Sandbox.Test
+      ScriptFields:
+        []
