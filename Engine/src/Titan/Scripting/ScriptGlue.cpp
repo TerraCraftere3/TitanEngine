@@ -18,24 +18,84 @@ namespace Titan
 
 #define TI_ADD_INTERNAL_CALL(Name) mono_add_internal_call("Titan.InternalCalls::" #Name, Name)
 
-    static void NativeLog(MonoString* string, int parameter)
+    static void InternalLogTrace(MonoString* string)
     {
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        std::cout << str << ", " << parameter << std::endl;
+        TI_CORE_TRACE(str);
     }
 
-    static void NativeLog_Vector(glm::vec3* parameter, glm::vec3* outResult)
+    static void InternalLogInfo(MonoString* string)
     {
-        TI_CORE_WARN("Value: {0}", *parameter);
-        *outResult = glm::normalize(*parameter);
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_CORE_INFO(str);
     }
 
-    static float NativeLog_VectorDot(glm::vec3* parameter)
+    static void InternalLogWarn(MonoString* string)
     {
-        TI_CORE_WARN("Value: {0}", *parameter);
-        return glm::dot(*parameter, *parameter);
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_CORE_WARN(str);
+    }
+
+    static void InternalLogError(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_CORE_ERROR(str);
+    }
+
+    static void InternalLogCritical(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_CORE_CRITICAL(str);
+    }
+
+    static void InternalClientLogTrace(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_TRACE(str);
+    }
+
+    static void InternalClientLogInfo(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_INFO(str);
+    }
+
+    static void InternalClientLogWarn(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_WARN(str);
+    }
+
+    static void InternalClientLogError(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_ERROR(str);
+    }
+
+    static void InternalClientLogCritical(MonoString* string)
+    {
+        char* cStr = mono_string_to_utf8(string);
+        std::string str(cStr);
+        mono_free(cStr);
+        TI_CRITICAL(str);
     }
 
     static bool Entity_HasComponent(UUID entityID, MonoReflectionType* componentType)
@@ -135,9 +195,17 @@ namespace Titan
 
     void ScriptGlue::RegisterFunctions()
     {
-        TI_ADD_INTERNAL_CALL(NativeLog);
-        TI_ADD_INTERNAL_CALL(NativeLog_Vector);
-        TI_ADD_INTERNAL_CALL(NativeLog_VectorDot);
+        TI_ADD_INTERNAL_CALL(InternalLogTrace);
+        TI_ADD_INTERNAL_CALL(InternalLogInfo);
+        TI_ADD_INTERNAL_CALL(InternalLogWarn);
+        TI_ADD_INTERNAL_CALL(InternalLogError);
+        TI_ADD_INTERNAL_CALL(InternalLogCritical);
+
+        TI_ADD_INTERNAL_CALL(InternalClientLogTrace);
+        TI_ADD_INTERNAL_CALL(InternalClientLogInfo);
+        TI_ADD_INTERNAL_CALL(InternalClientLogWarn);
+        TI_ADD_INTERNAL_CALL(InternalClientLogError);
+        TI_ADD_INTERNAL_CALL(InternalClientLogCritical);
 
         TI_ADD_INTERNAL_CALL(Entity_HasComponent);
         TI_ADD_INTERNAL_CALL(TransformComponent_GetTranslation);

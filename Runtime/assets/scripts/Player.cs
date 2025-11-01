@@ -15,8 +15,6 @@ namespace Sandbox
 
         void OnCreate()
         {
-            Console.WriteLine($"Player.OnCreate - {ID}");
-
             m_Transform = GetComponent<TransformComponent>();
             m_Rigidbody = GetComponent<Rigidbody2DComponent>();
         }

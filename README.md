@@ -56,6 +56,7 @@ For now there is no linux support
 | **Slang**    | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
 
 ## ⚙️ Features
+- C# Scripting Support
 - Platform Independent Code
 - 2D Batch Renderer
 - Entity Component System

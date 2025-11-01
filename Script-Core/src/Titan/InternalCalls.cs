@@ -6,6 +6,36 @@ namespace Titan
     public static class InternalCalls
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalLogTrace(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalLogInfo(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalLogWarn(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalLogError(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalLogCritical(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalClientLogTrace(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalClientLogInfo(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalClientLogWarn(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalClientLogError(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void InternalClientLogCritical(string message);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static bool Entity_HasComponent(ulong entityID, Type componentType);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
