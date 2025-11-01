@@ -381,12 +381,12 @@ namespace Titan
 
         DrawComponent<ScriptComponent>(
             "Script", entity,
-            [entity](auto& component) mutable
+            [entity, scene = m_Context](auto& component) mutable
             {
                 bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);
 
                 static char buffer[64];
-                strcpy(buffer, component.ClassName.c_str());
+                strcpy_s(buffer, sizeof(buffer), component.ClassName.c_str());
 
                 if (!scriptClassExists)
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
@@ -394,135 +394,64 @@ namespace Titan
                 if (ImGui::InputText("Class", buffer, sizeof(buffer)))
                     component.ClassName = buffer;
 
-                Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
-                if (scriptInstance)
+                // Fields
+                bool sceneRunning = scene->IsRunning();
+                if (sceneRunning)
                 {
-                    const auto& fields = scriptInstance->GetScriptClass()->GetFields();
-
-                    for (const auto& [name, field] : fields)
+                    Ref<ScriptInstance> scriptInstance = ScriptEngine::GetEntityScriptInstance(entity.GetUUID());
+                    if (scriptInstance)
                     {
-                        switch (field.Type)
+                        const auto& fields = scriptInstance->GetScriptClass()->GetFields();
+                        for (const auto& [name, field] : fields)
                         {
-                            case ScriptFieldType::Float:
+                            if (field.Type == ScriptFieldType::Float)
                             {
                                 float data = scriptInstance->GetFieldValue<float>(name);
                                 if (ImGui::DragFloat(name.c_str(), &data))
+                                {
                                     scriptInstance->SetFieldValue(name, data);
-                                break;
+                                }
                             }
-                            case ScriptFieldType::Double:
+                        }
+                    }
+                }
+                else
+                {
+                    if (scriptClassExists)
+                    {
+                        Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(component.ClassName);
+                        const auto& fields = entityClass->GetFields();
+
+                        auto& entityFields = ScriptEngine::GetScriptFieldMap(entity);
+                        for (const auto& [name, field] : fields)
+                        {
+                            // Field has been set in editor
+                            if (entityFields.find(name) != entityFields.end())
                             {
-                                double data = scriptInstance->GetFieldValue<double>(name);
-                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_Double, &data, 0.1f))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
+                                ScriptFieldInstance& scriptField = entityFields.at(name);
+
+                                // Display control to set it maybe
+                                if (field.Type == ScriptFieldType::Float)
+                                {
+                                    float data = scriptField.GetValue<float>();
+                                    if (ImGui::DragFloat(name.c_str(), &data))
+                                        scriptField.SetValue(data);
+                                }
                             }
-                            case ScriptFieldType::Bool:
+                            else
                             {
-                                bool data = scriptInstance->GetFieldValue<bool>(name);
-                                if (ImGui::Checkbox(name.c_str(), &data))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
+                                // Display control to set it maybe
+                                if (field.Type == ScriptFieldType::Float)
+                                {
+                                    float data = 0.0f;
+                                    if (ImGui::DragFloat(name.c_str(), &data))
+                                    {
+                                        ScriptFieldInstance& fieldInstance = entityFields[name];
+                                        fieldInstance.Field = field;
+                                        fieldInstance.SetValue(data);
+                                    }
+                                }
                             }
-                            case ScriptFieldType::Char:
-                            {
-                                char data = scriptInstance->GetFieldValue<char>(name);
-                                char buf[2] = {data, '\0'};
-                                if (ImGui::InputText(name.c_str(), buf, sizeof(buf)))
-                                    scriptInstance->SetFieldValue(name, buf[0]);
-                                break;
-                            }
-                            case ScriptFieldType::Byte:
-                            {
-                                int8_t data = scriptInstance->GetFieldValue<int8_t>(name);
-                                int tmp = data;
-                                if (ImGui::DragInt(name.c_str(), &tmp, 1, -128, 127))
-                                    scriptInstance->SetFieldValue(name, static_cast<int8_t>(tmp));
-                                break;
-                            }
-                            case ScriptFieldType::Short:
-                            {
-                                int16_t data = scriptInstance->GetFieldValue<int16_t>(name);
-                                int tmp = data;
-                                if (ImGui::DragInt(name.c_str(), &tmp, 1, INT16_MIN, INT16_MAX))
-                                    scriptInstance->SetFieldValue(name, static_cast<int16_t>(tmp));
-                                break;
-                            }
-                            case ScriptFieldType::Int:
-                            {
-                                int data = scriptInstance->GetFieldValue<int>(name);
-                                if (ImGui::DragInt(name.c_str(), &data))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::Long:
-                            {
-                                int64_t data = scriptInstance->GetFieldValue<int64_t>(name);
-                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_S64, &data))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::UByte:
-                            {
-                                uint8_t data = scriptInstance->GetFieldValue<uint8_t>(name);
-                                int tmp = data;
-                                if (ImGui::DragInt(name.c_str(), &tmp, 1, 0, 255))
-                                    scriptInstance->SetFieldValue(name, static_cast<uint8_t>(tmp));
-                                break;
-                            }
-                            case ScriptFieldType::UShort:
-                            {
-                                uint16_t data = scriptInstance->GetFieldValue<uint16_t>(name);
-                                int tmp = data;
-                                if (ImGui::DragInt(name.c_str(), &tmp, 1, 0, UINT16_MAX))
-                                    scriptInstance->SetFieldValue(name, static_cast<uint16_t>(tmp));
-                                break;
-                            }
-                            case ScriptFieldType::UInt:
-                            {
-                                uint32_t data = scriptInstance->GetFieldValue<uint32_t>(name);
-                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U32, &data))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::ULong:
-                            {
-                                uint64_t data = scriptInstance->GetFieldValue<uint64_t>(name);
-                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U64, &data))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::Vector2:
-                            {
-                                glm::vec2 data = scriptInstance->GetFieldValue<glm::vec2>(name);
-                                if (ImGui::DragFloat2(name.c_str(), glm::value_ptr(data)))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::Vector3:
-                            {
-                                glm::vec3 data = scriptInstance->GetFieldValue<glm::vec3>(name);
-                                if (ImGui::DragFloat3(name.c_str(), glm::value_ptr(data)))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::Vector4:
-                            {
-                                glm::vec4 data = scriptInstance->GetFieldValue<glm::vec4>(name);
-                                if (ImGui::DragFloat4(name.c_str(), glm::value_ptr(data)))
-                                    scriptInstance->SetFieldValue(name, data);
-                                break;
-                            }
-                            case ScriptFieldType::Entity:
-                            {
-                                uint64_t entityID = scriptInstance->GetFieldValue<uint64_t>(name);
-                                ImGui::Text("%s: Entity(%llu)", name.c_str(), entityID);
-                                break;
-                            }
-                            case ScriptFieldType::None:
-                            default:
-                                ImGui::Text("%s: <Unsupported type>", name.c_str());
-                                break;
                         }
                     }
                 }

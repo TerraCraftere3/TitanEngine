@@ -133,6 +133,8 @@ namespace Titan
     void Scene::OnRuntimeStart()
     {
         TI_PROFILE_FUNCTION();
+        m_IsRunning = true;
+
         OnPhysics2DStart();
 
         {
@@ -151,6 +153,8 @@ namespace Titan
     void Scene::OnRuntimeStop()
     {
         TI_PROFILE_FUNCTION();
+        m_IsRunning = false;
+
         OnPhysics2DStop();
 
         ScriptEngine::OnRuntimeStop();

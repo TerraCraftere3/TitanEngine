@@ -171,6 +171,7 @@ namespace Titan
 
         std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
         std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
+        std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
         // Runtime
         Scene* SceneContext = nullptr;
@@ -193,38 +194,6 @@ namespace Titan
 
         // Retrieve and instantiate class
         s_Data->EntityClass = ScriptClass("Titan", "Entity", true);
-#if 0
-	
-		MonoObject* instance = s_Data->EntityClass.Instantiate();
-	
-		// Call method
-		MonoMethod* printMessageFunc = s_Data->EntityClass.GetMethod("PrintMessage", 0);
-		s_Data->EntityClass.InvokeMethod(instance, printMessageFunc);
-
-		// Call method with param
-		MonoMethod* printIntFunc = s_Data->EntityClass.GetMethod("PrintInt", 1);
-
-		int value = 5;
-		void* param = &value;
-
-		s_Data->EntityClass.InvokeMethod(instance, printIntFunc, &param);
-
-		MonoMethod* printIntsFunc = s_Data->EntityClass.GetMethod("PrintInts", 2);
-		int value2 = 508;
-		void* params[2] =
-		{
-			&value,
-			&value2
-		};
-		s_Data->EntityClass.InvokeMethod(instance, printIntsFunc, params);
-
-		MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello World from C++!");
-		MonoMethod* printCustomMessageFunc = s_Data->EntityClass.GetMethod("PrintCustomMessage", 1);
-		void* stringParam = monoString;
-		s_Data->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
-
-		TI_CORE_ASSERT(false);
-#endif
     }
 
     void ScriptEngine::Shutdown()
@@ -294,8 +263,18 @@ namespace Titan
         const auto& sc = entity.GetComponent<ScriptComponent>();
         if (ScriptEngine::EntityClassExists(sc.ClassName))
         {
+            UUID entityID = entity.GetUUID();
+
             Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
-            s_Data->EntityInstances[entity.GetUUID()] = instance;
+            s_Data->EntityInstances[entityID] = instance;
+
+            if (s_Data->EntityScriptFields.find(entityID) != s_Data->EntityScriptFields.end())
+            {
+                const ScriptFieldMap& fieldMap = s_Data->EntityScriptFields.at(entityID);
+                for (const auto& [name, fieldInstance] : fieldMap)
+                    instance->SetFieldValueInternal(name, fieldInstance.m_Buffer);
+            }
+
             instance->InvokeOnCreate();
         }
     }
@@ -332,9 +311,25 @@ namespace Titan
         s_Data->EntityInstances.clear();
     }
 
+    Ref<ScriptClass> ScriptEngine::GetEntityClass(const std::string& name)
+    {
+        if (s_Data->EntityClasses.find(name) == s_Data->EntityClasses.end())
+            return nullptr;
+
+        return s_Data->EntityClasses.at(name);
+    }
+
     std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
     {
         return s_Data->EntityClasses;
+    }
+
+    ScriptFieldMap& ScriptEngine::GetScriptFieldMap(Entity entity)
+    {
+        TI_CORE_ASSERT(entity);
+
+        UUID entityID = entity.GetUUID();
+        return s_Data->EntityScriptFields[entityID];
     }
 
     void ScriptEngine::LoadAssemblyClasses()
