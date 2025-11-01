@@ -23,6 +23,7 @@ add_subdirectory(glm)
 add_subdirectory(entt)
 add_subdirectory(yaml-cpp)
 add_subdirectory(Box2D)
+add_subdirectory(optick)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS

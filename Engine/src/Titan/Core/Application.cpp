@@ -19,7 +19,7 @@ namespace Titan
 
     Application::Application(const std::string& name)
     {
-        TI_PROFILE_BEGIN_SESSION("Startup", "profile-startup.json");
+        TI_PROFILE_BEGIN_SESSION("Startup", "profile-startup");
         TI_CORE_ASSERT(!s_Instance, "Application already exists! There can only be one");
         s_Instance = this;
 
@@ -49,7 +49,7 @@ namespace Titan
 
     void Application::Run()
     {
-        TI_PROFILE_BEGIN_SESSION("Runtime", "profile-runtime.json");
+        TI_PROFILE_BEGIN_SESSION("Runtime", "profile-runtime");
 
         while (m_Running)
         {
@@ -134,7 +134,7 @@ namespace Titan
 
     void TI_API Titan::DeleteApplication(Application* app)
     {
-        TI_PROFILE_BEGIN_SESSION("Shutdown", "profile-shutdown.json");
+        TI_PROFILE_BEGIN_SESSION("Shutdown", "profile-shutdown");
         delete app;
         TI_PROFILE_END_SESSION();
     }

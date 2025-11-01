@@ -180,6 +180,7 @@ namespace Titan
 
     void ScriptEngine::Init()
     {
+        TI_PROFILE_FUNCTION();
         s_Data = new ScriptEngineData();
 
         InitMono();
@@ -278,6 +279,7 @@ namespace Titan
 
     void ScriptEngine::OnRuntimeStart(Scene* scene)
     {
+        TI_PROFILE_FUNCTION();
         s_Data->SceneContext = scene;
     }
 
@@ -288,6 +290,7 @@ namespace Titan
 
     void ScriptEngine::OnCreateEntity(Entity entity)
     {
+        TI_PROFILE_FUNCTION();
         const auto& sc = entity.GetComponent<ScriptComponent>();
         if (ScriptEngine::EntityClassExists(sc.ClassName))
         {
@@ -299,6 +302,7 @@ namespace Titan
 
     void ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
     {
+        TI_PROFILE_FUNCTION();
         UUID entityUUID = entity.GetUUID();
         TI_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
 
@@ -322,6 +326,7 @@ namespace Titan
 
     void ScriptEngine::OnRuntimeStop()
     {
+        TI_PROFILE_FUNCTION();
         s_Data->SceneContext = nullptr;
 
         s_Data->EntityInstances.clear();

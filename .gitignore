@@ -17,11 +17,13 @@ build
 **.exe
 **.pdb
 **.log
+**.opt
 */imgui.ini
 **profile-*.json
 **.meta
 **.generated.**
 out
+!**/Optick.exe
 !**/mono/
 !**/mono/**/*.dll
 !**/mono/**/*.exe

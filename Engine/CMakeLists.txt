@@ -26,7 +26,7 @@ message(STATUS "Mono Libraries: ${MONO_LIB_DIR}")
 message(STATUS "Mono Include: ${MONO_INCLUDE_DIR}")
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore)
 target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib" "${MONO_LIB_DIR}/libmono-static-sgen.lib")
 if(MSVC)
     target_link_libraries(engine PRIVATE
@@ -84,6 +84,7 @@ target_compile_definitions(engine PUBLIC
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
     NOMINMAX
+    TI_PROFILE
 )
 
 if (MSVC)

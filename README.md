@@ -54,6 +54,7 @@ For now there is no linux support
 | **codicons** | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
 | **Box2D**    | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
 | **Slang**    | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
+| **Optick**   | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
 
 ## ⚙️ Features
 - C# Scripting Support

@@ -28,3 +28,6 @@
 [submodule "Vendor/Box2D"]
 	path = Vendor/Box2D
 	url = https://github.com/erincatto/box2d
+[submodule "Vendor/optick"]
+	path = Vendor/optick
+	url = https://github.com/bombomby/optick

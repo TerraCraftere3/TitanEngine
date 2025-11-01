@@ -20,6 +20,13 @@ endif()
 
 # ---- Options ----
 set(TI_BUILD_SHARED OFF CACHE BOOL "Build Titan Engine as a shared library")
+if(POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif()
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif()
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 # ---- Subdirectories ----
 add_subdirectory(Vendor)
