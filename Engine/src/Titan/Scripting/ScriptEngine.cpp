@@ -1,5 +1,8 @@
 #include "ScriptEngine.h"
+#include "FileWatch.hpp"
 #include "ScriptGlue.h"
+#include "Titan/Core/Application.h"
+#include "Titan/Core/Timer.h"
 #include "Titan/PCH.h"
 #include "Titan/Scene/Components.h"
 #include "mono/jit/jit.h"
@@ -136,12 +139,28 @@ namespace Titan
         std::unordered_map<UUID, Ref<ScriptInstance>> EntityInstances;
         std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
-        // Runtime
+        Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
+        bool AssemblyReloadPending = false;
 
         Scene* SceneContext = nullptr;
     };
 
     static ScriptEngineData* s_Data = nullptr;
+
+    static void OnAppAssemblyFileSystemEvent(const std::string& path, const filewatch::Event change_type)
+    {
+        if (!s_Data->AssemblyReloadPending && change_type == filewatch::Event::modified)
+        {
+            s_Data->AssemblyReloadPending = true;
+
+            Application::GetInstance()->SubmitToMainThread(
+                []()
+                {
+                    s_Data->AppAssemblyFileWatcher.reset();
+                    ScriptEngine::ReloadAssembly();
+                });
+        }
+    }
 
     void ScriptEngine::Init()
     {
@@ -158,38 +177,6 @@ namespace Titan
 
         // Retrieve and instantiate class
         s_Data->EntityClass = ScriptClass("Titan", "Entity", true);
-#if 0
-	
-		MonoObject* instance = s_Data->EntityClass.Instantiate();
-	
-		// Call method
-		MonoMethod* printMessageFunc = s_Data->EntityClass.GetMethod("PrintMessage", 0);
-		s_Data->EntityClass.InvokeMethod(instance, printMessageFunc);
-
-		// Call method with param
-		MonoMethod* printIntFunc = s_Data->EntityClass.GetMethod("PrintInt", 1);
-
-		int value = 5;
-		void* param = &value;
-
-		s_Data->EntityClass.InvokeMethod(instance, printIntFunc, &param);
-
-		MonoMethod* printIntsFunc = s_Data->EntityClass.GetMethod("PrintInts", 2);
-		int value2 = 508;
-		void* params[2] =
-		{
-			&value,
-			&value2
-		};
-		s_Data->EntityClass.InvokeMethod(instance, printIntsFunc, params);
-
-		MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello World from C++!");
-		MonoMethod* printCustomMessageFunc = s_Data->EntityClass.GetMethod("PrintCustomMessage", 1);
-		void* stringParam = monoString;
-		s_Data->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
-
-		TI_CORE_ASSERT(false);
-#endif
     }
 
     void ScriptEngine::Shutdown()
@@ -242,6 +229,10 @@ namespace Titan
         s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
         auto assembi = s_Data->AppAssemblyImage;
         // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
+
+        s_Data->AppAssemblyFileWatcher =
+            CreateScope<filewatch::FileWatch<std::string>>(filepath.string(), OnAppAssemblyFileSystemEvent);
+        s_Data->AssemblyReloadPending = false;
     }
 
     void ScriptEngine::ReloadAssembly()

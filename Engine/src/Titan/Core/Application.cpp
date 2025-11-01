@@ -11,6 +11,7 @@
 #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Application.h"
 // clang-format on
 namespace Titan
 {
@@ -58,6 +59,9 @@ namespace Titan
             float time = (float)glfwGetTime(); // TODO: Platform Indepentend Time Query (Time::GetCurrent()???)
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
+
+            ExecuteMainThreadQueue();
+
             if (!m_Minimized)
             {
                 TI_PROFILE_SCOPE("Application::Run layer->OnUpdate");
@@ -122,6 +126,23 @@ namespace Titan
         Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
         return false;
+    }
+
+    void Application::ExecuteMainThreadQueue()
+    {
+        std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+
+        for (auto& func : m_MainThreadQueue)
+            func();
+
+        m_MainThreadQueue.clear();
+    }
+
+    void Application::SubmitToMainThread(const std::function<void()>& function)
+    {
+        std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+
+        m_MainThreadQueue.emplace_back(function);
     }
 
     bool Application::OnWindowClosed(WindowCloseEvent& e)

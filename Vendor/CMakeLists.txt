@@ -24,6 +24,7 @@ add_subdirectory(entt)
 add_subdirectory(yaml-cpp)
 add_subdirectory(Box2D)
 add_subdirectory(optick)
+add_subdirectory(filewatch)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS
@@ -54,7 +55,8 @@ target_include_directories(imguizmo PUBLIC
 target_link_libraries(imguizmo PRIVATE imgui)
 
 target_link_libraries(imgui PRIVATE glfw)
-# ---- STB Directory ----
+
+set(FILEWATCH_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/filewatch" PARENT_SCOPE)
 set(STB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stb" PARENT_SCOPE)
 set(NANOSVG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/nanosvg/src" PARENT_SCOPE)
 set(SLANG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/slang/windows-x86_64/include" PARENT_SCOPE)

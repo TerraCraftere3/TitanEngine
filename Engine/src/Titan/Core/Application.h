@@ -38,6 +38,11 @@ namespace Titan
         /// @brief Gets the window (not native)
         /// @return the window of this instance
         inline Window& GetWindow() { return *m_Window; }
+
+        /// @brief Submits a function that should be executed in the main thread
+        /// @param function the function
+        void SubmitToMainThread(const std::function<void()>& function);
+
         /// @brief Gets the current public instance
         /// @return the instance
         inline static Application* GetInstance() { return s_Instance; };
@@ -45,6 +50,8 @@ namespace Titan
     private:
         bool OnWindowClosed(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
+
+        void ExecuteMainThreadQueue();
 
     private:
         static Application* s_Instance;
@@ -54,6 +61,8 @@ namespace Titan
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
         float m_LastFrameTime = 0.0f;
+        std::vector<std::function<void()>> m_MainThreadQueue;
+        std::mutex m_MainThreadQueueMutex;
     };
 
     void TI_API DeleteApplication(Application* app);

@@ -57,6 +57,7 @@ target_include_directories(engine PUBLIC
     "${NANOSVG_INCLUDE_DIR}"
     "${SLANG_INCLUDE_DIR}"
     "${MONO_INCLUDE_DIR}"
+    "${FILEWATCH_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----
@@ -84,7 +85,6 @@ target_compile_definitions(engine PUBLIC
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
     NOMINMAX
-    TI_PROFILE
 )
 
 if (MSVC)

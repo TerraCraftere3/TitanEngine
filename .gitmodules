@@ -31,3 +31,6 @@
 [submodule "Vendor/optick"]
 	path = Vendor/optick
 	url = https://github.com/bombomby/optick
+[submodule "Vendor/filewatch"]
+	path = Vendor/filewatch
+	url = https://github.com/ThomasMonkman/filewatch

@@ -40,21 +40,22 @@ For now there is no linux support
 
 ## 📦 Dependencies
 
-| Name         | Usage / Purpose                                                 | Repository Link                                                           |
-| ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **spdlog**   | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
-| **glfw**     | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
-| **imgui**    | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
-| **glm**      | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
-| **stb**      | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
-| **entt**     | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
-| **yaml-cpp** | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
-| **ImGuizmo** | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
-| **nanosvg**  | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
-| **codicons** | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
-| **Box2D**    | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
-| **Slang**    | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
-| **Optick**   | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
+| Name          | Usage / Purpose                                                 | Repository Link                                                           |
+| ------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **spdlog**    | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
+| **glfw**      | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
+| **imgui**     | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
+| **glm**       | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
+| **stb**       | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
+| **entt**      | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
+| **yaml-cpp**  | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
+| **ImGuizmo**  | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
+| **nanosvg**   | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
+| **codicons**  | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
+| **Box2D**     | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
+| **Slang**     | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
+| **Optick**    | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
+| **Filewatch** | Watching Files (for e.g. Hot Code Reloading)                    | [ThomasMonkman/filewatch](https://github.com/ThomasMonkman/filewatch)     |
 
 ## ⚙️ Features
 - C# Scripting Support
