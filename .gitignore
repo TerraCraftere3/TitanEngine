@@ -21,3 +21,9 @@ build
 **profile-*.json
 **.meta
 **.generated.**
+out
+!**/mono/
+!**/mono/**/*.dll
+!**/mono/**/*.exe
+!**/mono/**/*.pdb
+!**/mono/**/*.log

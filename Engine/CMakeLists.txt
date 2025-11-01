@@ -47,6 +47,9 @@ if(MSVC)
 )
 endif()
 
+add_dependencies(engine Titan-ScriptCore)
+add_dependencies(engine Titan-GameCore)
+
 # ---- Include directories ----
 target_include_directories(engine PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"

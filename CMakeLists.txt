@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0..3.5)
+cmake_minimum_required(VERSION 4.0)
 project(TitanEngine C CXX)
 
 # ---- Defaults ----
@@ -24,5 +24,6 @@ set(TI_BUILD_SHARED OFF CACHE BOOL "Build Titan Engine as a shared library")
 # ---- Subdirectories ----
 add_subdirectory(Vendor)
 add_subdirectory(Script-Core)
+add_subdirectory(Runtime/assets/scripts)
 add_subdirectory(Engine)
 add_subdirectory(Editor)

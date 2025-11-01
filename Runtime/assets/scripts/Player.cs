@@ -23,7 +23,6 @@ namespace Sandbox
 
         void OnUpdate(float ts)
         {
-
             float speed = 0.1f;
             Vector3 velocity = Vector3.Zero;
 
@@ -40,7 +39,6 @@ namespace Sandbox
             velocity *= speed;
 
             m_Rigidbody.ApplyLinearImpulse(velocity.XY, true);
-            Console.WriteLine($"Player.OnUpdate: {velocity.Y}, {velocity.X}");
         }
     }
 }
