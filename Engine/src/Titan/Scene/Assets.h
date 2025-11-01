@@ -210,6 +210,54 @@ namespace Titan
             return meta;
         }
 
+        inline AssetMeta LoadMeta(const std::filesystem::path& assetPath)
+        {
+            if (AssetLibrary::ExistsMeta(assetPath))
+                return *AssetLibrary::GetMeta(assetPath);
+
+            auto metaPath = assetPath;
+            metaPath += ".meta";
+
+            AssetType type = AssetType::None;
+
+            if (std::filesystem::exists(metaPath))
+            {
+                YAML::Node data = YAML::LoadFile(metaPath.string());
+                type = (AssetType)data["Type"].as<int>();
+            }
+
+            AssetMeta meta;
+
+            switch (type)
+            {
+                case AssetType::Texture2D:
+                    meta = LoadMetaFromDisk<Texture2D>(assetPath);
+                    break;
+
+                case AssetType::Shader:
+                    meta = LoadMetaFromDisk<Shader>(assetPath);
+                    break;
+
+                case AssetType::Scene:
+                    meta = LoadMetaFromDisk<Scene>(assetPath);
+                    break;
+
+                case AssetType::Physics2DMaterial:
+                    meta = LoadMetaFromDisk<Physics2DMaterial>(assetPath);
+                    break;
+
+                case AssetType::None:
+                default:
+                    meta.ID = UUID();
+                    meta.SourcePath = assetPath;
+                    meta.Type = AssetType::None;
+                    break;
+            }
+
+            AssetLibrary::AddMeta(assetPath, meta);
+            return meta;
+        }
+
         template <typename T>
         Ref<T> Load(const std::filesystem::path& path)
         {
@@ -218,15 +266,23 @@ namespace Titan
                 TI_CORE_TRACE("Loading existing Asset {}", path.generic_string());
                 return AssetLibrary::Get<T>(path);
             }
-
             TI_CORE_TRACE("Loading new Asset {}", path.generic_string());
 
-            AssetMeta meta = LoadMeta<T>(path);
+            AssetMeta meta = LoadMetaFromDisk<T>(path);
             Ref<T> asset = nullptr;
 
             if constexpr (std::is_same_v<T, Texture2D>)
             {
-                asset = Texture2D::Create(std::filesystem::relative(path).string());
+                TextureSettings settings;
+                if (meta.Properties.contains("WrapS"))
+                    settings.HorizontalWrap = Utils::StringToTextureWrap(meta.Properties["WrapS"]);
+                if (meta.Properties.contains("WrapT"))
+                    settings.VerticalWrap = Utils::StringToTextureWrap(meta.Properties["WrapT"]);
+                if (meta.Properties.contains("MinFilter"))
+                    settings.MinFilter = Utils::StringToTextureFiltering(meta.Properties["MinFilter"]);
+                if (meta.Properties.contains("MagFilter"))
+                    settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
+                asset = Texture2D::Create(std::filesystem::relative(path).string(), settings);
             }
             else if constexpr (std::is_same_v<T, Shader>)
             {
@@ -275,7 +331,8 @@ namespace Titan
             if (reloaded)
                 *existing = *reloaded;
 
-            AssetLibrary::Add(path, existing);
+            AssetMeta meta = Assets::LoadMeta(path);
+            AssetLibrary::Add<T>(path, existing, meta);
         }
 
     } // namespace Assets

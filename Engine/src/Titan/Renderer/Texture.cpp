@@ -20,7 +20,7 @@ namespace Titan
         return nullptr;
     }
 
-    Ref<Texture2D> Texture2D::Create(const std::string& path)
+    Ref<Texture2D> Texture2D::Create(const std::string& path, TextureSettings settings)
     {
         switch (Renderer::GetAPI())
         {
@@ -28,7 +28,7 @@ namespace Titan
                 TI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLTexture2D>(path);
+                return CreateRef<OpenGLTexture2D>(path, settings);
         }
 
         TI_CORE_ASSERT(false, "Unknown RendererAPI!");

@@ -1,0 +1,8 @@
+ID: 11136587640694804424
+Type: 1
+Source: resources/icons/simulate.svg
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

@@ -13,7 +13,7 @@
 namespace Titan
 {
 
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : m_Path(path)
+    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, TextureSettings settings) : m_Path(path)
     {
         TI_PROFILE_FUNCTION();
 
@@ -78,10 +78,50 @@ namespace Titan
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        auto wrapToGL = [](TextureWrap wrap) -> GLenum
+        {
+            switch (wrap)
+            {
+                case TextureWrap::Repeat:
+                    return GL_REPEAT;
+                case TextureWrap::MirroredRepeat:
+                    return GL_MIRRORED_REPEAT;
+                case TextureWrap::ClampToEdge:
+                    return GL_CLAMP_TO_EDGE;
+                case TextureWrap::ClampToBorder:
+                    return GL_CLAMP_TO_BORDER;
+                default:
+                    return GL_REPEAT;
+            }
+        };
+
+        auto filterToGL = [](TextureFiltering filter) -> GLenum
+        {
+            switch (filter)
+            {
+                case TextureFiltering::Nearest:
+                    return GL_NEAREST;
+                case TextureFiltering::MipmapNearest:
+                    return GL_NEAREST_MIPMAP_NEAREST;
+                case TextureFiltering::Linear:
+                    return GL_LINEAR;
+                case TextureFiltering::MipmapLinear:
+                    return GL_LINEAR_MIPMAP_LINEAR;
+                default:
+                    return GL_LINEAR;
+            }
+        };
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, filterToGL(settings.MinFilter));
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, filterToGL(settings.MagFilter));
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, wrapToGL(settings.HorizontalWrap));
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, wrapToGL(settings.VerticalWrap));
+
+        if (settings.MinFilter == TextureFiltering::MipmapNearest ||
+            settings.MinFilter == TextureFiltering::MipmapLinear)
+        {
+            glGenerateTextureMipmap(m_RendererID);
+        }
 
         glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 

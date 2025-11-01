@@ -20,7 +20,6 @@ build
 **.opt
 */imgui.ini
 **profile-*.json
-**.meta
 **.generated.**
 out
 !**/Optick.exe

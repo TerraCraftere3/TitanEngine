@@ -1,0 +1,8 @@
+ID: 13327787088091193941
+Type: 1
+Source: assets\textures\pixelart.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Nearest
+  MagFilter: Nearest

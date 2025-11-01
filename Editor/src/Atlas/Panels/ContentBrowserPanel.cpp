@@ -90,6 +90,8 @@ namespace Titan
                                        {0, 1}, {1, 0}))
                 {
                     m_Selected = path;
+                    m_SelectedType = GetTypeForFile(path);
+                    m_SelectedMeta = Assets::LoadMeta(path);
                 }
 
                 if (ImGui::BeginDragDropSource())
@@ -146,7 +148,7 @@ namespace Titan
             ImGui::InputText("Tag", m_SelectedBuf.data(), m_SelectedBuf.size(), ImGuiInputTextFlags_ReadOnly);
             ImGui::EndDisabled();
 
-            auto type = GetTypeForFile(m_Selected);
+            auto type = m_SelectedType;
             if (type != AssetType::None)
             {
                 if (type == AssetType::Texture2D)

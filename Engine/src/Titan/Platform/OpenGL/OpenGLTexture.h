@@ -14,7 +14,7 @@ namespace Titan
     class OpenGLTexture2D : public Texture2D
     {
     public:
-        OpenGLTexture2D(const std::string& path);
+        OpenGLTexture2D(const std::string& path, TextureSettings settings);
         OpenGLTexture2D(uint32_t width, uint32_t height);
         virtual ~OpenGLTexture2D();
 

@@ -23,6 +23,8 @@ namespace Titan
     private:
         std::filesystem::path m_CurrentDirectory;
         std::filesystem::path m_Selected;
+        AssetType m_SelectedType;
+        AssetMeta m_SelectedMeta;
         std::vector<char> m_SelectedBuf = std::vector<char>(1024);
         std::string m_LastSelectedStr;
 
