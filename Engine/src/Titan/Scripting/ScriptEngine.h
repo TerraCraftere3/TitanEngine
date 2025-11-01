@@ -4,6 +4,7 @@
 #include "Titan/Scene/Scene.h"
 
 #include <filesystem>
+#include <map>
 #include <string>
 
 extern "C"
@@ -13,10 +14,40 @@ extern "C"
     typedef struct _MonoMethod MonoMethod;
     typedef struct _MonoAssembly MonoAssembly;
     typedef struct _MonoImage MonoImage;
+    typedef struct _MonoClassField MonoClassField;
 }
 
 namespace Titan
 {
+
+    enum class ScriptFieldType
+    {
+        None = 0,
+        Float,
+        Double,
+        Bool,
+        Char,
+        Byte,
+        Short,
+        Int,
+        Long,
+        UByte,
+        UShort,
+        UInt,
+        ULong,
+        Vector2,
+        Vector3,
+        Vector4,
+        Entity
+    };
+
+    struct ScriptField
+    {
+        ScriptFieldType Type;
+        std::string Name;
+
+        MonoClassField* ClassField;
+    };
 
     class ScriptClass
     {
@@ -28,11 +59,17 @@ namespace Titan
         MonoMethod* GetMethod(const std::string& name, int parameterCount);
         MonoObject* InvokeMethod(MonoObject* instance, MonoMethod* method, void** params = nullptr);
 
+        const std::map<std::string, ScriptField>& GetFields() const { return m_Fields; }
+
     private:
         std::string m_ClassNamespace;
         std::string m_ClassName;
 
+        std::map<std::string, ScriptField> m_Fields;
+
         MonoClass* m_MonoClass = nullptr;
+
+        friend class ScriptEngine;
     };
 
     class ScriptInstance
@@ -43,6 +80,28 @@ namespace Titan
         void InvokeOnCreate();
         void InvokeOnUpdate(float ts);
 
+        Ref<ScriptClass> GetScriptClass() { return m_ScriptClass; }
+
+        template <typename T>
+        T GetFieldValue(const std::string& name)
+        {
+            bool success = GetFieldValueInternal(name, s_FieldValueBuffer);
+            if (!success)
+                return T();
+
+            return *(T*)s_FieldValueBuffer;
+        }
+
+        template <typename T>
+        void SetFieldValue(const std::string& name, const T& value)
+        {
+            SetFieldValueInternal(name, &value);
+        }
+
+    private:
+        bool GetFieldValueInternal(const std::string& name, void* buffer);
+        bool SetFieldValueInternal(const std::string& name, const void* value);
+
     private:
         Ref<ScriptClass> m_ScriptClass;
 
@@ -50,6 +109,8 @@ namespace Titan
         MonoMethod* m_Constructor = nullptr;
         MonoMethod* m_OnCreateMethod = nullptr;
         MonoMethod* m_OnUpdateMethod = nullptr;
+
+        inline static char s_FieldValueBuffer[8];
     };
 
     class ScriptEngine
@@ -69,6 +130,7 @@ namespace Titan
         static void OnUpdateEntity(Entity entity, Timestep ts);
 
         static Scene* GetSceneContext();
+        static Ref<ScriptInstance> GetEntityScriptInstance(UUID entityID);
         static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
 
         static MonoImage* GetCoreAssemblyImage();

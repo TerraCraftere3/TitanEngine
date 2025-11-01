@@ -186,6 +186,9 @@ namespace Titan
             ext == ".hlsl" || ext == ".slang")
             return m_FileCodeIcon;
 
+        if (ext == ".cs")
+            return m_FileCodeIcon;
+
         if (ext == ".phys2d")
             return m_FileMaterialIcon;
 
