@@ -135,6 +135,8 @@ namespace Titan
         bool GetFieldValueInternal(const std::string& name, void* buffer);
         bool SetFieldValueInternal(const std::string& name, const void* value);
 
+        MonoObject* GetManagedObject() { return m_Instance; }
+
     private:
         Ref<ScriptClass> m_ScriptClass;
 
@@ -173,6 +175,8 @@ namespace Titan
         static ScriptFieldMap& GetScriptFieldMap(Entity entity);
 
         static MonoImage* GetCoreAssemblyImage();
+
+        static MonoObject* GetManagedInstance(UUID uuid);
 
     private:
         static void InitMono();
