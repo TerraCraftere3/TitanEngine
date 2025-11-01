@@ -86,9 +86,10 @@ namespace Titan
                 case ShaderDataType::Float4:
                 {
                     glEnableVertexAttribArray(m_VertexBufferIndex);
-                    glVertexAttribPointer(
-                        m_VertexBufferIndex, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type),
-                        element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.Offset);
+                    glVertexAttribPointer(m_VertexBufferIndex, element.GetComponentCount(),
+                                          ShaderDataTypeToOpenGLBaseType(element.Type),
+                                          element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(),
+                                          (const void*)(uintptr_t)element.Offset);
                     m_VertexBufferIndex++;
                     break;
                 }
@@ -101,7 +102,7 @@ namespace Titan
                     glEnableVertexAttribArray(m_VertexBufferIndex);
                     glVertexAttribIPointer(m_VertexBufferIndex, element.GetComponentCount(),
                                            ShaderDataTypeToOpenGLBaseType(element.Type), layout.GetStride(),
-                                           (const void*)element.Offset);
+                                           (const void*)(uintptr_t)element.Offset);
                     m_VertexBufferIndex++;
                     break;
                 }
@@ -114,7 +115,7 @@ namespace Titan
                         glEnableVertexAttribArray(m_VertexBufferIndex);
                         glVertexAttribPointer(m_VertexBufferIndex, count, ShaderDataTypeToOpenGLBaseType(element.Type),
                                               element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(),
-                                              (const void*)(element.Offset + sizeof(float) * count * i));
+                                              (const void*)(uintptr_t)(element.Offset + sizeof(float) * count * i));
                         glVertexAttribDivisor(m_VertexBufferIndex, 1);
                         m_VertexBufferIndex++;
                     }
