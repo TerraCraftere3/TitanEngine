@@ -64,8 +64,7 @@ namespace Titan
         public static bool operator !=(Vector3 a, Vector3 b) => !(a == b);
 
         // --- Methods ---
-        public float Length()
-            => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
+        public float Length() => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
 
         public float LengthSquared() => X * X + Y * Y + Z * Z;
 

@@ -12,15 +12,8 @@ namespace Sandbox
     {
         public float DistanceFromPlayer = 5.0f;
 
-        private Entity Player;
-
-        void OnCreate() { Player = FindEntityByName("Player"); }
-
         void OnUpdate(float ts)
         {
-            if (Player != null)
-                Translation = new Vector3(Player.Translation.XY, DistanceFromPlayer);
-
             float speed = 1.0f;
             Vector3 velocity = Vector3.Zero;
 

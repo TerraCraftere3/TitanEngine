@@ -127,6 +127,9 @@ namespace Titan
         MonoAssembly* AppAssembly = nullptr;
         MonoImage* AppAssemblyImage = nullptr;
 
+        std::filesystem::path CoreAssemblyFilepath;
+        std::filesystem::path AppAssemblyFilepath;
+
         ScriptClass EntityClass;
 
         std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
@@ -134,6 +137,7 @@ namespace Titan
         std::unordered_map<UUID, ScriptFieldMap> EntityScriptFields;
 
         // Runtime
+
         Scene* SceneContext = nullptr;
     };
 
@@ -141,19 +145,51 @@ namespace Titan
 
     void ScriptEngine::Init()
     {
-        TI_PROFILE_FUNCTION();
         s_Data = new ScriptEngineData();
 
         InitMono();
+        ScriptGlue::RegisterFunctions();
+
         LoadAssembly("resources/scripts/ScriptCore.dll");
         LoadAppAssembly("resources/scripts/Sandbox.dll");
         LoadAssemblyClasses();
 
         ScriptGlue::RegisterComponents();
-        ScriptGlue::RegisterFunctions();
 
         // Retrieve and instantiate class
         s_Data->EntityClass = ScriptClass("Titan", "Entity", true);
+#if 0
+	
+		MonoObject* instance = s_Data->EntityClass.Instantiate();
+	
+		// Call method
+		MonoMethod* printMessageFunc = s_Data->EntityClass.GetMethod("PrintMessage", 0);
+		s_Data->EntityClass.InvokeMethod(instance, printMessageFunc);
+
+		// Call method with param
+		MonoMethod* printIntFunc = s_Data->EntityClass.GetMethod("PrintInt", 1);
+
+		int value = 5;
+		void* param = &value;
+
+		s_Data->EntityClass.InvokeMethod(instance, printIntFunc, &param);
+
+		MonoMethod* printIntsFunc = s_Data->EntityClass.GetMethod("PrintInts", 2);
+		int value2 = 508;
+		void* params[2] =
+		{
+			&value,
+			&value2
+		};
+		s_Data->EntityClass.InvokeMethod(instance, printIntsFunc, params);
+
+		MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello World from C++!");
+		MonoMethod* printCustomMessageFunc = s_Data->EntityClass.GetMethod("PrintCustomMessage", 1);
+		void* stringParam = monoString;
+		s_Data->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
+
+		TI_CORE_ASSERT(false);
+#endif
     }
 
     void ScriptEngine::Shutdown()
@@ -175,12 +211,12 @@ namespace Titan
 
     void ScriptEngine::ShutdownMono()
     {
-        // NOTE(Yan): mono is a little confusing to shutdown, so maybe come back to this
+        mono_domain_set(mono_get_root_domain(), false);
 
-        // mono_domain_unload(s_Data->AppDomain);
+        mono_domain_unload(s_Data->AppDomain);
         s_Data->AppDomain = nullptr;
 
-        // mono_jit_cleanup(s_Data->RootDomain);
+        mono_jit_cleanup(s_Data->RootDomain);
         s_Data->RootDomain = nullptr;
     }
 
@@ -191,6 +227,7 @@ namespace Titan
         mono_domain_set(s_Data->AppDomain, true);
 
         // Move this maybe
+        s_Data->CoreAssemblyFilepath = filepath;
         s_Data->CoreAssembly = Utils::LoadMonoAssembly(filepath);
         s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
         // Utils::PrintAssemblyTypes(s_Data->CoreAssembly);
@@ -199,6 +236,7 @@ namespace Titan
     void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
     {
         // Move this maybe
+        s_Data->AppAssemblyFilepath = filepath;
         s_Data->AppAssembly = Utils::LoadMonoAssembly(filepath);
         auto assemb = s_Data->AppAssembly;
         s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
@@ -206,9 +244,24 @@ namespace Titan
         // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
     }
 
+    void ScriptEngine::ReloadAssembly()
+    {
+        mono_domain_set(mono_get_root_domain(), false);
+
+        mono_domain_unload(s_Data->AppDomain);
+
+        LoadAssembly(s_Data->CoreAssemblyFilepath);
+        LoadAppAssembly(s_Data->AppAssemblyFilepath);
+        LoadAssemblyClasses();
+
+        ScriptGlue::RegisterComponents();
+
+        // Retrieve and instantiate class
+        s_Data->EntityClass = ScriptClass("Titan", "Entity", true);
+    }
+
     void ScriptEngine::OnRuntimeStart(Scene* scene)
     {
-        TI_PROFILE_FUNCTION();
         s_Data->SceneContext = scene;
     }
 
@@ -219,7 +272,6 @@ namespace Titan
 
     void ScriptEngine::OnCreateEntity(Entity entity)
     {
-        TI_PROFILE_FUNCTION();
         const auto& sc = entity.GetComponent<ScriptComponent>();
         if (ScriptEngine::EntityClassExists(sc.ClassName))
         {
@@ -228,6 +280,7 @@ namespace Titan
             Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
             s_Data->EntityInstances[entityID] = instance;
 
+            // Copy field values
             if (s_Data->EntityScriptFields.find(entityID) != s_Data->EntityScriptFields.end())
             {
                 const ScriptFieldMap& fieldMap = s_Data->EntityScriptFields.at(entityID);
@@ -241,7 +294,6 @@ namespace Titan
 
     void ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
     {
-        TI_PROFILE_FUNCTION();
         UUID entityUUID = entity.GetUUID();
         TI_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
 
@@ -263,20 +315,19 @@ namespace Titan
         return it->second;
     }
 
-    void ScriptEngine::OnRuntimeStop()
-    {
-        TI_PROFILE_FUNCTION();
-        s_Data->SceneContext = nullptr;
-
-        s_Data->EntityInstances.clear();
-    }
-
     Ref<ScriptClass> ScriptEngine::GetEntityClass(const std::string& name)
     {
         if (s_Data->EntityClasses.find(name) == s_Data->EntityClasses.end())
             return nullptr;
 
         return s_Data->EntityClasses.at(name);
+    }
+
+    void ScriptEngine::OnRuntimeStop()
+    {
+        s_Data->SceneContext = nullptr;
+
+        s_Data->EntityInstances.clear();
     }
 
     std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses()

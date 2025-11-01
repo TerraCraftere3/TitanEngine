@@ -7,6 +7,7 @@
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
 #include <Titan/Scene/SceneSerializer.h>
+#include <Titan/Scripting/ScriptEngine.h>
 #include <Titan/Utils/Math.h>
 #include <Titan/Utils/PlatformUtils.h>
 
@@ -178,6 +179,13 @@ namespace Titan
 
                 if (ImGui::MenuItem("Exit", "Alt+F4"))
                     Application::GetInstance()->Close();
+
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Scripts"))
+            {
+                if (ImGui::MenuItem("Reload", "Ctrl+R"))
+                    ScriptEngine::ReloadAssembly();
 
                 ImGui::EndMenu();
             }
@@ -464,19 +472,35 @@ namespace Titan
                 break;
             }
             case KeyCode::Q:
-                m_GizmoType = -1;
+                if (!ImGuizmo::IsUsing())
+                {
+                    m_GizmoType = -1;
+                }
                 break;
 
             case KeyCode::W:
-                m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                if (!ImGuizmo::IsUsing())
+                {
+                    m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                }
                 break;
 
             case KeyCode::E:
-                m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                if (!ImGuizmo::IsUsing())
+                {
+                    m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+                }
                 break;
 
             case KeyCode::R:
-                m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                if (control)
+                {
+                    ScriptEngine::ReloadAssembly();
+                }
+                else if (!ImGuizmo::IsUsing())
+                {
+                    m_GizmoType = ImGuizmo::OPERATION::SCALE;
+                }
                 break;
         }
 
