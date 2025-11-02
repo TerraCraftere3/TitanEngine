@@ -5,6 +5,7 @@
 #include "ScriptableEntity.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Texture.h"
 
 namespace Titan
@@ -63,6 +64,15 @@ namespace Titan
 
         CircleRendererComponent() = default;
         CircleRendererComponent(const CircleRendererComponent&) = default;
+    };
+
+    struct MeshRendererComponent
+    {
+        Ref<Mesh> MeshRef;
+
+        MeshRendererComponent() = default;
+        MeshRendererComponent(const MeshRendererComponent&) = default;
+        MeshRendererComponent(const Ref<Mesh>& mesh) : MeshRef(mesh) {}
     };
 
     struct CameraComponent
@@ -151,6 +161,6 @@ namespace Titan
     };
 
     using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent,
-                                         CameraComponent, ScriptComponent, NativeScriptComponent, Rigidbody2DComponent,
-                                         BoxCollider2DComponent, CircleCollider2DComponent>;
+                                         MeshRendererComponent, CameraComponent, ScriptComponent, NativeScriptComponent,
+                                         Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 } // namespace Titan

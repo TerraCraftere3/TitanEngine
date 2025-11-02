@@ -66,6 +66,15 @@ namespace Titan
 
                 ImGui::SeparatorText("Rendering");
 
+                if (!m_SelectionContext.HasComponent<MeshRendererComponent>())
+                {
+                    if (ImGui::MenuItem("Mesh Renderer"))
+                    {
+                        m_SelectionContext.AddComponent<MeshRendererComponent>();
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+
                 if (!m_SelectionContext.HasComponent<SpriteRendererComponent>())
                 {
                     if (ImGui::MenuItem("Sprite Renderer"))
@@ -310,6 +319,25 @@ namespace Titan
                                                                     1.0f);
                                                    ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
                                                });
+        DrawComponent<MeshRendererComponent>(
+            "Mesh Renderer", entity,
+            [](auto& component)
+            {
+                float buttonWidth = ImGui::GetContentRegionAvail().x;
+                ImGui::Button(
+                    std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetFilePath() : "None").c_str(),
+                    ImVec2(buttonWidth, 0.0f));
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path meshPath = std::filesystem::path(g_AssetPath) / path;
+                        component.MeshRef = Assets::Load<Mesh>(meshPath.string());
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            });
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,
                                             [](auto& component)
                                             {

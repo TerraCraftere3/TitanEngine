@@ -4,6 +4,7 @@
 #include "Titan/PCH.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/Renderer3D.h"
 #include "Titan/Scripting/ScriptEngine.h"
 
 #include "box2d/box2d.h"
@@ -81,6 +82,7 @@ namespace Titan
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<MeshRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -116,6 +118,8 @@ namespace Titan
 
         CopyComponentIfExists<TransformComponent>(newEntity, entity);
         CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
         CopyComponentIfExists<CameraComponent>(newEntity, entity);
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -410,6 +414,7 @@ namespace Titan
     {
         TI_PROFILE_FUNCTION();
         Renderer2D::BeginScene(viewProjection);
+        Renderer3D::BeginScene(viewProjection);
 
         {
             auto spriteView = GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
@@ -432,6 +437,15 @@ namespace Titan
 
                 Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
                                        (uint32_t)entity);
+            }
+        }
+        {
+            auto meshView = GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+            for (auto entity : meshView)
+            {
+                auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
+                if (meshComp.MeshRef)
+                    Renderer3D::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
             }
         }
         if (drawOverlay)
@@ -459,26 +473,11 @@ namespace Titan
         }
 
         Renderer2D::EndScene();
+        Renderer3D::EndScene();
     }
 
     template <typename T>
     void Scene::OnComponentAdded(Entity entity, T& component)
-    {
-        static_assert(false);
-    }
-
-    template <>
-    void Scene::OnComponentAdded<IDComponent>(Entity entity, IDComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
     {
     }
 
@@ -486,40 +485,5 @@ namespace Titan
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
     {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
-    }
-
-    template <>
-    void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
-    {
-    }
-
-    template <>
-    void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
-    {
     }
 } // namespace Titan

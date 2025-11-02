@@ -251,6 +251,18 @@ namespace Titan
             out << YAML::EndMap; // CircleRendererComponent
         }
 
+        if (entity.HasComponent<MeshRendererComponent>())
+        {
+            out << YAML::Key << "MeshRendererComponent";
+            out << YAML::BeginMap; // MeshRendererComponent
+
+            auto& meshRendererComponent = entity.GetComponent<MeshRendererComponent>();
+            if (meshRendererComponent.MeshRef)
+                out << YAML::Key << "Mesh" << YAML::Value << meshRendererComponent.MeshRef->GetFilePath();
+
+            out << YAML::EndMap; // MeshRendererComponent
+        }
+
         if (entity.HasComponent<Rigidbody2DComponent>())
         {
             out << YAML::Key << "Rigidbody2DComponent";
@@ -445,6 +457,16 @@ namespace Titan
                     if (spriteRendererComponent["Texture"])
                     {
                         src.Tex = Assets::Load<Texture2D>(spriteRendererComponent["Texture"].as<std::string>());
+                    }
+                }
+
+                auto meshRendererComponent = entity["MeshRendererComponent"];
+                if (meshRendererComponent)
+                {
+                    auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
+                    if (meshRendererComponent["Mesh"])
+                    {
+                        mrc.MeshRef = Assets::Load<Mesh>(meshRendererComponent["Mesh"].as<std::string>());
                     }
                 }
 

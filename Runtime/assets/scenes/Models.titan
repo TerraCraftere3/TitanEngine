@@ -1,0 +1,29 @@
+Scene: Untitled
+Entities:
+  - Entity: 17597661931907950731
+    TagComponent:
+      Tag: Mesh
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [10, 10, 10]
+    MeshRendererComponent:
+      Mesh: assets\models\dragon_lowres.glb
+  - Entity: 7492291350219355528
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0.5, 2.5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false

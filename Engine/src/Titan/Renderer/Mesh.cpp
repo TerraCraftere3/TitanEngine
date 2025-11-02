@@ -70,7 +70,8 @@ namespace Titan
         if (!scene || !scene->mRootNode)
         {
             TI_CORE_ERROR("Failed to load mesh: {}", filepath);
-            return nullptr;
+            auto mesh = CreateRef<Mesh>();
+            return mesh;
         }
 
         RawMeshData data;
@@ -80,6 +81,7 @@ namespace Titan
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals   = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_FilePath = std::filesystem::relative(filepath).string();
 
         TI_CORE_INFO("Loaded mesh '{}' ({} vertices)", filepath, mesh->m_Positions.size());
         return mesh;

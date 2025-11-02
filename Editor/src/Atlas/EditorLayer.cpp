@@ -31,7 +31,7 @@ namespace Titan
         fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Physics.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Models.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
@@ -41,8 +41,6 @@ namespace Titan
         m_StartIcon = Assets::Load<Texture2D>("resources/icons/play.svg");
         m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
         m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
-
-        m_DragonMesh = Assets::Load<Mesh>("assets/models/dragon_lowres.glb");
     }
 
     void EditorLayer::OnDetach() {}
@@ -63,10 +61,6 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-
-                Renderer3D::BeginScene(m_EditorCamera);
-                Renderer3D::DrawMesh(m_DragonMesh, glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)), -1);
-                Renderer3D::EndScene();
                 break;
             }
             case SceneState::Simulate:
@@ -74,10 +68,6 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
-
-                Renderer3D::BeginScene(m_EditorCamera);
-                Renderer3D::DrawMesh(m_DragonMesh, glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)), -1);
-                Renderer3D::EndScene();
                 break;
             }
             case SceneState::Play:
