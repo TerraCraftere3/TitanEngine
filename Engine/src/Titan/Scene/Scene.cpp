@@ -445,7 +445,8 @@ namespace Titan
             {
                 auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
                 if (meshComp.MeshRef)
-                    Renderer3D::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
+                    Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
+                                         (uint32_t)entity);
             }
         }
         if (drawOverlay)

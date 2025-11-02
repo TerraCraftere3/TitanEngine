@@ -2,13 +2,13 @@
 
 #include "Camera.h"
 #include "EditorCamera.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan
 {
-
     class TI_API Renderer3D
     {
     public:
@@ -22,7 +22,8 @@ namespace Titan
         static void EndScene();
         static void Flush();
 
-        static void DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID = -1);
+        static void DrawMesh(const Ref<Mesh>& mesh, const Material3D& mat, const glm::mat4& transform,
+                             int entityID = -1);
 
         // Statistics
         struct Statistics

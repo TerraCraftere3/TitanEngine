@@ -1,6 +1,7 @@
 #include "Renderer3D.h"
 #include "RenderCommand.h"
 #include "Shader.h"
+#include "ShaderStorageBuffer.h"
 #include "Titan/PCH.h"
 #include "Titan/Scene/Assets.h"
 #include "UniformBuffer.h"
@@ -15,11 +16,13 @@ namespace Titan
         glm::vec3 Normal;
         glm::vec2 TexCoord;
         int EntityID;
+        int MaterialIndex = 0;
     };
 
     struct Renderer3DData
     {
         static const uint32_t MaxVertices = 100'000;
+        static const uint32_t MaxMaterials = 1000;
 
         Ref<VertexArray> VertexArray;
         Ref<VertexBuffer> VertexBuffer;
@@ -29,6 +32,12 @@ namespace Titan
 
         Ref<Shader> Shader;
         Ref<UniformBuffer> CameraUniformBuffer;
+        Ref<ShaderStorageBuffer> MaterialStorageBuffer;
+
+        // Material management
+        std::vector<Material3D> Materials;
+        std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
+        uint32_t CurrentMaterialIndex = 0;
 
         glm::mat4 ViewProjectionMatrix;
 
@@ -37,6 +46,18 @@ namespace Titan
 
     static Renderer3DData s_3DData;
     static bool s_IsRendering = false;
+
+    // Helper function to hash materials
+    static size_t HashMaterial(const Material3D& mat)
+    {
+        size_t hash = 0;
+        const uint8_t* data = reinterpret_cast<const uint8_t*>(&mat);
+        for (size_t i = 0; i < sizeof(Material3D); ++i)
+        {
+            hash = hash * 31 + data[i];
+        }
+        return hash;
+    }
 
     void Renderer3D::Init()
     {
@@ -55,17 +76,19 @@ namespace Titan
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float3, "a_Normal"},
             {ShaderDataType::Float2, "a_TexCoord"},
-            {ShaderDataType::Int,    "a_EntityID"}
+            {ShaderDataType::Int,    "a_EntityID"},
+            {ShaderDataType::Int,    "a_MaterialIndex"}
         });
         // clang-format on
 
         s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
 
-        // Create camera uniform buffer
         s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(glm::mat4), 0);
-
-        // Load shader
+        s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(16 * 1024 * 1024, 1); // 16 MB for materials
         s_3DData.Shader = Shader::Create("assets/shader/Mesh.slang");
+
+        // Reserve space for materials
+        s_3DData.Materials.reserve(s_3DData.MaxMaterials);
     }
 
     void Renderer3D::Shutdown()
@@ -79,6 +102,10 @@ namespace Titan
         s_3DData.VertexBuffer.reset();
         s_3DData.Shader.reset();
         s_3DData.CameraUniformBuffer.reset();
+        s_3DData.MaterialStorageBuffer.reset();
+
+        s_3DData.Materials.clear();
+        s_3DData.MaterialIndexMap.clear();
     }
 
     void Renderer3D::BeginScene(const EditorCamera& camera)
@@ -113,6 +140,11 @@ namespace Titan
 
         Flush();
         s_IsRendering = false;
+
+        // Clear materials for next frame
+        s_3DData.Materials.clear();
+        s_3DData.MaterialIndexMap.clear();
+        s_3DData.CurrentMaterialIndex = 0;
     }
 
     void Renderer3D::StartBatch()
@@ -128,8 +160,18 @@ namespace Titan
         if (s_3DData.VertexCount == 0)
             return;
 
+        // Upload materials to GPU
+        if (!s_3DData.Materials.empty())
+        {
+            s_3DData.MaterialStorageBuffer->SetData(s_3DData.Materials.data(),
+                                                    s_3DData.Materials.size() * sizeof(Material3D));
+        }
+
+        // Upload vertex data
         uint32_t dataSize = (uint32_t)((uint8_t*)s_3DData.VertexBufferPtr - (uint8_t*)s_3DData.VertexBufferBase);
         s_3DData.VertexBuffer->SetData(s_3DData.VertexBufferBase, dataSize);
+        s_3DData.Shader->Bind();
+        s_3DData.MaterialStorageBuffer->Bind();
 
         RenderCommand::DrawArrays(s_3DData.VertexArray, s_3DData.VertexCount);
 
@@ -145,7 +187,32 @@ namespace Titan
         StartBatch();
     }
 
-    void Renderer3D::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
+    static uint32_t GetOrAddMaterial(const Material3D& mat)
+    {
+        size_t hash = HashMaterial(mat);
+
+        auto it = s_3DData.MaterialIndexMap.find(hash);
+        if (it != s_3DData.MaterialIndexMap.end())
+        {
+            return it->second;
+        }
+
+        // Add new material
+        uint32_t newIndex = s_3DData.CurrentMaterialIndex++;
+
+        if (newIndex >= s_3DData.MaxMaterials)
+        {
+            TI_CORE_WARN("Material limit reached! Using default material.");
+            return 0;
+        }
+
+        s_3DData.Materials.push_back(mat);
+        s_3DData.MaterialIndexMap[hash] = newIndex;
+
+        return newIndex;
+    }
+
+    void Renderer3D::DrawMesh(const Ref<Mesh>& mesh, const Material3D& mat, const glm::mat4& transform, int entityID)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Must call BeginScene() before DrawMesh()");
@@ -158,6 +225,9 @@ namespace Titan
         const auto& texCoords = mesh->GetTexCoords();
 
         uint32_t totalVertexCount = (uint32_t)positions.size();
+
+        // Get or add material index
+        uint32_t materialIndex = GetOrAddMaterial(mat);
 
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
 
@@ -187,10 +257,11 @@ namespace Titan
                 glm::vec4 transformedPos = transform * glm::vec4(positions[vertexIndex], 1.0f);
                 s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
 
-                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]); // WORLD NORMAL
+                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]);
 
                 s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
                 s_3DData.VertexBufferPtr->EntityID = entityID;
+                s_3DData.VertexBufferPtr->MaterialIndex = materialIndex;
 
                 s_3DData.VertexBufferPtr++;
             }

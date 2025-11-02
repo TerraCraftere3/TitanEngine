@@ -5,6 +5,7 @@
 #include "ScriptableEntity.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Material.h"
 #include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Texture.h"
 
@@ -69,6 +70,7 @@ namespace Titan
     struct MeshRendererComponent
     {
         Ref<Mesh> MeshRef;
+        Material3D Material;
 
         MeshRendererComponent() = default;
         MeshRendererComponent(const MeshRendererComponent&) = default;
