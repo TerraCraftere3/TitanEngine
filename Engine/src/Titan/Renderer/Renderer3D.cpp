@@ -159,22 +159,17 @@ namespace Titan
 
         uint32_t totalVertexCount = (uint32_t)positions.size();
 
-        // Pre-compute transformation matrices once
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
 
-        // Process mesh in triangle-aligned chunks
         uint32_t vertexOffset = 0;
         while (vertexOffset < totalVertexCount)
         {
-            // Calculate how many vertices we can fit in this batch
             uint32_t availableSpace = s_3DData.MaxVertices - s_3DData.VertexCount;
             uint32_t remainingVertices = totalVertexCount - vertexOffset;
 
-            // Round down to nearest multiple of 3 to keep triangles intact
             uint32_t verticesThisChunk = min(availableSpace, remainingVertices);
             verticesThisChunk = (verticesThisChunk / 3) * 3;
 
-            // If we can't fit even one triangle, flush and reset
             if (verticesThisChunk == 0)
             {
                 FlushAndReset();
@@ -182,11 +177,9 @@ namespace Titan
                 verticesThisChunk = min(availableSpace, remainingVertices);
                 verticesThisChunk = (verticesThisChunk / 3) * 3;
 
-                // Safety check: if MaxVertices can't hold a single triangle
                 TI_CORE_ASSERT(verticesThisChunk >= 3, "MaxVertices too small to render triangles!");
             }
 
-            // Transform and add vertices for this chunk
             for (uint32_t i = 0; i < verticesThisChunk; ++i)
             {
                 uint32_t vertexIndex = vertexOffset + i;
@@ -194,8 +187,7 @@ namespace Titan
                 glm::vec4 transformedPos = transform * glm::vec4(positions[vertexIndex], 1.0f);
                 s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
 
-                // Transform normal (use inverse transpose for correct normal transformation)
-                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]);
+                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]); // WORLD NORMAL
 
                 s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
                 s_3DData.VertexBufferPtr->EntityID = entityID;

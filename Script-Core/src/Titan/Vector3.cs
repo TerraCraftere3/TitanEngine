@@ -63,6 +63,18 @@ namespace Titan
 
         public static bool operator !=(Vector3 a, Vector3 b) => !(a == b);
 
+        public override int GetHashCode()
+        {
+            unchecked 
+            {
+                int hash = 17;
+                hash = hash * 23 + X.GetHashCode();
+                hash = hash * 23 + Y.GetHashCode();
+                hash = hash * 23 + Z.GetHashCode();
+                return hash;
+            }
+        }
+
         // --- Methods ---
         public float Length() => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
 

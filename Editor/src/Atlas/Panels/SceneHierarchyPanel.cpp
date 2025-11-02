@@ -127,7 +127,19 @@ namespace Titan
                 DrawAddComponent<CircleCollider2DComponent>(m_SelectionContext, "Circle Collider 2D");
 
                 ImGui::SeparatorText("Scripts");
-                DrawAddComponent<ScriptComponent>(m_SelectionContext, "Script");
+                DrawAddComponent<ScriptComponent>(m_SelectionContext, "Empty Script");
+                for (const auto& [name, scriptClass] : ScriptEngine::GetEntityClasses())
+                {
+                    if (!m_SelectionContext.HasComponent<ScriptComponent>())
+                    {
+                        if (ImGui::MenuItem(("\"" + name + "\" Script").c_str()))
+                        {
+                            auto& sc = m_SelectionContext.AddComponent<ScriptComponent>();
+                            sc.ClassName = name;
+                            ImGui::CloseCurrentPopup();
+                        }
+                    }
+                }
 
                 ImGui::EndPopup();
             }

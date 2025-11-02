@@ -150,6 +150,46 @@ namespace Titan
         entity.GetComponent<TransformComponent>().Translation = *translation;
     }
 
+    static void TransformComponent_GetRotation(UUID entityID, glm::vec3* outRotation)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outRotation = entity.GetComponent<TransformComponent>().Rotation;
+    }
+
+    static void TransformComponent_SetRotation(UUID entityID, glm::vec3* rotation)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<TransformComponent>().Rotation = *rotation;
+    }
+
+    static void TransformComponent_GetScale(UUID entityID, glm::vec3* outScale)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outScale = entity.GetComponent<TransformComponent>().Scale;
+    }
+
+    static void TransformComponent_SetScale(UUID entityID, glm::vec3* scale)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<TransformComponent>().Scale = *scale;
+    }
+
     static void Rigidbody2DComponent_ApplyLinearImpulse(UUID entityID, glm::vec2* impulse, glm::vec2* point, bool wake)
     {
         Scene* scene = ScriptEngine::GetSceneContext();
@@ -235,6 +275,10 @@ namespace Titan
 
         TI_ADD_INTERNAL_CALL(TransformComponent_GetTranslation);
         TI_ADD_INTERNAL_CALL(TransformComponent_SetTranslation);
+        TI_ADD_INTERNAL_CALL(TransformComponent_GetRotation);
+        TI_ADD_INTERNAL_CALL(TransformComponent_SetRotation);
+        TI_ADD_INTERNAL_CALL(TransformComponent_GetScale);
+        TI_ADD_INTERNAL_CALL(TransformComponent_SetScale);
 
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
