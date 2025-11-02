@@ -21,6 +21,19 @@ namespace Titan
         m_SelectionContext = {};
     }
 
+    template <typename T>
+    void DrawAddComponent(Entity& entity, const char* name)
+    {
+        if (!entity.HasComponent<T>())
+        {
+            if (ImGui::MenuItem(name))
+            {
+                entity.AddComponent<T>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+    }
+
     void SceneHierarchyPanel::OnImGuiRender()
     {
         ImGui::Begin("Scene Hierarchy");
@@ -37,8 +50,53 @@ namespace Titan
 
         if (ImGui::BeginPopupContextWindow(0, 1))
         {
-            if (ImGui::MenuItem("Create Empty Entity"))
-                m_Context->CreateEntity("Empty Entity");
+            if (m_SelectionContext)
+            {
+                if (ImGui::MenuItem("Delete"))
+                {
+                    m_Context->DestroyEntity(m_SelectionContext);
+                    m_SelectionContext = {};
+                }
+                if (ImGui::MenuItem("Duplicate"))
+                {
+                    m_Context->DuplicateEntity(m_SelectionContext);
+                }
+            }
+            else
+            {
+                if (ImGui::MenuItem("Create Empty Entity"))
+                    m_Context->CreateEntity("Empty Entity");
+
+                if (ImGui::MenuItem("Create Camera Entity"))
+                {
+                    Entity cameraEntity = m_Context->CreateEntity("Camera");
+                    cameraEntity.AddComponent<CameraComponent>();
+                }
+                ImGui::SeparatorText("2D");
+                if (ImGui::MenuItem("Create Sprite"))
+                {
+                    Entity spriteEntity = m_Context->CreateEntity("Sprite");
+                    spriteEntity.AddComponent<SpriteRendererComponent>();
+                }
+                if (ImGui::MenuItem("Create Circle"))
+                {
+                    Entity circleEntity = m_Context->CreateEntity("Circle");
+                    circleEntity.AddComponent<CircleRendererComponent>();
+                }
+                ImGui::SeparatorText("3D Primitives");
+                if (ImGui::MenuItem("Create Cube"))
+                {
+                    Entity cubeEntity = m_Context->CreateEntity("Cube");
+                    auto& mrc = cubeEntity.AddComponent<MeshRendererComponent>();
+                    mrc.MeshRef = Mesh::CreateCube();
+                }
+                if (ImGui::MenuItem("Create Quad"))
+                {
+                    Entity quadEntity = m_Context->CreateEntity("Quad");
+                    auto& mrc = quadEntity.AddComponent<MeshRendererComponent>();
+                    mrc.MeshRef = Mesh::CreateQuad();
+                }
+            }
 
             ImGui::EndPopup();
         }
@@ -55,82 +113,21 @@ namespace Titan
 
             if (ImGui::BeginPopup("AddComponent"))
             {
-                if (!m_SelectionContext.HasComponent<CameraComponent>())
-                {
-                    if (ImGui::MenuItem("Camera"))
-                    {
-                        m_SelectionContext.AddComponent<CameraComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
+                DrawAddComponent<CameraComponent>(m_SelectionContext, "Camera");
 
                 ImGui::SeparatorText("Rendering");
-
-                if (!m_SelectionContext.HasComponent<MeshRendererComponent>())
-                {
-                    if (ImGui::MenuItem("Mesh Renderer"))
-                    {
-                        m_SelectionContext.AddComponent<MeshRendererComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
-
-                if (!m_SelectionContext.HasComponent<SpriteRendererComponent>())
-                {
-                    if (ImGui::MenuItem("Sprite Renderer"))
-                    {
-                        m_SelectionContext.AddComponent<SpriteRendererComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
-
-                if (!m_SelectionContext.HasComponent<CircleRendererComponent>())
-                {
-                    if (ImGui::MenuItem("Circle Renderer"))
-                    {
-                        m_SelectionContext.AddComponent<CircleRendererComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
+                DrawAddComponent<MeshRendererComponent>(m_SelectionContext, "Mesh Renderer");
+                DrawAddComponent<SpriteRendererComponent>(m_SelectionContext, "Sprite Renderer");
+                DrawAddComponent<CircleRendererComponent>(m_SelectionContext, "Circle Renderer");
 
                 ImGui::SeparatorText("Physics");
+                DrawAddComponent<Rigidbody2DComponent>(m_SelectionContext, "Rigidbody 2D");
+                DrawAddComponent<BoxCollider2DComponent>(m_SelectionContext, "Box Collider 2D");
 
-                if (!m_SelectionContext.HasComponent<Rigidbody2DComponent>())
-                {
-                    if (ImGui::MenuItem("Rigidbody 2D"))
-                    {
-                        m_SelectionContext.AddComponent<Rigidbody2DComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
-
-                if (!m_SelectionContext.HasComponent<BoxCollider2DComponent>())
-                {
-                    if (ImGui::MenuItem("Box Collider 2D"))
-                    {
-                        m_SelectionContext.AddComponent<BoxCollider2DComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
-
-                if (!m_SelectionContext.HasComponent<CircleCollider2DComponent>())
-                {
-                    if (ImGui::MenuItem("Circle Collider 2D"))
-                    {
-                        m_SelectionContext.AddComponent<CircleCollider2DComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
+                DrawAddComponent<CircleCollider2DComponent>(m_SelectionContext, "Circle Collider 2D");
 
                 ImGui::SeparatorText("Scripts");
-                if (!m_SelectionContext.HasComponent<ScriptComponent>())
-                {
-                    if (ImGui::MenuItem("Script Component"))
-                    {
-                        m_SelectionContext.AddComponent<ScriptComponent>();
-                        ImGui::CloseCurrentPopup();
-                    }
-                }
+                DrawAddComponent<ScriptComponent>(m_SelectionContext, "Script");
 
                 ImGui::EndPopup();
             }

@@ -56,8 +56,75 @@ namespace Titan
             ProcessNode(node->mChildren[i], scene, data);
     }
 
+    Ref<Mesh> Mesh::CreateQuad()
+    {
+        RawMeshData data;
+
+        // Quad on XY plane, centered at origin
+        data.Positions = {
+            {-0.5f, -0.5f, 0.0f}, {0.5f, -0.5f, 0.0f}, {0.5f, 0.5f, 0.0f},
+            {-0.5f, -0.5f, 0.0f}, {0.5f, 0.5f, 0.0f},  {-0.5f, 0.5f, 0.0f},
+        };
+
+        data.Normals = {
+            {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
+            {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
+        };
+
+        data.TexCoords = {
+            {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
+        };
+
+        auto mesh = CreateRef<Mesh>();
+        mesh->m_Positions = std::move(data.Positions);
+        mesh->m_Normals = std::move(data.Normals);
+        mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_FilePath = "quad";
+        return mesh;
+    }
+
+    Ref<Mesh> Mesh::CreateCube()
+    {
+        RawMeshData data;
+
+        // Simple cube vertices (6 faces, 2 triangles per face)
+        glm::vec3 positions[8] = {
+            {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
+            {-0.5f, -0.5f, 0.5f},  {0.5f, -0.5f, 0.5f},  {0.5f, 0.5f, 0.5f},  {-0.5f, 0.5f, 0.5f},
+        };
+
+        uint32_t indices[36] = {
+            0, 1, 2, 2, 3, 0, // back
+            4, 5, 6, 6, 7, 4, // front
+            4, 5, 1, 1, 0, 4, // bottom
+            7, 6, 2, 2, 3, 7, // top
+            4, 0, 3, 3, 7, 4, // left
+            5, 1, 2, 2, 6, 5  // right
+        };
+
+        for (int i = 0; i < 36; i++)
+        {
+            data.Positions.push_back(positions[indices[i]]);
+            // Simple normals based on face (approximation)
+            data.Normals.push_back(glm::normalize(positions[indices[i]]));
+            data.TexCoords.push_back({0.0f, 0.0f}); // placeholder
+        }
+
+        auto mesh = CreateRef<Mesh>();
+        mesh->m_Positions = std::move(data.Positions);
+        mesh->m_Normals = std::move(data.Normals);
+        mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_FilePath = "cube";
+        return mesh;
+    }
+
     Ref<Mesh> Mesh::Create(const std::string& filepath)
     {
+        if (filepath == "quad")
+            return CreateQuad();
+        if (filepath == "cube")
+            return CreateCube();
+
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(filepath,
             aiProcess_Triangulate |

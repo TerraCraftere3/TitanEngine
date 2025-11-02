@@ -13,9 +13,9 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 0.5, 2.5]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Translation: [2.0128627, 1.8689319, 2.3826745]
+      Rotation: [-0.4135744, 0.7014624, -9.753355e-08]
+      Scale: [0.9999847, 1, 0.99999154]
     CameraComponent:
       Camera:
         ProjectionType: 0
@@ -27,3 +27,12 @@ Entities:
         OrthographicFar: 1000
       Primary: true
       FixedAspectRatio: false
+  - Entity: 9031942194792113906
+    TagComponent:
+      Tag: Quad
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [10, 10.000004, 0.99999905]
+    MeshRendererComponent:
+      Mesh: quad

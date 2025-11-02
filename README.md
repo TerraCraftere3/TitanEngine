@@ -73,7 +73,7 @@ For now there is no linux support
   - [ ] Shadows
   - [ ] Materials
   - [ ] Custom Shader?
-  - [x] Batch Rendering?
+  - [x] Batch Rendering (semi-functioning rn)
   - [ ] Instancing?
   - [ ] Particle Systems
   - [x] Model Loading

@@ -466,7 +466,13 @@ namespace Titan
                     auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
                     if (meshRendererComponent["Mesh"])
                     {
-                        mrc.MeshRef = Assets::Load<Mesh>(meshRendererComponent["Mesh"].as<std::string>());
+                        std::string path = meshRendererComponent["Mesh"].as<std::string>();
+                        if (path == "quad")
+                            mrc.MeshRef = Mesh::CreateQuad();
+                        else if (path == "cube")
+                            mrc.MeshRef = Mesh::CreateCube();
+                        else
+                            mrc.MeshRef = Assets::Load<Mesh>(path);
                     }
                 }
 

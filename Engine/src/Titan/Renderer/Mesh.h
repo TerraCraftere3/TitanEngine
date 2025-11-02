@@ -15,6 +15,8 @@ namespace Titan
         const std::vector<glm::vec2>& GetTexCoords() const { return m_TexCoords; }
         const std::string& GetFilePath() const { return m_FilePath; }
 
+        static Ref<Mesh> CreateQuad();
+        static Ref<Mesh> CreateCube();
         static Ref<Mesh> Create(const std::string& filepath);
 
     private:
