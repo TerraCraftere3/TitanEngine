@@ -7,6 +7,7 @@
 #include <Titan/Renderer/Framebuffer.h>
 #include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
+#include <Titan/Renderer/Mesh.h>
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
@@ -82,6 +83,8 @@ namespace Titan
         Ref<Texture2D> m_StartIcon;
         Ref<Texture2D> m_SimulateIcon;
         Ref<Texture2D> m_StopIcon;
+
+        Ref<Mesh> m_DragonMesh;
 
         // Scene
         Ref<Scene> m_ActiveScene;

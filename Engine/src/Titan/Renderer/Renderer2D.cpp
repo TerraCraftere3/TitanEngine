@@ -198,6 +198,7 @@ namespace Titan
         s_Data.QuadVertexArray.reset();
         s_Data.QuadVertexBuffer.reset();
         s_Data.QuadShader.reset();
+        s_Data.CamUniformBuffer.reset();
         s_Data.WhiteTexture.reset();
         for (auto& slot : s_Data.TextureSlots)
             slot.reset();

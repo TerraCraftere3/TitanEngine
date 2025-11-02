@@ -11,7 +11,6 @@
 #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "Application.h"
 // clang-format on
 namespace Titan
 {

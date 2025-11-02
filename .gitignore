@@ -28,3 +28,4 @@ out
 !**/mono/**/*.exe
 !**/mono/**/*.pdb
 !**/mono/**/*.log
+**.blend1

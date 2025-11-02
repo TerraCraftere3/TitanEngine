@@ -1,6 +1,7 @@
 #pragma once
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
 #include "Titan/Scene/PhysicsMaterial.h"
@@ -19,7 +20,8 @@ namespace Titan
         Texture2D,
         Scene,
         Shader,
-        Physics2DMaterial
+        Physics2DMaterial,
+        Mesh
     };
 
     struct AssetMeta
@@ -166,6 +168,10 @@ namespace Titan
             {
                 meta.Type = AssetType::Physics2DMaterial;
             }
+            else if constexpr (std::is_same_v<T, Mesh>)
+            {
+                meta.Type = AssetType::Mesh;
+            }
             else
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::GenerateDefaultMeta");
             return meta;
@@ -246,6 +252,10 @@ namespace Titan
                     meta = LoadMetaFromDisk<Physics2DMaterial>(assetPath);
                     break;
 
+                case AssetType::Mesh:
+                    meta = LoadMetaFromDisk<Mesh>(assetPath);
+                    break;
+
                 case AssetType::None:
                 default:
                     meta.ID = UUID();
@@ -298,6 +308,10 @@ namespace Titan
             {
                 asset = Physics2DMaterial::Create(std::filesystem::relative(path).string());
             }
+            else if constexpr (std::is_same_v<T, Mesh>)
+            {
+                asset = Mesh::Create(std::filesystem::relative(path).string());
+            }
             else
             {
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::Load<T>");
@@ -318,21 +332,8 @@ namespace Titan
         template <typename T>
         void Reload(const std::filesystem::path& path)
         {
-            if (!AssetLibrary::Exists(path))
-            {
-                Load<T>(path);
-                return;
-            }
-
-            Ref<T> existing = AssetLibrary::Get<T>(path);
-            AssetLibrary::Remove(path);
-            Ref<T> reloaded = Load<T>(path);
-
-            if (reloaded)
-                *existing = *reloaded;
-
-            AssetMeta meta = Assets::LoadMeta(path);
-            AssetLibrary::Add<T>(path, existing, meta);
+            // TODO: Implement asset reloading (maybe in the asset itself?)
+            TI_CORE_ASSERT(false, "Not implemented yet!");
         }
 
     } // namespace Assets

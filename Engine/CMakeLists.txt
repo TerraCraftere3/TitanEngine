@@ -20,13 +20,17 @@ else()
     target_compile_definitions(engine PUBLIC TI_STATIC_LINK)
 endif()
 
+message(STATUS "Building Titan Engine as a Shared Lib is turned ${TI_BUILD_SHARED}")
 message(STATUS "Slang Libraries: ${SLANG_LIB_DIR}")
 message(STATUS "Slang Include: ${SLANG_INCLUDE_DIR}")
 message(STATUS "Mono Libraries: ${MONO_LIB_DIR}")
 message(STATUS "Mono Include: ${MONO_INCLUDE_DIR}")
+message(STATUS "Filewatch Include: ${FILEWATCH_INCLUDE_DIR}")
+message(STATUS "NanoSVG Include: ${NANOSVG_INCLUDE_DIR}")
+message(STATUS "STB Include: ${STB_INCLUDE_DIR}")
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore assimp)
 target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib" "${MONO_LIB_DIR}/libmono-static-sgen.lib")
 if(MSVC)
     target_link_libraries(engine PRIVATE

@@ -14,9 +14,14 @@ namespace Titan
 
         inline static void Clear() { s_RendererAPI->Clear(); }
 
-        inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0)
+        inline static void DrawArrays(const Ref<VertexArray>& vertexArray, uint32_t vertexCount = 0)
         {
-            s_RendererAPI->DrawIndexed(vertexArray, count);
+            s_RendererAPI->DrawArrays(vertexArray, vertexCount);
+        }
+
+        inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0)
+        {
+            s_RendererAPI->DrawIndexed(vertexArray, indexCount);
         }
 
         static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)

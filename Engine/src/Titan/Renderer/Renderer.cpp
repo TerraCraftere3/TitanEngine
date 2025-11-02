@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Renderer2D.h"
+#include "Renderer3D.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
 
@@ -12,6 +13,13 @@ namespace Titan
         TI_PROFILE_FUNCTION();
         RenderCommand::Init();
         Renderer2D::Init();
+        Renderer3D::Init();
+    }
+
+    void Renderer::Shutdown()
+    {
+        Renderer3D::Shutdown();
+        Renderer2D::Shutdown();
     }
 
     void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)

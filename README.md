@@ -56,30 +56,35 @@ For now there is no linux support
 | **Slang**     | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
 | **Optick**    | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
 | **Filewatch** | Watching Files (for e.g. Hot Code Reloading)                    | [ThomasMonkman/filewatch](https://github.com/ThomasMonkman/filewatch)     |
+| **assimp**    | Model loading                                                   | [assimp/assimp](https://github.com/assimp/assimp)                         |
 
-## ⚙️ Features
-- C# Scripting Support
-- Platform Independent Code
-- 2D Batch Renderer
-- Entity Component System
-- Scene Renderer
-
-### TODO
-- Audio
-- 3D PBR Renderer
-  - Shadows
-  - Materials
-  - Custom Shader?
-- Exporting Projects
-- Project Files
-- Custom C# UIs
-
-## 🧪 Builds
-| Tool  | Operating System | Badge                                                                                                                                                                                                                                 |
-| ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CMake | Windows          | [![CMake on Windows (with submodules, CMake >= 4.0)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/cmake_windows.yml) |
-
-(only supports Windows for now)
+## 💡 Features
+- [x] C# Scripting Support
+  - [x] Hot Reloading
+- [x] Platform Independent Code
+- [x] 2D Batch Renderer
+  - [ ] Particle Systems
+- [x] Entity Component System
+  - [ ] Children
+  - [ ] Multiple Components of same Type
+- [x] Scene Renderer
+- [ ] Audio
+- [ ] 3D PBR Renderer
+  - [ ] Shadows
+  - [ ] Materials
+  - [ ] Custom Shader?
+  - [x] Batch Rendering?
+  - [ ] Instancing?
+  - [ ] Particle Systems
+  - [x] Model Loading
+- [ ] Post Processing
+  - [ ] Bloom
+  - [ ] Tone Mapping
+  - [x] Anti Aliasing (limited rn)
+- [ ] Exporting Projects
+- [ ] Project Files
+- [ ] Custom C# UIs
+- [ ] Asset Refactor
 
 
 

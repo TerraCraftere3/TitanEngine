@@ -13,14 +13,16 @@
 // Renderer
 #include "Titan/Renderer/Buffer.h"
 #include "Titan/Renderer/Framebuffer.h"
+#include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/Renderer3D.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
 #include "Titan/Renderer/VertexArray.h"
 // Scene
-#include "Titan/Scene/AssetFile.h"
+#include "Titan/Scene/Assets.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Entity.h"
 #include "Titan/Scene/Scene.h"

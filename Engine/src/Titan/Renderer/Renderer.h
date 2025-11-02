@@ -14,6 +14,7 @@ namespace Titan
     public:
         static void OnWindowResize(uint32_t width, uint32_t height);
         static void Init();
+        static void Shutdown();
         static void BeginScene(Camera& camera, const glm::mat4& transform);
         static void EndScene();
 

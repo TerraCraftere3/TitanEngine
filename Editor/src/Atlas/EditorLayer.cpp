@@ -4,6 +4,7 @@
 #include <Titan/Core/Input.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
+#include <Titan/Renderer/Renderer3D.h>
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
 #include <Titan/Scene/SceneSerializer.h>
@@ -30,14 +31,18 @@ namespace Titan
         fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Cube.titan");
-        m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Physics.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
+
+        m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+        m_EditorCamera.MouseRotate(glm::vec2(-0.5f, 0.5f)); // Rotate
 
         m_StartIcon = Assets::Load<Texture2D>("resources/icons/play.svg");
         m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
         m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
+
+        m_DragonMesh = Assets::Load<Mesh>("assets/models/dragon_lowres.glb");
     }
 
     void EditorLayer::OnDetach() {}
@@ -48,6 +53,7 @@ namespace Titan
             m_FPS = 1.0f / ts.GetSeconds();
 
         Renderer2D::ResetStats();
+        Renderer3D::ResetStats();
         m_Framebuffer->Bind();
         m_Framebuffer->ClearAttachment(1, -1);
         switch (m_SceneState)
@@ -57,6 +63,10 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+
+                Renderer3D::BeginScene(m_EditorCamera);
+                Renderer3D::DrawMesh(m_DragonMesh, glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)), -1);
+                Renderer3D::EndScene();
                 break;
             }
             case SceneState::Simulate:
@@ -64,6 +74,10 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+
+                Renderer3D::BeginScene(m_EditorCamera);
+                Renderer3D::DrawMesh(m_DragonMesh, glm::scale(glm::mat4(1.0f), glm::vec3(10.0f)), -1);
+                Renderer3D::EndScene();
                 break;
             }
             case SceneState::Play:
@@ -200,12 +214,11 @@ namespace Titan
         ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::Separator();
 
-        auto stats = Renderer2D::GetStats();
-        ImGui::Text("Draw Calls: %d", stats.GetTotalDrawCalls());
-        ImGui::Text("Quads: %d", stats.GetTotalQuadCount());
-        ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-        ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-        ImGui::Text("Triangles: %d", stats.GetTotalTriangleCount());
+        auto stats2d = Renderer2D::GetStats();
+        auto stats3d = Renderer3D::GetStats();
+        ImGui::Text("Draw Calls: %d", stats2d.GetTotalDrawCalls() + stats3d.GetTotalDrawCalls());
+        ImGui::Text("Meshes Rendered: %d", stats3d.GetTotalMeshCount());
+        ImGui::Text("Vertices Rendered: %d", stats2d.GetTotalVertexCount() + stats3d.GetTotalVertexCount());
 
         ImGui::End();
     }

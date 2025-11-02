@@ -15,6 +15,10 @@ set(BOX2D_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(BOX2D_USER_SETTINGS OFF CACHE BOOL "" FORCE)
 set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE) # May change in the future for Mesh Sources (.assimp?)
 
 # ---- Subdirectories ----
 add_subdirectory(spdlog)
@@ -25,6 +29,7 @@ add_subdirectory(yaml-cpp)
 add_subdirectory(Box2D)
 add_subdirectory(optick)
 add_subdirectory(filewatch)
+add_subdirectory(assimp)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS
