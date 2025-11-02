@@ -251,7 +251,7 @@ namespace Titan
         {
             RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
             RenderCommand::Clear();
-            RenderScene(mainCamera->GetProjection() * glm::inverse(cameraTransform));
+            RenderScene(mainCamera->GetProjection() * glm::inverse(cameraTransform), glm::vec3(cameraTransform[3]));
         }
     }
 
@@ -282,7 +282,7 @@ namespace Titan
             }
         }
 
-        RenderScene(camera.GetViewProjection(), true);
+        RenderScene(camera.GetViewProjection(), camera.GetPosition(), true);
     }
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
@@ -292,7 +292,7 @@ namespace Titan
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
 
-        RenderScene(camera.GetViewProjection(), true);
+        RenderScene(camera.GetViewProjection(), camera.GetPosition(), true);
     }
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -410,11 +410,11 @@ namespace Titan
         m_PhysicsWorld = nullptr;
     }
 
-    void Scene::RenderScene(const glm::mat4& viewProjection, bool drawOverlay)
+    void Scene::RenderScene(const glm::mat4& viewProjection, const glm::vec3& viewPosition, bool drawOverlay)
     {
         TI_PROFILE_FUNCTION();
         Renderer2D::BeginScene(viewProjection);
-        Renderer3D::BeginScene(viewProjection);
+        Renderer3D::BeginScene(viewProjection, viewPosition);
 
         {
             auto spriteView = GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();

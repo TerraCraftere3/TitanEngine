@@ -56,7 +56,7 @@ namespace Titan
         void OnPhysics2DStart();
         void OnPhysics2DStop();
 
-        void RenderScene(const glm::mat4& viewProjection, bool drawOverlay = false);
+        void RenderScene(const glm::mat4& viewProjection, const glm::vec3& viewPosition, bool drawOverlay = false);
 
     private:
         entt::registry m_Registry;

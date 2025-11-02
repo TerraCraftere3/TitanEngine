@@ -348,8 +348,8 @@ namespace Titan
                 }
                 ImGui::Separator();
                 ImGui::ColorEdit4("Color", glm::value_ptr(component.Material.AlbedoColor));
-                ImGui::DragFloat("Metallic", &component.Material.Metallic, 1.0f, 0.0f, 128.0f);
-                ImGui::DragFloat("Roughness", &component.Material.Roughness, 1.0f, 0.0f, 128.0f);
+                ImGui::DragFloat("Metallic", &component.Material.Metallic, 0.01f, 0.0f, 1.0f);
+                ImGui::DragFloat("Roughness", &component.Material.Roughness, 0.01f, 0.0f, 1.0f);
             });
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,
                                             [](auto& component)

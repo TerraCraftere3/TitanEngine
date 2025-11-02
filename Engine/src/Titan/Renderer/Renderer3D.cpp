@@ -30,6 +30,14 @@ namespace Titan
         Vertex* VertexBufferPtr = nullptr;
         uint32_t VertexCount = 0;
 
+        struct CameraData
+        {
+            glm::mat4 ViewProjection;
+            glm::vec3 ViewPosition;
+            float Padding; // Padding to align to 16 bytes
+        };
+        CameraData CamBuffer;
+
         Ref<Shader> Shader;
         Ref<UniformBuffer> CameraUniformBuffer;
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
@@ -38,8 +46,6 @@ namespace Titan
         std::vector<Material3D> Materials;
         std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
         uint32_t CurrentMaterialIndex = 0;
-
-        glm::mat4 ViewProjectionMatrix;
 
         Renderer3D::Statistics Stats;
     };
@@ -63,7 +69,6 @@ namespace Titan
     {
         TI_PROFILE_FUNCTION();
 
-        // Allocate CPU buffer FIRST before anything else
         s_3DData.VertexBufferBase = new Vertex[s_3DData.MaxVertices];
         s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
         s_3DData.VertexCount = 0;
@@ -83,8 +88,9 @@ namespace Titan
 
         s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
 
-        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(glm::mat4), 0);
-        s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(16 * 1024 * 1024, 1); // 16 MB for materials
+        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
+        s_3DData.MaterialStorageBuffer =
+            ShaderStorageBuffer::Create(sizeof(Material3D) * s_3DData.MaxMaterials, 1); // 256 Materials Max
         s_3DData.Shader = Shader::Create("assets/shader/Mesh.slang");
 
         // Reserve space for materials
@@ -108,24 +114,14 @@ namespace Titan
         s_3DData.MaterialIndexMap.clear();
     }
 
-    void Renderer3D::BeginScene(const EditorCamera& camera)
-    {
-        BeginScene(camera.GetViewProjection());
-    }
-
-    void Renderer3D::BeginScene(const Camera& camera, const glm::mat4& transform)
-    {
-        BeginScene(camera.GetProjection() * glm::inverse(transform));
-    }
-
-    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix)
+    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix, const glm::vec3& viewPosition)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer3D::EndScene()?");
         TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "Renderer3D not initialized!");
 
-        s_3DData.ViewProjectionMatrix = viewProjectionMatrix;
-        s_3DData.CameraUniformBuffer->SetData(&s_3DData.ViewProjectionMatrix, sizeof(glm::mat4));
+        s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
+        s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(Renderer3DData::CameraData));
 
         s_3DData.Shader->Bind();
 

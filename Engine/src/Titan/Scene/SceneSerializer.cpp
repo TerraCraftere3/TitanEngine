@@ -260,6 +260,12 @@ namespace Titan
             if (meshRendererComponent.MeshRef)
                 out << YAML::Key << "Mesh" << YAML::Value << meshRendererComponent.MeshRef->GetFilePath();
 
+            out << YAML::Key << "Material";
+            out << YAML::BeginMap; // Material
+            out << YAML::Key << "AlbedoColor" << YAML::Value << meshRendererComponent.Material.AlbedoColor;
+            out << YAML::Key << "Metallic" << YAML::Value << meshRendererComponent.Material.Metallic;
+            out << YAML::Key << "Roughness" << YAML::Value << meshRendererComponent.Material.Roughness;
+            out << YAML::EndMap; // Material
             out << YAML::EndMap; // MeshRendererComponent
         }
 
@@ -473,6 +479,13 @@ namespace Titan
                             mrc.MeshRef = Mesh::CreateCube();
                         else
                             mrc.MeshRef = Assets::Load<Mesh>(path);
+                    }
+                    auto material = meshRendererComponent["Material"];
+                    if (material)
+                    {
+                        mrc.Material.AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
+                        mrc.Material.Metallic = material["Metallic"].as<float>();
+                        mrc.Material.Roughness = material["Roughness"].as<float>();
                     }
                 }
 

@@ -15,9 +15,7 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void BeginScene(const EditorCamera& camera);
-        static void BeginScene(const Camera& camera, const glm::mat4& transform);
-        static void BeginScene(const glm::mat4& viewTransform);
+        static void BeginScene(const glm::mat4& viewTransform, const glm::vec3& viewPosition);
         static void StartBatch();
         static void EndScene();
         static void Flush();

@@ -9,6 +9,10 @@ Entities:
       Scale: [1.8, 0.5, 1.8]
     MeshRendererComponent:
       Mesh: cube
+      Material:
+        AlbedoColor: [0.50980395, 0.50980395, 0.50980395, 1]
+        Metallic: 0
+        Roughness: 0.9
     ScriptComponent:
       ClassName: Sandbox.Rotation
       ScriptFields:
@@ -24,12 +28,16 @@ Entities:
       Scale: [10, 10.000004, 0.99999905]
     MeshRendererComponent:
       Mesh: quad
+      Material:
+        AlbedoColor: [1, 1, 1, 1]
+        Metallic: 1
+        Roughness: 0
   - Entity: 7492291350219355528
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [2.0128627, 1.8689319, 2.3826745]
-      Rotation: [-0.4135744, 0.7014624, -9.753355e-08]
+      Translation: [-2.01, 1.8689319, 2.3826745]
+      Rotation: [-0.41364303, -0.7014478, -9.753355e-08]
       Scale: [0.9999847, 1, 0.99999154]
     CameraComponent:
       Camera:
@@ -50,7 +58,11 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [10, 10, 10]
     MeshRendererComponent:
-      Mesh: assets\models\dragon_lowres.glb
+      Mesh: assets\models\dragon_middleres.glb
+      Material:
+        AlbedoColor: [1, 0.84313726, 0, 1]
+        Metallic: 1
+        Roughness: 0.2
     ScriptComponent:
       ClassName: Sandbox.Rotation
       ScriptFields:
