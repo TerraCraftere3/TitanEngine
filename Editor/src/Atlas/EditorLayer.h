@@ -5,9 +5,9 @@
 #include <Titan/Events/KeyEvent.h>
 #include <Titan/Events/MouseEvent.h>
 #include <Titan/Renderer/Framebuffer.h>
+#include <Titan/Renderer/Mesh.h>
 #include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
-#include <Titan/Renderer/Mesh.h>
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 

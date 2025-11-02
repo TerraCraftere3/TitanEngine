@@ -19,7 +19,7 @@ namespace Titan
 
     struct Renderer3DData
     {
-        static const uint32_t MaxVertices = 300'000;
+        static const uint32_t MaxVertices = 100'000;
 
         Ref<VertexArray> VertexArray;
         Ref<VertexBuffer> VertexBuffer;
@@ -38,7 +38,8 @@ namespace Titan
     static Renderer3DData s_3DData;
     static bool s_IsRendering = false;
 
-    void Renderer3D::Init() {
+    void Renderer3D::Init()
+    {
         TI_PROFILE_FUNCTION();
 
         // Allocate CPU buffer FIRST before anything else
@@ -48,7 +49,7 @@ namespace Titan
 
         s_3DData.VertexArray = VertexArray::Create();
         s_3DData.VertexBuffer = VertexBuffer::Create(s_3DData.MaxVertices * sizeof(Vertex));
-        
+
         // clang-format off
         s_3DData.VertexBuffer->SetLayout({
             {ShaderDataType::Float3, "a_Position"},
@@ -57,7 +58,7 @@ namespace Titan
             {ShaderDataType::Int,    "a_EntityID"}
         });
         // clang-format on
-        
+
         s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
 
         // Create camera uniform buffer
@@ -67,7 +68,8 @@ namespace Titan
         s_3DData.Shader = Shader::Create("assets/shader/Mesh.slang");
     }
 
-    void Renderer3D::Shutdown() {
+    void Renderer3D::Shutdown()
+    {
         TI_PROFILE_FUNCTION();
 
         delete[] s_3DData.VertexBufferBase;
@@ -79,15 +81,18 @@ namespace Titan
         s_3DData.CameraUniformBuffer.reset();
     }
 
-    void Renderer3D::BeginScene(const EditorCamera& camera) {
+    void Renderer3D::BeginScene(const EditorCamera& camera)
+    {
         BeginScene(camera.GetViewProjection());
     }
 
-    void Renderer3D::BeginScene(const Camera& camera, const glm::mat4& transform) {
+    void Renderer3D::BeginScene(const Camera& camera, const glm::mat4& transform)
+    {
         BeginScene(camera.GetProjection() * glm::inverse(transform));
     }
 
-    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix) {
+    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix)
+    {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer3D::EndScene()?");
         TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "Renderer3D not initialized!");
@@ -96,15 +101,16 @@ namespace Titan
         s_3DData.CameraUniformBuffer->SetData(&s_3DData.ViewProjectionMatrix, sizeof(glm::mat4));
 
         s_3DData.Shader->Bind();
-        
+
         StartBatch();
         s_IsRendering = true;
     }
 
-    void Renderer3D::EndScene() {
+    void Renderer3D::EndScene()
+    {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Called Renderer3D::EndScene() without BeginScene()");
-        
+
         Flush();
         s_IsRendering = false;
     }
@@ -115,7 +121,8 @@ namespace Titan
         s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
     }
 
-    void Renderer3D::Flush() {
+    void Renderer3D::Flush()
+    {
         TI_PROFILE_FUNCTION();
 
         if (s_3DData.VertexCount == 0)
@@ -125,7 +132,7 @@ namespace Titan
         s_3DData.VertexBuffer->SetData(s_3DData.VertexBufferBase, dataSize);
 
         RenderCommand::DrawArrays(s_3DData.VertexArray, s_3DData.VertexCount);
-        
+
         s_3DData.Stats.DrawCalls++;
         s_3DData.Stats.VertexCount += s_3DData.VertexCount;
     }
@@ -133,7 +140,7 @@ namespace Titan
     void Renderer3D::FlushAndReset()
     {
         TI_PROFILE_FUNCTION();
-        
+
         Flush();
         StartBatch();
     }
@@ -150,31 +157,56 @@ namespace Titan
         const auto& normals = mesh->GetNormals();
         const auto& texCoords = mesh->GetTexCoords();
 
-        uint32_t vertexCount = (uint32_t)positions.size();
+        uint32_t totalVertexCount = (uint32_t)positions.size();
 
-        // Check if we need to flush
-        if (s_3DData.VertexCount + vertexCount >= s_3DData.MaxVertices)
+        // Pre-compute transformation matrices once
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
+
+        // Process mesh in triangle-aligned chunks
+        uint32_t vertexOffset = 0;
+        while (vertexOffset < totalVertexCount)
         {
-            FlushAndReset();
+            // Calculate how many vertices we can fit in this batch
+            uint32_t availableSpace = s_3DData.MaxVertices - s_3DData.VertexCount;
+            uint32_t remainingVertices = totalVertexCount - vertexOffset;
+
+            // Round down to nearest multiple of 3 to keep triangles intact
+            uint32_t verticesThisChunk = min(availableSpace, remainingVertices);
+            verticesThisChunk = (verticesThisChunk / 3) * 3;
+
+            // If we can't fit even one triangle, flush and reset
+            if (verticesThisChunk == 0)
+            {
+                FlushAndReset();
+                availableSpace = s_3DData.MaxVertices;
+                verticesThisChunk = min(availableSpace, remainingVertices);
+                verticesThisChunk = (verticesThisChunk / 3) * 3;
+
+                // Safety check: if MaxVertices can't hold a single triangle
+                TI_CORE_ASSERT(verticesThisChunk >= 3, "MaxVertices too small to render triangles!");
+            }
+
+            // Transform and add vertices for this chunk
+            for (uint32_t i = 0; i < verticesThisChunk; ++i)
+            {
+                uint32_t vertexIndex = vertexOffset + i;
+
+                glm::vec4 transformedPos = transform * glm::vec4(positions[vertexIndex], 1.0f);
+                s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
+
+                // Transform normal (use inverse transpose for correct normal transformation)
+                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]);
+
+                s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
+                s_3DData.VertexBufferPtr->EntityID = entityID;
+
+                s_3DData.VertexBufferPtr++;
+            }
+
+            s_3DData.VertexCount += verticesThisChunk;
+            vertexOffset += verticesThisChunk;
         }
 
-        // Transform vertices and add to batch
-        for (uint32_t i = 0; i < vertexCount; ++i)
-        {
-            glm::vec4 transformedPos = transform * glm::vec4(positions[i], 1.0f);
-            s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
-
-            // Transform normal (use inverse transpose for correct normal transformation)
-            glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
-            s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[i]);
-
-            s_3DData.VertexBufferPtr->TexCoord = texCoords[i];
-            s_3DData.VertexBufferPtr->EntityID = entityID;
-
-            s_3DData.VertexBufferPtr++;
-        }
-
-        s_3DData.VertexCount += vertexCount;
         s_3DData.Stats.MeshCount++;
     }
 

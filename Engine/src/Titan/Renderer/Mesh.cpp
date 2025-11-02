@@ -1,7 +1,7 @@
 #include "Mesh.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
 
 namespace Titan
 {
@@ -126,13 +126,9 @@ namespace Titan
             return CreateCube();
 
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(filepath,
-            aiProcess_Triangulate |
-            aiProcess_GenNormals |
-            aiProcess_CalcTangentSpace |
-            aiProcess_JoinIdenticalVertices |
-            aiProcess_ImproveCacheLocality
-        );
+        const aiScene* scene =
+            importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace |
+                                            aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
 
         if (!scene || !scene->mRootNode)
         {
@@ -146,11 +142,11 @@ namespace Titan
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
-        mesh->m_Normals   = std::move(data.Normals);
+        mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_FilePath = std::filesystem::relative(filepath).string();
 
         TI_CORE_INFO("Loaded mesh '{}' ({} vertices)", filepath, mesh->m_Positions.size());
         return mesh;
     }
-}
+} // namespace Titan

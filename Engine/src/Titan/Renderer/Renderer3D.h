@@ -2,8 +2,8 @@
 
 #include "Camera.h"
 #include "EditorCamera.h"
-#include "Texture.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan
@@ -22,8 +22,7 @@ namespace Titan
         static void EndScene();
         static void Flush();
 
-        static void DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, 
-                             int entityID = -1);
+        static void DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID = -1);
 
         // Statistics
         struct Statistics
