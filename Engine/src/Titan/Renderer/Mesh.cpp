@@ -56,6 +56,28 @@ namespace Titan
             ProcessNode(node->mChildren[i], scene, data);
     }
 
+    struct Vec3Hash
+    {
+        size_t operator()(const glm::vec3& v) const
+        {
+            size_t hx = std::hash<float>()(v.x);
+            size_t hy = std::hash<float>()(v.y);
+            size_t hz = std::hash<float>()(v.z);
+            return hx ^ (hy << 1) ^ (hz << 2);
+        }
+    };
+
+    void ComputeSmoothNormals(std::vector<glm::vec3>& positions, std::vector<glm::vec3>& normals)
+    {
+        std::unordered_map<glm::vec3, glm::vec3, Vec3Hash> normalMap;
+
+        for (size_t i = 0; i < positions.size(); i++)
+            normalMap[positions[i]] += normals[i];
+
+        for (size_t i = 0; i < positions.size(); i++)
+            normals[i] = glm::normalize(normalMap[positions[i]]);
+    }
+
     Ref<Mesh> Mesh::CreateQuad()
     {
         RawMeshData data;
@@ -74,6 +96,8 @@ namespace Titan
         data.TexCoords = {
             {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
         };
+
+        ComputeSmoothNormals(data.Positions, data.Normals);
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
@@ -107,8 +131,10 @@ namespace Titan
             data.Positions.push_back(positions[indices[i]]);
             // Simple normals based on face (approximation)
             data.Normals.push_back(glm::normalize(positions[indices[i]]));
-            data.TexCoords.push_back({0.0f, 0.0f}); // placeholder
+            data.TexCoords.push_back({0.0f, 0.0f});
         }
+
+        ComputeSmoothNormals(data.Positions, data.Normals);
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
@@ -139,6 +165,8 @@ namespace Titan
 
         RawMeshData data;
         ProcessNode(scene->mRootNode, scene, data);
+
+        ComputeSmoothNormals(data.Positions, data.Normals);
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
