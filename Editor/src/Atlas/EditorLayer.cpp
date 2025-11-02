@@ -31,7 +31,7 @@ namespace Titan
         fbSpec.Samples = 4;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Models.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/PBR.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
@@ -58,14 +58,16 @@ namespace Titan
         {
             case SceneState::Edit:
             {
-                m_EditorCamera.OnUpdate(ts);
+                if (m_ViewportHovered)
+                    m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
                 break;
             }
             case SceneState::Simulate:
             {
-                m_EditorCamera.OnUpdate(ts);
+                if (m_ViewportHovered)
+                    m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
                 break;
