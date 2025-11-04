@@ -2,8 +2,9 @@
 
 #include "Titan/PCH.h"
 
-namespace Titan{
-    
+namespace Titan
+{
+
     struct Material3D
     {
         glm::vec4 AlbedoColor = glm::vec4(1.0f);
@@ -11,4 +12,4 @@ namespace Titan{
         float Roughness = 1.0f;
         float Padding[2];
     };
-}
+} // namespace Titan

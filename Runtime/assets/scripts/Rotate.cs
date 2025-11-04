@@ -12,13 +12,8 @@ namespace Sandbox
     {
         public float Speed = 0.1f;
 
-        void OnCreate()
-        {
-        }
+        void OnCreate() {}
 
-        void OnUpdate(float ts)
-        {
-            Rotation += new Vector3(0.0f, Speed * ts, 0.0f);
-        }
+        void OnUpdate(float ts) { Rotation += new Vector3(0.0f, Speed * ts, 0.0f); }
     }
 }

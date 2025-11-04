@@ -18,6 +18,7 @@
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Renderer/Renderer3D.h"
+#include "Titan/Renderer/SceneRenderer.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
 #include "Titan/Renderer/VertexArray.h"

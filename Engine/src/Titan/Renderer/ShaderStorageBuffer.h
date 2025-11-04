@@ -14,4 +14,4 @@ namespace Titan
 
         static Ref<ShaderStorageBuffer> Create(uint32_t size, uint32_t binding);
     };
-}
+} // namespace Titan

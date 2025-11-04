@@ -65,7 +65,7 @@ namespace Titan
 
         public override int GetHashCode()
         {
-            unchecked 
+            unchecked
             {
                 int hash = 17;
                 hash = hash * 23 + X.GetHashCode();

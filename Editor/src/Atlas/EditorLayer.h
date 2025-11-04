@@ -79,7 +79,6 @@ namespace Titan
         ImVec2 m_ViewportImageSize;
 
         // Resources
-        Ref<Framebuffer> m_Framebuffer;
         Ref<Texture2D> m_StartIcon;
         Ref<Texture2D> m_SimulateIcon;
         Ref<Texture2D> m_StopIcon;

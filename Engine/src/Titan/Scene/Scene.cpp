@@ -227,32 +227,6 @@ namespace Titan
                 transform.Rotation.z = body->GetAngle();
             }
         }
-
-        // FIND CAMERA
-        Camera* mainCamera = nullptr;
-        glm::mat4 cameraTransform;
-        {
-            auto view = GetAllEntitiesWith<TransformComponent, CameraComponent>();
-            for (auto entity : view)
-            {
-                auto& transform = view.get<TransformComponent>(entity);
-                auto& camera = view.get<CameraComponent>(entity);
-                if (camera.Primary)
-                {
-                    mainCamera = &camera.Camera;
-                    cameraTransform = transform.GetTransform();
-                    break;
-                }
-            }
-        }
-
-        // RENDER
-        if (mainCamera)
-        {
-            RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
-            RenderCommand::Clear();
-            RenderScene(mainCamera->GetProjection() * glm::inverse(cameraTransform), glm::vec3(cameraTransform[3]));
-        }
     }
 
     void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
@@ -281,8 +255,6 @@ namespace Titan
                 transform.Rotation.z = body->GetAngle();
             }
         }
-
-        RenderScene(camera.GetViewProjection(), camera.GetPosition(), true);
     }
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
@@ -291,8 +263,6 @@ namespace Titan
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
-
-        RenderScene(camera.GetViewProjection(), camera.GetPosition(), true);
     }
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -408,73 +378,6 @@ namespace Titan
         TI_PROFILE_FUNCTION();
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
-    }
-
-    void Scene::RenderScene(const glm::mat4& viewProjection, const glm::vec3& viewPosition, bool drawOverlay)
-    {
-        TI_PROFILE_FUNCTION();
-        Renderer2D::BeginScene(viewProjection);
-        Renderer3D::BeginScene(viewProjection, viewPosition);
-
-        {
-            auto spriteView = GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
-            for (auto entity : spriteView)
-            {
-                auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
-
-                if (sprite.Tex)
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                    (uint32_t)entity);
-                else
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
-            }
-        }
-        {
-            auto circleView = GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
-            for (auto entity : circleView)
-            {
-                auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
-
-                Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
-                                       (uint32_t)entity);
-            }
-        }
-        {
-            auto meshView = GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-            for (auto entity : meshView)
-            {
-                auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
-                if (meshComp.MeshRef)
-                    Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
-                                         (uint32_t)entity);
-            }
-        }
-        if (drawOverlay)
-        {
-            {
-                auto colliderView = GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
-                for (auto entity : colliderView)
-                {
-                    auto [transform, collider] = colliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
-
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                }
-            }
-            {
-                auto colliderView = GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
-                for (auto entity : colliderView)
-                {
-                    auto [transform, collider] =
-                        colliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
-
-                    // Renderer2D::DrawCircle(transform.GetTransform(), glm::vec4(0, 1, 0, 1), 0.05f);
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                }
-            }
-        }
-
-        Renderer2D::EndScene();
-        Renderer3D::EndScene();
     }
 
     template <typename T>

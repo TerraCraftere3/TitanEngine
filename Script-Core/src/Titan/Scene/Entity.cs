@@ -22,7 +22,7 @@ namespace Titan
             }
         }
 
-                public Vector3 Rotation
+        public Vector3 Rotation
         {
             get {
                 InternalCalls.TransformComponent_GetRotation(ID, out Vector3 result);

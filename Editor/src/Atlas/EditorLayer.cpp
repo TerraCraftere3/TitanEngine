@@ -5,6 +5,7 @@
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
 #include <Titan/Renderer/Renderer3D.h>
+#include <Titan/Renderer/SceneRenderer.h>
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
 #include <Titan/Scene/SceneSerializer.h>
@@ -23,15 +24,7 @@ namespace Titan
         // Setup
         Application::GetInstance()->GetWindow().SetVSync(false);
 
-        FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,
-                              FramebufferTextureFormat::Depth};
-        fbSpec.Width = 1280;
-        fbSpec.Height = 720;
-        fbSpec.Samples = 4;
-        m_Framebuffer = Framebuffer::Create(fbSpec);
-
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/PBR.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Models.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
@@ -52,35 +45,33 @@ namespace Titan
 
         Renderer2D::ResetStats();
         Renderer3D::ResetStats();
-        m_Framebuffer->Bind();
-        m_Framebuffer->ClearAttachment(1, -1);
         switch (m_SceneState)
         {
             case SceneState::Edit:
             {
-                if (m_ViewportHovered)
-                    m_EditorCamera.OnUpdate(ts);
+                m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
                 break;
             }
             case SceneState::Simulate:
             {
-                if (m_ViewportHovered)
-                    m_EditorCamera.OnUpdate(ts);
+                m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+                SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
                 break;
             }
             case SceneState::Play:
             {
                 m_ActiveScene->OnUpdateRuntime(ts);
+                SceneRenderer::RenderSceneRuntime(m_ActiveScene);
                 break;
             }
         }
 
         UpdateHoveredEntity();
-        m_Framebuffer->Unbind();
     }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
@@ -128,7 +119,7 @@ namespace Titan
         if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
             mouseY < static_cast<int>(m_ViewportImageSize.y))
         {
-            int pixel = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+            int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
             m_HoveredEntity = (pixel == -1) ? Entity() : Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
         }
         else
@@ -221,9 +212,7 @@ namespace Titan
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         ImGui::SetNextWindowSizeConstraints(ImVec2(256, 256), ImVec2(8192, 8192));
-        const char* windowLabel = m_SceneState == SceneState::Edit ? "Viewport" : "Game";
-        ImGui::Begin((std::string(windowLabel) + "##Viewport").c_str(), nullptr,
-                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
         // Render the scene control toolbar at the top
         RenderSceneControlToolbar();
@@ -324,7 +313,7 @@ namespace Titan
 
         if (m_ViewportSize != newSize)
         {
-            m_Framebuffer->Resize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
+            SceneRenderer::GetFramebuffer()->Resize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
             m_ViewportSize = newSize;
             m_ActiveScene->OnViewportResize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
             m_EditorCamera.SetViewportSize(newSize.x, newSize.y);
@@ -370,9 +359,8 @@ namespace Titan
         m_ViewportImagePos = ImGui::GetCursorScreenPos();
         m_ViewportImageSize = ImGui::GetContentRegionAvail();
 
-        m_Framebuffer->Resolve();
         ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        ImGui::Image(m_Framebuffer->GetColorAttachment(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(SceneRenderer::GetFramebuffer()->GetColorAttachment(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
     }
 
     void EditorLayer::HandleSceneDragDrop()
