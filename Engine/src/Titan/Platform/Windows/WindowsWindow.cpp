@@ -51,6 +51,9 @@ namespace Titan
 
         {
             TI_PROFILE_SCOPE("glfwCreateWindow");
+#ifdef TI_BUILD_DEBUG
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
             m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         }
         m_Context = CreateScope<OpenGLContext>(m_Window);
