@@ -116,7 +116,7 @@ namespace Titan
         int mouseX = static_cast<int>(mx);
         int mouseY = static_cast<int>(my);
 
-        if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
+        /*if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
             mouseY < static_cast<int>(m_ViewportImageSize.y))
         {
             int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
@@ -125,7 +125,7 @@ namespace Titan
         else
         {
             m_HoveredEntity = {};
-        }
+        }*/ // TODO: REFACTOR THIS FCKNG FRAMEBUFFER
     }
 
     void EditorLayer::RenderDockspace()

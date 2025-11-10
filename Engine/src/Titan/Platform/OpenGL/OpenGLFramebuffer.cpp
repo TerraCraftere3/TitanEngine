@@ -251,15 +251,17 @@ namespace Titan
 
         for (size_t i = 0; i < m_ColorAttachments.size(); i++)
         {
+            auto& spec = m_ColorAttachmentSpecifications[i];
+
+            // Only blit RGBA8 (non-integer) textures
+            if (spec.TextureFormat != FramebufferTextureFormat::RGBA8)
+                continue;
+
             glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
             glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
 
-            GLenum filter = GL_NEAREST;
-            if (m_ColorAttachmentSpecifications[i].TextureFormat == FramebufferTextureFormat::RGBA8)
-                filter = GL_LINEAR;
-
             glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width,
-                              m_Specification.Height, GL_COLOR_BUFFER_BIT, filter);
+                              m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -282,52 +284,50 @@ namespace Titan
     {
         TI_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
+        auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+
+        int pixelData = 0;
+
         if (m_Specification.Samples > 1)
         {
-            uint32_t tempFBO, tempTexture;
-            glCreateFramebuffers(1, &tempFBO);
-            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
-
-            Utils::CreateTextures(false, &tempTexture, 1);
-            Utils::BindTexture(false, tempTexture);
-
-            auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+            // For integer attachments, read manually
             if (spec.TextureFormat == FramebufferTextureFormat::RED_INTEGER)
             {
-                Utils::AttachColorTexture(tempTexture, 1, GL_R32I, GL_RED_INTEGER, m_Specification.Width,
-                                          m_Specification.Height, 0);
+                glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+
+                // Cannot blit multisample integer, must read via glReadPixels
+                glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
             }
             else
             {
-                Utils::AttachColorTexture(tempTexture, 1, GL_RGBA8, GL_RGBA, m_Specification.Width,
-                                          m_Specification.Height, 0);
+                // For RGBA8, blit to resolved FBO
+                Resolve();
+
+                glBindFramebuffer(GL_FRAMEBUFFER, m_ResolvedRendererID);
+                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+                unsigned char data[4];
+                glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+                pixelData = data[0]; // return red channel
             }
-
-            // Blit from multisampled to single-sample
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, tempFBO);
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-            glDrawBuffer(GL_COLOR_ATTACHMENT0);
-
-            glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width,
-                              m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-            // Now read from the resolved framebuffer
-            glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
-            glReadBuffer(GL_COLOR_ATTACHMENT0);
-            int pixelData;
-            glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
-
-            glDeleteFramebuffers(1, &tempFBO);
-            glDeleteTextures(1, &tempTexture);
 
             glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
             return pixelData;
         }
 
+        // Single-sample
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-        int pixelData;
-        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+
+        if (spec.TextureFormat == FramebufferTextureFormat::RED_INTEGER)
+            glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+        else
+        {
+            unsigned char data[4];
+            glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            pixelData = data[0]; // red channel
+        }
+
         return pixelData;
     }
 
@@ -337,16 +337,18 @@ namespace Titan
 
         auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
 
-        if (m_Specification.Samples > 1)
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+
+        if (spec.TextureFormat == FramebufferTextureFormat::RED_INTEGER)
         {
-            // For multisampled textures, use glClearBufferiv instead
-            glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+            // Use clear buffer for integer textures
             glClearBufferiv(GL_COLOR, attachmentIndex, &value);
         }
         else
         {
+            // Use glClearTexImage for non-integer textures
             glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TitanFBTextureFormatToGL(spec.TextureFormat),
-                            GL_INT, &value);
+                            GL_UNSIGNED_BYTE, nullptr);
         }
     }
 
