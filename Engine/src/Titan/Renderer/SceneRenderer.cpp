@@ -1,4 +1,5 @@
 #include "SceneRenderer.h"
+#include "RenderGraph.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Renderer/Renderer3D.h"
@@ -9,7 +10,16 @@ namespace Titan
 {
     struct SceneRendererData
     {
-        Ref<Framebuffer> framebuffer;
+        Ref<RenderGraph> renderGraph;
+        Ref<Framebuffer> finalFramebuffer;
+
+        // Camera data (shared across passes)
+        glm::mat4 viewProjection;
+        glm::vec3 viewPosition;
+        uint32_t viewWidth = 1280;
+        uint32_t viewHeight = 720;
+        bool drawOverlay = false;
+        Ref<Scene> currentScene;
     };
 
     SceneRendererData* s_SRData = nullptr;
@@ -17,15 +27,189 @@ namespace Titan
     void SceneRenderer::Init()
     {
         s_SRData = new SceneRendererData();
+        s_SRData->renderGraph = CreateRef<RenderGraph>();
 
-        // Framebuffer
+        // Create final output framebuffer
         FramebufferSpecification fbSpec;
         fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,
                               FramebufferTextureFormat::Depth};
-        fbSpec.Width = 1280;
-        fbSpec.Height = 720;
+        fbSpec.Width = s_SRData->viewWidth;
+        fbSpec.Height = s_SRData->viewHeight;
         fbSpec.Samples = 1;
-        s_SRData->framebuffer = Framebuffer::Create(fbSpec);
+        s_SRData->finalFramebuffer = Framebuffer::Create(fbSpec);
+
+        SetupRenderGraph();
+    }
+
+    void SceneRenderer::SetupRenderGraph()
+    {
+        auto& graph = *s_SRData->renderGraph;
+        RenderGraphBuilder builder(graph);
+
+        // Define resources
+        builder
+            .CreateFramebuffer("SceneFramebuffer",
+                               {
+                                   FramebufferTextureFormat::RGBA8,       // SceneColor
+                                   FramebufferTextureFormat::RED_INTEGER, // EntityID
+                                   FramebufferTextureFormat::Depth        // SceneDepth
+                               },
+                               s_SRData->viewWidth, s_SRData->viewHeight, 1)
+            .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
+                                     s_SRData->viewHeight, 1);
+
+        // Pass 1: Clear Pass
+        builder.AddRenderPass(
+            "ClearPass", {}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+                fb->ClearAttachment(1, -1); // Clear entity ID (assuming index 1 = RED_INTEGER)
+                RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
+                RenderCommand::Clear();
+                fb->Unbind();
+            });
+
+        // Pass 2: 2D Sprite Pass
+        builder.AddRenderPass(
+            "SpritePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+
+                Renderer2D::BeginScene(s_SRData->viewProjection);
+
+                auto spriteView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+                for (auto entity : spriteView)
+                {
+                    auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
+
+                    if (sprite.Tex)
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                        (uint32_t)entity);
+                    else
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+                }
+
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
+
+        // Pass 3: 2D Circle Pass
+        builder.AddRenderPass(
+            "CirclePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+
+                Renderer2D::BeginScene(s_SRData->viewProjection);
+
+                auto circleView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+                for (auto entity : circleView)
+                {
+                    auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+                    Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
+                                           (uint32_t)entity);
+                }
+
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
+
+        // Pass 4: 3D Mesh Pass
+        builder.AddRenderPass(
+            "MeshPass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+
+                Renderer3D::BeginScene(s_SRData->viewProjection, s_SRData->viewPosition);
+
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                for (auto entity : meshView)
+                {
+                    auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
+                    if (meshComp.MeshRef)
+                        Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
+                                             (uint32_t)entity);
+                }
+
+                Renderer3D::EndScene();
+                fb->Unbind();
+            });
+
+        // Pass 5: Overlay Pass (debug visualization)
+        builder.AddRenderPass(
+            "OverlayPass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+
+            {
+                if (!s_SRData->drawOverlay)
+                    return;
+
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+
+                Renderer2D::BeginScene(s_SRData->viewProjection);
+
+                // Box Colliders
+                auto boxColliderView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+                for (auto entity : boxColliderView)
+                {
+                    auto [transform, collider] =
+                        boxColliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
+                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+                }
+
+                // Circle Colliders
+                auto circleColliderView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+                for (auto entity : circleColliderView)
+                {
+                    auto [transform, collider] =
+                        circleColliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
+                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+                }
+
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
+
+        // Pass 6: Resolve Pass
+        builder.AddRenderPass("ResolvePass", {"SceneFramebuffer"}, {"FinalOutput"},
+                              [](RenderGraph& graph, const RenderPass& pass)
+                              {
+                                  auto sceneFB = graph.GetFramebuffer("SceneFramebuffer");
+                                  if (sceneFB)
+                                      sceneFB->Resolve();
+                              });
+
+        // Build the graph
+        builder.Build();
     }
 
     void SceneRenderer::Shutdown()
@@ -38,113 +222,69 @@ namespace Titan
     {
         Camera* mainCamera = nullptr;
         glm::mat4 cameraTransform;
+
+        auto view = scene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
+        for (auto entity : view)
         {
-            auto view = scene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
-            for (auto entity : view)
+            auto& transform = view.get<TransformComponent>(entity);
+            auto& camera = view.get<CameraComponent>(entity);
+            if (camera.Primary)
             {
-                auto& transform = view.get<TransformComponent>(entity);
-                auto& camera = view.get<CameraComponent>(entity);
-                if (camera.Primary)
-                {
-                    mainCamera = &camera.Camera;
-                    cameraTransform = transform.GetTransform();
-                    break;
-                }
+                mainCamera = &camera.Camera;
+                cameraTransform = transform.GetTransform();
+                break;
             }
         }
 
-        // RENDER
         if (mainCamera)
         {
-            RenderScene(scene, mainCamera->GetProjection() * glm::inverse(cameraTransform),
-                        glm::vec3(cameraTransform[3]), false);
+            s_SRData->viewProjection = mainCamera->GetProjection() * glm::inverse(cameraTransform);
+            s_SRData->viewPosition = glm::vec3(cameraTransform[3]);
+            s_SRData->drawOverlay = false;
+            s_SRData->currentScene = scene;
+
+            s_SRData->renderGraph->Execute();
         }
     }
 
     void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera)
     {
-        RenderScene(scene, camera.GetViewProjection(), camera.GetPosition(), true);
+        s_SRData->viewProjection = camera.GetViewProjection();
+        s_SRData->viewPosition = camera.GetPosition();
+        s_SRData->drawOverlay = true;
+        s_SRData->currentScene = scene;
+
+        s_SRData->renderGraph->Execute();
+    }
+
+    void SceneRenderer::Resize(uint32_t width, uint32_t height)
+    {
+        if (width == 0 || height == 0)
+            return;
+
+        if (s_SRData->viewWidth == width && s_SRData->viewHeight == height)
+            return;
+
+        s_SRData->viewWidth = width;
+        s_SRData->viewHeight = height;
+
+        if (s_SRData->finalFramebuffer)
+            s_SRData->finalFramebuffer->Resize(width, height);
+
+        auto& graph = *s_SRData->renderGraph;
+
+        for (auto& [name, fb] : graph.GetFramebuffers())
+        {
+            if (fb)
+                fb->Resize(width, height);
+        }
     }
 
     Ref<Framebuffer> SceneRenderer::GetFramebuffer()
     {
-        return s_SRData->framebuffer;
+        // Return the final framebuffer that contains the rendered scene
+        auto finalFB = s_SRData->renderGraph->GetFramebuffer("SceneFramebuffer");
+        return finalFB ? finalFB : s_SRData->finalFramebuffer;
     }
 
-    void SceneRenderer::RenderScene(Ref<Scene> scene, const glm::mat4& viewTransform, const glm::vec3& viewPosition,
-                                    bool drawOverlay)
-    {
-        TI_PROFILE_FUNCTION();
-
-        s_SRData->framebuffer->Bind();
-        s_SRData->framebuffer->ClearAttachment(1, -1);
-
-        RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
-        RenderCommand::Clear();
-
-        Renderer2D::BeginScene(viewTransform);
-
-        {
-            auto spriteView = scene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
-            for (auto entity : spriteView)
-            {
-                auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
-
-                if (sprite.Tex)
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                    (uint32_t)entity);
-                else
-                    Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
-            }
-        }
-        {
-            auto circleView = scene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
-            for (auto entity : circleView)
-            {
-                auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
-
-                Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
-                                       (uint32_t)entity);
-            }
-        }
-        if (drawOverlay)
-        {
-            {
-                auto colliderView = scene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
-                for (auto entity : colliderView)
-                {
-                    auto [transform, collider] = colliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
-
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                }
-            }
-            {
-                auto colliderView = scene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
-                for (auto entity : colliderView)
-                {
-                    auto [transform, collider] =
-                        colliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
-
-                    // Renderer2D::DrawCircle(transform.GetTransform(), glm::vec4(0, 1, 0, 1), 0.05f);
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                }
-            }
-        }
-        Renderer2D::EndScene();
-        Renderer3D::BeginScene(viewTransform, viewPosition);
-        {
-            auto meshView = scene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-            for (auto entity : meshView)
-            {
-                auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
-                if (meshComp.MeshRef)
-                    Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
-                                         (uint32_t)entity);
-            }
-        }
-        Renderer3D::EndScene();
-
-        s_SRData->framebuffer->Unbind();
-        s_SRData->framebuffer->Resolve();
-    }
 } // namespace Titan

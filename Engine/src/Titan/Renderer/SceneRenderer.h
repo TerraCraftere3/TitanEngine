@@ -17,11 +17,11 @@ namespace Titan
         static void Shutdown();
         static void RenderSceneRuntime(Ref<Scene> scene);
         static void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera);
+        static void Resize(uint32_t width, uint32_t height);
 
         static Ref<Framebuffer> GetFramebuffer();
 
     private:
-        static void RenderScene(Ref<Scene> scene, const glm::mat4& viewTransform, const glm::vec3& viewPosition,
-                                bool drawOverlay);
+        static void SetupRenderGraph();
     };
 } // namespace Titan

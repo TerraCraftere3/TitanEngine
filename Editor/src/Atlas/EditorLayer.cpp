@@ -313,7 +313,7 @@ namespace Titan
 
         if (m_ViewportSize != newSize)
         {
-            SceneRenderer::GetFramebuffer()->Resize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
+            SceneRenderer::Resize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
             m_ViewportSize = newSize;
             m_ActiveScene->OnViewportResize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
             m_EditorCamera.SetViewportSize(newSize.x, newSize.y);
