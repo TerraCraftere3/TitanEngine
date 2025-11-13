@@ -1,60 +1,19 @@
 Scene: Untitled
 Entities:
-  - Entity: 17597661931907950731
+  - Entity: 857036906376596000
     TagComponent:
-      Tag: Mesh
+      Tag: Directional Light
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [10, 10, 10]
-    MeshRendererComponent:
-      Mesh: assets\models\dragon_lowres.glb
-      Material:
-        AlbedoColor: [1, 0.84313726, 0, 1]
-        Metallic: 1
-        Roughness: 0.2
-    ScriptComponent:
-      ClassName: Sandbox.Rotation
-      ScriptFields:
-        - Name: Speed
-          Type: Float
-          Data: 0.1
-  - Entity: 7492291350219355528
-    TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Translation: [-2.01, 1.8689319, 2.3826745]
-      Rotation: [-0.41364303, -0.7014478, -9.753355e-08]
-      Scale: [0.9999847, 1, 0.99999154]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.7853982
-        PerspectiveNear: 0.01
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1000
-      Primary: true
-      FixedAspectRatio: false
-  - Entity: 9031942194792113906
-    TagComponent:
-      Tag: Quad
-    TransformComponent:
-      Translation: [0, -0.5, 0]
-      Rotation: [-1.5707964, 0, 0]
-      Scale: [10, 10.000004, 0.99999905]
-    MeshRendererComponent:
-      Mesh: quad
-      Material:
-        AlbedoColor: [1, 1, 1, 1]
-        Metallic: 1
-        Roughness: 0
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -0.4, -1]
   - Entity: 14757188471252006816
     TagComponent:
       Tag: Cube
     TransformComponent:
-      Translation: [0, -0.25, 0]
+      Translation: [0, 0.25, 0]
       Rotation: [0, 0, 0]
       Scale: [1.8, 0.5, 1.8]
     MeshRendererComponent:
@@ -69,12 +28,53 @@ Entities:
         - Name: Speed
           Type: Float
           Data: 0.1
-  - Entity: 857036906376596000
+  - Entity: 9031942194792113906
     TagComponent:
-      Tag: Directional Light
+      Tag: Quad
     TransformComponent:
       Translation: [0, 0, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [10, 10.000004, 0.99999905]
+    MeshRendererComponent:
+      Mesh: quad
+      Material:
+        AlbedoColor: [1, 1, 1, 1]
+        Metallic: 1
+        Roughness: 0
+  - Entity: 7492291350219355528
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-2.01, 2.87, 2.3826745]
+      Rotation: [-0.41364303, -0.7014478, -9.753355e-08]
+      Scale: [0.9999847, 1, 0.99999154]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 17597661931907950731
+    TagComponent:
+      Tag: Mesh
+    TransformComponent:
+      Translation: [0, 0.5, 0]
       Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, -0.4, -1]
+      Scale: [10, 10, 10]
+    MeshRendererComponent:
+      Mesh: assets\models\dragon_lowres.glb
+      Material:
+        AlbedoColor: [1, 0.84313726, 0, 1]
+        Metallic: 1
+        Roughness: 0.2
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.1

@@ -16,6 +16,7 @@ namespace Titan
         const std::string& GetFilePath() const { return m_FilePath; }
 
         static Ref<Mesh> CreateQuad();
+        static Ref<Mesh> CreateSubdivedQuad(uint32_t xSubdivisions, uint32_t ySubdivisions);
         static Ref<Mesh> CreateCube();
         static Ref<Mesh> Create(const std::string& filepath);
 

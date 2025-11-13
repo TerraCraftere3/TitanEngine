@@ -454,6 +454,40 @@ namespace Titan
         s_Data.LineVertexCount += 2;
     }
 
+    void Renderer2D::DrawGrid(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size)
+    {
+        // Define grid resolution
+        const int gridLines = 10;   // lines in each direction
+        const float spacing = 1.0f; // distance between lines
+        const glm::vec4 gridColor = {0.5f, 0.5f, 0.5f, 1.0f};
+
+        // Transform grid origin
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(glm::quat(rotation)) *
+                              glm::scale(glm::mat4(1.0f), size);
+
+        // Draw lines parallel to X and Z axes
+        for (int i = -gridLines; i <= gridLines; i++)
+        {
+            float offset = i * spacing;
+
+            // Line parallel to X (varying in Z)
+            glm::vec3 p0 = glm::vec3(-gridLines * spacing, 0.0f, offset);
+            glm::vec3 p1 = glm::vec3(gridLines * spacing, 0.0f, offset);
+
+            p0 = glm::vec3(transform * glm::vec4(p0, 1.0f));
+            p1 = glm::vec3(transform * glm::vec4(p1, 1.0f));
+            DrawLine(p0, p1, gridColor, -1);
+
+            // Line parallel to Z (varying in X)
+            glm::vec3 p2 = glm::vec3(offset, 0.0f, -gridLines * spacing);
+            glm::vec3 p3 = glm::vec3(offset, 0.0f, gridLines * spacing);
+
+            p2 = glm::vec3(transform * glm::vec4(p2, 1.0f));
+            p3 = glm::vec3(transform * glm::vec4(p3, 1.0f));
+            DrawLine(p2, p3, gridColor, -1);
+        }
+    }
+
     void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID)
     {
         glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);

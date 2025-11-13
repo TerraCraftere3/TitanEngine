@@ -107,6 +107,76 @@ namespace Titan
         return mesh;
     }
 
+    Ref<Mesh> Mesh::CreateSubdivedQuad(uint32_t xSubdivisions, uint32_t ySubdivisions)
+    {
+        RawMeshData data;
+
+        xSubdivisions = max(1u, xSubdivisions);
+        ySubdivisions = max(1u, ySubdivisions);
+
+        const float width = 1.0f;
+        const float height = 1.0f;
+        const float dx = width / xSubdivisions;
+        const float dy = height / ySubdivisions;
+
+        // Generate vertex data as triangle list
+        for (uint32_t y = 0; y < ySubdivisions; ++y)
+        {
+            for (uint32_t x = 0; x < xSubdivisions; ++x)
+            {
+                float x0 = -0.5f + x * dx;
+                float y0 = -0.5f + y * dy;
+                float x1 = x0 + dx;
+                float y1 = y0 + dy;
+
+                glm::vec3 p00 = {x0, y0, 0.0f};
+                glm::vec3 p10 = {x1, y0, 0.0f};
+                glm::vec3 p11 = {x1, y1, 0.0f};
+                glm::vec3 p01 = {x0, y1, 0.0f};
+
+                glm::vec2 uv00 = {(float)x / xSubdivisions, (float)y / ySubdivisions};
+                glm::vec2 uv10 = {(float)(x + 1) / xSubdivisions, (float)y / ySubdivisions};
+                glm::vec2 uv11 = {(float)(x + 1) / xSubdivisions, (float)(y + 1) / ySubdivisions};
+                glm::vec2 uv01 = {(float)x / xSubdivisions, (float)(y + 1) / ySubdivisions};
+
+                // Triangle 1
+                data.Positions.push_back(p00);
+                data.Positions.push_back(p10);
+                data.Positions.push_back(p11);
+
+                data.TexCoords.push_back(uv00);
+                data.TexCoords.push_back(uv10);
+                data.TexCoords.push_back(uv11);
+
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+
+                // Triangle 2
+                data.Positions.push_back(p00);
+                data.Positions.push_back(p11);
+                data.Positions.push_back(p01);
+
+                data.TexCoords.push_back(uv00);
+                data.TexCoords.push_back(uv11);
+                data.TexCoords.push_back(uv01);
+
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+                data.Normals.push_back({0.0f, 0.0f, 1.0f});
+            }
+        }
+
+        ComputeSmoothNormals(data.Positions, data.Normals);
+
+        auto mesh = CreateRef<Mesh>();
+        mesh->m_Positions = std::move(data.Positions);
+        mesh->m_Normals = std::move(data.Normals);
+        mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_FilePath = fmt::format("quad_{}x{}", xSubdivisions, ySubdivisions);
+        return mesh;
+    }
+
     Ref<Mesh> Mesh::CreateCube()
     {
         RawMeshData data;

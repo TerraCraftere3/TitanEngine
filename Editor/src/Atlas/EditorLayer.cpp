@@ -395,8 +395,6 @@ namespace Titan
         float snapValue = (m_GizmoType == ImGuizmo::OPERATION::ROTATE) ? 45.0f : 0.5f;
         float snapValues[3] = {snapValue, snapValue, snapValue};
 
-        glm::mat4 gridTransform = glm::mat4(1.0f);
-        ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), glm::value_ptr(gridTransform), 10.0f);
         if (selected && selected.HasComponent<TransformComponent>() && m_GizmoType != -1)
         {
             auto& tc = selected.GetComponent<TransformComponent>();

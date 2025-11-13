@@ -71,12 +71,14 @@ For now there is no linux support
 - [ ] Audio
 - [ ] 3D PBR Renderer
   - [ ] Shadows
-  - [ ] Materials
+  - [x] Materials (no textures rn)
   - [ ] Custom Shader?
   - [x] Batch Rendering (semi-functioning rn)
   - [ ] Instancing?
   - [ ] Particle Systems
   - [x] Model Loading
+  - [x] Directional Light
+  - [ ] Point Lights
 - [ ] Post Processing
   - [ ] Bloom
   - [ ] Tone Mapping

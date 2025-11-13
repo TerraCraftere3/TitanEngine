@@ -211,6 +211,8 @@ namespace Titan
                     Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
                 }
 
+                Renderer2D::DrawGrid();
+
                 Renderer2D::EndScene();
                 fb->Unbind();
             });
