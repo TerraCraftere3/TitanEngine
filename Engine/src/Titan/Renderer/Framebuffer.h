@@ -8,12 +8,67 @@ namespace Titan
     {
         None = 0,
 
-        // Color
+        // Color formats - 8-bit
         RGBA8,
+        RGB8,
+        RG8,
+        R8,
+
+        // Color formats - 16-bit
+        RGBA16,
+        RGBA16F,
+        RGB16F,
+        RG16F,
+        R16F,
+
+        // Color formats - 32-bit
+        RGBA32F,
+        RGB32F,
+        RG32F,
+        R32F,
+
+        // Integer formats
         RED_INTEGER,
+        RG_INTEGER,
+        RGB_INTEGER,
+        RGBA_INTEGER,
+
+        // 16-bit integer formats
+        R16I,
+        RG16I,
+        RGB16I,
+        RGBA16I,
+
+        // 32-bit integer formats
+        R32I,
+        RG32I,
+        RGB32I,
+        RGBA32I,
+
+        // Unsigned integer formats
+        R8UI,
+        RG8UI,
+        RGB8UI,
+        RGBA8UI,
+
+        R16UI,
+        RG16UI,
+        RGB16UI,
+        RGBA16UI,
+
+        R32UI,
+        RG32UI,
+        RGB32UI,
+        RGBA32UI,
+
+        // sRGB formats
+        SRGB8,
+        SRGB8_ALPHA8,
 
         // Depth/stencil
         DEPTH24STENCIL8,
+        DEPTH32F,
+        DEPTH32F_STENCIL8,
 
         // Defaults
         Depth = DEPTH24STENCIL8

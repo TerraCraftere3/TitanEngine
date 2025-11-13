@@ -454,10 +454,10 @@ namespace Titan
         s_Data.LineVertexCount += 2;
     }
 
-    void Renderer2D::DrawGrid(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& size)
+    void Renderer2D::DrawGrid(float gridLines, const glm::vec3& position, const glm::vec3& rotation,
+                              const glm::vec3& size)
     {
         // Define grid resolution
-        const int gridLines = 10;   // lines in each direction
         const float spacing = 1.0f; // distance between lines
         const glm::vec4 gridColor = {0.5f, 0.5f, 0.5f, 1.0f};
 
