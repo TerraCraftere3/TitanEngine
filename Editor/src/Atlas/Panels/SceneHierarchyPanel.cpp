@@ -96,6 +96,12 @@ namespace Titan
                     auto& mrc = quadEntity.AddComponent<MeshRendererComponent>();
                     mrc.MeshRef = Mesh::CreateQuad();
                 }
+                ImGui::SeparatorText("Lights");
+                if (ImGui::MenuItem("Create Directional Light"))
+                {
+                    Entity quadEntity = m_Context->CreateEntity("Directional Light");
+                    auto& dlc = quadEntity.AddComponent<DirectionalLightComponent>(glm::vec3(1.0f, 1.0f, 1.0f));
+                }
             }
 
             ImGui::EndPopup();
@@ -119,6 +125,9 @@ namespace Titan
                 DrawAddComponent<MeshRendererComponent>(m_SelectionContext, "Mesh Renderer");
                 DrawAddComponent<SpriteRendererComponent>(m_SelectionContext, "Sprite Renderer");
                 DrawAddComponent<CircleRendererComponent>(m_SelectionContext, "Circle Renderer");
+
+                ImGui::SeparatorText("Lights");
+                DrawAddComponent<DirectionalLightComponent>(m_SelectionContext, "Directional Light");
 
                 ImGui::SeparatorText("Physics");
                 DrawAddComponent<Rigidbody2DComponent>(m_SelectionContext, "Rigidbody 2D");
@@ -351,6 +360,8 @@ namespace Titan
                 ImGui::DragFloat("Metallic", &component.Material.Metallic, 0.01f, 0.0f, 1.0f);
                 ImGui::DragFloat("Roughness", &component.Material.Roughness, 0.01f, 0.0f, 1.0f);
             });
+        DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
+                                                 { Component::DirectionControl("Direction", component.Direction); });
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,
                                             [](auto& component)
                                             {

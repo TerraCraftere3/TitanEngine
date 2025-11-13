@@ -34,6 +34,8 @@ namespace Titan
         {
             glm::mat4 ViewProjection;
             glm::vec3 ViewPosition;
+            bool HasDirectionalLight;
+            glm::vec3 LightDirection;
             float Padding; // Padding to align to 16 bytes
         };
         CameraData CamBuffer;
@@ -114,13 +116,16 @@ namespace Titan
         s_3DData.MaterialIndexMap.clear();
     }
 
-    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix, const glm::vec3& viewPosition)
+    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix, const glm::vec3& viewPosition,
+                                bool hasDirectionalLight, glm::vec3 lightDirection)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer3D::EndScene()?");
         TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "Renderer3D not initialized!");
 
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
+        s_3DData.CamBuffer.HasDirectionalLight = hasDirectionalLight;
+        s_3DData.CamBuffer.LightDirection = lightDirection;
         s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(Renderer3DData::CameraData));
 
         s_3DData.Shader->Bind();

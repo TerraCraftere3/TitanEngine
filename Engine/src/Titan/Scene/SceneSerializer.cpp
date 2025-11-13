@@ -268,6 +268,16 @@ namespace Titan
             out << YAML::EndMap; // Material
             out << YAML::EndMap; // MeshRendererComponent
         }
+        if (entity.HasComponent<DirectionalLightComponent>())
+        {
+            out << YAML::Key << "DirectionalLightComponent";
+            out << YAML::BeginMap; // DirectionalLightComponent
+
+            auto& dlc = entity.GetComponent<DirectionalLightComponent>();
+            out << YAML::Key << "Direction" << YAML::Value << dlc.Direction;
+
+            out << YAML::EndMap; // DirectionalLightComponent
+        }
 
         if (entity.HasComponent<Rigidbody2DComponent>())
         {
@@ -487,6 +497,13 @@ namespace Titan
                         mrc.Material.Metallic = material["Metallic"].as<float>();
                         mrc.Material.Roughness = material["Roughness"].as<float>();
                     }
+                }
+
+                auto directionalLightComponent = entity["DirectionalLightComponent"];
+                if (directionalLightComponent)
+                {
+                    auto& dlc = deserializedEntity.AddComponent<DirectionalLightComponent>();
+                    dlc.Direction = directionalLightComponent["Direction"].as<glm::vec3>();
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];

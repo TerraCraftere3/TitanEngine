@@ -390,4 +390,18 @@ namespace Titan
     {
         component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
+
+    template void Scene::OnComponentAdded<IDComponent>(Entity, IDComponent&);
+    template void Scene::OnComponentAdded<TagComponent>(Entity, TagComponent&);
+    template void Scene::OnComponentAdded<TransformComponent>(Entity, TransformComponent&);
+    template void Scene::OnComponentAdded<SpriteRendererComponent>(Entity, SpriteRendererComponent&);
+    template void Scene::OnComponentAdded<CircleRendererComponent>(Entity, CircleRendererComponent&);
+    template void Scene::OnComponentAdded<MeshRendererComponent>(Entity, MeshRendererComponent&);
+    template void Scene::OnComponentAdded<DirectionalLightComponent>(Entity, DirectionalLightComponent&);
+    template void Scene::OnComponentAdded<CameraComponent>(Entity, CameraComponent&);
+    template void Scene::OnComponentAdded<NativeScriptComponent>(Entity, NativeScriptComponent&);
+    template void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity, Rigidbody2DComponent&);
+    template void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity, BoxCollider2DComponent&);
+    template void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity, CircleCollider2DComponent&);
+    template void Scene::OnComponentAdded<ScriptComponent>(Entity, ScriptComponent&);
 } // namespace Titan

@@ -13,6 +13,9 @@ namespace Titan
                                 float columnWidth = 100.0f);
         static void Vec2Control(const std::string& label, glm::vec2& values, float resetValue = 0.0f,
                                 float columnWidth = 100.0f);
+
+        static void DirectionControl(const std::string& label, glm::vec3& values, float min = -1.0f, float max = 1.0f,
+                                     float resetValue = 0.0f, float columnWidth = 100.0f);
     };
 
 } // namespace Titan

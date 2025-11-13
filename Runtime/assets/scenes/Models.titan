@@ -69,3 +69,12 @@ Entities:
         - Name: Speed
           Type: Float
           Data: 0.1
+  - Entity: 857036906376596000
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -0.4, -1]

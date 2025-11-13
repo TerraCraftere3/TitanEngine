@@ -18,7 +18,9 @@ namespace Titan
         glm::vec3 viewPosition;
         uint32_t viewWidth = 1280;
         uint32_t viewHeight = 720;
+
         bool drawOverlay = false;
+
         Ref<Scene> currentScene;
     };
 
@@ -141,9 +143,23 @@ namespace Titan
                 if (!fb)
                     return;
 
+                bool hasDirectionalLight = false;
+                glm::vec3 lightDirection;
+                auto dlView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
+                for (auto entity : dlView)
+                {
+                    auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
+                    hasDirectionalLight = true;
+                    lightDirection = dlComp.Direction;
+
+                    break; // only use first
+                }
+
                 fb->Bind();
 
-                Renderer3D::BeginScene(s_SRData->viewProjection, s_SRData->viewPosition);
+                Renderer3D::BeginScene(s_SRData->viewProjection, s_SRData->viewPosition, hasDirectionalLight,
+                                       lightDirection);
 
                 auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                 for (auto entity : meshView)

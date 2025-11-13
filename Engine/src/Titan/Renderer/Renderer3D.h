@@ -15,7 +15,8 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void BeginScene(const glm::mat4& viewTransform, const glm::vec3& viewPosition);
+        static void BeginScene(const glm::mat4& viewTransform, const glm::vec3& viewPosition,
+                               bool hasDirectionalLight = false, glm::vec3 lightDirection = glm::vec3(0.0f));
         static void StartBatch();
         static void EndScene();
         static void Flush();

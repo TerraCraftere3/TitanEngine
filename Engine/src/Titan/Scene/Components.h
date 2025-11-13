@@ -77,6 +77,15 @@ namespace Titan
         MeshRendererComponent(const Ref<Mesh>& mesh) : MeshRef(mesh) {}
     };
 
+    struct DirectionalLightComponent
+    {
+        glm::vec3 Direction;
+
+        DirectionalLightComponent() = default;
+        DirectionalLightComponent(const DirectionalLightComponent&) = default;
+        DirectionalLightComponent(glm::vec3 dir) : Direction(dir) {}
+    };
+
     struct CameraComponent
     {
         SceneCamera Camera;
@@ -162,7 +171,8 @@ namespace Titan
     {
     };
 
-    using AllComponents = ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent,
-                                         MeshRendererComponent, CameraComponent, ScriptComponent, NativeScriptComponent,
-                                         Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+    using AllComponents =
+        ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
+                       DirectionalLightComponent, CameraComponent, ScriptComponent, NativeScriptComponent,
+                       Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 } // namespace Titan
