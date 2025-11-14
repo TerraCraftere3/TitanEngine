@@ -129,6 +129,8 @@ namespace Titan
             delete[] data;
         else
             stbi_image_free(data);
+
+        MakeHandleResident();
     }
 
     OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
@@ -146,6 +148,8 @@ namespace Titan
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        MakeHandleResident();
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()
@@ -166,5 +170,30 @@ namespace Titan
     void OpenGLTexture2D::Bind(uint32_t slot) const
     {
         glBindTextureUnit(slot, m_RendererID);
+    }
+
+    uint64_t OpenGLTexture2D::GetBindlessHandle()
+    {
+        if (m_BindlessHandle == 0)
+            m_BindlessHandle = glGetTextureHandleARB(m_RendererID);
+        return m_BindlessHandle;
+    }
+
+    void OpenGLTexture2D::MakeHandleResident()
+    {
+        if (!m_HandleResident)
+        {
+            glMakeTextureHandleResidentARB(GetBindlessHandle());
+            m_HandleResident = true;
+        }
+    }
+
+    void OpenGLTexture2D::MakeHandleNonResident()
+    {
+        if (m_HandleResident)
+        {
+            glMakeTextureHandleNonResidentARB(m_BindlessHandle);
+            m_HandleResident = false;
+        }
     }
 } // namespace Titan

@@ -79,6 +79,7 @@ namespace Titan
             enttMap[uuid] = (entt::entity)newEntity;
         }
 
+        CopyComponent<DirectionalLightComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);

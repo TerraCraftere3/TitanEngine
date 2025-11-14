@@ -5,14 +5,20 @@ cbuffer GlobalUBO : register(b0)
 
 struct Material
 {
-    float4 Albedo;                 // 16 bytes
-    int32_t AlbedoTextureIndex;    // 4 bytes
-    float Metallic;                // 4 bytes
-    int32_t MetallicTextureIndex;  // 4 bytes
-    float Roughness;               // 4 bytes
-    int32_t RoughnessTextureIndex; // 4 bytes
-    int32_t NormalTextureIndex;    // 4 bytes
-    int32_t Padding;
+    float4 AlbedoColor; // 16 bytes
+
+    uint2 AlbedoTextureIndex; // 8 bytes
+    float Metallic;           // 4 bytes
+    float Padding0;           // 4 bytes
+
+    uint2 MetallicTextureIndex; // 8 bytes
+    float Roughness;            // 4 bytes
+    float Padding1;             // 4 bytes
+
+    uint2 RoughnessTextureIndex; // 8 bytes
+    uint2 NormalTextureIndex;    // 8 bytes
+
+    float2 Padding2; // 8 bytes, align struct to 16-byte multiple
 };
 
 StructuredBuffer<Material> u_Materials : register(t1);
@@ -52,12 +58,9 @@ Sampler2D GetBindlessTexture(uint2 handle);
 
 float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
 {
-    float3 color = mat.Albedo.rgb;
+    float3 color = mat.AlbedoColor.rgb;
 
-    if (mat.AlbedoTextureIndex >= 0)
-    {
-        color *= GetBindlessTexture(u_TextureHandles[mat.AlbedoTextureIndex]).Sample(texCoord).rgb;
-    }
+    color *= GetBindlessTexture(mat.AlbedoTextureIndex).Sample(texCoord).rgb;
 
     return float4(color, 1.0);
 }
@@ -66,10 +69,7 @@ float GET_METALLIC(Material mat, float2 texCoord)
 {
     float metallic = mat.Metallic;
 
-    if (mat.MetallicTextureIndex >= 0)
-    {
-        metallic *= GetBindlessTexture(u_TextureHandles[mat.MetallicTextureIndex]).Sample(texCoord).r;
-    }
+    metallic *= GetBindlessTexture(mat.MetallicTextureIndex).Sample(texCoord).r;
 
     return metallic;
 }
@@ -78,10 +78,7 @@ float GET_ROUGHNESS(Material mat, float2 texCoord)
 {
     float roughness = mat.Roughness;
 
-    if (mat.RoughnessTextureIndex >= 0)
-    {
-        roughness *= GetBindlessTexture(u_TextureHandles[mat.RoughnessTextureIndex]).Sample(texCoord).g;
-    }
+    roughness *= GetBindlessTexture(mat.RoughnessTextureIndex).Sample(texCoord).g;
 
     return roughness;
 }

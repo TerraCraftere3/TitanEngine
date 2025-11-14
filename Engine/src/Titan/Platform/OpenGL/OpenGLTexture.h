@@ -32,6 +32,10 @@ namespace Titan
 
         virtual void Bind(uint32_t slot = 0) const override;
 
+        virtual uint64_t GetBindlessHandle() override;
+        virtual void MakeHandleResident() override;
+        virtual void MakeHandleNonResident() override;
+
         virtual bool operator==(const Texture& other) const override
         {
             return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
@@ -42,6 +46,9 @@ namespace Titan
         uint32_t m_Width, m_Height;
         uint32_t m_RendererID;
         GLenum m_InternalFormat, m_DataFormat;
+
+        uint64_t m_BindlessHandle = 0;
+        bool m_HandleResident = false;
     };
 
 } // namespace Titan

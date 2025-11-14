@@ -1,5 +1,6 @@
 #include "Renderer3D.h"
 #include "RenderCommand.h"
+#include "Renderer2D.h"
 #include "Shader.h"
 #include "ShaderStorageBuffer.h"
 #include "Titan/PCH.h"
@@ -9,6 +10,12 @@
 
 namespace Titan
 {
+    glm::uvec2 HandleToVec2(uint64_t handle)
+    {
+        uint32_t low = static_cast<uint32_t>(handle & 0xFFFFFFFF);          // lower 32 bits
+        uint32_t high = static_cast<uint32_t>((handle >> 32) & 0xFFFFFFFF); // upper 32 bits
+        return glm::uvec2(low, high);
+    }
 
     struct Vertex
     {
@@ -21,26 +28,47 @@ namespace Titan
 
     struct alignas(16) GPUMaterial
     {
-        glm::vec4 AlbedoColor;
-        int32_t AlbedoTextureIndex = -1;
-        float Metallic;
-        int32_t MetallicTextureIndex = -1;
-        float Roughness;
-        int32_t RoughnessTextureIndex = -1;
-        int32_t NormalTextureIndex = -1;
-        int32_t Padding = 1111;
+        glm::vec4 AlbedoColor; // 16 bytes
+
+        glm::uvec2 AlbedoTextureIndex; // 8 bytes
+        float Metallic;                // 4 bytes
+        float Padding0;                // 4 bytes, align next member
+
+        glm::uvec2 MetallicTextureIndex; // 8 bytes
+        float Roughness;                 // 4 bytes
+        float Padding1;                  // 4 bytes
+
+        glm::uvec2 RoughnessTextureIndex; // 8 bytes
+        glm::uvec2 NormalTextureIndex;    // 8 bytes
+
+        float Padding2[2]; // 8 bytes, round struct to 16-byte multiple
 
         GPUMaterial() = default;
 
         explicit GPUMaterial(const Material3D& mat)
         {
             AlbedoColor = mat.AlbedoColor;
-            AlbedoTextureIndex = -1;
+            if (mat.AlbedoTexture)
+                AlbedoTextureIndex = HandleToVec2(mat.AlbedoTexture->GetBindlessHandle());
+            else
+                AlbedoTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+
             Metallic = mat.Metallic;
-            MetallicTextureIndex = -1;
+            if (mat.MetallicTexture)
+                MetallicTextureIndex = HandleToVec2(mat.MetallicTexture->GetBindlessHandle());
+            else
+                MetallicTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+
             Roughness = mat.Roughness;
-            RoughnessTextureIndex = -1;
-            NormalTextureIndex = -1;
+            if (mat.RoughnessTexture)
+                RoughnessTextureIndex = HandleToVec2(mat.RoughnessTexture->GetBindlessHandle());
+            else
+                RoughnessTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+
+            if (mat.NormalTexture)
+                NormalTextureIndex = HandleToVec2(mat.NormalTexture->GetBindlessHandle());
+            else
+                NormalTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
         }
     };
 

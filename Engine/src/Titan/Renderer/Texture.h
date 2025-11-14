@@ -21,6 +21,10 @@ namespace Titan
 
         virtual void Bind(uint32_t slot = 0) const = 0;
 
+        virtual uint64_t GetBindlessHandle() = 0;
+        virtual void MakeHandleResident() = 0;
+        virtual void MakeHandleNonResident() = 0;
+
         virtual bool operator==(const Texture& other) const = 0;
     };
 
