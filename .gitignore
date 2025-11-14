@@ -21,6 +21,7 @@ build
 */imgui.ini
 **profile-*.json
 **.generated.**
+**.spv
 out
 !**/Optick.exe
 !**/mono/

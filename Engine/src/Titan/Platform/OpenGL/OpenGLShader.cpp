@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 // clang-format on
+
 namespace Titan
 {
     std::string ReadFile(const std::string& filepath)
@@ -55,7 +56,7 @@ namespace Titan
         std::filesystem::path path(filepath);
         if (path.extension() == ".slang")
         {
-            CompileSlangShader(filepath);
+            CompileSlangShaderToSPIRV(filepath);
         }
         else
         {
@@ -183,7 +184,7 @@ namespace Titan
         return shaderSources;
     }
 
-    void OpenGLShader::CompileSlangShader(const std::string& filepath)
+    void OpenGLShader::CompileSlangShaderToSPIRV(const std::string& filepath)
     {
         TI_PROFILE_FUNCTION();
 
@@ -195,11 +196,11 @@ namespace Titan
             return;
         }
 
-        // Create session description
+        // Create session description for SPIR-V target
         slang::SessionDesc sessionDesc = {};
         slang::TargetDesc targetDesc = {};
-        targetDesc.format = SLANG_GLSL;
-        targetDesc.profile = globalSession->findProfile("glsl_450");
+        targetDesc.format = SLANG_SPIRV;
+        targetDesc.profile = globalSession->findProfile("spirv_1_5");
         targetDesc.flags = SLANG_TARGET_FLAG_GENERATE_WHOLE_PROGRAM;
 
         sessionDesc.targets = &targetDesc;
@@ -228,17 +229,17 @@ namespace Titan
             return;
         }
 
-        // Find entry points (vertex and fragment shaders)
-        std::unordered_map<GLenum, std::string> compiledShaders;
+        // Find entry points and compile to SPIR-V
+        std::unordered_map<GLenum, std::vector<uint32_t>> compiledShaders;
 
         // Compile vertex shader
         Slang::ComPtr<slang::IEntryPoint> vertexEntry;
         if (SLANG_SUCCEEDED(module->findEntryPointByName("vertexMain", vertexEntry.writeRef())))
         {
-            std::string vertexCode = CompileSlangEntryPoint(session, module, vertexEntry, "vertexMain");
-            if (!vertexCode.empty())
+            auto spirvCode = CompileSlangEntryPointToSPIRV(session, module, vertexEntry, "vertexMain");
+            if (!spirvCode.empty())
             {
-                compiledShaders[GL_VERTEX_SHADER] = vertexCode;
+                compiledShaders[GL_VERTEX_SHADER] = spirvCode;
             }
         }
 
@@ -246,10 +247,10 @@ namespace Titan
         Slang::ComPtr<slang::IEntryPoint> fragmentEntry;
         if (SLANG_SUCCEEDED(module->findEntryPointByName("fragmentMain", fragmentEntry.writeRef())))
         {
-            std::string fragmentCode = CompileSlangEntryPoint(session, module, fragmentEntry, "fragmentMain");
-            if (!fragmentCode.empty())
+            auto spirvCode = CompileSlangEntryPointToSPIRV(session, module, fragmentEntry, "fragmentMain");
+            if (!spirvCode.empty())
             {
-                compiledShaders[GL_FRAGMENT_SHADER] = fragmentCode;
+                compiledShaders[GL_FRAGMENT_SHADER] = spirvCode;
             }
         }
 
@@ -259,20 +260,21 @@ namespace Titan
             return;
         }
 
-        // Compile the generated GLSL code
-        Compile(compiledShaders);
+        // Load SPIR-V shaders into OpenGL
+        CompileSPIRV(compiledShaders);
     }
 
-    std::string OpenGLShader::CompileSlangEntryPoint(Slang::ComPtr<slang::ISession> session, slang::IModule* module,
-                                                     Slang::ComPtr<slang::IEntryPoint> entryPoint,
-                                                     const std::string& entryPointName)
+    std::vector<uint32_t> OpenGLShader::CompileSlangEntryPointToSPIRV(Slang::ComPtr<slang::ISession> session,
+                                                                      slang::IModule* module,
+                                                                      Slang::ComPtr<slang::IEntryPoint> entryPoint,
+                                                                      const std::string& entryPointName)
     {
         slang::IComponentType* componentTypes[] = {module, entryPoint};
         Slang::ComPtr<slang::IComponentType> program;
         if (SLANG_FAILED(session->createCompositeComponentType(componentTypes, 2, program.writeRef())))
         {
             TI_CORE_ERROR("Failed to create composite component type");
-            return "";
+            return {};
         }
 
         // Link the program
@@ -284,10 +286,10 @@ namespace Titan
             {
                 TI_CORE_ERROR("Slang linking error: {}", (const char*)diagnosticsBlob->getBufferPointer());
             }
-            return "";
+            return {};
         }
 
-        // Get the compiled code
+        // Get the compiled SPIR-V code
         Slang::ComPtr<slang::IBlob> codeBlob;
         if (SLANG_FAILED(linkedProgram->getEntryPointCode(0, 0, codeBlob.writeRef(), diagnosticsBlob.writeRef())))
         {
@@ -295,28 +297,106 @@ namespace Titan
             {
                 TI_CORE_ERROR("Slang code generation error: {}", (const char*)diagnosticsBlob->getBufferPointer());
             }
-            return "";
+            return {};
         }
 
-        std::string generatedCode((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
+        // Convert blob to uint32_t vector (SPIR-V format)
+        const uint32_t* spirvData = static_cast<const uint32_t*>(codeBlob->getBufferPointer());
+        size_t spirvSize = codeBlob->getBufferSize() / sizeof(uint32_t);
+        std::vector<uint32_t> spirvCode(spirvData, spirvData + spirvSize);
 
 #ifdef TI_BUILD_DEBUG
-        std::string outputPath = GetPathWithoutExtension(m_Name) + "_" + entryPointName + ".generated.glsl";
-        std::ofstream out(outputPath);
+        // Optionally save SPIR-V binary for debugging
+        std::string outputPath = GetPathWithoutExtension(m_Name) + "_" + entryPointName + ".spv";
+        std::ofstream out(outputPath, std::ios::binary);
         if (out)
         {
-            out << generatedCode;
+            out.write(reinterpret_cast<const char*>(spirvCode.data()), spirvCode.size() * sizeof(uint32_t));
             out.close();
-            TI_CORE_TRACE("Wrote generated GLSL to: {}", outputPath);
+            TI_CORE_TRACE("Wrote SPIR-V binary to: {}", outputPath);
         }
 #endif
 
-        return generatedCode;
+        return spirvCode;
     }
 
     GLint OpenGLShader::GetUniformLocation(const std::string& name)
     {
         return glGetUniformLocation(m_RendererID, (name + "_0").c_str());
+    }
+
+    void OpenGLShader::CompileSPIRV(const std::unordered_map<GLenum, std::vector<uint32_t>>& spirvShaders)
+    {
+        TI_PROFILE_FUNCTION();
+
+        GLuint program = glCreateProgram();
+        std::vector<GLuint> glShaderIDs;
+        glShaderIDs.reserve(spirvShaders.size());
+
+        for (const auto& [type, spirvCode] : spirvShaders)
+        {
+            GLuint shader = glCreateShader(type);
+
+            // Load SPIR-V binary using GL_ARB_gl_spirv extension
+            glShaderBinary(1, &shader, GL_SHADER_BINARY_FORMAT_SPIR_V, spirvCode.data(),
+                           static_cast<GLsizei>(spirvCode.size() * sizeof(uint32_t)));
+
+            // Specialize the shader (required for SPIR-V)
+            glSpecializeShader(shader, "main", 0, nullptr, nullptr);
+
+            // Check for specialization errors
+            GLint isSpecialized = 0;
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &isSpecialized);
+            if (isSpecialized == GL_FALSE)
+            {
+                GLint maxLength = 0;
+                glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+                std::vector<GLchar> infoLog(maxLength);
+                glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+
+                glDeleteShader(shader);
+
+                TI_CORE_ERROR("SPIR-V shader specialization failure: {}", infoLog.data());
+                TI_CORE_ASSERT(false, "SPIR-V shader specialization failure!");
+                break;
+            }
+
+            glAttachShader(program, shader);
+            glShaderIDs.push_back(shader);
+        }
+
+        m_RendererID = program;
+
+        // Link the program
+        glLinkProgram(program);
+
+        GLint isLinked = 0;
+        glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+        if (isLinked == GL_FALSE)
+        {
+            GLint maxLength = 0;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+
+            std::vector<GLchar> infoLog(maxLength);
+            glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+
+            glDeleteProgram(program);
+
+            for (auto id : glShaderIDs)
+                glDeleteShader(id);
+
+            TI_CORE_ERROR("SPIR-V program link failure: {}", infoLog.data());
+            TI_CORE_ASSERT(false, "SPIR-V program link failure!");
+            return;
+        }
+
+        // Detach shaders after linking
+        for (auto id : glShaderIDs)
+        {
+            glDetachShader(program, id);
+            glDeleteShader(id);
+        }
     }
 
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
