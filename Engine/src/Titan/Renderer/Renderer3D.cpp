@@ -19,6 +19,35 @@ namespace Titan
         int MaterialIndex = 0;
     };
 
+    struct GPUMaterial
+    {
+        glm::vec4 AlbedoColor;
+        float Metallic;
+        float Roughness;
+        float Padding[2]; // Ensure 16-byte alignment
+
+        // Constructor from Material3D
+        GPUMaterial() = default;
+
+        explicit GPUMaterial(const Material3D& mat)
+            : AlbedoColor(mat.AlbedoColor), Metallic(mat.Metallic), Roughness(mat.Roughness)
+        {
+            Padding[0] = 0.0f;
+            Padding[1] = 0.0f;
+        }
+
+        // Copy operator
+        GPUMaterial& operator=(const Material3D& mat)
+        {
+            AlbedoColor = mat.AlbedoColor;
+            Metallic = mat.Metallic;
+            Roughness = mat.Roughness;
+            Padding[0] = 0.0f;
+            Padding[1] = 0.0f;
+            return *this;
+        }
+    };
+
     struct Renderer3DData
     {
         static const uint32_t MaxVertices = 100'000;
@@ -44,8 +73,8 @@ namespace Titan
         Ref<UniformBuffer> CameraUniformBuffer;
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
 
-        // Material management
-        std::vector<Material3D> Materials;
+        // Material management - GPU version
+        std::vector<GPUMaterial> GPUMaterials;
         std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
         uint32_t CurrentMaterialIndex = 0;
 
@@ -91,12 +120,11 @@ namespace Titan
         s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
 
         s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
-        s_3DData.MaterialStorageBuffer =
-            ShaderStorageBuffer::Create(sizeof(Material3D) * s_3DData.MaxMaterials, 1); // 256 Materials Max
+        s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
         s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
 
-        // Reserve space for materials
-        s_3DData.Materials.reserve(s_3DData.MaxMaterials);
+        // Reserve space for GPU materials
+        s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
     }
 
     void Renderer3D::Shutdown()
@@ -112,7 +140,7 @@ namespace Titan
         s_3DData.CameraUniformBuffer.reset();
         s_3DData.MaterialStorageBuffer.reset();
 
-        s_3DData.Materials.clear();
+        s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
     }
 
@@ -140,7 +168,7 @@ namespace Titan
         s_IsRendering = false;
 
         // Clear materials for next frame
-        s_3DData.Materials.clear();
+        s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
         s_3DData.CurrentMaterialIndex = 0;
     }
@@ -158,11 +186,11 @@ namespace Titan
         if (s_3DData.VertexCount == 0)
             return;
 
-        // Upload materials to GPU
-        if (!s_3DData.Materials.empty())
+        // Upload GPU materials to GPU
+        if (!s_3DData.GPUMaterials.empty())
         {
-            s_3DData.MaterialStorageBuffer->SetData(s_3DData.Materials.data(),
-                                                    s_3DData.Materials.size() * sizeof(Material3D));
+            s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(),
+                                                    s_3DData.GPUMaterials.size() * sizeof(GPUMaterial));
         }
 
         // Upload vertex data
@@ -196,7 +224,7 @@ namespace Titan
             return it->second;
         }
 
-        // Add new material
+        // Add new material - convert to GPU format
         uint32_t newIndex = s_3DData.CurrentMaterialIndex++;
 
         if (newIndex >= s_3DData.MaxMaterials)
@@ -205,7 +233,8 @@ namespace Titan
             return 0;
         }
 
-        s_3DData.Materials.push_back(mat);
+        // Convert Material3D to GPUMaterial and add
+        s_3DData.GPUMaterials.emplace_back(mat);
         s_3DData.MaterialIndexMap[hash] = newIndex;
 
         return newIndex;
@@ -225,7 +254,7 @@ namespace Titan
 
         uint32_t totalVertexCount = (uint32_t)positions.size();
 
-        // Get or add material index
+        // Get or add material index - Material3D is automatically converted to GPUMaterial
         uint32_t materialIndex = GetOrAddMaterial(mat);
 
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
