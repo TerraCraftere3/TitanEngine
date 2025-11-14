@@ -19,32 +19,28 @@ namespace Titan
         int MaterialIndex = 0;
     };
 
-    struct GPUMaterial
+    struct alignas(16) GPUMaterial
     {
         glm::vec4 AlbedoColor;
+        int32_t AlbedoTextureIndex = -1;
         float Metallic;
+        int32_t MetallicTextureIndex = -1;
         float Roughness;
-        float Padding[2]; // Ensure 16-byte alignment
+        int32_t RoughnessTextureIndex = -1;
+        int32_t NormalTextureIndex = -1;
+        int32_t Padding = 1111;
 
-        // Constructor from Material3D
         GPUMaterial() = default;
 
         explicit GPUMaterial(const Material3D& mat)
-            : AlbedoColor(mat.AlbedoColor), Metallic(mat.Metallic), Roughness(mat.Roughness)
-        {
-            Padding[0] = 0.0f;
-            Padding[1] = 0.0f;
-        }
-
-        // Copy operator
-        GPUMaterial& operator=(const Material3D& mat)
         {
             AlbedoColor = mat.AlbedoColor;
+            AlbedoTextureIndex = -1;
             Metallic = mat.Metallic;
+            MetallicTextureIndex = -1;
             Roughness = mat.Roughness;
-            Padding[0] = 0.0f;
-            Padding[1] = 0.0f;
-            return *this;
+            RoughnessTextureIndex = -1;
+            NormalTextureIndex = -1;
         }
     };
 
@@ -52,6 +48,7 @@ namespace Titan
     {
         static const uint32_t MaxVertices = 100'000;
         static const uint32_t MaxMaterials = 1000;
+        static const uint32_t MaxTextures = 1024;
 
         Ref<VertexArray> VertexArray;
         Ref<VertexBuffer> VertexBuffer;
@@ -62,16 +59,13 @@ namespace Titan
         struct CameraData
         {
             glm::mat4 ViewProjection;
-            glm::vec3 ViewPosition;
-            bool HasDirectionalLight;
-            glm::vec3 LightDirection;
-            float Padding; // Padding to align to 16 bytes
         };
         CameraData CamBuffer;
 
         Ref<Shader> Shader;
         Ref<UniformBuffer> CameraUniformBuffer;
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
+        Ref<ShaderStorageBuffer> TextureStorageBuffer;
 
         // Material management - GPU version
         std::vector<GPUMaterial> GPUMaterials;
@@ -121,10 +115,13 @@ namespace Titan
 
         s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
         s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
+        s_3DData.TextureStorageBuffer = ShaderStorageBuffer::Create(sizeof(glm::ivec2) * s_3DData.MaxMaterials, 2);
         s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
 
         // Reserve space for GPU materials
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
+
+        TI_CORE_TRACE("Sizeof GPUMaterial: {}", sizeof(GPUMaterial));
     }
 
     void Renderer3D::Shutdown()
@@ -224,18 +221,36 @@ namespace Titan
             return it->second;
         }
 
-        // Add new material - convert to GPU format
-        uint32_t newIndex = s_3DData.CurrentMaterialIndex++;
+        uint32_t newIndex = static_cast<uint32_t>(s_3DData.GPUMaterials.size());
 
         if (newIndex >= s_3DData.MaxMaterials)
         {
-            TI_CORE_WARN("Material limit reached! Using default material.");
+            TI_CORE_ERROR("Material limit reached! Max: {}", s_3DData.MaxMaterials);
             return 0;
         }
 
-        // Convert Material3D to GPUMaterial and add
-        s_3DData.GPUMaterials.emplace_back(mat);
+        GPUMaterial gpuMat(mat);
+
+        if (std::isnan(gpuMat.AlbedoColor.r) || std::isnan(gpuMat.Metallic) || std::isnan(gpuMat.Roughness))
+        {
+            TI_CORE_ERROR("Material contains NaN values!");
+        }
+
+        s_3DData.GPUMaterials.push_back(gpuMat);
         s_3DData.MaterialIndexMap[hash] = newIndex;
+
+        size_t materialDataSize = s_3DData.GPUMaterials.size() * sizeof(GPUMaterial);
+
+        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&gpuMat);
+        std::string hexDump;
+        for (size_t i = 0; i < sizeof(GPUMaterial); ++i)
+        {
+            char buf[4];
+            snprintf(buf, sizeof(buf), "%02X ", bytes[i]);
+            hexDump += buf;
+        }
+
+        s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(), materialDataSize);
 
         return newIndex;
     }

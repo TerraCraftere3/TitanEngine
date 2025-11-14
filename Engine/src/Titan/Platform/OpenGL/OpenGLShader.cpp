@@ -10,6 +10,42 @@
 // clang-format on
 namespace Titan
 {
+    static std::string PatchGeneratedGLSL(const std::string& code)
+    {
+        std::string result = code;
+
+        // List of replacement rules
+        struct Rule
+        {
+            std::string from, to;
+        };
+
+        std::vector<Rule> rules = {
+
+            // ---- Bindless example ----
+            {"sampler2D GetBindlessTexture_0(uvec2 _0);",
+             "sampler2D GetBindlessTexture_0(uvec2 handle)\n"
+             "{\n"
+             "    return sampler2D(handle);\n"
+             "}\n"},
+            {"#version 450",
+             "#version 450\n"
+             "#extension GL_ARB_bindless_texture : require"}};
+
+        // Apply all rules
+        for (const auto& r : rules)
+        {
+            size_t pos = 0;
+            while ((pos = result.find(r.from, pos)) != std::string::npos)
+            {
+                result.replace(pos, r.from.length(), r.to);
+                pos += r.to.length();
+            }
+        }
+
+        return result;
+    }
+
     std::string ReadFile(const std::string& filepath)
     {
         std::string result;
@@ -299,6 +335,8 @@ namespace Titan
         }
 
         std::string generatedCode((const char*)codeBlob->getBufferPointer(), codeBlob->getBufferSize());
+
+        generatedCode = PatchGeneratedGLSL(generatedCode);
 
 #ifdef TI_BUILD_DEBUG
         std::string outputPath = GetPathWithoutExtension(m_Name) + "_" + entryPointName + ".generated.glsl";

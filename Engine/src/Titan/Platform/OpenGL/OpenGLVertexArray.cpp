@@ -107,20 +107,33 @@ namespace Titan
                     break;
                 }
                 case ShaderDataType::Mat3:
-                case ShaderDataType::Mat4:
                 {
-                    uint8_t count = element.GetComponentCount();
-                    for (uint8_t i = 0; i < count; i++)
+                    for (uint8_t i = 0; i < 3; i++)
                     {
                         glEnableVertexAttribArray(m_VertexBufferIndex);
-                        glVertexAttribPointer(m_VertexBufferIndex, count, ShaderDataTypeToOpenGLBaseType(element.Type),
-                                              element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(),
-                                              (const void*)(uintptr_t)(element.Offset + sizeof(float) * count * i));
+                        glVertexAttribPointer(m_VertexBufferIndex, 3, GL_FLOAT, element.Normalized ? GL_TRUE : GL_FALSE,
+                                              layout.GetStride(),
+                                              (const void*)(uintptr_t)(element.Offset + sizeof(float) * 3 * i));
                         glVertexAttribDivisor(m_VertexBufferIndex, 1);
                         m_VertexBufferIndex++;
                     }
                     break;
                 }
+
+                case ShaderDataType::Mat4:
+                {
+                    for (uint8_t i = 0; i < 4; i++)
+                    {
+                        glEnableVertexAttribArray(m_VertexBufferIndex);
+                        glVertexAttribPointer(m_VertexBufferIndex, 4, GL_FLOAT, element.Normalized ? GL_TRUE : GL_FALSE,
+                                              layout.GetStride(),
+                                              (const void*)(uintptr_t)(element.Offset + sizeof(float) * 4 * i));
+                        glVertexAttribDivisor(m_VertexBufferIndex, 1);
+                        m_VertexBufferIndex++;
+                    }
+                    break;
+                }
+
                 default:
                     TI_CORE_ASSERT(false, "Unknown ShaderDataType!");
             }

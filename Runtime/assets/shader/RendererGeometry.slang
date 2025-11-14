@@ -5,13 +5,18 @@ cbuffer GlobalUBO : register(b0)
 
 struct Material
 {
-    float4 Albedo;
-    float Metallic;
-    float Roughness;
-    float2 Padding;
+    float4 Albedo;                 // 16 bytes
+    int32_t AlbedoTextureIndex;    // 4 bytes
+    float Metallic;                // 4 bytes
+    int32_t MetallicTextureIndex;  // 4 bytes
+    float Roughness;               // 4 bytes
+    int32_t RoughnessTextureIndex; // 4 bytes
+    int32_t NormalTextureIndex;    // 4 bytes
+    int32_t Padding;
 };
 
 StructuredBuffer<Material> u_Materials : register(t1);
+StructuredBuffer<uint2> u_TextureHandles : register(t2);
 
 struct VertexInput
 {
@@ -43,11 +48,48 @@ struct FragmentOutput
 static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
 static const float PI = 3.14159265359;
 
-// Material getters (placeholders for future texture sampling)
-float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord) { return mat.Albedo; }
-float GET_METALLIC(Material mat, float2 texCoord) { return mat.Metallic; }
-float GET_ROUGHNESS(Material mat, float2 texCoord) { return mat.Roughness; }
-float GET_AO(Material mat, float2 texCoord) { return 1.0; }
+Sampler2D GetBindlessTexture(uint2 handle);
+
+float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
+{
+    float3 color = mat.Albedo.rgb;
+
+    if (mat.AlbedoTextureIndex >= 0)
+    {
+        color *= GetBindlessTexture(u_TextureHandles[mat.AlbedoTextureIndex]).Sample(texCoord).rgb;
+    }
+
+    return float4(color, 1.0);
+}
+
+float GET_METALLIC(Material mat, float2 texCoord)
+{
+    float metallic = mat.Metallic;
+
+    if (mat.MetallicTextureIndex >= 0)
+    {
+        metallic *= GetBindlessTexture(u_TextureHandles[mat.MetallicTextureIndex]).Sample(texCoord).r;
+    }
+
+    return metallic;
+}
+
+float GET_ROUGHNESS(Material mat, float2 texCoord)
+{
+    float roughness = mat.Roughness;
+
+    if (mat.RoughnessTextureIndex >= 0)
+    {
+        roughness *= GetBindlessTexture(u_TextureHandles[mat.RoughnessTextureIndex]).Sample(texCoord).g;
+    }
+
+    return roughness;
+}
+
+float GET_AO(Material mat, float2 texCoord)
+{
+    return 1.0;
+}
 
 [shader("vertex")]
 VertexOutput vertexMain(VertexInput input)
