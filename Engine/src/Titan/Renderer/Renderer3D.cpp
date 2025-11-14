@@ -256,9 +256,6 @@ namespace Titan
     {
         TI_PROFILE_FUNCTION();
 
-        if (s_3DData.VertexCount == 0)
-            return;
-
         // Upload GPU materials to GPU
         if (!s_3DData.GPUMaterials.empty())
         {

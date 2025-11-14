@@ -59,6 +59,8 @@ FragmentOutput fragmentMain(VertexOutput input)
     float roughness = _.g;
     float ao = _.b;
 
+    if (albedoColor.a == 0) discard;
+
     float3 N = normalize(normal);
     float3 V = normalize(u_ViewPosition - (input.position.xyz / input.position.w));
 

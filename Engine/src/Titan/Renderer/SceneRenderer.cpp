@@ -87,11 +87,15 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "GeometryPass", {"GeometryBuffer"}, {"GeometryBuffer"},
+            "GeometryPass", {}, {"GeometryBuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
 
             {
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
+
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                bool hasMeshes = meshView.begin() != meshView.end();
+
                 if (!fb)
                     return;
 
@@ -101,7 +105,6 @@ namespace Titan
                 RenderCommand::Clear();
                 Renderer3D::BeginScene(s_SRData->viewProjection);
 
-                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                 for (auto entity : meshView)
                 {
                     auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
@@ -120,6 +123,9 @@ namespace Titan
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
+
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                bool hasMeshes = meshView.begin() != meshView.end();
 
                 if (!fb || !gbuffer)
                     return;
@@ -144,13 +150,13 @@ namespace Titan
                 data.LightDirection = lightDirection;
                 data.ViewPosition = s_SRData->viewPosition;
 
-                PBRRenderer::Render(gbuffer, data);
+                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data);
 
                 fb->Unbind();
             });
 
         builder.AddRenderPass(
-            "SpritePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            "SpritePass", {}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
@@ -179,7 +185,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "CirclePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            "CirclePass", {}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
 
             {
@@ -205,7 +211,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "OverlayPass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
+            "OverlayPass", {}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
 
             {
