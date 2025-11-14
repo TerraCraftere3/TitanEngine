@@ -23,6 +23,7 @@ namespace Titan
         Ref<Texture2D> DefaultMetallic;
         Ref<Texture2D> DefaultRoughness;
         Ref<Texture2D> DefaultNormal;
+        Ref<Texture2D> DefaultAO;
     };
 
     static Textures s_Textures;
@@ -46,8 +47,7 @@ namespace Titan
         float Padding0;                // 4 bytes, align next member
 
         glm::uvec2 MetallicTextureIndex; // 8 bytes
-        float Roughness;                 // 4 bytes
-        float Padding1;                  // 4 bytes
+        glm::uvec2 AOTextureIndex;       // 8 bytes;
 
         glm::uvec2 RoughnessTextureIndex; // 8 bytes
         glm::uvec2 NormalTextureIndex;    // 8 bytes
@@ -64,13 +64,11 @@ namespace Titan
             else
                 AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
 
-            Metallic = mat.Metallic;
             if (mat.MetallicTexture)
                 MetallicTextureIndex = HandleToVec2(mat.MetallicTexture->GetBindlessHandle());
             else
                 MetallicTextureIndex = HandleToVec2(s_Textures.DefaultMetallic->GetBindlessHandle());
 
-            Roughness = mat.Roughness;
             if (mat.RoughnessTexture)
                 RoughnessTextureIndex = HandleToVec2(mat.RoughnessTexture->GetBindlessHandle());
             else
@@ -80,6 +78,11 @@ namespace Titan
                 NormalTextureIndex = HandleToVec2(mat.NormalTexture->GetBindlessHandle());
             else
                 NormalTextureIndex = HandleToVec2(s_Textures.DefaultNormal->GetBindlessHandle());
+
+            if (mat.AOTexture)
+                AOTextureIndex = HandleToVec2(mat.AOTexture->GetBindlessHandle());
+            else
+                AOTextureIndex = HandleToVec2(s_Textures.DefaultAO->GetBindlessHandle());
         }
     };
 
@@ -186,6 +189,12 @@ namespace Titan
                             (128u << 8) |  // G = 128
                             (128u);        // R = 128
             s_Textures.DefaultNormal->SetData(&data, sizeof(uint32_t));
+        }
+
+        s_Textures.DefaultAO = Texture2D::Create(1, 1);
+        {
+            uint32_t data = 0xffffffff; // white
+            s_Textures.DefaultAO->SetData(&data, sizeof(uint32_t));
         }
     }
 
@@ -297,11 +306,6 @@ namespace Titan
         }
 
         GPUMaterial gpuMat(mat);
-
-        if (std::isnan(gpuMat.AlbedoColor.r) || std::isnan(gpuMat.Metallic) || std::isnan(gpuMat.Roughness))
-        {
-            TI_CORE_ERROR("Material contains NaN values!");
-        }
 
         s_3DData.GPUMaterials.push_back(gpuMat);
         s_3DData.MaterialIndexMap[hash] = newIndex;

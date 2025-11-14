@@ -63,7 +63,7 @@ namespace Titan
                                    FramebufferTextureFormat::RGBA16F,     // Position
                                    FramebufferTextureFormat::RGBA16F,     // Normal
                                    FramebufferTextureFormat::RGBA8,       // Albedo
-                                   FramebufferTextureFormat::RGBA8,       // Metallic, Roughness, -, -
+                                   FramebufferTextureFormat::RGBA8,       // Metallic, Roughness, AO, -
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // Depth
                                },

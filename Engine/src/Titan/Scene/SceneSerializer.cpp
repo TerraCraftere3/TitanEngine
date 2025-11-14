@@ -268,13 +268,11 @@ namespace Titan
                 out << YAML::Key << "AlbedoTexture" << YAML::Value
                     << meshRendererComponent.Material.AlbedoTexture->GetPath();
             }
-            out << YAML::Key << "Metallic" << YAML::Value << meshRendererComponent.Material.Metallic;
             if (meshRendererComponent.Material.MetallicTexture)
             {
                 out << YAML::Key << "MetallicTexture" << YAML::Value
                     << meshRendererComponent.Material.MetallicTexture->GetPath();
             }
-            out << YAML::Key << "Roughness" << YAML::Value << meshRendererComponent.Material.Roughness;
             if (meshRendererComponent.Material.RoughnessTexture)
             {
                 out << YAML::Key << "RoughnessTexture" << YAML::Value
@@ -284,6 +282,10 @@ namespace Titan
             {
                 out << YAML::Key << "NormalTexture" << YAML::Value
                     << meshRendererComponent.Material.NormalTexture->GetPath();
+            }
+            if (meshRendererComponent.Material.AOTexture)
+            {
+                out << YAML::Key << "AOTexture" << YAML::Value << meshRendererComponent.Material.AOTexture->GetPath();
             }
             out << YAML::EndMap; // Material
             out << YAML::EndMap; // MeshRendererComponent
@@ -519,13 +521,11 @@ namespace Titan
                             mrc.Material.AlbedoTexture =
                                 Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
                         }
-                        mrc.Material.Metallic = material["Metallic"].as<float>();
                         if (material["MetallicTexture"])
                         {
                             mrc.Material.MetallicTexture =
                                 Assets::Load<Texture2D>(material["MetallicTexture"].as<std::string>());
                         }
-                        mrc.Material.Roughness = material["Roughness"].as<float>();
                         if (material["RoughnessTexture"])
                         {
                             mrc.Material.RoughnessTexture =
@@ -535,6 +535,10 @@ namespace Titan
                         {
                             mrc.Material.NormalTexture =
                                 Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
+                        }
+                        if (material["AOTexture"])
+                        {
+                            mrc.Material.AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
                         }
                     }
                 }

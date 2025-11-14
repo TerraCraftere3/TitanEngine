@@ -10,10 +10,9 @@ namespace Titan
     {
         glm::vec4 AlbedoColor = glm::vec4(1.0f);
         Ref<Texture2D> AlbedoTexture;
-        float Metallic = 0.0f;
         Ref<Texture2D> MetallicTexture;
-        float Roughness = 1.0f;
         Ref<Texture2D> RoughnessTexture;
         Ref<Texture2D> NormalTexture;
+        Ref<Texture2D> AOTexture;
     };
 } // namespace Titan

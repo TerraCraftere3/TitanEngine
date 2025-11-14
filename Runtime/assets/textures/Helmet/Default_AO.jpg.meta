@@ -1,0 +1,8 @@
+ID: 13607062200337531120
+Type: 1
+Source: assets\textures\Helmet\Default_AO.jpg
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

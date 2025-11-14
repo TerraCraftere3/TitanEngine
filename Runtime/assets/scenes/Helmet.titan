@@ -1,5 +1,36 @@
 Scene: Untitled
 Entities:
+  - Entity: 6817584821935004973
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -1, -1]
+  - Entity: 18224009490395026848
+    TagComponent:
+      Tag: Helmet
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [1.5707964, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: assets\models\DamagedHelmet.gltf
+      Material:
+        AlbedoColor: [1, 1, 1, 1]
+        AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
+        MetallicTexture: assets\textures\Helmet\Default_metal.jpg
+        RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
+        NormalTexture: assets\textures\Helmet\Default_normal.jpg
+        AOTexture: assets\textures\Helmet\Default_AO.jpg
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.2
   - Entity: 1229789391634107600
     TagComponent:
       Tag: Camera
@@ -18,35 +49,3 @@ Entities:
         OrthographicFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 18224009490395026848
-    TagComponent:
-      Tag: Helmet
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [1.5707964, 0, 0]
-      Scale: [1, 1, 1]
-    MeshRendererComponent:
-      Mesh: assets\models\DamagedHelmet.gltf
-      Material:
-        AlbedoColor: [1, 1, 1, 1]
-        AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
-        Metallic: 1
-        MetallicTexture: assets\textures\Helmet\Default_metal.jpg
-        Roughness: 1
-        RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
-        NormalTexture: assets\textures\Helmet\Default_normal.jpg
-    ScriptComponent:
-      ClassName: Sandbox.Rotation
-      ScriptFields:
-        - Name: Speed
-          Type: Float
-          Data: 0.2
-  - Entity: 6817584821935004973
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, -1, -1]

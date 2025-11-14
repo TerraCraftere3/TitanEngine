@@ -57,7 +57,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     float4 _ = gMetallicRoughness.Sample(input.texCoord);
     float metallic = _.r;
     float roughness = _.g;
-    float ao = 1.0;
+    float ao = _.b;
 
     float3 N = normalize(normal);
     float3 V = normalize(u_ViewPosition - (input.position.xyz / input.position.w));

@@ -386,11 +386,10 @@ namespace Titan
                 ImGui::Separator();
                 ImGui::ColorEdit4("Diffuse", glm::value_ptr(component.Material.AlbedoColor));
                 DrawTextureSlot("Diffuse Texture", component.Material.AlbedoTexture);
-                ImGui::DragFloat("Metallic", &component.Material.Metallic, 0.01f, 0.0f, 1.0f);
                 DrawTextureSlot("Metallic Texture", component.Material.MetallicTexture);
-                ImGui::DragFloat("Roughness", &component.Material.Roughness, 0.01f, 0.0f, 1.0f);
                 DrawTextureSlot("Roughness Texture", component.Material.RoughnessTexture);
                 DrawTextureSlot("Normal Texture", component.Material.NormalTexture);
+                DrawTextureSlot("Ambient Occlusion Texture", component.Material.AOTexture);
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });

@@ -12,8 +12,7 @@ struct Material
     float Padding0;           // 4 bytes
 
     uint2 MetallicTextureIndex; // 8 bytes
-    float Roughness;            // 4 bytes
-    float Padding1;             // 4 bytes
+    uint2 AOTextureIndex;
 
     uint2 RoughnessTextureIndex; // 8 bytes
     uint2 NormalTextureIndex;    // 8 bytes
@@ -70,25 +69,21 @@ float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
 
 float GET_METALLIC(Material mat, float2 texCoord)
 {
-    float metallic = mat.Metallic;
-
-    metallic *= GetBindlessTexture(mat.MetallicTextureIndex).Sample(texCoord).r;
+    float metallic = GetBindlessTexture(mat.MetallicTextureIndex).Sample(texCoord).r;
 
     return metallic;
 }
 
 float GET_ROUGHNESS(Material mat, float2 texCoord)
 {
-    float roughness = mat.Roughness;
-
-    roughness *= GetBindlessTexture(mat.RoughnessTextureIndex).Sample(texCoord).g;
+    float roughness = GetBindlessTexture(mat.RoughnessTextureIndex).Sample(texCoord).g;
 
     return roughness;
 }
 
 float GET_AO(Material mat, float2 texCoord)
 {
-    return 1.0;
+    return GetBindlessTexture(mat.AOTextureIndex).Sample(texCoord).r;
 }
 
 float3 GET_NORMAL(Material mat, VertexOutput input)
@@ -134,12 +129,13 @@ FragmentOutput fragmentMain(VertexOutput input)
     float4 albedoColor = GET_ALBEDO_COLOR(mat, input.texCoord);
     float metallic = GET_METALLIC(mat, input.texCoord);
     float roughness = GET_ROUGHNESS(mat, input.texCoord);
+    float ao = GET_AO(mat, input.texCoord);
 
     // Output raw values
     output.position = input.position;
     output.normal = float4(GET_NORMAL(mat, input), 1.0f);
     output.albedo = albedoColor;
-    output.metallic_roughness__ = float4(metallic, roughness, 0.0f, 1.0f);
+    output.metallic_roughness__ = float4(metallic, roughness, ao, 1.0f);
     output.entityID = input.entityID;
 
     return output;
