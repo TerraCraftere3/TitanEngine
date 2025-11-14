@@ -1,0 +1,8 @@
+ID: 1588239323418088553
+Type: 1
+Source: assets\textures\Ground\Ground041_2K-PNG_Color.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

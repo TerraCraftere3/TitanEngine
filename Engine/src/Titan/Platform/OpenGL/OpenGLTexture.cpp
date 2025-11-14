@@ -68,6 +68,16 @@ namespace Titan
                 m_InternalFormat = GL_RGB8;
                 m_DataFormat = GL_RGB;
             }
+            else if (channels == 2)
+            {
+                m_InternalFormat = GL_RG8;
+                m_DataFormat = GL_RG;
+            }
+            else if (channels == 1)
+            {
+                m_InternalFormat = GL_R8;
+                m_DataFormat = GL_RED;
+            }
 
             TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
         }
