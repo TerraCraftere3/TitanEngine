@@ -54,12 +54,10 @@ namespace Titan
     private:
         GLint GetUniformLocation(const std::string& name);
         void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
-        void CompileSlangShaderToSPIRV(const std::string& filepath);
-        std::vector<uint32_t> CompileSlangEntryPointToSPIRV(Slang::ComPtr<slang::ISession> session,
-                                                            slang::IModule* module,
-                                                            Slang::ComPtr<slang::IEntryPoint> entryPoint,
-                                                            const std::string& entryPointName);
-        void CompileSPIRV(const std::unordered_map<GLenum, std::vector<uint32_t>>& spirvShaders);
+        void CompileSlangShader(const std::string& filepath);
+        std::string CompileSlangEntryPoint(Slang::ComPtr<slang::ISession> session, slang::IModule* module,
+                                           Slang::ComPtr<slang::IEntryPoint> entryPoint,
+                                           const std::string& entryPointName);
         std::unordered_map<GLenum, std::string> ParseShaderFile(const std::string& source);
 
     private:
