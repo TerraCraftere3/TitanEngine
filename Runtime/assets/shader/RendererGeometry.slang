@@ -13,11 +13,10 @@ struct Material
 
     uint2 MetallicTextureIndex; // 8 bytes
     uint2 AOTextureIndex;
-
     uint2 RoughnessTextureIndex; // 8 bytes
     uint2 NormalTextureIndex;    // 8 bytes
 
-    float2 Padding2; // 8 bytes, align struct to 16-byte multiple
+    float2 UVRepeat;
 };
 
 StructuredBuffer<Material> u_Materials : register(t1);
@@ -88,7 +87,7 @@ float GET_AO(Material mat, float2 texCoord)
 
 float3 GET_NORMAL(Material mat, VertexOutput input)
 {
-    float3 sampledNormal = GetBindlessTexture(mat.NormalTextureIndex).Sample(input.texCoord).rgb;
+    float3 sampledNormal = GetBindlessTexture(mat.NormalTextureIndex).Sample(input.texCoord * mat.UVRepeat).rgb;
 
     sampledNormal = sampledNormal * 2.0f - 1.0f;
 
@@ -126,10 +125,12 @@ FragmentOutput fragmentMain(VertexOutput input)
 
     Material mat = u_Materials[input.materialIndex];
 
-    float4 albedoColor = GET_ALBEDO_COLOR(mat, input.texCoord);
-    float metallic = GET_METALLIC(mat, input.texCoord);
-    float roughness = GET_ROUGHNESS(mat, input.texCoord);
-    float ao = GET_AO(mat, input.texCoord);
+    float2 uv = input.texCoord * mat.UVRepeat;
+
+    float4 albedoColor = GET_ALBEDO_COLOR(mat, uv);
+    float metallic = GET_METALLIC(mat, uv);
+    float roughness = GET_ROUGHNESS(mat, uv);
+    float ao = GET_AO(mat, uv);
 
     // Output raw values
     output.position = input.position;

@@ -44,7 +44,7 @@ namespace Titan
 
         glm::uvec2 AlbedoTextureIndex; // 8 bytes
         float Metallic;                // 4 bytes
-        float Padding0;                // 4 bytes, align next member
+        float Padding0;                // 4 bytes
 
         glm::uvec2 MetallicTextureIndex; // 8 bytes
         glm::uvec2 AOTextureIndex;       // 8 bytes;
@@ -52,7 +52,7 @@ namespace Titan
         glm::uvec2 RoughnessTextureIndex; // 8 bytes
         glm::uvec2 NormalTextureIndex;    // 8 bytes
 
-        float Padding2[2]; // 8 bytes, round struct to 16-byte multiple
+        glm::vec2 UVRepeat; // 8 bytes
 
         GPUMaterial() = default;
 
@@ -83,6 +83,8 @@ namespace Titan
                 AOTextureIndex = HandleToVec2(mat.AOTexture->GetBindlessHandle());
             else
                 AOTextureIndex = HandleToVec2(s_Textures.DefaultAO->GetBindlessHandle());
+
+            UVRepeat = mat.UVRepeat;
         }
     };
 

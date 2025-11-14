@@ -12,6 +12,29 @@ namespace YAML
 {
 
     template <>
+    struct convert<glm::vec2>
+    {
+        static Node encode(const glm::vec2& rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.SetStyle(EmitterStyle::Flow);
+            return node;
+        }
+
+        static bool decode(const Node& node, glm::vec2& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 2)
+                return false;
+
+            rhs.x = node[0].as<float>();
+            rhs.y = node[1].as<float>();
+            return true;
+        }
+    };
+
+    template <>
     struct convert<glm::vec3>
     {
         static Node encode(const glm::vec3& rhs)
@@ -57,29 +80,6 @@ namespace YAML
             rhs.y = node[1].as<float>();
             rhs.z = node[2].as<float>();
             rhs.w = node[3].as<float>();
-            return true;
-        }
-    };
-
-    template <>
-    struct convert<glm::vec2>
-    {
-        static Node encode(const glm::vec2& rhs)
-        {
-            Node node;
-            node.push_back(rhs.x);
-            node.push_back(rhs.y);
-            node.SetStyle(EmitterStyle::Flow);
-            return node;
-        }
-
-        static bool decode(const Node& node, glm::vec2& rhs)
-        {
-            if (!node.IsSequence() || node.size() != 2)
-                return false;
-
-            rhs.x = node[0].as<float>();
-            rhs.y = node[1].as<float>();
             return true;
         }
     };
@@ -287,6 +287,7 @@ namespace Titan
             {
                 out << YAML::Key << "AOTexture" << YAML::Value << meshRendererComponent.Material.AOTexture->GetPath();
             }
+            out << YAML::Key << "UVRepeat" << YAML::Value << meshRendererComponent.Material.UVRepeat;
             out << YAML::EndMap; // Material
             out << YAML::EndMap; // MeshRendererComponent
         }
@@ -540,6 +541,8 @@ namespace Titan
                         {
                             mrc.Material.AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
                         }
+                        if (material["UVRepeat"])
+                            mrc.Material.UVRepeat = material["UVRepeat"].as<glm::vec2>();
                     }
                 }
 

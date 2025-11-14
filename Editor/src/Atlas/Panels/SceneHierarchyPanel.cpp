@@ -390,6 +390,7 @@ namespace Titan
                 DrawTextureSlot("Roughness Texture", component.Material.RoughnessTexture);
                 DrawTextureSlot("Normal Texture", component.Material.NormalTexture);
                 DrawTextureSlot("Ambient Occlusion Texture", component.Material.AOTexture);
+                ImGui::DragFloat2("UV Repeat", glm::value_ptr(component.Material.UVRepeat), 0.1f, 0.01f, 100.0f);
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });
@@ -491,9 +492,96 @@ namespace Titan
                             {
                                 float data = scriptInstance->GetFieldValue<float>(name);
                                 if (ImGui::DragFloat(name.c_str(), &data))
-                                {
                                     scriptInstance->SetFieldValue(name, data);
-                                }
+                            }
+                            else if (field.Type == ScriptFieldType::Double)
+                            {
+                                double data = scriptInstance->GetFieldValue<double>(name);
+                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_Double, &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Bool)
+                            {
+                                bool data = scriptInstance->GetFieldValue<bool>(name);
+                                if (ImGui::Checkbox(name.c_str(), &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Char)
+                            {
+                                char data = scriptInstance->GetFieldValue<char>(name);
+                                int temp = static_cast<int>(data);
+                                if (ImGui::InputInt(name.c_str(), &temp))
+                                    scriptInstance->SetFieldValue(name, static_cast<char>(temp));
+                            }
+                            else if (field.Type == ScriptFieldType::Byte)
+                            {
+                                int8_t data = scriptInstance->GetFieldValue<int8_t>(name);
+                                int temp = static_cast<int>(data);
+                                if (ImGui::InputInt(name.c_str(), &temp))
+                                    scriptInstance->SetFieldValue(name, static_cast<int8_t>(temp));
+                            }
+                            else if (field.Type == ScriptFieldType::Short)
+                            {
+                                int16_t data = scriptInstance->GetFieldValue<int16_t>(name);
+                                int temp = static_cast<int>(data);
+                                if (ImGui::InputInt(name.c_str(), &temp))
+                                    scriptInstance->SetFieldValue(name, static_cast<int16_t>(temp));
+                            }
+                            else if (field.Type == ScriptFieldType::Int)
+                            {
+                                int data = scriptInstance->GetFieldValue<int>(name);
+                                if (ImGui::DragInt(name.c_str(), &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Long)
+                            {
+                                int64_t data = scriptInstance->GetFieldValue<int64_t>(name);
+                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_S64, &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::UByte)
+                            {
+                                uint8_t data = scriptInstance->GetFieldValue<uint8_t>(name);
+                                int temp = static_cast<int>(data);
+                                if (ImGui::InputInt(name.c_str(), &temp))
+                                    scriptInstance->SetFieldValue(name, static_cast<uint8_t>(temp));
+                            }
+                            else if (field.Type == ScriptFieldType::UShort)
+                            {
+                                uint16_t data = scriptInstance->GetFieldValue<uint16_t>(name);
+                                int temp = static_cast<int>(data);
+                                if (ImGui::InputInt(name.c_str(), &temp))
+                                    scriptInstance->SetFieldValue(name, static_cast<uint16_t>(temp));
+                            }
+                            else if (field.Type == ScriptFieldType::UInt)
+                            {
+                                uint32_t data = scriptInstance->GetFieldValue<uint32_t>(name);
+                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U32, &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::ULong)
+                            {
+                                uint64_t data = scriptInstance->GetFieldValue<uint64_t>(name);
+                                if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U64, &data))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Vector2)
+                            {
+                                glm::vec2 data = scriptInstance->GetFieldValue<glm::vec2>(name);
+                                if (ImGui::DragFloat2(name.c_str(), &data.x))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Vector3)
+                            {
+                                glm::vec3 data = scriptInstance->GetFieldValue<glm::vec3>(name);
+                                if (ImGui::DragFloat3(name.c_str(), &data.x))
+                                    scriptInstance->SetFieldValue(name, data);
+                            }
+                            else if (field.Type == ScriptFieldType::Vector4)
+                            {
+                                glm::vec4 data = scriptInstance->GetFieldValue<glm::vec4>(name);
+                                if (ImGui::DragFloat4(name.c_str(), &data.x))
+                                    scriptInstance->SetFieldValue(name, data);
                             }
                         }
                     }
@@ -508,32 +596,145 @@ namespace Titan
                         auto& entityFields = ScriptEngine::GetScriptFieldMap(entity);
                         for (const auto& [name, field] : fields)
                         {
-                            // Field has been set in editor
-                            if (entityFields.find(name) != entityFields.end())
-                            {
-                                ScriptFieldInstance& scriptField = entityFields.at(name);
+                            bool fieldAlreadyExists = entityFields.find(name) != entityFields.end();
+                            ScriptFieldInstance* scriptField = nullptr;
 
-                                // Display control to set it maybe
-                                if (field.Type == ScriptFieldType::Float)
-                                {
-                                    float data = scriptField.GetValue<float>();
-                                    if (ImGui::DragFloat(name.c_str(), &data))
-                                        scriptField.SetValue(data);
-                                }
+                            if (fieldAlreadyExists)
+                            {
+                                scriptField = &entityFields.at(name);
                             }
                             else
                             {
-                                // Display control to set it maybe
-                                if (field.Type == ScriptFieldType::Float)
+                                // Create field if it doesn't exist
+                                ScriptFieldInstance& newField = entityFields[name];
+                                newField.Field = field;
+                                scriptField = &newField;
+                            }
+
+                            switch (field.Type)
+                            {
+                                case ScriptFieldType::Float:
                                 {
-                                    float data = 0.0f;
+                                    float data = fieldAlreadyExists ? scriptField->GetValue<float>() : 0.0f;
                                     if (ImGui::DragFloat(name.c_str(), &data))
-                                    {
-                                        ScriptFieldInstance& fieldInstance = entityFields[name];
-                                        fieldInstance.Field = field;
-                                        fieldInstance.SetValue(data);
-                                    }
+                                        scriptField->SetValue(data);
+                                    break;
                                 }
+                                case ScriptFieldType::Double:
+                                {
+                                    double data = fieldAlreadyExists ? scriptField->GetValue<double>() : 0.0;
+                                    if (ImGui::DragScalar(name.c_str(), ImGuiDataType_Double, &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Bool:
+                                {
+                                    bool data = fieldAlreadyExists ? scriptField->GetValue<bool>() : false;
+                                    if (ImGui::Checkbox(name.c_str(), &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Char:
+                                {
+                                    char data = fieldAlreadyExists ? scriptField->GetValue<char>() : 0;
+                                    int temp = static_cast<int>(data);
+                                    if (ImGui::InputInt(name.c_str(), &temp))
+                                        scriptField->SetValue(static_cast<char>(temp));
+                                    break;
+                                }
+                                case ScriptFieldType::Byte:
+                                {
+                                    int8_t data = fieldAlreadyExists ? scriptField->GetValue<int8_t>() : 0;
+                                    int temp = static_cast<int>(data);
+                                    if (ImGui::InputInt(name.c_str(), &temp))
+                                        scriptField->SetValue(static_cast<int8_t>(temp));
+                                    break;
+                                }
+                                case ScriptFieldType::Short:
+                                {
+                                    int16_t data = fieldAlreadyExists ? scriptField->GetValue<int16_t>() : 0;
+                                    int temp = static_cast<int>(data);
+                                    if (ImGui::InputInt(name.c_str(), &temp))
+                                        scriptField->SetValue(static_cast<int16_t>(temp));
+                                    break;
+                                }
+                                case ScriptFieldType::Int:
+                                {
+                                    int data = fieldAlreadyExists ? scriptField->GetValue<int>() : 0;
+                                    if (ImGui::DragInt(name.c_str(), &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Long:
+                                {
+                                    int64_t data = fieldAlreadyExists ? scriptField->GetValue<int64_t>() : 0;
+                                    if (ImGui::DragScalar(name.c_str(), ImGuiDataType_S64, &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::UByte:
+                                {
+                                    uint8_t data = fieldAlreadyExists ? scriptField->GetValue<uint8_t>() : 0;
+                                    int temp = static_cast<int>(data);
+                                    if (ImGui::InputInt(name.c_str(), &temp))
+                                        scriptField->SetValue(static_cast<uint8_t>(temp));
+                                    break;
+                                }
+                                case ScriptFieldType::UShort:
+                                {
+                                    uint16_t data = fieldAlreadyExists ? scriptField->GetValue<uint16_t>() : 0;
+                                    int temp = static_cast<int>(data);
+                                    if (ImGui::InputInt(name.c_str(), &temp))
+                                        scriptField->SetValue(static_cast<uint16_t>(temp));
+                                    break;
+                                }
+                                case ScriptFieldType::UInt:
+                                {
+                                    uint32_t data = fieldAlreadyExists ? scriptField->GetValue<uint32_t>() : 0;
+                                    if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U32, &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::ULong:
+                                {
+                                    uint64_t data = fieldAlreadyExists ? scriptField->GetValue<uint64_t>() : 0;
+                                    if (ImGui::DragScalar(name.c_str(), ImGuiDataType_U64, &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Vector2:
+                                {
+                                    glm::vec2 data =
+                                        fieldAlreadyExists ? scriptField->GetValue<glm::vec2>() : glm::vec2(0.0f);
+                                    if (ImGui::DragFloat2(name.c_str(), &data.x))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Vector3:
+                                {
+                                    glm::vec3 data =
+                                        fieldAlreadyExists ? scriptField->GetValue<glm::vec3>() : glm::vec3(0.0f);
+                                    if (ImGui::DragFloat3(name.c_str(), &data.x))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Vector4:
+                                {
+                                    glm::vec4 data =
+                                        fieldAlreadyExists ? scriptField->GetValue<glm::vec4>() : glm::vec4(0.0f);
+                                    if (ImGui::DragFloat4(name.c_str(), &data.x))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                case ScriptFieldType::Entity:
+                                {
+                                    uint64_t data = fieldAlreadyExists ? scriptField->GetValue<uint64_t>() : 0;
+                                    if (ImGui::InputScalar(name.c_str(), ImGuiDataType_U64, &data))
+                                        scriptField->SetValue(data);
+                                    break;
+                                }
+                                default:
+                                    break;
                             }
                         }
                     }
