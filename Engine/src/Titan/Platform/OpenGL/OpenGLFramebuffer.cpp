@@ -6,6 +6,7 @@ namespace Titan
 {
 
     static const uint32_t s_MaxFramebufferSize = 8192;
+    static const uint32_t s_MaxColorAttachments = 16;
 
     namespace Utils
     {
@@ -423,10 +424,15 @@ namespace Titan
 
         if (m_ColorAttachments.size() > 1)
         {
-            TI_CORE_ASSERT(m_ColorAttachments.size() <= 4);
-            GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-                                 GL_COLOR_ATTACHMENT3};
-            glDrawBuffers(m_ColorAttachments.size(), buffers);
+            TI_CORE_ASSERT(m_ColorAttachments.size() <= s_MaxColorAttachments,
+                           "Color attachments exceed maximum limit!");
+
+            std::vector<GLenum> buffers(m_ColorAttachments.size());
+            for (size_t i = 0; i < m_ColorAttachments.size(); i++)
+            {
+                buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+            }
+            glDrawBuffers(m_ColorAttachments.size(), buffers.data());
         }
         else if (m_ColorAttachments.empty())
         {
@@ -455,9 +461,12 @@ namespace Titan
 
             if (m_ResolvedColorAttachments.size() > 1)
             {
-                GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-                                     GL_COLOR_ATTACHMENT3};
-                glDrawBuffers(m_ResolvedColorAttachments.size(), buffers);
+                std::vector<GLenum> buffers(m_ResolvedColorAttachments.size());
+                for (size_t i = 0; i < m_ResolvedColorAttachments.size(); i++)
+                {
+                    buffers[i] = GL_COLOR_ATTACHMENT0 + i;
+                }
+                glDrawBuffers(m_ResolvedColorAttachments.size(), buffers.data());
             }
 
             TI_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
@@ -586,6 +595,70 @@ namespace Titan
             // Use glClearTexImage for non-integer textures
             glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::TitanFBTextureFormatToGL(spec.TextureFormat),
                             GL_UNSIGNED_BYTE, nullptr);
+        }
+    }
+
+    void OpenGLFramebuffer::BindTexture(uint32_t attachmentIndex, uint32_t bindIndex) const
+    {
+        TI_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "Attachment index out of range!");
+
+        uint32_t textureID = 0;
+        bool textureIsMultisample = (m_Specification.Samples > 1);
+
+        if (m_Specification.Samples > 1 && !m_ResolvedColorAttachments.empty())
+        {
+            if (attachmentIndex < m_ResolvedColorAttachments.size())
+            {
+                textureID = m_ResolvedColorAttachments[attachmentIndex];
+                textureIsMultisample = false;
+            }
+            else
+            {
+                textureID = m_ColorAttachments[attachmentIndex];
+                textureIsMultisample = true;
+            }
+        }
+        else
+        {
+            textureID = m_ColorAttachments[attachmentIndex];
+            textureIsMultisample = (m_Specification.Samples > 1);
+        }
+
+        TI_CORE_ASSERT(textureID != 0, "Trying to bind a zero texture ID!");
+
+        glActiveTexture(GL_TEXTURE0 + bindIndex);
+        GLenum target = Utils::TextureTarget(textureIsMultisample);
+        glBindTexture(target, textureID);
+
+        if (textureIsMultisample)
+        {
+            TI_CORE_WARN(
+                "Bound a multisample texture for sampling. Make sure your shader uses sampler2DMS (in opengl) if you "
+                "intend to sample it directly.");
+        }
+    }
+
+    void OpenGLFramebuffer::BindDepthTexture(uint32_t bindIndex) const
+    {
+        TI_CORE_ASSERT(m_DepthAttachment, "No depth attachment in framebuffer!");
+
+        uint32_t textureID = 0;
+        bool textureIsMultisample = (m_Specification.Samples > 1);
+
+        textureID = m_DepthAttachment;
+
+        TI_CORE_ASSERT(textureID != 0, "Trying to bind a zero depth texture ID!");
+
+        glActiveTexture(GL_TEXTURE0 + bindIndex);
+
+        GLenum target = Utils::TextureTarget(textureIsMultisample);
+        glBindTexture(target, textureID);
+
+        if (textureIsMultisample)
+        {
+            TI_CORE_WARN(
+                "Bound a multisample depth texture for sampling. Make sure your shader uses sampler2DMS and "
+                "texelFetch.");
         }
     }
 

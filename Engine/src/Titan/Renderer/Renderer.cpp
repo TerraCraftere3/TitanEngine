@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "PBRRenderer.h"
 #include "Renderer2D.h"
 #include "Renderer3D.h"
 #include "SceneRenderer.h"
@@ -15,11 +16,13 @@ namespace Titan
         RenderCommand::Init();
         Renderer2D::Init();
         Renderer3D::Init();
+        PBRRenderer::Init();
         SceneRenderer::Init();
     }
 
     void Renderer::Shutdown()
     {
+        PBRRenderer::Shutdown();
         Renderer3D::Shutdown();
         Renderer2D::Shutdown();
         SceneRenderer::Shutdown();

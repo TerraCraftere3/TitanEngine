@@ -93,7 +93,7 @@ namespace Titan
         s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
         s_3DData.MaterialStorageBuffer =
             ShaderStorageBuffer::Create(sizeof(Material3D) * s_3DData.MaxMaterials, 1); // 256 Materials Max
-        s_3DData.Shader = Shader::Create("assets/shader/Mesh.slang");
+        s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
 
         // Reserve space for materials
         s_3DData.Materials.reserve(s_3DData.MaxMaterials);
@@ -116,16 +116,13 @@ namespace Titan
         s_3DData.MaterialIndexMap.clear();
     }
 
-    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix, const glm::vec3& viewPosition,
-                                bool hasDirectionalLight, glm::vec3 lightDirection)
+    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer3D::EndScene()?");
         TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "Renderer3D not initialized!");
 
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
-        s_3DData.CamBuffer.HasDirectionalLight = hasDirectionalLight;
-        s_3DData.CamBuffer.LightDirection = lightDirection;
         s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(Renderer3DData::CameraData));
 
         s_3DData.Shader->Bind();
@@ -173,6 +170,7 @@ namespace Titan
         s_3DData.VertexBuffer->SetData(s_3DData.VertexBufferBase, dataSize);
         s_3DData.Shader->Bind();
         s_3DData.MaterialStorageBuffer->Bind();
+        s_3DData.CameraUniformBuffer->Bind();
 
         RenderCommand::DrawArrays(s_3DData.VertexArray, s_3DData.VertexCount);
 

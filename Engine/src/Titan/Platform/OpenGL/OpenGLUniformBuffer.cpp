@@ -15,6 +15,7 @@ namespace Titan
         glCreateBuffers(1, &m_RendererID);
         glNamedBufferData(m_RendererID, size, nullptr, GL_DYNAMIC_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
+        m_BindingPoint = binding;
     }
 
     OpenGLUniformBuffer::~OpenGLUniformBuffer()
@@ -25,6 +26,11 @@ namespace Titan
     void OpenGLUniformBuffer::SetData(const void* data, uint32_t size, uint32_t offset)
     {
         glNamedBufferSubData(m_RendererID, offset, size, data);
+    }
+
+    void OpenGLUniformBuffer::Bind()
+    {
+        glBindBufferBase(GL_UNIFORM_BUFFER, m_BindingPoint, m_RendererID);
     }
 
 } // namespace Titan

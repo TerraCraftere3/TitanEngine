@@ -1,5 +1,6 @@
 #include "SceneRenderer.h"
 #include "RenderGraph.h"
+#include "Titan/Renderer/PBRRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Renderer/Renderer3D.h"
@@ -57,10 +58,19 @@ namespace Titan
                                    FramebufferTextureFormat::Depth        // SceneDepth
                                },
                                s_SRData->viewWidth, s_SRData->viewHeight, 1)
+            .CreateFramebuffer("GeometryBuffer",
+                               {
+                                   FramebufferTextureFormat::RGBA16F,     // Position
+                                   FramebufferTextureFormat::RGBA16F,     // Normal
+                                   FramebufferTextureFormat::RGBA8,       // Albedo
+                                   FramebufferTextureFormat::RGBA8,       // Metallic, Roughness, -, -
+                                   FramebufferTextureFormat::RED_INTEGER, // EntityID
+                                   FramebufferTextureFormat::Depth        // Depth
+                               },
+                               s_SRData->viewWidth, s_SRData->viewHeight, 1)
             .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
                                      s_SRData->viewHeight, 1);
 
-        // Pass 1: Clear Pass
         builder.AddRenderPass(
             "ClearPass", {}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
@@ -76,7 +86,69 @@ namespace Titan
                 fb->Unbind();
             });
 
-        // Pass 2: 2D Sprite Pass
+        builder.AddRenderPass(
+            "GeometryPass", {"GeometryBuffer"}, {"GeometryBuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+
+            {
+                auto fb = graph.GetFramebuffer("GeometryBuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+
+                RenderCommand::SetClearColor(glm::vec4(0.0));
+                RenderCommand::Clear();
+                Renderer3D::BeginScene(s_SRData->viewProjection);
+
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                for (auto entity : meshView)
+                {
+                    auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
+                    if (meshComp.MeshRef)
+                        Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
+                                             (uint32_t)entity);
+                }
+
+                Renderer3D::EndScene();
+                fb->Unbind();
+            });
+
+        builder.AddRenderPass(
+            "PBRPass", {"GeometryBuffer", "SceneFramebuffer"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
+
+                if (!fb || !gbuffer)
+                    return;
+
+                fb->Bind();
+
+                bool hasDirectionalLight = false;
+                glm::vec3 lightDirection;
+                auto dlView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
+                for (auto entity : dlView)
+                {
+                    auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
+                    hasDirectionalLight = true;
+                    lightDirection = dlComp.Direction;
+
+                    break; // only use first
+                }
+
+                PBRSceneData data;
+                data.HasDirectionalLight = hasDirectionalLight;
+                data.LightDirection = lightDirection;
+                data.ViewPosition = s_SRData->viewPosition;
+
+                PBRRenderer::Render(gbuffer, data);
+
+                fb->Unbind();
+            });
+
         builder.AddRenderPass(
             "SpritePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
@@ -106,7 +178,6 @@ namespace Titan
                 fb->Unbind();
             });
 
-        // Pass 3: 2D Circle Pass
         builder.AddRenderPass(
             "CirclePass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
@@ -133,48 +204,6 @@ namespace Titan
                 fb->Unbind();
             });
 
-        // Pass 4: 3D Mesh Pass
-        builder.AddRenderPass(
-            "MeshPass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
-            [](RenderGraph& graph, const RenderPass& pass)
-
-            {
-                auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                if (!fb)
-                    return;
-
-                bool hasDirectionalLight = false;
-                glm::vec3 lightDirection;
-                auto dlView =
-                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
-                for (auto entity : dlView)
-                {
-                    auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
-                    hasDirectionalLight = true;
-                    lightDirection = dlComp.Direction;
-
-                    break; // only use first
-                }
-
-                fb->Bind();
-
-                Renderer3D::BeginScene(s_SRData->viewProjection, s_SRData->viewPosition, hasDirectionalLight,
-                                       lightDirection);
-
-                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-                for (auto entity : meshView)
-                {
-                    auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
-                    if (meshComp.MeshRef)
-                        Renderer3D::DrawMesh(meshComp.MeshRef, meshComp.Material, transform.GetTransform(),
-                                             (uint32_t)entity);
-                }
-
-                Renderer3D::EndScene();
-                fb->Unbind();
-            });
-
-        // Pass 5: Overlay Pass (debug visualization)
         builder.AddRenderPass(
             "OverlayPass", {"SceneFramebuffer"}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
@@ -217,7 +246,6 @@ namespace Titan
                 fb->Unbind();
             });
 
-        // Pass 6: Resolve Pass
         builder.AddRenderPass("ResolvePass", {"SceneFramebuffer"}, {"FinalOutput"},
                               [](RenderGraph& graph, const RenderPass& pass)
                               {

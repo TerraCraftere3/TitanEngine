@@ -27,6 +27,8 @@ namespace Titan
 
         virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
+        virtual void BindTexture(uint32_t attachmentIndex = 0, uint32_t bindIndex = 0) const override;
+        virtual void BindDepthTexture(uint32_t bindIndex = 0) const override;
         virtual void* GetDepthAttachment() const override { return (void*)(intptr_t)m_DepthAttachment; }
         virtual void* GetColorAttachment(uint32_t index = 0) const override
         {

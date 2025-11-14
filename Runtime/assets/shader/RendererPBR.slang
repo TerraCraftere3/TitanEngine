@@ -1,84 +1,69 @@
 cbuffer GlobalUBO : register(b0)
 {
-    column_major float4x4 u_ViewProjection; // 64 bytes
     float3 u_ViewPosition;                  // 12 bytes
     bool u_HasDirectionLight;               // 4 bytes (bool is 4 bytes in HLSL)
     float3 u_LightDirection;                // 12 bytes
     float padding1;                         // 4 bytes -> total = 96 bytes (aligned)
 };
 
-struct Material
-{
-    float4 Albedo;
-    float Metallic;
-    float Roughness;
-    float2 Padding;
-};
-
-StructuredBuffer<Material> u_Materials : register(t1);
-
 struct VertexInput
 {
-    float3 a_Position : POSITION;
-    float3 a_Normal : NORMAL;
+    float2 a_Position : POSITION;
     float2 a_TexCoord : TEXCOORD0;
-    int a_EntityID : TEXCOORD3;
-    int a_MaterialIndex : TEXCOORD4;
 };
 
 struct VertexOutput
 {
     float4 position : SV_Position;
-    float3 normal : COLOR;
     float2 texCoord : TEXCOORD0;
-    nointerpolation int entityID : TEXCOORD3;
-    nointerpolation int materialIndex : TEXCOORD4;
 };
 
 struct FragmentOutput
 {
     float4 color : SV_Target0;
     int entityID : SV_Target1;
+    float depth : SV_Depth;
 };
 
-static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
-static const float PI = 3.14159265359;
+Sampler2D gPosition;
+Sampler2D gNormal;
+Sampler2D gAlbedo;
+Sampler2D gMetallicRoughness;
+Sampler2D gEntityID;
+Sampler2D gDepth;
 
-// Material getters (placeholders for future texture sampling)
-float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord) { return mat.Albedo; }
-float GET_METALLIC(Material mat, float2 texCoord) { return mat.Metallic; }
-float GET_ROUGHNESS(Material mat, float2 texCoord) { return mat.Roughness; }
-float GET_AO(Material mat, float2 texCoord) { return 1.0; }
 
 [shader("vertex")]
 VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
-    output.position = mul(u_ViewProjection, float4(input.a_Position, 1.0));
-    output.normal = input.a_Normal;
+    output.position = float4(input.a_Position, 0.0, 1.0);
     output.texCoord = input.a_TexCoord;
-    output.entityID = input.a_EntityID;
-    output.materialIndex = input.a_MaterialIndex;
     return output;
 }
+
+static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
+static const float PI = 3.14159265359;
 
 [shader("fragment")]
 FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 
-    Material mat = u_Materials[input.materialIndex];
-    float4 albedoColor = GET_ALBEDO_COLOR(mat, input.texCoord);
-    float metallic = GET_METALLIC(mat, input.texCoord);
-    float roughness = GET_ROUGHNESS(mat, input.texCoord);
-    float ao = GET_AO(mat, input.texCoord);
+    float3 position = gPosition.Sample(input.texCoord).xyz;
+    float3 normal = gNormal.Sample(input.texCoord).xyz;
 
-    float3 N = normalize(input.normal);
+    float4 albedoColor = gAlbedo.Sample(input.texCoord);
+    float4 _ = gMetallicRoughness.Sample(input.texCoord);
+    float metallic = _.r;
+    float roughness = _.g;
+    float ao = 1.0;
+
+    float3 N = normalize(normal);
     float3 V = normalize(u_ViewPosition - (input.position.xyz / input.position.w));
 
     float3 color = AMBIENT_LIGHT * albedoColor.rgb * ao;
 
-    // Only compute directional light if enabled
     if (u_HasDirectionLight)
     {
         float3 L = normalize(-u_LightDirection);
@@ -117,11 +102,12 @@ FragmentOutput fragmentMain(VertexOutput input)
         color += (diffuse + specular) * radiance * NdotL;
     }
 
-    // Tone mapping + gamma
     color = color / (color + float3(1.0));
     color = pow(color, float3(1.0 / 2.2));
 
-    output.color = float4(color, albedoColor.a);
-    output.entityID = input.entityID;
+    output.color = float4(color.rgb, albedoColor.a);
+    output.entityID = -1;
+    output.depth = gDepth.Sample(input.texCoord).r;
+
     return output;
 }
