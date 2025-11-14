@@ -220,6 +220,49 @@ namespace Titan
         }
     }
 
+    bool DrawTextureSlot(const char* label, Ref<Texture2D>& texture, const ImVec2& previewSize = {64, 64})
+    {
+        ImGui::TextUnformatted(label);
+
+        // --- Texture preview / button ---
+        if (texture)
+        {
+            ImGui::ImageButton(label, texture->GetNativeTexture(), previewSize, ImVec2(0, 1), ImVec2(1, 0));
+        }
+        else
+        {
+            ImGui::Button((std::string("Empty##") + label).c_str(), previewSize);
+        }
+
+        bool changed = false;
+
+        // --- Drag & Drop ---
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+            {
+                const wchar_t* path = (const wchar_t*)payload->Data;
+                std::filesystem::path fullPath = std::filesystem::path(g_AssetPath) / path;
+                texture = Assets::Load<Texture2D>(fullPath.string());
+                changed = true;
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        // --- Right-click context menu ---
+        if (ImGui::BeginPopupContextItem(label))
+        {
+            if (ImGui::MenuItem("Remove"))
+            {
+                texture = nullptr;
+                changed = true;
+            }
+            ImGui::EndPopup();
+        }
+
+        return changed;
+    }
+
     void SceneHierarchyPanel::DrawComponents(Entity entity)
     {
         if (entity.HasComponent<TagComponent>())
@@ -312,22 +355,7 @@ namespace Titan
             [](auto& component)
             {
                 ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-                if (component.Tex)
-                    ImGui::ImageButton("Texture", component.Tex->GetNativeTexture(), {64, 64}, ImVec2(0, 1),
-                                       ImVec2(1, 0));
-                else
-                    ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
-
-                if (ImGui::BeginDragDropTarget())
-                {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-                    {
-                        const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path texturePath = std::filesystem::path(g_AssetPath) / path;
-                        component.Tex = Assets::Load<Texture2D>(texturePath.string());
-                    }
-                    ImGui::EndDragDropTarget();
-                }
+                DrawTextureSlot("Texture", component.Tex);
             });
         DrawComponent<CircleRendererComponent>("Circle Renderer", entity,
                                                [](auto& component)
@@ -356,9 +384,13 @@ namespace Titan
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::Separator();
-                ImGui::ColorEdit4("Color", glm::value_ptr(component.Material.AlbedoColor));
+                ImGui::ColorEdit4("Diffuse", glm::value_ptr(component.Material.AlbedoColor));
+                DrawTextureSlot("Diffuse Texture", component.Material.AlbedoTexture);
                 ImGui::DragFloat("Metallic", &component.Material.Metallic, 0.01f, 0.0f, 1.0f);
+                DrawTextureSlot("Metallic Texture", component.Material.MetallicTexture);
                 ImGui::DragFloat("Roughness", &component.Material.Roughness, 0.01f, 0.0f, 1.0f);
+                DrawTextureSlot("Roughness Texture", component.Material.RoughnessTexture);
+                DrawTextureSlot("Normal Texture", component.Material.NormalTexture);
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });

@@ -1,0 +1,8 @@
+ID: 13493594699985134882
+Type: 1
+Source: assets\textures\Worn Shiny Metal\worn-shiny-metal-Roughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

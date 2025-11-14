@@ -1,0 +1,8 @@
+ID: 7653804987546644967
+Type: 1
+Source: assets\textures\Worn Shiny Metal\worn-shiny-metal-albedo.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear
