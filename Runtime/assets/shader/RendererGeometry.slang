@@ -28,6 +28,7 @@ struct VertexInput
 {
     float3 a_Position : POSITION;
     float3 a_Normal : NORMAL;
+    float3 a_Tangent : TANGENT;
     float2 a_TexCoord : TEXCOORD0;
     int a_EntityID : TEXCOORD3;
     int a_MaterialIndex : TEXCOORD4;
@@ -37,6 +38,8 @@ struct VertexOutput
 {
     float4 position : SV_Position;
     float3 normal : COLOR;
+    float3 tangent : TEXCOORD1;
+    float3 bitangent : TEXCOORD2;
     float2 texCoord : TEXCOORD0;
     nointerpolation int entityID : TEXCOORD3;
     nointerpolation int materialIndex : TEXCOORD4;
@@ -88,12 +91,33 @@ float GET_AO(Material mat, float2 texCoord)
     return 1.0;
 }
 
+float3 GET_NORMAL(Material mat, VertexOutput input)
+{
+    float3 sampledNormal = GetBindlessTexture(mat.NormalTextureIndex).Sample(input.texCoord).rgb;
+
+    sampledNormal = sampledNormal * 2.0f - 1.0f;
+
+    float3x3 TBN = float3x3(normalize(input.tangent),
+                            normalize(input.bitangent),
+                            normalize(input.normal));
+
+    return normalize(mul(sampledNormal, TBN));
+}
+
 [shader("vertex")]
 VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
     output.position = mul(u_ViewProjection, float4(input.a_Position, 1.0));
-    output.normal = input.a_Normal;
+    output.normal = normalize(input.a_Normal);
+
+    // Compute bitangent
+    float3 n = normalize(input.a_Normal);
+    float3 t = normalize(input.a_Tangent);
+    float3 b = cross(n, t); // assuming tangent is orthogonal to normal
+
+    output.tangent = t;
+    output.bitangent = b;
     output.texCoord = input.a_TexCoord;
     output.entityID = input.a_EntityID;
     output.materialIndex = input.a_MaterialIndex;
@@ -113,7 +137,7 @@ FragmentOutput fragmentMain(VertexOutput input)
 
     // Output raw values
     output.position = input.position;
-    output.normal = float4(normalize(input.normal), 1.0);
+    output.normal = float4(GET_NORMAL(mat, input), 1.0f);
     output.albedo = albedoColor;
     output.metallic_roughness__ = float4(metallic, roughness, 0.0f, 1.0f);
     output.entityID = input.entityID;

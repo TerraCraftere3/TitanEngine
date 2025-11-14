@@ -10,36 +10,57 @@ namespace Titan
         std::vector<glm::vec3> Positions;
         std::vector<glm::vec3> Normals;
         std::vector<glm::vec2> TexCoords;
+        std::vector<glm::vec3> Tangents;
     };
 
     static void ProcessMesh(aiMesh* mesh, RawMeshData& data)
     {
-        // Expand each triangle into unique vertices
         for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
         {
             const aiFace& face = mesh->mFaces[i];
-            for (unsigned int j = 0; j < face.mNumIndices; ++j)
+            if (face.mNumIndices != 3)
+                continue;
+
+            unsigned int idx0 = face.mIndices[0];
+            unsigned int idx1 = face.mIndices[1];
+            unsigned int idx2 = face.mIndices[2];
+
+            glm::vec3 positions[3] = {
+                {mesh->mVertices[idx0].x, mesh->mVertices[idx0].y, mesh->mVertices[idx0].z},
+                {mesh->mVertices[idx1].x, mesh->mVertices[idx1].y, mesh->mVertices[idx1].z},
+                {mesh->mVertices[idx2].x, mesh->mVertices[idx2].y, mesh->mVertices[idx2].z},
+            };
+
+            glm::vec2 uvs[3] = {
+                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx0].x, mesh->mTextureCoords[0][idx0].y)
+                                          : glm::vec2(0.0f),
+                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx1].x, mesh->mTextureCoords[0][idx1].y)
+                                          : glm::vec2(0.0f),
+                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx2].x, mesh->mTextureCoords[0][idx2].y)
+                                          : glm::vec2(0.0f)};
+
+            glm::vec3 n[3] = {
+                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx0].x, mesh->mNormals[idx0].y, mesh->mNormals[idx0].z)
+                                   : glm::vec3(0.0f),
+                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx1].x, mesh->mNormals[idx1].y, mesh->mNormals[idx1].z)
+                                   : glm::vec3(0.0f),
+                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx2].x, mesh->mNormals[idx2].y, mesh->mNormals[idx2].z)
+                                   : glm::vec3(0.0f)};
+
+            // Compute tangent for this triangle
+            glm::vec3 edge1 = positions[1] - positions[0];
+            glm::vec3 edge2 = positions[2] - positions[0];
+            glm::vec2 deltaUV1 = uvs[1] - uvs[0];
+            glm::vec2 deltaUV2 = uvs[2] - uvs[0];
+            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+            glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
+
+            for (int j = 0; j < 3; ++j)
             {
-                unsigned int idx = face.mIndices[j];
-
-                const aiVector3D& pos = mesh->mVertices[idx];
-                data.Positions.emplace_back(pos.x, pos.y, pos.z);
-
-                if (mesh->HasNormals())
-                {
-                    const aiVector3D& n = mesh->mNormals[idx];
-                    data.Normals.emplace_back(n.x, n.y, n.z);
-                }
-                else
-                    data.Normals.emplace_back(0.0f);
-
-                if (mesh->HasTextureCoords(0))
-                {
-                    const aiVector3D& uv = mesh->mTextureCoords[0][idx];
-                    data.TexCoords.emplace_back(uv.x, uv.y);
-                }
-                else
-                    data.TexCoords.emplace_back(0.0f);
+                data.Positions.push_back(positions[j]);
+                data.Normals.push_back(n[j]);
+                data.TexCoords.push_back(uvs[j]);
+                data.Tangents.push_back(tangent); // store tangent per vertex
             }
         }
     }
@@ -78,6 +99,45 @@ namespace Titan
             normals[i] = glm::normalize(normalMap[positions[i]]);
     }
 
+    void ComputeTangents(const std::vector<glm::vec3>& positions, const std::vector<glm::vec2>& uvs,
+                         const std::vector<uint32_t>& indices, std::vector<glm::vec3>& tangents)
+    {
+        tangents.resize(positions.size(), glm::vec3(0.0f));
+
+        for (size_t i = 0; i < indices.size(); i += 3)
+        {
+            uint32_t i0 = indices[i];
+            uint32_t i1 = indices[i + 1];
+            uint32_t i2 = indices[i + 2];
+
+            const glm::vec3& p0 = positions[i0];
+            const glm::vec3& p1 = positions[i1];
+            const glm::vec3& p2 = positions[i2];
+
+            const glm::vec2& uv0 = uvs[i0];
+            const glm::vec2& uv1 = uvs[i1];
+            const glm::vec2& uv2 = uvs[i2];
+
+            glm::vec3 edge1 = p1 - p0;
+            glm::vec3 edge2 = p2 - p0;
+
+            glm::vec2 deltaUV1 = uv1 - uv0;
+            glm::vec2 deltaUV2 = uv2 - uv0;
+
+            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+            glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
+
+            tangents[i0] += tangent;
+            tangents[i1] += tangent;
+            tangents[i2] += tangent;
+        }
+
+        // Normalize
+        for (auto& t : tangents)
+            t = glm::normalize(t);
+    }
+
     Ref<Mesh> Mesh::CreateQuad()
     {
         RawMeshData data;
@@ -97,83 +157,20 @@ namespace Titan
             {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
         };
 
+        // Tangent points along +X (U direction)
+        data.Tangents = {
+            {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+        };
+
         ComputeSmoothNormals(data.Positions, data.Normals);
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_Tangents = std::move(data.Tangents);
         mesh->m_FilePath = "quad";
-        return mesh;
-    }
-
-    Ref<Mesh> Mesh::CreateSubdivedQuad(uint32_t xSubdivisions, uint32_t ySubdivisions)
-    {
-        RawMeshData data;
-
-        xSubdivisions = max(1u, xSubdivisions);
-        ySubdivisions = max(1u, ySubdivisions);
-
-        const float width = 1.0f;
-        const float height = 1.0f;
-        const float dx = width / xSubdivisions;
-        const float dy = height / ySubdivisions;
-
-        // Generate vertex data as triangle list
-        for (uint32_t y = 0; y < ySubdivisions; ++y)
-        {
-            for (uint32_t x = 0; x < xSubdivisions; ++x)
-            {
-                float x0 = -0.5f + x * dx;
-                float y0 = -0.5f + y * dy;
-                float x1 = x0 + dx;
-                float y1 = y0 + dy;
-
-                glm::vec3 p00 = {x0, y0, 0.0f};
-                glm::vec3 p10 = {x1, y0, 0.0f};
-                glm::vec3 p11 = {x1, y1, 0.0f};
-                glm::vec3 p01 = {x0, y1, 0.0f};
-
-                glm::vec2 uv00 = {(float)x / xSubdivisions, (float)y / ySubdivisions};
-                glm::vec2 uv10 = {(float)(x + 1) / xSubdivisions, (float)y / ySubdivisions};
-                glm::vec2 uv11 = {(float)(x + 1) / xSubdivisions, (float)(y + 1) / ySubdivisions};
-                glm::vec2 uv01 = {(float)x / xSubdivisions, (float)(y + 1) / ySubdivisions};
-
-                // Triangle 1
-                data.Positions.push_back(p00);
-                data.Positions.push_back(p10);
-                data.Positions.push_back(p11);
-
-                data.TexCoords.push_back(uv00);
-                data.TexCoords.push_back(uv10);
-                data.TexCoords.push_back(uv11);
-
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-
-                // Triangle 2
-                data.Positions.push_back(p00);
-                data.Positions.push_back(p11);
-                data.Positions.push_back(p01);
-
-                data.TexCoords.push_back(uv00);
-                data.TexCoords.push_back(uv11);
-                data.TexCoords.push_back(uv01);
-
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-                data.Normals.push_back({0.0f, 0.0f, 1.0f});
-            }
-        }
-
-        ComputeSmoothNormals(data.Positions, data.Normals);
-
-        auto mesh = CreateRef<Mesh>();
-        mesh->m_Positions = std::move(data.Positions);
-        mesh->m_Normals = std::move(data.Normals);
-        mesh->m_TexCoords = std::move(data.TexCoords);
-        mesh->m_FilePath = fmt::format("quad_{}x{}", xSubdivisions, ySubdivisions);
         return mesh;
     }
 
@@ -181,27 +178,74 @@ namespace Titan
     {
         RawMeshData data;
 
-        // Simple cube vertices (6 faces, 2 triangles per face)
-        glm::vec3 positions[8] = {
-            {-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-            {-0.5f, -0.5f, 0.5f},  {0.5f, -0.5f, 0.5f},  {0.5f, 0.5f, 0.5f},  {-0.5f, 0.5f, 0.5f},
-        };
-
-        uint32_t indices[36] = {
-            0, 1, 2, 2, 3, 0, // back
-            4, 5, 6, 6, 7, 4, // front
-            4, 5, 1, 1, 0, 4, // bottom
-            7, 6, 2, 2, 3, 7, // top
-            4, 0, 3, 3, 7, 4, // left
-            5, 1, 2, 2, 6, 5  // right
-        };
-
-        for (int i = 0; i < 36; i++)
+        // Cube vertices per face (6 faces, 2 triangles per face)
+        struct Face
         {
-            data.Positions.push_back(positions[indices[i]]);
-            // Simple normals based on face (approximation)
-            data.Normals.push_back(glm::normalize(positions[indices[i]]));
-            data.TexCoords.push_back({0.0f, 0.0f});
+            glm::vec3 normal;
+            glm::vec3 tangent;
+            glm::vec3 v0, v1, v2, v3;
+        };
+
+        Face faces[6] = {
+            // Back
+            {{0, 0, -1},
+             {1, 0, 0},
+             {-0.5f, -0.5f, -0.5f},
+             {0.5f, -0.5f, -0.5f},
+             {0.5f, 0.5f, -0.5f},
+             {-0.5f, 0.5f, -0.5f}},
+            // Front
+            {{0, 0, 1}, {1, 0, 0}, {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f}, {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}},
+            // Bottom
+            {{0, -1, 0},
+             {1, 0, 0},
+             {-0.5f, -0.5f, -0.5f},
+             {0.5f, -0.5f, -0.5f},
+             {0.5f, -0.5f, 0.5f},
+             {-0.5f, -0.5f, 0.5f}},
+            // Top
+            {{0, 1, 0}, {1, 0, 0}, {-0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}},
+            // Left
+            {{-1, 0, 0},
+             {0, 0, 1},
+             {-0.5f, -0.5f, -0.5f},
+             {-0.5f, 0.5f, -0.5f},
+             {-0.5f, 0.5f, 0.5f},
+             {-0.5f, -0.5f, 0.5f}},
+            // Right
+            {{1, 0, 0}, {0, 0, 1}, {0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, 0.5f}, {0.5f, -0.5f, 0.5f}},
+        };
+
+        glm::vec2 uv[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+
+        for (auto& f : faces)
+        {
+            // Triangle 1
+            data.Positions.push_back(f.v0);
+            data.TexCoords.push_back(uv[0]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
+            data.Positions.push_back(f.v1);
+            data.TexCoords.push_back(uv[1]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
+            data.Positions.push_back(f.v2);
+            data.TexCoords.push_back(uv[2]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
+            // Triangle 2
+            data.Positions.push_back(f.v0);
+            data.TexCoords.push_back(uv[0]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
+            data.Positions.push_back(f.v2);
+            data.TexCoords.push_back(uv[2]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
+            data.Positions.push_back(f.v3);
+            data.TexCoords.push_back(uv[3]);
+            data.Normals.push_back(f.normal);
+            data.Tangents.push_back(f.tangent);
         }
 
         ComputeSmoothNormals(data.Positions, data.Normals);
@@ -210,6 +254,7 @@ namespace Titan
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_Tangents = std::move(data.Tangents);
         mesh->m_FilePath = "cube";
         return mesh;
     }
@@ -242,6 +287,7 @@ namespace Titan
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
+        mesh->m_Tangents = std::move(data.Tangents);
         mesh->m_FilePath = std::filesystem::relative(filepath).string();
 
         TI_CORE_INFO("Loaded mesh '{}' ({} vertices)", filepath, mesh->m_Positions.size());

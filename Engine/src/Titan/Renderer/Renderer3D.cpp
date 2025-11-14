@@ -17,10 +17,21 @@ namespace Titan
         return glm::uvec2(low, high);
     }
 
+    struct Textures
+    {
+        Ref<Texture2D> DefaultAlbedo;
+        Ref<Texture2D> DefaultMetallic;
+        Ref<Texture2D> DefaultRoughness;
+        Ref<Texture2D> DefaultNormal;
+    };
+
+    static Textures s_Textures;
+
     struct Vertex
     {
         glm::vec3 Position;
         glm::vec3 Normal;
+        glm::vec3 Tangent;
         glm::vec2 TexCoord;
         int EntityID;
         int MaterialIndex = 0;
@@ -51,24 +62,24 @@ namespace Titan
             if (mat.AlbedoTexture)
                 AlbedoTextureIndex = HandleToVec2(mat.AlbedoTexture->GetBindlessHandle());
             else
-                AlbedoTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+                AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
 
             Metallic = mat.Metallic;
             if (mat.MetallicTexture)
                 MetallicTextureIndex = HandleToVec2(mat.MetallicTexture->GetBindlessHandle());
             else
-                MetallicTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+                MetallicTextureIndex = HandleToVec2(s_Textures.DefaultMetallic->GetBindlessHandle());
 
             Roughness = mat.Roughness;
             if (mat.RoughnessTexture)
                 RoughnessTextureIndex = HandleToVec2(mat.RoughnessTexture->GetBindlessHandle());
             else
-                RoughnessTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+                RoughnessTextureIndex = HandleToVec2(s_Textures.DefaultRoughness->GetBindlessHandle());
 
             if (mat.NormalTexture)
                 NormalTextureIndex = HandleToVec2(mat.NormalTexture->GetBindlessHandle());
             else
-                NormalTextureIndex = HandleToVec2(Renderer2D::GetWhiteTexture()->GetBindlessHandle());
+                NormalTextureIndex = HandleToVec2(s_Textures.DefaultNormal->GetBindlessHandle());
         }
     };
 
@@ -95,7 +106,6 @@ namespace Titan
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
         Ref<ShaderStorageBuffer> TextureStorageBuffer;
 
-        // Material management - GPU version
         std::vector<GPUMaterial> GPUMaterials;
         std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
         uint32_t CurrentMaterialIndex = 0;
@@ -133,6 +143,7 @@ namespace Titan
         s_3DData.VertexBuffer->SetLayout({
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float3, "a_Normal"},
+            {ShaderDataType::Float3, "a_Tangent"},
             {ShaderDataType::Float2, "a_TexCoord"},
             {ShaderDataType::Int,    "a_EntityID"},
             {ShaderDataType::Int,    "a_MaterialIndex"}
@@ -149,7 +160,33 @@ namespace Titan
         // Reserve space for GPU materials
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
 
-        TI_CORE_TRACE("Sizeof GPUMaterial: {}", sizeof(GPUMaterial));
+        // Textures
+        s_Textures.DefaultAlbedo = Texture2D::Create(1, 1);
+        {
+            uint32_t data = 0xffffffff; // white
+            s_Textures.DefaultAlbedo->SetData(&data, sizeof(uint32_t));
+        }
+
+        s_Textures.DefaultMetallic = Texture2D::Create(1, 1);
+        {
+            uint32_t data = 0x00000000; // black
+            s_Textures.DefaultMetallic->SetData(&data, sizeof(uint32_t));
+        }
+
+        s_Textures.DefaultRoughness = Texture2D::Create(1, 1);
+        {
+            uint32_t data = 0xffffffff; // white
+            s_Textures.DefaultRoughness->SetData(&data, sizeof(uint32_t));
+        }
+
+        s_Textures.DefaultNormal = Texture2D::Create(1, 1);
+        {
+            uint32_t data = (255u << 24) | // A
+                            (255u << 16) | // B = 255
+                            (128u << 8) |  // G = 128
+                            (128u);        // R = 128
+            s_Textures.DefaultNormal->SetData(&data, sizeof(uint32_t));
+        }
     }
 
     void Renderer3D::Shutdown()
@@ -167,6 +204,8 @@ namespace Titan
 
         s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
+
+        s_Textures = {};
     }
 
     void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix)
@@ -293,6 +332,7 @@ namespace Titan
 
         const auto& positions = mesh->GetPositions();
         const auto& normals = mesh->GetNormals();
+        const auto& tangents = mesh->GetTangents();
         const auto& texCoords = mesh->GetTexCoords();
 
         uint32_t totalVertexCount = (uint32_t)positions.size();
@@ -329,6 +369,7 @@ namespace Titan
                 s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
 
                 s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]);
+                s_3DData.VertexBufferPtr->Tangent = glm::normalize(glm::mat3(transform) * tangents[vertexIndex]);
 
                 s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
                 s_3DData.VertexBufferPtr->EntityID = entityID;

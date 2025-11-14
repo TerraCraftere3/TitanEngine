@@ -1,0 +1,8 @@
+ID: 12834615228103495877
+Type: 1
+Source: assets\textures\Helmet\Default_emissive.jpg
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

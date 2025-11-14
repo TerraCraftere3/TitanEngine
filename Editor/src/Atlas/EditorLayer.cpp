@@ -24,7 +24,7 @@ namespace Titan
         // Setup
         Application::GetInstance()->GetWindow().SetVSync(false);
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Models.titan");
+        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Helmet.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 

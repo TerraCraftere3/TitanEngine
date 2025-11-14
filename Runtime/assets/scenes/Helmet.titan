@@ -30,10 +30,17 @@ Entities:
       Material:
         AlbedoColor: [1, 1, 1, 1]
         AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
-        Metallic: 0.99
+        Metallic: 1
         MetallicTexture: assets\textures\Helmet\Default_metal.jpg
         Roughness: 1
         RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
+        NormalTexture: assets\textures\Helmet\Default_normal.jpg
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.2
   - Entity: 6817584821935004973
     TagComponent:
       Tag: Directional Light
