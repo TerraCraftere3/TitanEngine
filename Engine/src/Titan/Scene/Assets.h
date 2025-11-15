@@ -273,10 +273,8 @@ namespace Titan
         {
             if (AssetLibrary::Exists(path))
             {
-                TI_CORE_TRACE("Loading existing Asset {}", path.generic_string());
                 return AssetLibrary::Get<T>(path);
             }
-            TI_CORE_TRACE("Loading new Asset {}", path.generic_string());
 
             AssetMeta meta = LoadMetaFromDisk<T>(path);
             Ref<T> asset = nullptr;
