@@ -1,0 +1,8 @@
+ID: 6750291234092848109
+Type: 1
+Source: assets\textures\Ground\Ground041_2K-PNG_Roughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

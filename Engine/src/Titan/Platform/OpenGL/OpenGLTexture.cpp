@@ -1,5 +1,6 @@
 #include "OpenGLTexture.h"
 #include "Titan/PCH.h"
+#include "Titan/Utils/PlatformUtils.h"
 #include "nanosvg.h"
 #include "nanosvgrast.h"
 #include "stb_image.h"
@@ -68,6 +69,16 @@ namespace Titan
                 m_InternalFormat = GL_RGB8;
                 m_DataFormat = GL_RGB;
             }
+            else if (channels == 2)
+            {
+                m_InternalFormat = GL_RG8;
+                m_DataFormat = GL_RG;
+            }
+            else if (channels == 1)
+            {
+                m_InternalFormat = GL_R8;
+                m_DataFormat = GL_RED;
+            }
 
             TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
         }
@@ -129,8 +140,6 @@ namespace Titan
             delete[] data;
         else
             stbi_image_free(data);
-
-        MakeHandleResident();
     }
 
     OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
@@ -148,8 +157,6 @@ namespace Titan
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        MakeHandleResident();
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()
@@ -174,6 +181,10 @@ namespace Titan
 
     uint64_t OpenGLTexture2D::GetBindlessHandle()
     {
+        if (Debug::isRenderdocAttached())
+        {
+            return 0; // TODO: Fix renderdoc bindless texture issue
+        }
         if (m_BindlessHandle == 0)
             m_BindlessHandle = glGetTextureHandleARB(m_RendererID);
         return m_BindlessHandle;
@@ -181,6 +192,11 @@ namespace Titan
 
     void OpenGLTexture2D::MakeHandleResident()
     {
+        if (Debug::isRenderdocAttached())
+        {
+            return; // TODO: Fix renderdoc bindless texture issue
+        }
+        m_CreatedHandle = true;
         if (!m_HandleResident)
         {
             glMakeTextureHandleResidentARB(GetBindlessHandle());
@@ -190,6 +206,11 @@ namespace Titan
 
     void OpenGLTexture2D::MakeHandleNonResident()
     {
+        if (Debug::isRenderdocAttached())
+        {
+            return; // TODO: Fix renderdoc bindless texture issue
+        }
+        m_CreatedHandle = true;
         if (m_HandleResident)
         {
             glMakeTextureHandleNonResidentARB(m_BindlessHandle);

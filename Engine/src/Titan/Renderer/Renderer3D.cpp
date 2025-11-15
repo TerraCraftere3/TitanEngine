@@ -60,29 +60,68 @@ namespace Titan
         {
             AlbedoColor = mat.AlbedoColor;
             if (mat.AlbedoTexture)
+            {
+                if (!mat.AlbedoTexture->isValidBindlessHandle())
+                    mat.AlbedoTexture->MakeHandleResident();
                 AlbedoTextureIndex = HandleToVec2(mat.AlbedoTexture->GetBindlessHandle());
+            }
             else
+            {
+                if (!s_Textures.DefaultAO->isValidBindlessHandle())
+                    s_Textures.DefaultAO->MakeHandleResident();
                 AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
-
+            }
             if (mat.MetallicTexture)
+            {
+                if (!mat.MetallicTexture->isValidBindlessHandle())
+                    mat.MetallicTexture->MakeHandleResident();
                 MetallicTextureIndex = HandleToVec2(mat.MetallicTexture->GetBindlessHandle());
+            }
             else
+            {
+                if (!s_Textures.DefaultMetallic->isValidBindlessHandle())
+                    s_Textures.DefaultMetallic->MakeHandleResident();
                 MetallicTextureIndex = HandleToVec2(s_Textures.DefaultMetallic->GetBindlessHandle());
+            }
 
             if (mat.RoughnessTexture)
+            {
+                if (!mat.RoughnessTexture->isValidBindlessHandle())
+                    mat.RoughnessTexture->MakeHandleResident();
                 RoughnessTextureIndex = HandleToVec2(mat.RoughnessTexture->GetBindlessHandle());
+            }
             else
+            {
+                if (!s_Textures.DefaultRoughness->isValidBindlessHandle())
+                    s_Textures.DefaultRoughness->MakeHandleResident();
                 RoughnessTextureIndex = HandleToVec2(s_Textures.DefaultRoughness->GetBindlessHandle());
+            }
 
             if (mat.NormalTexture)
+            {
+                if (!mat.NormalTexture->isValidBindlessHandle())
+                    mat.NormalTexture->MakeHandleResident();
                 NormalTextureIndex = HandleToVec2(mat.NormalTexture->GetBindlessHandle());
+            }
             else
+            {
+                if (!s_Textures.DefaultNormal->isValidBindlessHandle())
+                    s_Textures.DefaultNormal->MakeHandleResident();
                 NormalTextureIndex = HandleToVec2(s_Textures.DefaultNormal->GetBindlessHandle());
+            }
 
             if (mat.AOTexture)
+            {
+                if (!mat.AOTexture->isValidBindlessHandle())
+                    mat.AOTexture->MakeHandleResident();
                 AOTextureIndex = HandleToVec2(mat.AOTexture->GetBindlessHandle());
+            }
             else
+            {
+                if (!s_Textures.DefaultAO->isValidBindlessHandle())
+                    s_Textures.DefaultAO->MakeHandleResident();
                 AOTextureIndex = HandleToVec2(s_Textures.DefaultAO->GetBindlessHandle());
+            }
 
             UVRepeat = mat.UVRepeat;
         }

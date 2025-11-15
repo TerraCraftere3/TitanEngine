@@ -14,25 +14,21 @@ namespace Titan
     {
         std::string result = code;
 
-        // List of replacement rules
         struct Rule
         {
             std::string from, to;
         };
 
-        std::vector<Rule> rules = {
+        std::vector<Rule> rules = {// bindless textures
+                                   {"sampler2D GetBindlessTexture_0(uvec2 _0);",
+                                    "sampler2D GetBindlessTexture_0(uvec2 handle)\n"
+                                    "{\n"
+                                    "    return sampler2D(handle);\n"
+                                    "}\n"},
+                                   {"#version 450",
+                                    "#version 450\n"
+                                    "#extension GL_ARB_bindless_texture : require"}};
 
-            // ---- Bindless example ----
-            {"sampler2D GetBindlessTexture_0(uvec2 _0);",
-             "sampler2D GetBindlessTexture_0(uvec2 handle)\n"
-             "{\n"
-             "    return sampler2D(handle);\n"
-             "}\n"},
-            {"#version 450",
-             "#version 450\n"
-             "#extension GL_ARB_bindless_texture : require"}};
-
-        // Apply all rules
         for (const auto& r : rules)
         {
             size_t pos = 0;
@@ -75,6 +71,8 @@ namespace Titan
     {
         if (type == "vertex")
             return GL_VERTEX_SHADER;
+        if (type == "geometry")
+            return GL_GEOMETRY_SHADER;
         if (type == "fragment" || type == "pixel")
             return GL_FRAGMENT_SHADER;
 
@@ -108,6 +106,18 @@ namespace Titan
         m_Name = name;
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
+        sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+        Compile(sources);
+    }
+
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& geometrySrc,
+                               const std::string& fragmentSrc)
+    {
+        TI_PROFILE_FUNCTION();
+        m_Name = name;
+        std::unordered_map<GLenum, std::string> sources;
+        sources[GL_VERTEX_SHADER] = vertexSrc;
+        sources[GL_GEOMETRY_SHADER] = geometrySrc;
         sources[GL_FRAGMENT_SHADER] = fragmentSrc;
         Compile(sources);
     }
@@ -264,7 +274,7 @@ namespace Titan
             return;
         }
 
-        // Find entry points (vertex and fragment shaders)
+        // Find entry points (vertex, geometry, and fragment shaders)
         std::unordered_map<GLenum, std::string> compiledShaders;
 
         // Compile vertex shader
@@ -275,6 +285,17 @@ namespace Titan
             if (!vertexCode.empty())
             {
                 compiledShaders[GL_VERTEX_SHADER] = vertexCode;
+            }
+        }
+
+        // Compile geometry shader (optional)
+        Slang::ComPtr<slang::IEntryPoint> geometryEntry;
+        if (SLANG_SUCCEEDED(module->findEntryPointByName("geometryMain", geometryEntry.writeRef())))
+        {
+            std::string geometryCode = CompileSlangEntryPoint(session, module, geometryEntry, "geometryMain");
+            if (!geometryCode.empty())
+            {
+                compiledShaders[GL_GEOMETRY_SHADER] = geometryCode;
             }
         }
 

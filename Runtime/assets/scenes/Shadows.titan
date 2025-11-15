@@ -1,83 +1,5 @@
 Scene: Untitled
 Entities:
-  - Entity: 4030959852380234952
-    TagComponent:
-      Tag: Circle
-    TransformComponent:
-      Translation: [0, 7, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1.2, 1.2, 1.2]
-    MeshRendererComponent:
-      Mesh: assets\models\circle.obj
-      Material:
-        AlbedoColor: [0.87188613, 0.245121, 0.245121, 1]
-        AlbedoTexture: assets\textures\Checkerboard.png
-        UVRepeat: [10, 1]
-    ScriptComponent:
-      ClassName: Sandbox.Rotation3D
-      ScriptFields:
-        - Name: Speed
-          Type: Vector3
-          Data: [0.6, 0.3, 0.5]
-  - Entity: 16249865421415446673
-    TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Translation: [0, 4.7062464, 26.306349]
-      Rotation: [-0.11891628, 0, 0]
-      Scale: [1, 0.9999999, 0.9999999]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.7853982
-        PerspectiveNear: 0.01
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1000
-      Primary: true
-      FixedAspectRatio: false
-  - Entity: 7483140265597002675
-    TagComponent:
-      Tag: Circle
-    TransformComponent:
-      Translation: [0, 7, 0]
-      Rotation: [0, 0, 0]
-      Scale: [0.8, 0.8, 0.8]
-    MeshRendererComponent:
-      Mesh: assets\models\circle.obj
-      Material:
-        AlbedoColor: [0.2921374, 0.9501779, 0.09806104, 1]
-        AlbedoTexture: assets\textures\Checkerboard.png
-        UVRepeat: [10, 1]
-    ScriptComponent:
-      ClassName: Sandbox.Rotation3D
-      ScriptFields:
-        - Name: Speed
-          Type: Vector3
-          Data: [0.1, 0.2, 0.3]
-  - Entity: 18038068843637139211
-    TagComponent:
-      Tag: Floor
-    TransformComponent:
-      Translation: [0, -5, 0]
-      Rotation: [-1.5707964, 0, 0]
-      Scale: [100, 100, 1]
-    MeshRendererComponent:
-      Mesh: quad
-      Material:
-        AlbedoColor: [1, 0.9860691, 0.9857651, 1]
-        AlbedoTexture: assets\textures\Checkerboard.png
-        UVRepeat: [10, 10]
-  - Entity: 9023914152867079430
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Translation: [0, 3.5585413, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [1, -1, 1]
   - Entity: 13832406188611310241
     TagComponent:
       Tag: Cube
@@ -97,3 +19,84 @@ Entities:
         - Name: Speed
           Type: Vector3
           Data: [1, 1, 1]
+  - Entity: 9023914152867079430
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 3.5585413, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, -1, 1]
+  - Entity: 18038068843637139211
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [0, -5, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [100, 100, 1]
+    MeshRendererComponent:
+      Mesh: quad
+      Material:
+        AlbedoColor: [1, 0.9860691, 0.9857651, 1]
+        AlbedoTexture: assets\textures\Ground\Ground041_2K-PNG_Color.png
+        RoughnessTexture: assets\textures\Ground\Ground041_2K-PNG_Roughness.png
+        NormalTexture: assets\textures\Ground\Ground041_2K-PNG_NormalGL.png
+        AOTexture: assets\textures\Ground\Ground041_2K-PNG_AmbientOcclusion.png
+        UVRepeat: [10, 10]
+  - Entity: 7483140265597002675
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Translation: [0, 7, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.8, 0.8]
+    MeshRendererComponent:
+      Mesh: assets\models\circle.obj
+      Material:
+        AlbedoColor: [0.2921374, 0.9501779, 0.09806104, 1]
+        AlbedoTexture: assets\textures\Checkerboard.png
+        UVRepeat: [10, 1]
+    ScriptComponent:
+      ClassName: Sandbox.Rotation3D
+      ScriptFields:
+        - Name: Speed
+          Type: Vector3
+          Data: [0.1, 0.2, 0.3]
+  - Entity: 16249865421415446673
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 4.7062464, 26.306349]
+      Rotation: [-0.11891628, 0, 0]
+      Scale: [1, 0.9999999, 0.9999999]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 4030959852380234952
+    TagComponent:
+      Tag: Circle
+    TransformComponent:
+      Translation: [0, 7, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1.2, 1.2, 1.2]
+    MeshRendererComponent:
+      Mesh: assets\models\circle.obj
+      Material:
+        AlbedoColor: [0.87188613, 0.245121, 0.245121, 1]
+        AlbedoTexture: assets\textures\Checkerboard.png
+        UVRepeat: [10, 1]
+    ScriptComponent:
+      ClassName: Sandbox.Rotation3D
+      ScriptFields:
+        - Name: Speed
+          Type: Vector3
+          Data: [0.6, 0.3, 0.5]
