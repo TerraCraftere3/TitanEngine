@@ -41,6 +41,8 @@ namespace Titan
         float GetPitch() const { return m_Pitch; }
         float GetYaw() const { return m_Yaw; }
 
+        void SetBlockEvents(bool value) { m_BlockEvents = value; }
+
     private:
         void UpdateProjection();
         void UpdateView();
@@ -68,6 +70,8 @@ namespace Titan
 
         float m_Distance = 10.0f;
         float m_Pitch = 0.0f, m_Yaw = 0.0f;
+
+        bool m_BlockEvents = false;
 
         float m_ViewportWidth = 1280, m_ViewportHeight = 720;
         friend class EditorLayer;

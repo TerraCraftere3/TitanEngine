@@ -63,6 +63,9 @@ namespace Titan
 
     void EditorCamera::OnUpdate(Timestep ts)
     {
+        if (m_BlockEvents)
+            return;
+
         if (Input::IsKeyPressed(Key::LeftAlt))
         {
             const glm::vec2& mouse{Input::GetMouseX(), Input::GetMouseY()};
@@ -82,6 +85,9 @@ namespace Titan
 
     void EditorCamera::OnEvent(Event& e)
     {
+        if (m_BlockEvents)
+            return;
+
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<MouseScrolledEvent>(TI_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
     }

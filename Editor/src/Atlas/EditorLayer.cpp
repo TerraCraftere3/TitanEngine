@@ -12,6 +12,7 @@
 #include <Titan/Scripting/ScriptEngine.h>
 #include <Titan/Utils/Math.h>
 #include <Titan/Utils/PlatformUtils.h>
+#include <Titan/Utils/String.h>
 
 namespace Titan
 {
@@ -72,6 +73,8 @@ namespace Titan
         }
 
         UpdateHoveredEntity();
+
+        m_EditorCamera.SetBlockEvents(!m_ViewportHovered);
     }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
@@ -201,7 +204,8 @@ namespace Titan
         auto stats3d = Renderer3D::GetStats();
         ImGui::Text("Draw Calls: %d", stats2d.GetTotalDrawCalls() + stats3d.GetTotalDrawCalls());
         ImGui::Text("Meshes Rendered: %d", stats3d.GetTotalMeshCount());
-        ImGui::Text("Vertices Rendered: %d", stats2d.GetTotalVertexCount() + stats3d.GetTotalVertexCount());
+        ImGui::Text("Vertices Rendered: %s",
+                    FormatNumber(stats2d.GetTotalVertexCount() + stats3d.GetTotalVertexCount()).c_str());
 
         ImGui::End();
     }
