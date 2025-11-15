@@ -1,9 +1,9 @@
 #include "SceneRenderer.h"
 #include "RenderGraph.h"
+#include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/PBRRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
-#include "Titan/Renderer/Renderer3D.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
 
@@ -103,16 +103,16 @@ namespace Titan
 
                 RenderCommand::SetClearColor(glm::vec4(0.0));
                 RenderCommand::Clear();
-                Renderer3D::BeginScene(s_SRData->viewProjection);
+                GeometryRenderer::BeginScene(s_SRData->viewProjection);
 
                 for (auto entity : meshView)
                 {
                     auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
                     if (meshComp.MeshRef)
-                        Renderer3D::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
+                        GeometryRenderer::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
                 }
 
-                Renderer3D::EndScene();
+                GeometryRenderer::EndScene();
                 fb->Unbind();
             });
 

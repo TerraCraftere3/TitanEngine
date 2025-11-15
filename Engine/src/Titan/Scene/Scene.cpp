@@ -2,9 +2,9 @@
 #include "Components.h"
 #include "Entity.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
-#include "Titan/Renderer/Renderer3D.h"
 #include "Titan/Scripting/ScriptEngine.h"
 
 #include "box2d/box2d.h"

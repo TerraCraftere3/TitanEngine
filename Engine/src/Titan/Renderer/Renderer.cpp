@@ -1,7 +1,7 @@
 #include "Renderer.h"
+#include "GeometryRenderer.h"
 #include "PBRRenderer.h"
 #include "Renderer2D.h"
-#include "Renderer3D.h"
 #include "SceneRenderer.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
@@ -15,7 +15,7 @@ namespace Titan
         TI_PROFILE_FUNCTION();
         RenderCommand::Init();
         Renderer2D::Init();
-        Renderer3D::Init();
+        GeometryRenderer::Init();
         PBRRenderer::Init();
         SceneRenderer::Init();
     }
@@ -23,7 +23,7 @@ namespace Titan
     void Renderer::Shutdown()
     {
         PBRRenderer::Shutdown();
-        Renderer3D::Shutdown();
+        GeometryRenderer::Shutdown();
         Renderer2D::Shutdown();
         SceneRenderer::Shutdown();
     }

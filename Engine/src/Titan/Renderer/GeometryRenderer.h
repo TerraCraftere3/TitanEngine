@@ -9,7 +9,7 @@
 
 namespace Titan
 {
-    class TI_API Renderer3D
+    class TI_API GeometryRenderer
     {
     public:
         static void Init();

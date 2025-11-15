@@ -1,4 +1,4 @@
-#include "Renderer3D.h"
+#include "GeometryRenderer.h"
 #include "RenderCommand.h"
 #include "Renderer2D.h"
 #include "Shader.h"
@@ -127,7 +127,7 @@ namespace Titan
         }
     };
 
-    struct Renderer3DData
+    struct GeometryRendererData
     {
         static const uint32_t MaxVertices = 100'000;
         static const uint32_t MaxMaterials = 1000;
@@ -154,10 +154,10 @@ namespace Titan
         std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
         uint32_t CurrentMaterialIndex = 0;
 
-        Renderer3D::Statistics Stats;
+        GeometryRenderer::Statistics Stats;
     };
 
-    static Renderer3DData s_3DData;
+    static GeometryRendererData s_3DData;
     static bool s_IsRendering = false;
 
     // Helper function to hash materials
@@ -172,7 +172,7 @@ namespace Titan
         return hash;
     }
 
-    void Renderer3D::Init()
+    void GeometryRenderer::Init()
     {
         TI_PROFILE_FUNCTION();
 
@@ -196,7 +196,7 @@ namespace Titan
 
         s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
 
-        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer3DData::CameraData), 0);
+        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(GeometryRendererData::CameraData), 0);
         s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
         s_3DData.TextureStorageBuffer = ShaderStorageBuffer::Create(sizeof(glm::ivec2) * s_3DData.MaxMaterials, 2);
         s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
@@ -239,7 +239,7 @@ namespace Titan
         }
     }
 
-    void Renderer3D::Shutdown()
+    void GeometryRenderer::Shutdown()
     {
         TI_PROFILE_FUNCTION();
 
@@ -258,14 +258,14 @@ namespace Titan
         s_Textures = {};
     }
 
-    void Renderer3D::BeginScene(const glm::mat4& viewProjectionMatrix)
+    void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix)
     {
         TI_PROFILE_FUNCTION();
-        TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer3D::EndScene()?");
-        TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "Renderer3D not initialized!");
+        TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");
+        TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "GeometryRenderer not initialized!");
 
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
-        s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(Renderer3DData::CameraData));
+        s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(GeometryRendererData::CameraData));
 
         s_3DData.Shader->Bind();
 
@@ -273,10 +273,10 @@ namespace Titan
         s_IsRendering = true;
     }
 
-    void Renderer3D::EndScene()
+    void GeometryRenderer::EndScene()
     {
         TI_PROFILE_FUNCTION();
-        TI_CORE_ASSERT(s_IsRendering, "Called Renderer3D::EndScene() without BeginScene()");
+        TI_CORE_ASSERT(s_IsRendering, "Called GeometryRenderer::EndScene() without BeginScene()");
 
         Flush();
         s_IsRendering = false;
@@ -287,13 +287,13 @@ namespace Titan
         s_3DData.CurrentMaterialIndex = 0;
     }
 
-    void Renderer3D::StartBatch()
+    void GeometryRenderer::StartBatch()
     {
         s_3DData.VertexCount = 0;
         s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
     }
 
-    void Renderer3D::Flush()
+    void GeometryRenderer::Flush()
     {
         TI_PROFILE_FUNCTION();
 
@@ -317,7 +317,7 @@ namespace Titan
         s_3DData.Stats.VertexCount += s_3DData.VertexCount;
     }
 
-    void Renderer3D::FlushAndReset()
+    void GeometryRenderer::FlushAndReset()
     {
         TI_PROFILE_FUNCTION();
 
@@ -364,7 +364,7 @@ namespace Titan
         return newIndex;
     }
 
-    void Renderer3D::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
+    void GeometryRenderer::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Must call BeginScene() before DrawMesh()");
@@ -434,12 +434,12 @@ namespace Titan
         s_3DData.Stats.MeshCount++;
     }
 
-    Renderer3D::Statistics Renderer3D::GetStats()
+    GeometryRenderer::Statistics GeometryRenderer::GetStats()
     {
         return s_3DData.Stats;
     }
 
-    void Renderer3D::ResetStats()
+    void GeometryRenderer::ResetStats()
     {
         memset(&s_3DData.Stats, 0, sizeof(Statistics));
     }

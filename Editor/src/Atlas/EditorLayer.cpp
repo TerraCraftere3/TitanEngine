@@ -2,9 +2,9 @@
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
+#include <Titan/Renderer/GeometryRenderer.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
-#include <Titan/Renderer/Renderer3D.h>
 #include <Titan/Renderer/SceneRenderer.h>
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
@@ -45,7 +45,7 @@ namespace Titan
             m_FPS = 1.0f / ts.GetSeconds();
 
         Renderer2D::ResetStats();
-        Renderer3D::ResetStats();
+        GeometryRenderer::ResetStats();
         switch (m_SceneState)
         {
             case SceneState::Edit:
@@ -201,7 +201,7 @@ namespace Titan
         ImGui::Separator();
 
         auto stats2d = Renderer2D::GetStats();
-        auto stats3d = Renderer3D::GetStats();
+        auto stats3d = GeometryRenderer::GetStats();
         ImGui::Text("Draw Calls: %d", stats2d.GetTotalDrawCalls() + stats3d.GetTotalDrawCalls());
         ImGui::Text("Meshes Rendered: %d", stats3d.GetTotalMeshCount());
         ImGui::Text("Vertices Rendered: %s",
