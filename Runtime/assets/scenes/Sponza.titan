@@ -1,5 +1,14 @@
 Scene: Untitled
 Entities:
+  - Entity: 7774000498037357011
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, 1, 1]
   - Entity: 14367220654640568265
     TagComponent:
       Tag: Sponza
@@ -13,61 +22,98 @@ Entities:
         - AlbedoColor: [1, 1, 1, 1]
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\lion.tga
+          NormalTexture: assets\textures\Sponza\lion_ddn.tga
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\lion.tga
+          NormalTexture: assets\textures\Sponza\lion2_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\vase_plant.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_arch_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_arch_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\spnza_bricks_a_diff.tga
+          NormalTexture: assets\textures\Sponza\spnza_bricks_a_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_ceiling_a_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_ceiling_a_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\chain_texture.tga
+          NormalTexture: assets\textures\Sponza\chain_texture_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_column_a_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_column_a_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_column_b_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_column_b_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_column_c_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_column_c_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_details_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_details_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_fabric_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_fabric_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_fabric_green_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_fabric_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_fabric_blue_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_fabric_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_curtain_blue_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_curtain_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_curtain_green_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_curtain_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_curtain_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_curtain_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_flagpole_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_flagpole_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_floor_a_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_floor_a_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\vase_plant.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\sponza_roof_diff.tga
+          NormalTexture: assets\textures\Sponza\sponza_roof_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\vase_dif.tga
+          NormalTexture: assets\textures\Sponza\vase_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\vase_hanging.tga
+          NormalTexture: assets\textures\Sponza\vase_hanging_ddn.tga
           UVRepeat: [1, 1]
         - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Sponza\vase_round.tga
+          NormalTexture: assets\textures\Sponza\vase_round_ddn.tga
           UVRepeat: [1, 1]
-        - AlbedoColor: [1, 1, 1, 1]
-          UVRepeat: [1, 1]
-  - Entity: 7774000498037357011
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [1, 1, 1]

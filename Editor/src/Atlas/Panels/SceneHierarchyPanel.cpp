@@ -386,7 +386,7 @@ namespace Titan
                 for (auto mat : component.MeshRef->GetMaterials())
                 {
                     ImGui::PushID(index);
-                    std::string label = "Material " + std::to_string(index);
+                    std::string label = mat->Name;
 
                     if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
                     {

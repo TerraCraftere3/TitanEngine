@@ -1,0 +1,8 @@
+ID: 1474162624031450585
+Type: 1
+Source: assets\textures\Sponza\sponza_ceiling_a_ddn.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

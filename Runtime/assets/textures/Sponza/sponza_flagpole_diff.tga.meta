@@ -1,0 +1,8 @@
+ID: 3026334094769131476
+Type: 1
+Source: assets\textures\Sponza\sponza_flagpole_diff.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

@@ -1,0 +1,8 @@
+ID: 1110252891924602668
+Type: 1
+Source: assets\textures\Sponza\vase_round.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

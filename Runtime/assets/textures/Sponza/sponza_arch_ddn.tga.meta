@@ -1,0 +1,8 @@
+ID: 8626678982306409899
+Type: 1
+Source: assets\textures\Sponza\sponza_arch_ddn.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

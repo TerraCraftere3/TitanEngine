@@ -1,0 +1,8 @@
+ID: 3942625921733954277
+Type: 1
+Source: assets\textures\Sponza\lion.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

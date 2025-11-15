@@ -8,6 +8,7 @@ namespace Titan
 
     struct Material3D
     {
+        std::string Name = "Material";
         glm::vec4 AlbedoColor = glm::vec4(1.0f);
         Ref<Texture2D> AlbedoTexture;
         Ref<Texture2D> MetallicTexture;

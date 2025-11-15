@@ -173,7 +173,10 @@ namespace Titan
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
         mesh->m_MaterialIndex = std::vector<uint8_t>(6, 0);
-        mesh->m_Materials.push_back(CreateRef<Material3D>());
+
+        auto material = CreateRef<Material3D>();
+        material->Name = "Material 1";
+        mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "quad";
         return mesh;
     }
@@ -260,7 +263,10 @@ namespace Titan
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
         mesh->m_MaterialIndex = std::vector<uint8_t>(36, 0);
-        mesh->m_Materials.push_back(CreateRef<Material3D>());
+
+        auto material = CreateRef<Material3D>();
+        material->Name = "Material 1";
+        mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "cube";
         return mesh;
     }
@@ -287,9 +293,24 @@ namespace Titan
         RawMeshData data;
         std::vector<uint8_t> materialIndices;
 
-        for (int i = 0; i < scene->mNumMaterials; i++)
+        // Load materials with names
+        for (unsigned int i = 0; i < scene->mNumMaterials; i++)
         {
-            mesh->m_Materials.push_back(CreateRef<Material3D>());
+            auto material = CreateRef<Material3D>();
+
+            // Try to get the material name from Assimp
+            aiString aiMatName;
+            if (scene->mMaterials[i]->Get(AI_MATKEY_NAME, aiMatName) == AI_SUCCESS && aiMatName.length > 0)
+            {
+                material->Name = aiMatName.C_Str();
+            }
+            else
+            {
+                // Use default naming: "Material 1", "Material 2", etc.
+                material->Name = "Material " + std::to_string(i + 1);
+            }
+
+            mesh->m_Materials.push_back(material);
         }
 
         ProcessNode(scene->mRootNode, scene, data, materialIndices);

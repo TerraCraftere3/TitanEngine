@@ -1,0 +1,8 @@
+ID: 15219896572551654361
+Type: 1
+Source: assets\textures\Sponza\sponza_column_b_diff.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

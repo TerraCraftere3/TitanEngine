@@ -1,0 +1,8 @@
+ID: 3760083293979176641
+Type: 1
+Source: assets\textures\Sponza\sponza_curtain_green_diff.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

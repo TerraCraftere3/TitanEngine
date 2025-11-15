@@ -1,0 +1,8 @@
+ID: 16231437529284059617
+Type: 1
+Source: assets\textures\Sponza\chain_texture.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

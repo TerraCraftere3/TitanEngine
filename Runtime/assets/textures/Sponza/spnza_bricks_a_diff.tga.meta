@@ -1,0 +1,8 @@
+ID: 2784179911084999341
+Type: 1
+Source: assets\textures\Sponza\spnza_bricks_a_diff.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear
