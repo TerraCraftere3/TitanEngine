@@ -70,7 +70,6 @@ namespace Titan
     struct MeshRendererComponent
     {
         Ref<Mesh> MeshRef;
-        Material3D Material;
 
         MeshRendererComponent() = default;
         MeshRendererComponent(const MeshRendererComponent&) = default;

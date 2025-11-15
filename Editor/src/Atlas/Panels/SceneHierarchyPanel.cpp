@@ -350,13 +350,12 @@ namespace Titan
                     ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
                 }
             });
-        DrawComponent<SpriteRendererComponent>(
-            "Sprite Renderer", entity,
-            [](auto& component)
-            {
-                ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-                DrawTextureSlot("Texture", component.Tex);
-            });
+        DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity,
+                                               [](auto& component)
+                                               {
+                                                   ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+                                                   DrawTextureSlot("Texture", component.Tex);
+                                               });
         DrawComponent<CircleRendererComponent>("Circle Renderer", entity,
                                                [](auto& component)
                                                {
@@ -383,14 +382,28 @@ namespace Titan
                     }
                     ImGui::EndDragDropTarget();
                 }
-                ImGui::Separator();
-                ImGui::ColorEdit4("Diffuse", glm::value_ptr(component.Material.AlbedoColor));
-                DrawTextureSlot("Diffuse Texture", component.Material.AlbedoTexture);
-                DrawTextureSlot("Metallic Texture", component.Material.MetallicTexture);
-                DrawTextureSlot("Roughness Texture", component.Material.RoughnessTexture);
-                DrawTextureSlot("Normal Texture", component.Material.NormalTexture);
-                DrawTextureSlot("Ambient Occlusion Texture", component.Material.AOTexture);
-                ImGui::DragFloat2("UV Repeat", glm::value_ptr(component.Material.UVRepeat), 0.1f, 0.01f, 100.0f);
+                int index = 0;
+                for (auto mat : component.MeshRef->GetMaterials())
+                {
+                    ImGui::PushID(index);
+                    std::string label = "Material " + std::to_string(index);
+
+                    if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
+                    {
+                        ImGui::ColorEdit4("Diffuse", glm::value_ptr(mat->AlbedoColor));
+                        DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
+                        DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
+                        DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
+                        DrawTextureSlot("Normal Texture", mat->NormalTexture);
+                        DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
+                        ImGui::DragFloat2("UV Repeat", glm::value_ptr(mat->UVRepeat), 0.1f, 0.01f, 100.0f);
+
+                        ImGui::TreePop();
+                    }
+
+                    ImGui::PopID();
+                    index++;
+                }
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });

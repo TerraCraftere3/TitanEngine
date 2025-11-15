@@ -260,35 +260,36 @@ namespace Titan
             if (meshRendererComponent.MeshRef)
                 out << YAML::Key << "Mesh" << YAML::Value << meshRendererComponent.MeshRef->GetFilePath();
 
-            out << YAML::Key << "Material";
-            out << YAML::BeginMap; // Material
-            out << YAML::Key << "AlbedoColor" << YAML::Value << meshRendererComponent.Material.AlbedoColor;
-            if (meshRendererComponent.Material.AlbedoTexture)
+            out << YAML::Key << "Materials";
+            out << YAML::BeginSeq; // Materials
+            for (auto mat : meshRendererComponent.MeshRef->GetMaterials())
             {
-                out << YAML::Key << "AlbedoTexture" << YAML::Value
-                    << meshRendererComponent.Material.AlbedoTexture->GetPath();
+                out << YAML::BeginMap; // Material
+                out << YAML::Key << "AlbedoColor" << YAML::Value << mat->AlbedoColor;
+                if (mat->AlbedoTexture)
+                {
+                    out << YAML::Key << "AlbedoTexture" << YAML::Value << mat->AlbedoTexture->GetPath();
+                }
+                if (mat->MetallicTexture)
+                {
+                    out << YAML::Key << "MetallicTexture" << YAML::Value << mat->MetallicTexture->GetPath();
+                }
+                if (mat->RoughnessTexture)
+                {
+                    out << YAML::Key << "RoughnessTexture" << YAML::Value << mat->RoughnessTexture->GetPath();
+                }
+                if (mat->NormalTexture)
+                {
+                    out << YAML::Key << "NormalTexture" << YAML::Value << mat->NormalTexture->GetPath();
+                }
+                if (mat->AOTexture)
+                {
+                    out << YAML::Key << "AOTexture" << YAML::Value << mat->AOTexture->GetPath();
+                }
+                out << YAML::Key << "UVRepeat" << YAML::Value << mat->UVRepeat;
+                out << YAML::EndMap; // Material
             }
-            if (meshRendererComponent.Material.MetallicTexture)
-            {
-                out << YAML::Key << "MetallicTexture" << YAML::Value
-                    << meshRendererComponent.Material.MetallicTexture->GetPath();
-            }
-            if (meshRendererComponent.Material.RoughnessTexture)
-            {
-                out << YAML::Key << "RoughnessTexture" << YAML::Value
-                    << meshRendererComponent.Material.RoughnessTexture->GetPath();
-            }
-            if (meshRendererComponent.Material.NormalTexture)
-            {
-                out << YAML::Key << "NormalTexture" << YAML::Value
-                    << meshRendererComponent.Material.NormalTexture->GetPath();
-            }
-            if (meshRendererComponent.Material.AOTexture)
-            {
-                out << YAML::Key << "AOTexture" << YAML::Value << meshRendererComponent.Material.AOTexture->GetPath();
-            }
-            out << YAML::Key << "UVRepeat" << YAML::Value << meshRendererComponent.Material.UVRepeat;
-            out << YAML::EndMap; // Material
+            out << YAML::EndSeq; // Materials
             out << YAML::EndMap; // MeshRendererComponent
         }
         if (entity.HasComponent<DirectionalLightComponent>())
@@ -513,36 +514,34 @@ namespace Titan
                         else
                             mrc.MeshRef = Assets::Load<Mesh>(path);
                     }
-                    auto material = meshRendererComponent["Material"];
-                    if (material)
+                    auto materials = meshRendererComponent["Materials"];
+                    int matIndex = 0;
+                    for (auto material : materials)
                     {
-                        mrc.Material.AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
+                        auto mat = mrc.MeshRef->GetMaterial(matIndex);
+                        mat->AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
+
                         if (material["AlbedoTexture"])
-                        {
-                            mrc.Material.AlbedoTexture =
-                                Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
-                        }
+                            mat->AlbedoTexture = Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
+
                         if (material["MetallicTexture"])
-                        {
-                            mrc.Material.MetallicTexture =
+                            mat->MetallicTexture =
                                 Assets::Load<Texture2D>(material["MetallicTexture"].as<std::string>());
-                        }
+
                         if (material["RoughnessTexture"])
-                        {
-                            mrc.Material.RoughnessTexture =
+                            mat->RoughnessTexture =
                                 Assets::Load<Texture2D>(material["RoughnessTexture"].as<std::string>());
-                        }
+
                         if (material["NormalTexture"])
-                        {
-                            mrc.Material.NormalTexture =
-                                Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
-                        }
+                            mat->NormalTexture = Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
+
                         if (material["AOTexture"])
-                        {
-                            mrc.Material.AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
-                        }
+                            mat->AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
+
                         if (material["UVRepeat"])
-                            mrc.Material.UVRepeat = material["UVRepeat"].as<glm::vec2>();
+                            mat->UVRepeat = material["UVRepeat"].as<glm::vec2>();
+
+                        matIndex++;
                     }
                 }
 

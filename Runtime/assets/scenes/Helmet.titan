@@ -18,13 +18,16 @@ Entities:
       Scale: [1, 1, 1]
     MeshRendererComponent:
       Mesh: assets\models\DamagedHelmet.gltf
-      Material:
-        AlbedoColor: [1, 1, 1, 1]
-        AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
-        MetallicTexture: assets\textures\Helmet\Default_metal.jpg
-        RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
-        NormalTexture: assets\textures\Helmet\Default_normal.jpg
-        AOTexture: assets\textures\Helmet\Default_AO.jpg
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
+          MetallicTexture: assets\textures\Helmet\Default_metal.jpg
+          RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
+          NormalTexture: assets\textures\Helmet\Default_normal.jpg
+          AOTexture: assets\textures\Helmet\Default_AO.jpg
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
     ScriptComponent:
       ClassName: Sandbox.Rotation
       ScriptFields:

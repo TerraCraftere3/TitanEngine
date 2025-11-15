@@ -5,13 +5,13 @@
 
 namespace Titan
 {
-            struct PBRSceneData
-        {
-            glm::vec3 ViewPosition;
-            bool HasDirectionalLight;
-            glm::vec3 LightDirection;
-            float Padding; // Padding to align to 16 bytes
-        };
+    struct PBRSceneData
+    {
+        glm::vec3 ViewPosition;
+        bool HasDirectionalLight;
+        glm::vec3 LightDirection;
+        float Padding; // Padding to align to 16 bytes
+    };
 
     class TI_API PBRRenderer
     {

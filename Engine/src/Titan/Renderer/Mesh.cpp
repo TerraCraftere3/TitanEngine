@@ -13,7 +13,8 @@ namespace Titan
         std::vector<glm::vec3> Tangents;
     };
 
-    static void ProcessMesh(aiMesh* mesh, RawMeshData& data)
+    static void ProcessMesh(aiMesh* mesh, RawMeshData& data, std::vector<uint8_t>& materialIndexOut,
+                            uint8_t materialIdx)
     {
         for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
         {
@@ -47,7 +48,6 @@ namespace Titan
                 mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx2].x, mesh->mNormals[idx2].y, mesh->mNormals[idx2].z)
                                    : glm::vec3(0.0f)};
 
-            // Compute tangent for this triangle
             glm::vec3 edge1 = positions[1] - positions[0];
             glm::vec3 edge2 = positions[2] - positions[0];
             glm::vec2 deltaUV1 = uvs[1] - uvs[0];
@@ -60,23 +60,25 @@ namespace Titan
                 data.Positions.push_back(positions[j]);
                 data.Normals.push_back(n[j]);
                 data.TexCoords.push_back(uvs[j]);
-                data.Tangents.push_back(tangent); // store tangent per vertex
+                data.Tangents.push_back(tangent);
+                materialIndexOut.push_back(materialIdx);
             }
         }
     }
 
-    static void ProcessNode(aiNode* node, const aiScene* scene, RawMeshData& data)
+    static void ProcessNode(aiNode* node, const aiScene* scene, RawMeshData& data,
+                            std::vector<uint8_t>& materialIndexOut)
     {
         for (unsigned int i = 0; i < node->mNumMeshes; ++i)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            ProcessMesh(mesh, data);
+            uint8_t matIndex = static_cast<uint8_t>(mesh->mMaterialIndex);
+            ProcessMesh(mesh, data, materialIndexOut, matIndex);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; ++i)
-            ProcessNode(node->mChildren[i], scene, data);
+            ProcessNode(node->mChildren[i], scene, data, materialIndexOut);
     }
-
     struct Vec3Hash
     {
         size_t operator()(const glm::vec3& v) const
@@ -170,6 +172,8 @@ namespace Titan
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
+        mesh->m_MaterialIndex = std::vector<uint8_t>(6, 0);
+        mesh->m_Materials.push_back(CreateRef<Material3D>());
         mesh->m_FilePath = "quad";
         return mesh;
     }
@@ -255,6 +259,8 @@ namespace Titan
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
+        mesh->m_MaterialIndex = std::vector<uint8_t>(36, 0);
+        mesh->m_Materials.push_back(CreateRef<Material3D>());
         mesh->m_FilePath = "cube";
         return mesh;
     }
@@ -271,26 +277,31 @@ namespace Titan
             importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace |
                                             aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
 
+        auto mesh = CreateRef<Mesh>();
         if (!scene || !scene->mRootNode)
         {
-            TI_CORE_ERROR("Failed to load mesh: {}", filepath);
-            auto mesh = CreateRef<Mesh>();
+            mesh->m_FilePath = filepath;
             return mesh;
         }
 
         RawMeshData data;
-        ProcessNode(scene->mRootNode, scene, data);
+        std::vector<uint8_t> materialIndices;
 
+        for (int i = 0; i < scene->mNumMaterials; i++)
+        {
+            mesh->m_Materials.push_back(CreateRef<Material3D>());
+        }
+
+        ProcessNode(scene->mRootNode, scene, data, materialIndices);
         ComputeSmoothNormals(data.Positions, data.Normals);
 
-        auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
-        mesh->m_FilePath = std::filesystem::relative(filepath).string();
+        mesh->m_MaterialIndex = std::move(materialIndices);
 
-        TI_CORE_INFO("Loaded mesh '{}' ({} vertices)", filepath, mesh->m_Positions.size());
+        mesh->m_FilePath = std::filesystem::relative(filepath).string();
         return mesh;
     }
 } // namespace Titan

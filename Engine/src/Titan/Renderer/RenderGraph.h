@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Titan/Core.h"
-#include "Framebuffer.h"
 #include <functional>
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include "Framebuffer.h"
+#include "Titan/Core.h"
 
 namespace Titan
 {
@@ -49,7 +49,7 @@ namespace Titan
 
         const ResourceDescriptor& GetDescriptor() const { return m_Descriptor; }
         const std::string& GetName() const { return m_Descriptor.Name; }
-        
+
         void* GetHandle() const { return m_Handle; }
         void SetHandle(void* handle) { m_Handle = handle; }
 
@@ -83,7 +83,7 @@ namespace Titan
 
         const RenderPassDescriptor& GetDescriptor() const { return m_Descriptor; }
         const std::string& GetName() const { return m_Descriptor.Name; }
-        
+
         const std::vector<std::string>& GetInputs() const { return m_Descriptor.Inputs; }
         const std::vector<std::string>& GetOutputs() const { return m_Descriptor.Outputs; }
 
@@ -128,7 +128,7 @@ namespace Titan
         // Queries
         bool IsCompiled() const { return m_Compiled; }
         const std::vector<Ref<RenderPass>>& GetPasses() const { return m_ExecutionOrder; }
-        
+
         // Statistics
         struct Statistics
         {
@@ -182,22 +182,18 @@ namespace Titan
         RenderGraphBuilder(RenderGraph& graph) : m_Graph(graph) {}
 
         // Fluent API for building render passes
-        RenderGraphBuilder& CreateTexture(const std::string& name, FramebufferTextureFormat format, 
-                                         uint32_t width, uint32_t height, uint32_t samples = 1);
-        
+        RenderGraphBuilder& CreateTexture(const std::string& name, FramebufferTextureFormat format, uint32_t width,
+                                          uint32_t height, uint32_t samples = 1);
+
         RenderGraphBuilder& CreatePersistentTexture(const std::string& name, FramebufferTextureFormat format,
-                                                   uint32_t width, uint32_t height, uint32_t samples = 1);
+                                                    uint32_t width, uint32_t height, uint32_t samples = 1);
 
-        RenderGraphBuilder& CreateFramebuffer(
-    const std::string& name,
-    const std::vector<FramebufferTextureFormat>& attachments,
-    uint32_t width, uint32_t height,
-    uint32_t samples);
+        RenderGraphBuilder& CreateFramebuffer(const std::string& name,
+                                              const std::vector<FramebufferTextureFormat>& attachments, uint32_t width,
+                                              uint32_t height, uint32_t samples);
 
-        RenderGraphBuilder& AddRenderPass(const std::string& name,
-                                         const std::vector<std::string>& inputs,
-                                         const std::vector<std::string>& outputs,
-                                         RenderPass::ExecuteFunc executeFunc);
+        RenderGraphBuilder& AddRenderPass(const std::string& name, const std::vector<std::string>& inputs,
+                                          const std::vector<std::string>& outputs, RenderPass::ExecuteFunc executeFunc);
 
         void Build();
 

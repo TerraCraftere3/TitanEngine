@@ -364,7 +364,7 @@ namespace Titan
         return newIndex;
     }
 
-    void Renderer3D::DrawMesh(const Ref<Mesh>& mesh, const Material3D& mat, const glm::mat4& transform, int entityID)
+    void Renderer3D::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
     {
         TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Must call BeginScene() before DrawMesh()");
@@ -372,15 +372,21 @@ namespace Titan
         if (!mesh)
             return;
 
-        const auto& positions = mesh->GetPositions();
-        const auto& normals = mesh->GetNormals();
-        const auto& tangents = mesh->GetTangents();
-        const auto& texCoords = mesh->GetTexCoords();
+        const std::vector<glm::vec3>& positions = mesh->GetPositions();
+        const std::vector<glm::vec3>& normals = mesh->GetNormals();
+        const std::vector<glm::vec3>& tangents = mesh->GetTangents();
+        const std::vector<glm::vec2>& texCoords = mesh->GetTexCoords();
+        const std::vector<uint8_t>& matIndices = mesh->GetMaterialIndices();
+        const std::vector<Ref<Material3D>>& materials = mesh->GetMaterials();
 
         uint32_t totalVertexCount = (uint32_t)positions.size();
 
-        // Get or add material index - Material3D is automatically converted to GPUMaterial
-        uint32_t materialIndex = GetOrAddMaterial(mat);
+        // Map local material indices to global shader material indices
+        std::vector<uint32_t> globalMaterialIndices(materials.size());
+        for (size_t i = 0; i < materials.size(); ++i)
+        {
+            globalMaterialIndices[i] = GetOrAddMaterial(*materials[i]);
+        }
 
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
 
@@ -406,6 +412,7 @@ namespace Titan
             for (uint32_t i = 0; i < verticesThisChunk; ++i)
             {
                 uint32_t vertexIndex = vertexOffset + i;
+                uint8_t localMatIndex = matIndices[vertexIndex];
 
                 glm::vec4 transformedPos = transform * glm::vec4(positions[vertexIndex], 1.0f);
                 s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
@@ -415,7 +422,7 @@ namespace Titan
 
                 s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
                 s_3DData.VertexBufferPtr->EntityID = entityID;
-                s_3DData.VertexBufferPtr->MaterialIndex = materialIndex;
+                s_3DData.VertexBufferPtr->MaterialIndex = globalMaterialIndices[localMatIndex];
 
                 s_3DData.VertexBufferPtr++;
             }

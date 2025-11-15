@@ -1,8 +1,8 @@
 #include "RenderGraph.h"
-#include "Titan/PCH.h"
 #include <algorithm>
 #include <queue>
 #include <set>
+#include "Titan/PCH.h"
 
 namespace Titan
 {
@@ -12,14 +12,12 @@ namespace Titan
 
     bool RenderPass::HasInput(const std::string& name) const
     {
-        return std::find(m_Descriptor.Inputs.begin(), m_Descriptor.Inputs.end(), name) 
-               != m_Descriptor.Inputs.end();
+        return std::find(m_Descriptor.Inputs.begin(), m_Descriptor.Inputs.end(), name) != m_Descriptor.Inputs.end();
     }
 
     bool RenderPass::HasOutput(const std::string& name) const
     {
-        return std::find(m_Descriptor.Outputs.begin(), m_Descriptor.Outputs.end(), name) 
-               != m_Descriptor.Outputs.end();
+        return std::find(m_Descriptor.Outputs.begin(), m_Descriptor.Outputs.end(), name) != m_Descriptor.Outputs.end();
     }
 
     // ============================================================================
@@ -28,8 +26,7 @@ namespace Titan
 
     void RenderGraph::RegisterResource(const ResourceDescriptor& desc)
     {
-        TI_CORE_ASSERT(m_Resources.find(desc.Name) == m_Resources.end(), 
-                      "Resource already registered: {0}", desc.Name);
+        TI_CORE_ASSERT(m_Resources.find(desc.Name) == m_Resources.end(), "Resource already registered: {0}", desc.Name);
 
         auto resource = CreateRef<RenderResource>(desc);
         m_Resources[desc.Name] = resource;
@@ -60,7 +57,7 @@ namespace Titan
         auto it = m_Resources.find(name);
         if (it != m_Resources.end())
             return it->second;
-        
+
         TI_CORE_WARN("Resource not found: {0}", name);
         return nullptr;
     }
@@ -70,20 +67,18 @@ namespace Titan
         auto it = m_Framebuffers.find(name);
         if (it != m_Framebuffers.end())
             return it->second;
-        
+
         return nullptr;
     }
 
-std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
-{
-    return m_Framebuffers;
-}
-
+    std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
+    {
+        return m_Framebuffers;
+    }
 
     RenderPass& RenderGraph::AddPass(const RenderPassDescriptor& desc, RenderPass::ExecuteFunc executeFunc)
     {
-        TI_CORE_ASSERT(m_PassMap.find(desc.Name) == m_PassMap.end(), 
-                      "Pass already exists: {0}", desc.Name);
+        TI_CORE_ASSERT(m_PassMap.find(desc.Name) == m_PassMap.end(), "Pass already exists: {0}", desc.Name);
 
         auto pass = CreateRef<RenderPass>(desc, executeFunc);
         m_Passes.push_back(pass);
@@ -137,7 +132,7 @@ std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
         for (uint32_t i = 0; i < m_ExecutionOrder.size(); ++i)
         {
             const auto& pass = m_ExecutionOrder[i];
-            
+
             // Update lifetimes for inputs
             for (const auto& input : pass->GetInputs())
             {
@@ -145,7 +140,7 @@ std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
                 lifetime.FirstUse = min(lifetime.FirstUse, i);
                 lifetime.LastUse = max(lifetime.LastUse, i);
             }
-            
+
             // Update lifetimes for outputs
             for (const auto& output : pass->GetOutputs())
             {
@@ -160,14 +155,14 @@ std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
 
         m_Compiled = true;
 
-        TI_CORE_INFO("RenderGraph compiled successfully: {0} passes, {1} resources", 
-                     m_ExecutionOrder.size(), m_Resources.size());
+        TI_CORE_INFO("RenderGraph compiled successfully: {0} passes, {1} resources", m_ExecutionOrder.size(),
+                     m_Resources.size());
     }
 
     void RenderGraph::Execute()
     {
         TI_PROFILE_FUNCTION();
-        
+
         if (!m_Compiled)
         {
             TI_CORE_WARN("Executing uncompiled RenderGraph - compiling now");
@@ -232,50 +227,50 @@ std::unordered_map<std::string, Ref<Framebuffer>> RenderGraph::GetFramebuffers()
     // Private Helper Methods
     // ============================================================================
 
-void RenderGraph::CreatePhysicalResources()
-{
-    TI_PROFILE_FUNCTION();
-
-    for (auto& [name, resource] : m_Resources)
+    void RenderGraph::CreatePhysicalResources()
     {
-        const auto& desc = resource->GetDescriptor();
+        TI_PROFILE_FUNCTION();
 
-        // Skip if external resource already set
-        if (resource->GetHandle() != nullptr)
-            continue;
-
-        if (desc.Type == ResourceType::Texture2D)
+        for (auto& [name, resource] : m_Resources)
         {
-            FramebufferSpecification fbSpec;
-            fbSpec.Width = desc.Width > 0 ? desc.Width : m_Width;
-            fbSpec.Height = desc.Height > 0 ? desc.Height : m_Height;
-            fbSpec.Samples = desc.Samples;
+            const auto& desc = resource->GetDescriptor();
 
-            // Use either the multiple formats or the single one
-            if (!desc.AttachmentFormats.empty())
+            // Skip if external resource already set
+            if (resource->GetHandle() != nullptr)
+                continue;
+
+            if (desc.Type == ResourceType::Texture2D)
             {
-                FramebufferAttachmentSpecification attachements;
-                for(auto at : desc.AttachmentFormats){
-                    attachements.Attachments.push_back({at});
+                FramebufferSpecification fbSpec;
+                fbSpec.Width = desc.Width > 0 ? desc.Width : m_Width;
+                fbSpec.Height = desc.Height > 0 ? desc.Height : m_Height;
+                fbSpec.Samples = desc.Samples;
+
+                // Use either the multiple formats or the single one
+                if (!desc.AttachmentFormats.empty())
+                {
+                    FramebufferAttachmentSpecification attachements;
+                    for (auto at : desc.AttachmentFormats)
+                    {
+                        attachements.Attachments.push_back({at});
+                    }
+                    fbSpec.Attachments = attachements;
                 }
-                fbSpec.Attachments = attachements;
-            }
-            else
-            {
-                if (desc.Format == FramebufferTextureFormat::Depth || 
-                    desc.Format == FramebufferTextureFormat::DEPTH24STENCIL8)
-                    fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, desc.Format};
                 else
-                    fbSpec.Attachments = {desc.Format, FramebufferTextureFormat::Depth};
-            }
+                {
+                    if (desc.Format == FramebufferTextureFormat::Depth ||
+                        desc.Format == FramebufferTextureFormat::DEPTH24STENCIL8)
+                        fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, desc.Format};
+                    else
+                        fbSpec.Attachments = {desc.Format, FramebufferTextureFormat::Depth};
+                }
 
-            auto fb = Framebuffer::Create(fbSpec);
-            m_Framebuffers[name] = fb;
-            resource->SetHandle(fb.get());
+                auto fb = Framebuffer::Create(fbSpec);
+                m_Framebuffers[name] = fb;
+                resource->SetHandle(fb.get());
+            }
         }
     }
-}
-
 
     void RenderGraph::DestroyTransientResources()
     {
@@ -288,151 +283,148 @@ void RenderGraph::CreatePhysicalResources()
         }
     }
 
-void RenderGraph::TopologicalSort()
-{
-    TI_PROFILE_FUNCTION();
-
-    m_ExecutionOrder.clear();
-
-    // Build dependency graph
-    std::unordered_map<std::string, std::vector<std::string>> adjacencyList;
-    std::unordered_map<std::string, int> inDegree;
-
-    for (const auto& pass : m_Passes)
+    void RenderGraph::TopologicalSort()
     {
-        const auto& name = pass->GetName();
-        inDegree[name] = 0;
-        adjacencyList[name] = {};
-    }
+        TI_PROFILE_FUNCTION();
 
-    // Calculate dependencies based on resource usage
-    for (const auto& pass : m_Passes)
-    {
-        const auto& outputs = pass->GetOutputs();
+        m_ExecutionOrder.clear();
 
-        for (const auto& otherPass : m_Passes)
+        // Build dependency graph
+        std::unordered_map<std::string, std::vector<std::string>> adjacencyList;
+        std::unordered_map<std::string, int> inDegree;
+
+        for (const auto& pass : m_Passes)
         {
-            if (pass == otherPass)
-                continue;
+            const auto& name = pass->GetName();
+            inDegree[name] = 0;
+            adjacencyList[name] = {};
+        }
 
-            const auto& inputs = otherPass->GetInputs();
-            const auto& otherOutputs = otherPass->GetOutputs();
+        // Calculate dependencies based on resource usage
+        for (const auto& pass : m_Passes)
+        {
+            const auto& outputs = pass->GetOutputs();
 
-            // If otherPass reads what pass writes, pass must execute first
-            // BUT skip adding the edge if otherPass also writes that same resource
-            for (const auto& output : outputs)
+            for (const auto& otherPass : m_Passes)
             {
-                if (std::find(inputs.begin(), inputs.end(), output) != inputs.end())
-                {
-                    // if otherPass also writes the same resource, skip (avoid mutual edges)
-                    if (std::find(otherOutputs.begin(), otherOutputs.end(), output) != otherOutputs.end())
-                        continue;
+                if (pass == otherPass)
+                    continue;
 
-                    // avoid duplicate edges
-                    auto& neighbours = adjacencyList[pass->GetName()];
-                    if (std::find(neighbours.begin(), neighbours.end(), otherPass->GetName()) == neighbours.end())
+                const auto& inputs = otherPass->GetInputs();
+                const auto& otherOutputs = otherPass->GetOutputs();
+
+                // If otherPass reads what pass writes, pass must execute first
+                // BUT skip adding the edge if otherPass also writes that same resource
+                for (const auto& output : outputs)
+                {
+                    if (std::find(inputs.begin(), inputs.end(), output) != inputs.end())
                     {
-                        neighbours.push_back(otherPass->GetName());
-                        inDegree[otherPass->GetName()]++;
+                        // if otherPass also writes the same resource, skip (avoid mutual edges)
+                        if (std::find(otherOutputs.begin(), otherOutputs.end(), output) != otherOutputs.end())
+                            continue;
+
+                        // avoid duplicate edges
+                        auto& neighbours = adjacencyList[pass->GetName()];
+                        if (std::find(neighbours.begin(), neighbours.end(), otherPass->GetName()) == neighbours.end())
+                        {
+                            neighbours.push_back(otherPass->GetName());
+                            inDegree[otherPass->GetName()]++;
+                        }
                     }
                 }
             }
         }
-    }
 
-    // Kahn's algorithm
-    std::queue<std::string> queue;
-    for (const auto& [name, degree] : inDegree)
-    {
-        if (degree == 0)
-            queue.push(name);
-    }
-
-    while (!queue.empty())
-    {
-        std::string current = queue.front();
-        queue.pop();
-
-        m_ExecutionOrder.push_back(m_PassMap[current]);
-
-        for (const auto& neighbor : adjacencyList[current])
+        // Kahn's algorithm
+        std::queue<std::string> queue;
+        for (const auto& [name, degree] : inDegree)
         {
-            inDegree[neighbor]--;
-            if (inDegree[neighbor] == 0)
-                queue.push(neighbor);
+            if (degree == 0)
+                queue.push(name);
         }
+
+        while (!queue.empty())
+        {
+            std::string current = queue.front();
+            queue.pop();
+
+            m_ExecutionOrder.push_back(m_PassMap[current]);
+
+            for (const auto& neighbor : adjacencyList[current])
+            {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0)
+                    queue.push(neighbor);
+            }
+        }
+
+        TI_CORE_ASSERT(m_ExecutionOrder.size() == m_Passes.size(), "Topological sort failed - possible cycle detected");
     }
-
-    TI_CORE_ASSERT(m_ExecutionOrder.size() == m_Passes.size(),
-                  "Topological sort failed - possible cycle detected");
-}
-
 
     bool RenderGraph::HasCycles() const
-{
-    std::set<std::string> visited;
-    std::set<std::string> recursionStack;
-
-    std::function<bool(const std::string&)> dfs = [&](const std::string& passName) -> bool
     {
-        visited.insert(passName);
-        recursionStack.insert(passName);
+        std::set<std::string> visited;
+        std::set<std::string> recursionStack;
 
-        auto it = m_PassMap.find(passName);
-        if (it == m_PassMap.end())
-            return false;
-
-        const auto& pass = it->second;
-        const auto& outputs = pass->GetOutputs();
-
-        // Find passes that depend on this pass
-        for (const auto& otherPass : m_Passes)
+        std::function<bool(const std::string&)> dfs = [&](const std::string& passName) -> bool
         {
-            if (pass == otherPass)
-                continue;
+            visited.insert(passName);
+            recursionStack.insert(passName);
 
-            const auto& inputs = otherPass->GetInputs();
-            const auto& otherOutputs = otherPass->GetOutputs();
+            auto it = m_PassMap.find(passName);
+            if (it == m_PassMap.end())
+                return false;
 
-            for (const auto& output : outputs)
+            const auto& pass = it->second;
+            const auto& outputs = pass->GetOutputs();
+
+            // Find passes that depend on this pass
+            for (const auto& otherPass : m_Passes)
             {
-                if (std::find(inputs.begin(), inputs.end(), output) != inputs.end())
+                if (pass == otherPass)
+                    continue;
+
+                const auto& inputs = otherPass->GetInputs();
+                const auto& otherOutputs = otherPass->GetOutputs();
+
+                for (const auto& output : outputs)
                 {
-                    // If otherPass also writes the same resource, treat as non-dependent here
-                    if (std::find(otherOutputs.begin(), otherOutputs.end(), output) != otherOutputs.end())
-                        continue;
-
-                    const auto& nextName = otherPass->GetName();
-
-                    if (recursionStack.find(nextName) != recursionStack.end())
-                        return true; // Cycle detected
-
-                    if (visited.find(nextName) == visited.end())
+                    if (std::find(inputs.begin(), inputs.end(), output) != inputs.end())
                     {
-                        if (dfs(nextName))
-                            return true;
+                        // If otherPass also writes the same resource, treat as non-dependent here
+                        if (std::find(otherOutputs.begin(), otherOutputs.end(), output) != otherOutputs.end())
+                            continue;
+
+                        const auto& nextName = otherPass->GetName();
+
+                        if (recursionStack.find(nextName) != recursionStack.end())
+                            return true; // Cycle detected
+
+                        if (visited.find(nextName) == visited.end())
+                        {
+                            if (dfs(nextName))
+                                return true;
+                        }
                     }
                 }
             }
-        }
 
-        recursionStack.erase(passName);
-        return false;
-    };
+            recursionStack.erase(passName);
+            return false;
+        };
 
-    for (const auto& pass : m_Passes)
-    {
-        const auto& name = pass->GetName();
-        if (visited.find(name) == visited.end())
+        for (const auto& pass : m_Passes)
         {
-            if (dfs(name))
-                return true;
+            const auto& name = pass->GetName();
+            if (visited.find(name) == visited.end())
+            {
+                if (dfs(name))
+                    return true;
+            }
         }
+
+        return false;
     }
-
-    return false;
-}
-
 
     void RenderGraph::ValidateGraph() const
     {
@@ -442,15 +434,13 @@ void RenderGraph::TopologicalSort()
             for (const auto& input : pass->GetInputs())
             {
                 TI_CORE_ASSERT(m_Resources.find(input) != m_Resources.end(),
-                              "Pass '{0}' references non-existent input resource '{1}'",
-                              pass->GetName(), input);
+                               "Pass '{0}' references non-existent input resource '{1}'", pass->GetName(), input);
             }
 
             for (const auto& output : pass->GetOutputs())
             {
                 TI_CORE_ASSERT(m_Resources.find(output) != m_Resources.end(),
-                              "Pass '{0}' references non-existent output resource '{1}'",
-                              pass->GetName(), output);
+                               "Pass '{0}' references non-existent output resource '{1}'", pass->GetName(), output);
             }
         }
     }
@@ -471,10 +461,8 @@ void RenderGraph::TopologicalSort()
     // RenderGraphBuilder Implementation
     // ============================================================================
 
-    RenderGraphBuilder& RenderGraphBuilder::CreateTexture(const std::string& name, 
-                                                          FramebufferTextureFormat format,
-                                                          uint32_t width, uint32_t height, 
-                                                          uint32_t samples)
+    RenderGraphBuilder& RenderGraphBuilder::CreateTexture(const std::string& name, FramebufferTextureFormat format,
+                                                          uint32_t width, uint32_t height, uint32_t samples)
     {
         ResourceDescriptor desc;
         desc.Name = name;
@@ -490,9 +478,8 @@ void RenderGraph::TopologicalSort()
     }
 
     RenderGraphBuilder& RenderGraphBuilder::CreatePersistentTexture(const std::string& name,
-                                                                    FramebufferTextureFormat format,
-                                                                    uint32_t width, uint32_t height,
-                                                                    uint32_t samples)
+                                                                    FramebufferTextureFormat format, uint32_t width,
+                                                                    uint32_t height, uint32_t samples)
     {
         ResourceDescriptor desc;
         desc.Name = name;
@@ -507,25 +494,22 @@ void RenderGraph::TopologicalSort()
         return *this;
     }
 
-RenderGraphBuilder& RenderGraphBuilder::CreateFramebuffer(
-    const std::string& name,
-    const std::vector<FramebufferTextureFormat>& attachments,
-    uint32_t width, uint32_t height,
-    uint32_t samples)
-{
-    ResourceDescriptor desc;
-    desc.Name = name;
-    desc.Type = ResourceType::Texture2D;
-    desc.AttachmentFormats = attachments;
-    desc.Width = width;
-    desc.Height = height;
-    desc.Samples = samples;
-    desc.Persistent = false;
+    RenderGraphBuilder& RenderGraphBuilder::CreateFramebuffer(const std::string& name,
+                                                              const std::vector<FramebufferTextureFormat>& attachments,
+                                                              uint32_t width, uint32_t height, uint32_t samples)
+    {
+        ResourceDescriptor desc;
+        desc.Name = name;
+        desc.Type = ResourceType::Texture2D;
+        desc.AttachmentFormats = attachments;
+        desc.Width = width;
+        desc.Height = height;
+        desc.Samples = samples;
+        desc.Persistent = false;
 
-    m_Graph.RegisterResource(desc);
-    return *this;
-}
-
+        m_Graph.RegisterResource(desc);
+        return *this;
+    }
 
     RenderGraphBuilder& RenderGraphBuilder::AddRenderPass(const std::string& name,
                                                           const std::vector<std::string>& inputs,

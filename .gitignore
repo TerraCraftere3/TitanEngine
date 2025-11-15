@@ -18,7 +18,6 @@ build
 **.pdb
 **.log
 **.opt
-*/imgui.ini
 **profile-*.json
 **.generated.**
 out

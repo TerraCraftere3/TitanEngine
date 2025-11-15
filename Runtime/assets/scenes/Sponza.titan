@@ -1,0 +1,73 @@
+Scene: Untitled
+Entities:
+  - Entity: 14367220654640568265
+    TagComponent:
+      Tag: Sponza
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.01, 0.01, 0.01]
+    MeshRendererComponent:
+      Mesh: assets\models\sponza.obj
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+  - Entity: 7774000498037357011
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, 1, 1]
