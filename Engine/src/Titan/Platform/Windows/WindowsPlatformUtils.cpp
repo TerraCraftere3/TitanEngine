@@ -59,4 +59,9 @@ namespace Titan
         return std::string();
     }
 
+    bool Debug::isRenderdocAttached()
+    {
+        return GetModuleHandleA("renderdoc.dll") != NULL;
+    }
+
 } // namespace Titan

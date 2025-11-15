@@ -24,6 +24,7 @@ namespace Titan
         virtual uint64_t GetBindlessHandle() = 0;
         virtual void MakeHandleResident() = 0;
         virtual void MakeHandleNonResident() = 0;
+        virtual bool isValidBindlessHandle() = 0;
 
         virtual bool operator==(const Texture& other) const = 0;
     };

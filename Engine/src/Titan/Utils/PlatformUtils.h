@@ -13,4 +13,10 @@ namespace Titan
         static std::string SaveFile(const char* filter);
     };
 
+    class TI_API Debug
+    {
+    public:
+        static bool isRenderdocAttached();
+    };
+
 } // namespace Titan

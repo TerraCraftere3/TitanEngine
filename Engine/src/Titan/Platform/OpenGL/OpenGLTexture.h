@@ -35,6 +35,7 @@ namespace Titan
         virtual uint64_t GetBindlessHandle() override;
         virtual void MakeHandleResident() override;
         virtual void MakeHandleNonResident() override;
+        virtual bool isValidBindlessHandle() override { return m_CreatedHandle; };
 
         virtual bool operator==(const Texture& other) const override
         {
@@ -49,6 +50,7 @@ namespace Titan
 
         uint64_t m_BindlessHandle = 0;
         bool m_HandleResident = false;
+        bool m_CreatedHandle = false;
     };
 
 } // namespace Titan
