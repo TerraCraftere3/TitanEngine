@@ -439,7 +439,7 @@ namespace Titan
         s_Data.Stats.QuadCount++;
     }
 
-    void Renderer2D::DrawLine(const glm::vec3& p0, glm::vec3& p1, const glm::vec4& color, int entityID)
+    void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID)
     {
         s_Data.LineVertexBufferPtr->Position = p0;
         s_Data.LineVertexBufferPtr->Color = color;
@@ -452,6 +452,93 @@ namespace Titan
         s_Data.LineVertexBufferPtr++;
 
         s_Data.LineVertexCount += 2;
+    }
+
+    void Renderer2D::DrawCamera(const glm::mat4& transform)
+    {
+        // Customize look
+        const glm::vec4 color = {0.9f, 0.9f, 0.2f, 1.0f};        // yellow-ish
+        const glm::vec4 forwardColor = {0.2f, 0.6f, 1.0f, 1.0f}; // blue (camera forward)
+
+        // Camera gizmo proportions
+        const float bodySize = 0.1f; // small cube
+        const float frustumNear = 0.2f;
+        const float frustumFar = 0.6f;
+        const float frustumHalfW = 0.15f;
+        const float frustumHalfH = 0.10f;
+
+        // Helper lambda
+        auto T = [&](glm::vec3 p) { return glm::vec3(transform * glm::vec4(p, 1.0f)); };
+
+        // -----------------------------------------
+        // Camera body (small cube)
+        // -----------------------------------------
+        glm::vec3 b0(-bodySize, -bodySize, 0.0f);
+        glm::vec3 b1(bodySize, -bodySize, 0.0f);
+        glm::vec3 b2(bodySize, bodySize, 0.0f);
+        glm::vec3 b3(-bodySize, bodySize, 0.0f);
+
+        glm::vec3 b4(-bodySize, -bodySize, -bodySize);
+        glm::vec3 b5(bodySize, -bodySize, -bodySize);
+        glm::vec3 b6(bodySize, bodySize, -bodySize);
+        glm::vec3 b7(-bodySize, bodySize, -bodySize);
+
+        // Front square
+        DrawLine(T(b0), T(b1), color);
+        DrawLine(T(b1), T(b2), color);
+        DrawLine(T(b2), T(b3), color);
+        DrawLine(T(b3), T(b0), color);
+
+        // Back square
+        DrawLine(T(b4), T(b5), color);
+        DrawLine(T(b5), T(b6), color);
+        DrawLine(T(b6), T(b7), color);
+        DrawLine(T(b7), T(b4), color);
+
+        // Connections
+        DrawLine(T(b0), T(b4), color);
+        DrawLine(T(b1), T(b5), color);
+        DrawLine(T(b2), T(b6), color);
+        DrawLine(T(b3), T(b7), color);
+
+        // -----------------------------------------
+        // Frustum edges
+        // -----------------------------------------
+        glm::vec3 n0(-frustumHalfW, -frustumHalfH, -frustumNear);
+        glm::vec3 n1(frustumHalfW, -frustumHalfH, -frustumNear);
+        glm::vec3 n2(frustumHalfW, frustumHalfH, -frustumNear);
+        glm::vec3 n3(-frustumHalfW, frustumHalfH, -frustumNear);
+
+        glm::vec3 f0(-frustumHalfW * 2, -frustumHalfH * 2, -frustumFar);
+        glm::vec3 f1(frustumHalfW * 2, -frustumHalfH * 2, -frustumFar);
+        glm::vec3 f2(frustumHalfW * 2, frustumHalfH * 2, -frustumFar);
+        glm::vec3 f3(-frustumHalfW * 2, frustumHalfH * 2, -frustumFar);
+
+        // Near quad
+        DrawLine(T(n0), T(n1), color);
+        DrawLine(T(n1), T(n2), color);
+        DrawLine(T(n2), T(n3), color);
+        DrawLine(T(n3), T(n0), color);
+
+        // Far quad
+        DrawLine(T(f0), T(f1), color);
+        DrawLine(T(f1), T(f2), color);
+        DrawLine(T(f2), T(f3), color);
+        DrawLine(T(f3), T(f0), color);
+
+        // Connect near & far
+        DrawLine(T(n0), T(f0), color);
+        DrawLine(T(n1), T(f1), color);
+        DrawLine(T(n2), T(f2), color);
+        DrawLine(T(n3), T(f3), color);
+
+        // -----------------------------------------
+        // Forward direction
+        // -----------------------------------------
+        glm::vec3 origin = T(glm::vec3(0, 0, 0));
+        glm::vec3 forward = T(glm::vec3(0, 0, -1)) - origin;
+
+        DrawLine(origin, origin + forward * 1.5f, forwardColor);
     }
 
     void Renderer2D::DrawGrid(float gridLines, const glm::vec3& position, const glm::vec3& rotation,

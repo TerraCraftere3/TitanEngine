@@ -245,6 +245,13 @@ namespace Titan
                     Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
                 }
 
+                auto cameraView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
+                for (auto entity : cameraView)
+                {
+                    auto [transform, cc] = cameraView.get<TransformComponent, CameraComponent>(entity);
+                    Renderer2D::DrawCamera(transform.GetTransform());
+                }
+
                 Renderer2D::DrawGrid(20.0f);
 
                 Renderer2D::EndScene();

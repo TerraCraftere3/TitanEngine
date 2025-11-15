@@ -1,20 +1,29 @@
 Scene: Untitled
 Entities:
-  - Entity: 7774000498037357011
+  - Entity: 18095092561200448690
     TagComponent:
-      Tag: Directional Light
+      Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [1, 1, 1]
+      Translation: [-2.4029124, 6.4214015, 7.577108]
+      Rotation: [-0.22926438, -0.53082037, -0.02975702]
+      Scale: [0.9999998, 1, 0.9999998]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
   - Entity: 14367220654640568265
     TagComponent:
       Tag: Sponza
     TransformComponent:
       Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Rotation: [0, 1.5707964, 0]
       Scale: [0.01, 0.01, 0.01]
     MeshRendererComponent:
       Mesh: assets\models\sponza.obj
@@ -117,3 +126,12 @@ Entities:
           AlbedoTexture: assets\textures\Sponza\vase_round.tga
           NormalTexture: assets\textures\Sponza\vase_round_ddn.tga
           UVRepeat: [1, 1]
+  - Entity: 7774000498037357011
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -0.4, -0.3]
