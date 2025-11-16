@@ -281,7 +281,7 @@ void main()
         glDeleteProgram(shaderProgram);
 
         TI_CORE_INFO("Created cubemap from HDR: {0} (Resolution: {1}x{2}, Mips: {3})", path, m_Width, m_Height,
-                        m_MipLevels);
+                     m_MipLevels);
     }
 
     // Constructor for creating empty cubemap (used by CreateIrradianceMap)

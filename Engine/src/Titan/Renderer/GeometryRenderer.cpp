@@ -186,8 +186,6 @@ namespace Titan
 
     void GeometryRenderer::Init()
     {
-        TI_PROFILE_FUNCTION();
-
         s_3DData.VertexBufferBase = new Vertex[s_3DData.MaxVertices];
         s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
         s_3DData.VertexCount = 0;
@@ -259,8 +257,6 @@ namespace Titan
 
     void GeometryRenderer::Shutdown()
     {
-        TI_PROFILE_FUNCTION();
-
         delete[] s_3DData.VertexBufferBase;
         s_3DData.VertexBufferBase = nullptr;
 
@@ -278,7 +274,6 @@ namespace Titan
 
     void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix)
     {
-        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");
         TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "GeometryRenderer not initialized!");
 
@@ -293,7 +288,6 @@ namespace Titan
 
     void GeometryRenderer::EndScene()
     {
-        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Called GeometryRenderer::EndScene() without BeginScene()");
 
         Flush();
@@ -313,8 +307,6 @@ namespace Titan
 
     void GeometryRenderer::Flush()
     {
-        TI_PROFILE_FUNCTION();
-
         // Upload GPU materials to GPU
         if (!s_3DData.GPUMaterials.empty())
         {
@@ -337,8 +329,6 @@ namespace Titan
 
     void GeometryRenderer::FlushAndReset()
     {
-        TI_PROFILE_FUNCTION();
-
         Flush();
         StartBatch();
     }
@@ -384,7 +374,6 @@ namespace Titan
 
     void GeometryRenderer::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
     {
-        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Must call BeginScene() before DrawMesh()");
 
         if (!mesh)

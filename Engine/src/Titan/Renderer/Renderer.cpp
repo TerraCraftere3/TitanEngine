@@ -13,7 +13,6 @@ namespace Titan
 
     void Renderer::Init()
     {
-        TI_PROFILE_FUNCTION();
         RenderCommand::Init();
         Renderer2D::Init();
         GeometryRenderer::Init();
@@ -33,18 +32,13 @@ namespace Titan
 
     void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
     {
-        TI_PROFILE_FUNCTION();
         s_SceneData->ViewProjMatrix = camera.GetProjection() * glm::inverse(transform);
     }
 
-    void Renderer::EndScene()
-    {
-        TI_PROFILE_FUNCTION();
-    }
+    void Renderer::EndScene() {}
 
     void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::mat4& transform)
     {
-        TI_PROFILE_FUNCTION();
         shader->Bind();
         std::dynamic_pointer_cast<OpenGLShader>(shader)->SetMat4("u_ViewProjection",
                                                                  s_SceneData->ViewProjMatrix); // LEGACY METHODS

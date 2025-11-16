@@ -140,7 +140,6 @@ namespace Titan
 
     void Scene::OnRuntimeStart()
     {
-        TI_PROFILE_FUNCTION();
         m_IsRunning = true;
 
         OnPhysics2DStart();
@@ -160,7 +159,6 @@ namespace Titan
 
     void Scene::OnRuntimeStop()
     {
-        TI_PROFILE_FUNCTION();
         m_IsRunning = false;
 
         OnPhysics2DStop();
@@ -170,20 +168,16 @@ namespace Titan
 
     void Scene::OnSimulationStart()
     {
-        TI_PROFILE_FUNCTION();
         OnPhysics2DStart();
     }
 
     void Scene::OnSimulationStop()
     {
-        TI_PROFILE_FUNCTION();
         OnPhysics2DStop();
     }
 
     void Scene::OnUpdateRuntime(Timestep ts)
     {
-        TI_PROFILE_FUNCTION()
-
         // C# SCRIPTS
         {
             auto view = GetAllEntitiesWith<ScriptComponent>();
@@ -235,7 +229,6 @@ namespace Titan
 
     void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
     {
-        TI_PROFILE_FUNCTION();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
@@ -263,7 +256,6 @@ namespace Titan
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
     {
-        TI_PROFILE_FUNCTION();
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
@@ -321,7 +313,6 @@ namespace Titan
 
     void Scene::OnPhysics2DStart()
     {
-        TI_PROFILE_FUNCTION();
         m_PhysicsWorld = new b2World({0.0f, -9.8f});
 
         auto view = m_Registry.view<Rigidbody2DComponent>();
@@ -379,7 +370,6 @@ namespace Titan
 
     void Scene::OnPhysics2DStop()
     {
-        TI_PROFILE_FUNCTION();
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
     }

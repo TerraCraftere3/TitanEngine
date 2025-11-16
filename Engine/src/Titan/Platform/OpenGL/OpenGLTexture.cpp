@@ -16,8 +16,6 @@ namespace Titan
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, TextureSettings settings) : m_Path(path)
     {
-        TI_PROFILE_FUNCTION();
-
         int width = 0, height = 0, channels = 4;
         unsigned char* data = nullptr;
 
@@ -145,7 +143,6 @@ namespace Titan
     OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
         : m_Width(width), m_Height(height), m_Path("[internal]")
     {
-        TI_PROFILE_FUNCTION();
         m_InternalFormat = GL_RGBA8;
         m_DataFormat = GL_RGBA;
 
@@ -161,13 +158,11 @@ namespace Titan
 
     OpenGLTexture2D::~OpenGLTexture2D()
     {
-        TI_PROFILE_FUNCTION();
         glDeleteTextures(1, &m_RendererID);
     }
 
     void OpenGLTexture2D::SetData(void* data, uint32_t size)
     {
-        TI_PROFILE_FUNCTION();
         uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
         TI_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture (expected: {}, got: {} bytes)!",
                        m_Width * m_Height * bpp, size);

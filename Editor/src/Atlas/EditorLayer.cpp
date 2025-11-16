@@ -88,6 +88,7 @@ namespace Titan
 
         RenderStatisticsPanel();
         RenderViewport();
+        Profiler::Get().DrawProfilerUI();
     }
 
     void EditorLayer::OnEvent(Event& event)

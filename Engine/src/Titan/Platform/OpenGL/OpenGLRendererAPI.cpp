@@ -11,7 +11,6 @@ namespace Titan
 {
     void OpenGLRendererAPI::Init()
     {
-        TI_PROFILE_FUNCTION();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -74,7 +73,6 @@ namespace Titan
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
     {
-        TI_PROFILE_FUNCTION();
         vertexArray->Bind();
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);

@@ -113,8 +113,6 @@ namespace Titan
 
     void RenderGraph::Compile()
     {
-        TI_PROFILE_FUNCTION();
-
         if (m_Compiled)
             return;
 
@@ -161,8 +159,6 @@ namespace Titan
 
     void RenderGraph::Execute()
     {
-        TI_PROFILE_FUNCTION();
-
         if (!m_Compiled)
         {
             TI_CORE_WARN("Executing uncompiled RenderGraph - compiling now");
@@ -175,7 +171,6 @@ namespace Titan
         // Execute passes in order
         for (auto& pass : m_ExecutionOrder)
         {
-            TI_PROFILE_SCOPE(pass->GetName().c_str());
             pass->Execute(*this);
         }
 
@@ -229,8 +224,6 @@ namespace Titan
 
     void RenderGraph::CreatePhysicalResources()
     {
-        TI_PROFILE_FUNCTION();
-
         for (auto& [name, resource] : m_Resources)
         {
             const auto& desc = resource->GetDescriptor();
@@ -285,8 +278,6 @@ namespace Titan
 
     void RenderGraph::TopologicalSort()
     {
-        TI_PROFILE_FUNCTION();
-
         m_ExecutionOrder.clear();
 
         // Build dependency graph

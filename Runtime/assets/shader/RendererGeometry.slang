@@ -46,7 +46,7 @@ struct FragmentOutput
     float4 position : SV_Target0;
     float4 normal : SV_TARGET1;
     float4 albedo : SV_TARGET2;
-    float4 metallic_roughness__ : SV_TARGET3;
+    float4 metallic_roughness_ao_ : SV_TARGET3;
     float4 emission : SV_TARGET4;
     int entityID : SV_Target5;
 };
@@ -139,7 +139,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     output.position = input.position;
     output.normal = float4(GET_NORMAL(mat, input), 1.0f);
     output.albedo = albedoColor;
-    output.metallic_roughness__ = float4(metallic, roughness, ao, 1.0f);
+    output.metallic_roughness_ao_ = float4(metallic, roughness, ao, 1.0f);
     output.emission = emission;
     output.entityID = input.entityID;
 

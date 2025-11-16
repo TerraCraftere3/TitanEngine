@@ -2,7 +2,8 @@
 #include "Renderer.h"
 #include "Titan/Platform/OpenGL/OpenGLCubemap.h"
 
-namespace Titan{
+namespace Titan
+{
 
     Ref<Cubemap> Cubemap::Create(const std::string& path)
     {

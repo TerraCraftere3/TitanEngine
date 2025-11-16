@@ -23,8 +23,6 @@ namespace Titan
 
     void PBRRenderer::Init()
     {
-        TI_PROFILE_FUNCTION();
-
         s_PBRData.SceneUniformBuffer = UniformBuffer::Create(sizeof(PBRSceneData), 0);
 
         // Irradiance
@@ -56,14 +54,11 @@ namespace Titan
 
     void PBRRenderer::Shutdown()
     {
-        TI_PROFILE_FUNCTION();
         s_PBRData = {};
     }
 
     void PBRRenderer::Render(Ref<Framebuffer> gbuffer, PBRSceneData data, Ref<Cubemap> irradiance)
     {
-        TI_PROFILE_FUNCTION();
-
         s_PBRData.SceneUniformBuffer->SetData(&data, sizeof(PBRSceneData));
 
         s_PBRData.Shader->Bind();

@@ -82,7 +82,6 @@ namespace Titan
 
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
-        TI_PROFILE_FUNCTION();
         m_Name = filepath;
 
         // Check if it's a Slang shader
@@ -102,7 +101,6 @@ namespace Titan
 
     OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
-        TI_PROFILE_FUNCTION();
         m_Name = name;
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -113,7 +111,6 @@ namespace Titan
     OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& geometrySrc,
                                const std::string& fragmentSrc)
     {
-        TI_PROFILE_FUNCTION();
         m_Name = name;
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -124,7 +121,6 @@ namespace Titan
 
     OpenGLShader::~OpenGLShader()
     {
-        TI_PROFILE_FUNCTION();
         glDeleteProgram(m_RendererID);
     }
 
@@ -231,8 +227,6 @@ namespace Titan
 
     void OpenGLShader::CompileSlangShader(const std::string& filepath)
     {
-        TI_PROFILE_FUNCTION();
-
         // Create Slang global session
         Slang::ComPtr<slang::IGlobalSession> globalSession;
         if (SLANG_FAILED(slang::createGlobalSession(globalSession.writeRef())))

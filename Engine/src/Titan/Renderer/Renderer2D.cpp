@@ -90,8 +90,6 @@ namespace Titan
 
     void Renderer2D::Init()
     {
-        TI_PROFILE_FUNCTION();
-
         // ==== QUADS ====
         s_Data.QuadVertexArray = VertexArray::Create();
         s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
@@ -190,8 +188,6 @@ namespace Titan
 
     void Renderer2D::Shutdown()
     {
-        TI_PROFILE_FUNCTION();
-
         delete[] s_Data.QuadVertexBufferBase;
         s_Data.QuadVertexBufferBase = nullptr;
 
@@ -216,7 +212,6 @@ namespace Titan
 
     void Renderer2D::BeginScene(const glm::mat4& viewTransform)
     {
-        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.CamBuffer.ViewProjection = viewTransform;
         s_Data.CamUniformBuffer->SetData(&s_Data.CamBuffer, sizeof(Renderer2DData::CameraData));
@@ -234,14 +229,12 @@ namespace Titan
 
     void Renderer2D::EndScene()
     {
-        TI_PROFILE_FUNCTION();
         Flush();
         s_IsRendering = false;
     }
 
     void Renderer2D::Flush()
     {
-        TI_PROFILE_FUNCTION();
         if (s_Data.QuadIndexCount)
         {
             uint32_t dataSize =
@@ -286,7 +279,6 @@ namespace Titan
 
     void Renderer2D::FlushAndReset()
     {
-        TI_PROFILE_FUNCTION();
         // End Scene
         EndScene();
 

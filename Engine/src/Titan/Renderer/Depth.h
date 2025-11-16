@@ -1,7 +1,8 @@
 #pragma once
 
-namespace Titan{
-        enum class DepthFunc
+namespace Titan
+{
+    enum class DepthFunc
     {
         Never,
         Less,

@@ -7,14 +7,17 @@
 #include "UniformBuffer.h"
 #include "VertexArray.h"
 
-namespace Titan {
+namespace Titan
+{
 
-    struct SkyboxSceneData {
+    struct SkyboxSceneData
+    {
         glm::mat4 View;
         glm::mat4 Projection;
     };
 
-    struct SkyboxRendererData {
+    struct SkyboxRendererData
+    {
         Ref<Shader> Shader;
         Ref<UniformBuffer> SceneUniformBuffer;
         Ref<VertexArray> CubeVAO;
@@ -23,27 +26,26 @@ namespace Titan {
     static SkyboxRendererData s_SBData;
 
     // Cube vertices
-    static float s_CubeVertices[] = {
-        -1.0f,  1.0f, -1.0f,  -1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,   1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
+    static float s_CubeVertices[] = {-1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+                                     1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
 
-        -1.0f, -1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+                                     -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
+                                     -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
 
-         1.0f, -1.0f, -1.0f,   1.0f, -1.0f,  1.0f,   1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,   1.0f,  1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
+                                     1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
+                                     1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
 
-        -1.0f, -1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,   1.0f, -1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+                                     -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+                                     1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
 
-        -1.0f,  1.0f, -1.0f,   1.0f,  1.0f, -1.0f,   1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f,  1.0f, -1.0f,
+                                     -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
+                                     1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
 
-        -1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
-    };
+                                     -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+                                     1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
 
-    void SkyboxRenderer::Init() {
+    void SkyboxRenderer::Init()
+    {
         s_SBData.Shader = Shader::Create("assets/shader/RendererSkybox.slang");
 
         s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData), 0);
@@ -51,11 +53,12 @@ namespace Titan {
         s_SBData.CubeVAO = VertexArray::Create();
 
         Ref<VertexBuffer> vb = VertexBuffer::Create(s_CubeVertices, sizeof(s_CubeVertices));
-        vb->SetLayout({ { ShaderDataType::Float3, "a_Position" } });
+        vb->SetLayout({{ShaderDataType::Float3, "a_Position"}});
         s_SBData.CubeVAO->AddVertexBuffer(vb);
     }
 
-    void SkyboxRenderer::Shutdown() {
+    void SkyboxRenderer::Shutdown()
+    {
         s_SBData = {};
     }
 

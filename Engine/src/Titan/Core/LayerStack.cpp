@@ -17,7 +17,6 @@ namespace Titan
 
     void LayerStack::PushLayer(Layer* layer)
     {
-        TI_PROFILE_FUNCTION();
         layer->OnAttach();
         m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
         m_LayerInsertIndex++;
@@ -25,14 +24,12 @@ namespace Titan
 
     void LayerStack::PushOverlay(Layer* overlay)
     {
-        TI_PROFILE_FUNCTION();
         overlay->OnAttach();
         m_Layers.emplace_back(overlay);
     }
 
     void LayerStack::PopLayer(Layer* layer)
     {
-        TI_PROFILE_FUNCTION();
         layer->OnDetach();
         auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
         if (it != m_Layers.end())
@@ -44,7 +41,6 @@ namespace Titan
 
     void LayerStack::PopOverlay(Layer* overlay)
     {
-        TI_PROFILE_FUNCTION();
         overlay->OnDetach();
         auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
         if (it != m_Layers.end())

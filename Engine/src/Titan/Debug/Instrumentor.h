@@ -1,17 +1,68 @@
 #pragma once
+#include <imgui.h>
+#include <chrono>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-// clang-format off
-#include <Optick.h>
+namespace Titan
+{
+    class Profiler
+    {
+    public:
+        static Profiler& Get();
+        void BeginFrame();
+        void EndFrame();
 
-#ifdef TI_PROFILE
-    #define TI_PROFILE_BEGIN_SESSION(name, filepath) OPTICK_START_CAPTURE(); static const char* ti_profile_path = filepath
-    #define TI_PROFILE_END_SESSION() OPTICK_STOP_CAPTURE(); OPTICK_SAVE_CAPTURE(ti_profile_path)
-    #define TI_PROFILE_SCOPE(name) OPTICK_EVENT(name)
-    #define TI_PROFILE_FUNCTION() OPTICK_EVENT()
-#else
-    #define TI_PROFILE_BEGIN_SESSION(name, filepath)
-    #define TI_PROFILE_END_SESSION()
-    #define TI_PROFILE_SCOPE(name)
-    #define TI_PROFILE_FUNCTION()
-#endif
-// clang-format on
+        const std::vector<float>& GetFrameTimes() const { return m_FrameTimes; }
+
+        void AppendPassTime(const std::string& pass, float ms)
+        {
+            auto& vec = m_PassTimes[pass];
+            vec.push_back(ms);
+
+            if (vec.size() > m_MaxSamples)
+                vec.erase(vec.begin());
+        }
+
+        const std::unordered_map<std::string, std::vector<float>>& GetPassTimes() const { return m_PassTimes; }
+
+        void DrawProfilerUI();
+
+    private:
+        using Clock = std::chrono::high_resolution_clock;
+
+        Profiler() : m_MaxSamples(300) {}
+
+        Clock::time_point m_FrameStart;
+        std::vector<float> m_FrameTimes;
+
+        std::unordered_map<std::string, std::vector<float>> m_PassTimes;
+
+        size_t m_MaxSamples;
+    };
+
+    class ProfilePassTimer
+    {
+    public:
+        ProfilePassTimer(const char* name) : m_Name(name), m_Start(Clock::now()) {}
+
+        ~ProfilePassTimer()
+        {
+            auto end = Clock::now();
+            float ms = std::chrono::duration<float, std::milli>(end - m_Start).count();
+            Profiler::Get().AppendPassTime(m_Name, ms);
+        }
+
+    private:
+        using Clock = std::chrono::high_resolution_clock;
+
+        const char* m_Name;
+        Clock::time_point m_Start;
+    };
+
+} // namespace Titan
+
+#define TI_PROFILE_BEGIN_FRAME() ::Titan::Profiler::Get().BeginFrame()
+#define TI_PROFILE_END_FRAME() ::Titan::Profiler::Get().EndFrame()
+#define TI_PROFILE_PASS() ::Titan::ProfilePassTimer ___timer(pass.GetName().c_str())

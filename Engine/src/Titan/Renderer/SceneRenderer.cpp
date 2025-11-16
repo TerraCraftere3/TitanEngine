@@ -79,6 +79,7 @@ namespace Titan
             "ClearPass", {}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_PASS(); // get pass name using pass.GetName()
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
@@ -93,8 +94,8 @@ namespace Titan
         builder.AddRenderPass(
             "GeometryPass", {}, {"GeometryBuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
-
             {
+                TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
 
                 auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
@@ -124,6 +125,7 @@ namespace Titan
             "PBRPass", {"GeometryBuffer", "SceneFramebuffer"}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
 
@@ -174,6 +176,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
+                TI_PROFILE_PASS();
 
                 fb->Bind();
 
@@ -204,6 +207,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
+                TI_PROFILE_PASS();
 
                 fb->Bind();
 
@@ -229,6 +233,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
+                TI_PROFILE_PASS();
 
                 fb->Bind();
                 Ref<Cubemap> cubemap = nullptr;
@@ -261,6 +266,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
+                TI_PROFILE_PASS();
 
                 fb->Bind();
 
@@ -298,14 +304,6 @@ namespace Titan
                 Renderer2D::EndScene();
                 fb->Unbind();
             });
-
-        builder.AddRenderPass("ResolvePass", {"SceneFramebuffer"}, {"FinalOutput"},
-                              [](RenderGraph& graph, const RenderPass& pass)
-                              {
-                                  auto sceneFB = graph.GetFramebuffer("SceneFramebuffer");
-                                  if (sceneFB)
-                                      sceneFB->Resolve();
-                              });
 
         // Build the graph
         builder.Build();
