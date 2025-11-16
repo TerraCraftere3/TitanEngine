@@ -35,6 +35,7 @@ namespace Titan
     Application::~Application()
     {
         ScriptEngine::Shutdown();
+        Renderer::Shutdown();
     }
 
     void Application::Close()

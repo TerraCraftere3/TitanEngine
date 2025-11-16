@@ -1,4 +1,6 @@
 #include "SceneRenderer.h"
+#include "PostProcessing.h"
+#include "PostProcessing/FXAA.h"
 #include "RenderGraph.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/PBRRenderer.h"
@@ -14,6 +16,7 @@ namespace Titan
     {
         Ref<RenderGraph> renderGraph;
         Ref<Framebuffer> finalFramebuffer;
+        Ref<PostProcessingStack> postFXs;
 
         // Camera data (shared across passes)
         glm::mat4 view;
@@ -44,6 +47,9 @@ namespace Titan
         fbSpec.Samples = 1;
         s_SRData->finalFramebuffer = Framebuffer::Create(fbSpec);
 
+        s_SRData->postFXs = CreateRef<PostProcessingStack>();
+        s_SRData->postFXs->AddEffect(CreateRef<FXAAEffect>());
+
         SetupRenderGraph();
     }
 
@@ -72,11 +78,13 @@ namespace Titan
                                    FramebufferTextureFormat::Depth        // Depth
                                },
                                s_SRData->viewWidth, s_SRData->viewHeight, 1)
+            .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
+                                     s_SRData->viewHeight, 1)
             .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
                                      s_SRData->viewHeight, 1);
 
         builder.AddRenderPass(
-            "ClearPass", {}, {"SceneFramebuffer"},
+            "ClearPass", {}, {"SceneFramebuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 TI_PROFILE_PASS(); // get pass name using pass.GetName()
@@ -92,7 +100,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "GeometryPass", {}, {"GeometryBuffer"},
+            "GeometryPass", {}, {"GeometryBuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 TI_PROFILE_PASS();
@@ -122,7 +130,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "PBRPass", {"GeometryBuffer", "SceneFramebuffer"}, {"SceneFramebuffer"},
+            "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "PreFX"}, {"SceneFramebuffer"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 TI_PROFILE_PASS();
@@ -170,7 +178,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "SpritePass", {}, {"SceneFramebuffer"},
+            "SpritePass", {}, {"SceneFramebuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
@@ -200,7 +208,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "CirclePass", {}, {"SceneFramebuffer"},
+            "CirclePass", {}, {"SceneFramebuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
 
             {
@@ -227,7 +235,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "SkyboxPass", {}, {"SceneFramebuffer"},
+            "SkyboxPass", {}, {"SceneFramebuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
@@ -256,7 +264,7 @@ namespace Titan
             });
 
         builder.AddRenderPass(
-            "OverlayPass", {}, {"SceneFramebuffer"},
+            "OverlayPass", {}, {"SceneFramebuffer", "PreFX"},
             [](RenderGraph& graph, const RenderPass& pass)
 
             {
@@ -305,12 +313,25 @@ namespace Titan
                 fb->Unbind();
             });
 
+        builder.AddRenderPass("PostProcessing", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"FinalOutput"},
+                              [](RenderGraph& graph, const RenderPass& pass)
+                              {
+                                  auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                                  if (!fb)
+                                      return;
+                                  TI_PROFILE_PASS();
+
+                                  s_SRData->postFXs->Execute(graph, pass, fb);
+                              });
+
         // Build the graph
         builder.Build();
     }
 
     void SceneRenderer::Shutdown()
     {
+        s_SRData->postFXs->Shutdown();
+
         delete s_SRData;
         s_SRData = nullptr;
     }
