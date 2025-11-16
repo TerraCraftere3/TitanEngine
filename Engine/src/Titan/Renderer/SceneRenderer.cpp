@@ -326,6 +326,10 @@ namespace Titan
 
         // Build the graph
         builder.Build();
+
+#if TI_BUILD_DEBUG
+        s_SRData->renderGraph->ExportToDOT("scene-graph.generated.dot");
+#endif
     }
 
     void SceneRenderer::Shutdown()

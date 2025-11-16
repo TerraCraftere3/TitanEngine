@@ -76,6 +76,135 @@ namespace Titan
         return m_Framebuffers;
     }
 
+    void RenderGraph::ExportToDOT(const std::string& filepath)
+    {
+        std::ofstream out(filepath);
+        if (!out.is_open())
+        {
+            TI_CORE_ERROR("Failed to export RenderGraph DOT file '{0}'", filepath);
+            return;
+        }
+
+        out << "digraph RenderGraph {\n";
+        out << "    rankdir=LR;\n";
+        out << "    node [shape=box style=filled fontname=\"Consolas\" fontsize=10];\n";
+        out << "    edge [fontname=\"Consolas\" fontsize=9];\n";
+
+        // ------------------------------------------------------------
+        // Pass nodes with color coding (uses persistent/transient info)
+        // ------------------------------------------------------------
+        for (const auto& pass : m_Passes)
+        {
+            const std::string& name = pass->GetName();
+
+            bool writesPersistent = false;
+            bool writesTransient = false;
+
+            for (const auto& outResName : pass->GetOutputs())
+            {
+                auto res = GetResource(outResName);
+                if (!res)
+                    continue;
+
+                if (res->GetDescriptor().Persistent)
+                    writesPersistent = true;
+                else
+                    writesTransient = true;
+            }
+
+            std::string color = "lightgray";
+            if (writesPersistent && writesTransient)
+                color = "orange";
+            else if (writesPersistent)
+                color = "palegreen";
+            else if (writesTransient)
+                color = "lightskyblue";
+
+            // Tooltip contains list of output resources
+            out << "    \"" << name << "\" [fillcolor=\"" << color << "\" tooltip=\"Outputs: ";
+            for (auto& o : pass->GetOutputs())
+                out << o << " ";
+            out << "\"];\n";
+        }
+
+        // ------------------------------------------------------------
+        // Edges between passes, labeled and colored using AttachmentFormats
+        // ------------------------------------------------------------
+        for (const auto& pass : m_Passes)
+        {
+            const auto& pName = pass->GetName();
+            const auto& outputs = pass->GetOutputs();
+
+            for (const auto& nextPass : m_Passes)
+            {
+                if (pass == nextPass)
+                    continue;
+
+                const auto& inputs = nextPass->GetInputs();
+                const auto& oName = nextPass->GetName();
+
+                for (const auto& resName : outputs)
+                {
+                    if (std::find(inputs.begin(), inputs.end(), resName) == inputs.end())
+                        continue;
+
+                    auto res = GetResource(resName);
+
+                    std::string label = resName;
+                    std::string tooltip = resName;
+                    std::string color = "black";
+                    std::string style = "solid";
+
+                    if (res)
+                    {
+                        const auto& desc = res->GetDescriptor();
+
+                        // ------------------------------------
+                        // Use AttachmentFormats for the styling
+                        // ------------------------------------
+                        if (!desc.AttachmentFormats.empty())
+                        {
+                            // Label includes all attachments
+                            label += " (";
+                            for (size_t i = 0; i < desc.AttachmentFormats.size(); i++)
+                            {
+                                label += FramebufferTextureFormatToString(desc.AttachmentFormats[i]);
+                                if (i + 1 < desc.AttachmentFormats.size())
+                                    label += ", ";
+                            }
+                            label += ")";
+
+                            // Tooltip lists all attachment formats
+                            tooltip = "Attachments: ";
+                            for (auto fmt : desc.AttachmentFormats)
+                            {
+                                tooltip += FramebufferTextureFormatToString(fmt);
+                                tooltip += " ";
+                            }
+
+                            color = "purple";
+                            style = "dashed";
+                        }
+
+                        // MSAA → blue dotted
+                        if (desc.Samples > 1)
+                        {
+                            color = "blue";
+                            style = "dotted";
+                        }
+                    }
+
+                    out << "    \"" << pName << "\" -> \"" << oName << "\" [label=\"" << label << "\" tooltip=\""
+                        << tooltip << "\" color=\"" << color << "\" style=\"" << style << "\"];\n";
+                }
+            }
+        }
+
+        out << "}\n";
+
+        TI_CORE_INFO("RenderGraph DOT exported to: {0}", filepath);
+    }
+
     RenderPass& RenderGraph::AddPass(const RenderPassDescriptor& desc, RenderPass::ExecuteFunc executeFunc)
     {
         TI_CORE_ASSERT(m_PassMap.find(desc.Name) == m_PassMap.end(), "Pass already exists: {0}", desc.Name);

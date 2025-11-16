@@ -115,6 +115,8 @@ namespace Titan
         Ref<Framebuffer> GetFramebuffer(const std::string& name);
         std::unordered_map<std::string, Ref<Framebuffer>> GetFramebuffers();
 
+        void ExportToDOT(const std::string& filepath);
+
         // Pass Management
         RenderPass& AddPass(const RenderPassDescriptor& desc, RenderPass::ExecuteFunc executeFunc);
         void RemovePass(const std::string& name);

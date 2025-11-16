@@ -74,6 +74,121 @@ namespace Titan
         Depth = DEPTH24STENCIL8
     };
 
+    inline static const char* FramebufferTextureFormatToString(FramebufferTextureFormat format)
+    {
+        switch (format)
+        {
+            case FramebufferTextureFormat::None:
+                return "None";
+
+            // 8-bit
+            case FramebufferTextureFormat::RGBA8:
+                return "RGBA8";
+            case FramebufferTextureFormat::RGB8:
+                return "RGB8";
+            case FramebufferTextureFormat::RG8:
+                return "RG8";
+            case FramebufferTextureFormat::R8:
+                return "R8";
+
+            // 16-bit
+            case FramebufferTextureFormat::RGBA16:
+                return "RGBA16";
+            case FramebufferTextureFormat::RGBA16F:
+                return "RGBA16F";
+            case FramebufferTextureFormat::RGB16F:
+                return "RGB16F";
+            case FramebufferTextureFormat::RG16F:
+                return "RG16F";
+            case FramebufferTextureFormat::R16F:
+                return "R16F";
+
+            // 32-bit
+            case FramebufferTextureFormat::RGBA32F:
+                return "RGBA32F";
+            case FramebufferTextureFormat::RGB32F:
+                return "RGB32F";
+            case FramebufferTextureFormat::RG32F:
+                return "RG32F";
+            case FramebufferTextureFormat::R32F:
+                return "R32F";
+
+            // Integer formats
+            case FramebufferTextureFormat::RED_INTEGER:
+                return "RED_INTEGER";
+            case FramebufferTextureFormat::RG_INTEGER:
+                return "RG_INTEGER";
+            case FramebufferTextureFormat::RGB_INTEGER:
+                return "RGB_INTEGER";
+            case FramebufferTextureFormat::RGBA_INTEGER:
+                return "RGBA_INTEGER";
+
+            // 16-bit integer formats
+            case FramebufferTextureFormat::R16I:
+                return "R16I";
+            case FramebufferTextureFormat::RG16I:
+                return "RG16I";
+            case FramebufferTextureFormat::RGB16I:
+                return "RGB16I";
+            case FramebufferTextureFormat::RGBA16I:
+                return "RGBA16I";
+
+            // 32-bit integer formats
+            case FramebufferTextureFormat::R32I:
+                return "R32I";
+            case FramebufferTextureFormat::RG32I:
+                return "RG32I";
+            case FramebufferTextureFormat::RGB32I:
+                return "RGB32I";
+            case FramebufferTextureFormat::RGBA32I:
+                return "RGBA32I";
+
+            // Unsigned integer formats
+            case FramebufferTextureFormat::R8UI:
+                return "R8UI";
+            case FramebufferTextureFormat::RG8UI:
+                return "RG8UI";
+            case FramebufferTextureFormat::RGB8UI:
+                return "RGB8UI";
+            case FramebufferTextureFormat::RGBA8UI:
+                return "RGBA8UI";
+
+            case FramebufferTextureFormat::R16UI:
+                return "R16UI";
+            case FramebufferTextureFormat::RG16UI:
+                return "RG16UI";
+            case FramebufferTextureFormat::RGB16UI:
+                return "RGB16UI";
+            case FramebufferTextureFormat::RGBA16UI:
+                return "RGBA16UI";
+
+            case FramebufferTextureFormat::R32UI:
+                return "R32UI";
+            case FramebufferTextureFormat::RG32UI:
+                return "RG32UI";
+            case FramebufferTextureFormat::RGB32UI:
+                return "RGB32UI";
+            case FramebufferTextureFormat::RGBA32UI:
+                return "RGBA32UI";
+
+            // sRGB formats
+            case FramebufferTextureFormat::SRGB8:
+                return "SRGB8";
+            case FramebufferTextureFormat::SRGB8_ALPHA8:
+                return "SRGB8_ALPHA8";
+
+            // Depth / Stencil
+            case FramebufferTextureFormat::DEPTH24STENCIL8:
+                return "DEPTH24STENCIL8";
+            case FramebufferTextureFormat::DEPTH32F:
+                return "DEPTH32F";
+            case FramebufferTextureFormat::DEPTH32F_STENCIL8:
+                return "DEPTH32F_STENCIL8";
+        }
+
+        return "Unknown";
+    }
+
     struct FramebufferTextureSpecification
     {
         FramebufferTextureSpecification() = default;
