@@ -78,8 +78,6 @@ namespace Titan
                                    FramebufferTextureFormat::Depth        // Depth
                                },
                                s_SRData->viewWidth, s_SRData->viewHeight, 1)
-            .CreateFramebuffer("SSAOBuffer", {FramebufferTextureFormat::RED_INTEGER}, s_SRData->viewWidth,
-                               s_SRData->viewHeight, 1)
             .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
                                      s_SRData->viewHeight, 1)
             .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
@@ -131,207 +129,203 @@ namespace Titan
                 fb->Unbind();
             });
 
-        builder.AddRenderPass("SSAOPass", {"GeometryBuffer"}, {"SSAOBuffer"},
-                              [](RenderGraph& graph, const RenderPass& pass) { TI_PROFILE_PASS(); });
+        builder.AddRenderPass(
+            "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "PreFX"}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                TI_PROFILE_PASS();
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
 
-            builder.AddRenderPass(
-                "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "SSAOBuffer", "PreFX"}, {"SceneFramebuffer"},
-                [](RenderGraph& graph, const RenderPass& pass)
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                bool hasMeshes = meshView.begin() != meshView.end();
+
+                if (!fb || !gbuffer)
+                    return;
+
+                fb->Bind();
+
+                bool hasDirectionalLight = false;
+                glm::vec3 lightDirection;
+                auto dlView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
+                for (auto entity : dlView)
                 {
-                    TI_PROFILE_PASS();
-                    auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                    auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
+                    auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
+                    hasDirectionalLight = true;
+                    lightDirection = dlComp.Direction;
 
-                    auto meshView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-                    bool hasMeshes = meshView.begin() != meshView.end();
+                    break; // only use first
+                }
 
-                    if (!fb || !gbuffer)
-                        return;
+                PBRSceneData data;
+                data.HasDirectionalLight = hasDirectionalLight;
+                data.LightDirection = lightDirection;
+                data.ViewPosition = s_SRData->viewPosition;
 
-                    fb->Bind();
-
-                    bool hasDirectionalLight = false;
-                    glm::vec3 lightDirection;
-                    auto dlView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
-                    for (auto entity : dlView)
-                    {
-                        auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
-                        hasDirectionalLight = true;
-                        lightDirection = dlComp.Direction;
-
-                        break; // only use first
-                    }
-
-                    PBRSceneData data;
-                    data.HasDirectionalLight = hasDirectionalLight;
-                    data.LightDirection = lightDirection;
-                    data.ViewPosition = s_SRData->viewPosition;
-
-                    Ref<Cubemap> cubemap = nullptr;
-                    auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
-                    for (auto entity : skyboxView)
-                    {
-                        auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
-                        cubemap = sb.Irradiance;
-                        break;
-                    }
-
-                    PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data, cubemap);
-
-                    fb->Unbind();
-                });
-
-            builder.AddRenderPass(
-                "SpritePass", {}, {"SceneFramebuffer", "PreFX"},
-                [](RenderGraph& graph, const RenderPass& pass)
+                Ref<Cubemap> cubemap = nullptr;
+                auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+                for (auto entity : skyboxView)
                 {
-                    auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                    if (!fb)
-                        return;
-                    TI_PROFILE_PASS();
+                    auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+                    cubemap = sb.Irradiance;
+                    break;
+                }
 
-                    fb->Bind();
+                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data, cubemap);
 
-                    Renderer2D::BeginScene(s_SRData->viewProjection);
+                fb->Unbind();
+            });
 
-                    auto spriteView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
-                    for (auto entity : spriteView)
-                    {
-                        auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
+        builder.AddRenderPass(
+            "SpritePass", {}, {"SceneFramebuffer", "PreFX"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+                TI_PROFILE_PASS();
 
-                        if (sprite.Tex)
-                            Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
-                                                            (uint32_t)entity);
-                        else
-                            Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
-                    }
+                fb->Bind();
 
-                    Renderer2D::EndScene();
-                    fb->Unbind();
-                });
+                Renderer2D::BeginScene(s_SRData->viewProjection);
 
-            builder.AddRenderPass(
-                "CirclePass", {}, {"SceneFramebuffer", "PreFX"},
-                [](RenderGraph& graph, const RenderPass& pass)
-
+                auto spriteView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+                for (auto entity : spriteView)
                 {
-                    auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                    if (!fb)
-                        return;
-                    TI_PROFILE_PASS();
+                    auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                    fb->Bind();
+                    if (sprite.Tex)
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Tex, 1.0f, sprite.Color,
+                                                        (uint32_t)entity);
+                    else
+                        Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
+                }
 
-                    Renderer2D::BeginScene(s_SRData->viewProjection);
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
 
-                    auto circleView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
-                    for (auto entity : circleView)
-                    {
-                        auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
-                        Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
-                                               (uint32_t)entity);
-                    }
+        builder.AddRenderPass(
+            "CirclePass", {}, {"SceneFramebuffer", "PreFX"},
+            [](RenderGraph& graph, const RenderPass& pass)
 
-                    Renderer2D::EndScene();
-                    fb->Unbind();
-                });
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+                TI_PROFILE_PASS();
 
-            builder.AddRenderPass(
-                "SkyboxPass", {}, {"SceneFramebuffer", "PreFX"},
-                [](RenderGraph& graph, const RenderPass& pass)
+                fb->Bind();
+
+                Renderer2D::BeginScene(s_SRData->viewProjection);
+
+                auto circleView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+                for (auto entity : circleView)
                 {
-                    auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                    if (!fb)
-                        return;
-                    TI_PROFILE_PASS();
+                    auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
+                    Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade,
+                                           (uint32_t)entity);
+                }
 
-                    fb->Bind();
-                    Ref<Cubemap> cubemap = nullptr;
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
 
-                    auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+        builder.AddRenderPass(
+            "SkyboxPass", {}, {"SceneFramebuffer", "PreFX"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+                TI_PROFILE_PASS();
 
-                    for (auto entity : skyboxView)
-                    {
-                        auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
-                        cubemap = sb.Skybox;
-                        break;
-                    }
+                fb->Bind();
+                Ref<Cubemap> cubemap = nullptr;
 
-                    if (cubemap)
-                    {
-                        SkyboxRenderer::Render(cubemap, s_SRData->view, s_SRData->projection);
-                    }
+                auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
 
-                    fb->Unbind();
-                });
-
-            builder.AddRenderPass(
-                "OverlayPass", {}, {"SceneFramebuffer", "PreFX"},
-                [](RenderGraph& graph, const RenderPass& pass)
-
+                for (auto entity : skyboxView)
                 {
-                    if (!s_SRData->drawOverlay)
-                        return;
+                    auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+                    cubemap = sb.Skybox;
+                    break;
+                }
 
-                    auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                    if (!fb)
-                        return;
-                    TI_PROFILE_PASS();
+                if (cubemap)
+                {
+                    SkyboxRenderer::Render(cubemap, s_SRData->view, s_SRData->projection);
+                }
 
-                    fb->Bind();
+                fb->Unbind();
+            });
 
-                    Renderer2D::BeginScene(s_SRData->viewProjection);
+        builder.AddRenderPass(
+            "OverlayPass", {}, {"SceneFramebuffer", "PreFX"},
+            [](RenderGraph& graph, const RenderPass& pass)
 
-                    // Box Colliders
-                    auto boxColliderView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
-                    for (auto entity : boxColliderView)
-                    {
-                        auto [transform, collider] =
-                            boxColliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
-                        Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                    }
+            {
+                if (!s_SRData->drawOverlay)
+                    return;
 
-                    // Circle Colliders
-                    auto circleColliderView =
-                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
-                    for (auto entity : circleColliderView)
-                    {
-                        auto [transform, collider] =
-                            circleColliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
-                        Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
-                    }
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+                TI_PROFILE_PASS();
 
-                    auto cameraView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
-                    for (auto entity : cameraView)
-                    {
-                        auto [transform, cc] = cameraView.get<TransformComponent, CameraComponent>(entity);
-                        Renderer2D::DrawCamera(transform.GetTransform());
-                    }
+                fb->Bind();
 
-                    Renderer2D::DrawGrid(20.0f);
+                Renderer2D::BeginScene(s_SRData->viewProjection);
 
-                    Renderer2D::EndScene();
-                    fb->Unbind();
-                });
+                // Box Colliders
+                auto boxColliderView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+                for (auto entity : boxColliderView)
+                {
+                    auto [transform, collider] =
+                        boxColliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
+                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+                }
 
-            builder.AddRenderPass("PostProcessing", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"FinalOutput"},
-                                  [](RenderGraph& graph, const RenderPass& pass)
-                                  {
-                                      auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                                      if (!fb)
-                                          return;
-                                      TI_PROFILE_PASS();
+                // Circle Colliders
+                auto circleColliderView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+                for (auto entity : circleColliderView)
+                {
+                    auto [transform, collider] =
+                        circleColliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
+                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+                }
 
-                                      s_SRData->postFXs->Execute(graph, pass, fb, s_SRData->currentScene);
-                                  });
+                auto cameraView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
+                for (auto entity : cameraView)
+                {
+                    auto [transform, cc] = cameraView.get<TransformComponent, CameraComponent>(entity);
+                    Renderer2D::DrawCamera(transform.GetTransform());
+                }
 
-            // Build the graph
-            builder.Build();
+                Renderer2D::DrawGrid(20.0f);
+
+                Renderer2D::EndScene();
+                fb->Unbind();
+            });
+
+        builder.AddRenderPass("PostProcessing", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"FinalOutput"},
+                              [](RenderGraph& graph, const RenderPass& pass)
+                              {
+                                  auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                                  if (!fb)
+                                      return;
+                                  TI_PROFILE_PASS();
+
+                                  s_SRData->postFXs->Execute(graph, pass, fb, s_SRData->currentScene);
+                              });
+
+        // Build the graph
+        builder.Build();
 
 #if TI_BUILD_DEBUG
         s_SRData->renderGraph->ExportToDOT("scene-graph.generated.dot");
