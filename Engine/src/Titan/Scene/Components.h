@@ -5,6 +5,7 @@
 #include "ScriptableEntity.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Cubemap.h"
 #include "Titan/Renderer/Material.h"
 #include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Texture.h"
@@ -83,6 +84,16 @@ namespace Titan
         DirectionalLightComponent() = default;
         DirectionalLightComponent(const DirectionalLightComponent&) = default;
         DirectionalLightComponent(glm::vec3 dir) : Direction(dir) {}
+    };
+
+    struct SkyboxComponent
+    {
+        Ref<Cubemap> Skybox;
+        Ref<Cubemap> Irradiance;
+
+        SkyboxComponent() = default;
+        SkyboxComponent(const SkyboxComponent&) = default;
+        SkyboxComponent(Ref<Cubemap> map) : Skybox(map) {}
     };
 
     struct CameraComponent
@@ -172,6 +183,6 @@ namespace Titan
 
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
-                       DirectionalLightComponent, CameraComponent, ScriptComponent, NativeScriptComponent,
-                       Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+                       DirectionalLightComponent, SkyboxComponent, CameraComponent, ScriptComponent,
+                       NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 } // namespace Titan

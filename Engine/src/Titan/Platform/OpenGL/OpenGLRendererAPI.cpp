@@ -21,6 +21,41 @@ namespace Titan
         glEnable(GL_LINE_SMOOTH);
     }
 
+    void OpenGLRendererAPI::SetDepthFunc(DepthFunc function)
+    {
+        GLenum glFunc = GL_LESS;
+
+        switch (function)
+        {
+            case DepthFunc::Never:
+                glFunc = GL_NEVER;
+                break;
+            case DepthFunc::Less:
+                glFunc = GL_LESS;
+                break;
+            case DepthFunc::Equal:
+                glFunc = GL_EQUAL;
+                break;
+            case DepthFunc::LessEqual:
+                glFunc = GL_LEQUAL;
+                break;
+            case DepthFunc::Greater:
+                glFunc = GL_GREATER;
+                break;
+            case DepthFunc::NotEqual:
+                glFunc = GL_NOTEQUAL;
+                break;
+            case DepthFunc::GreaterEqual:
+                glFunc = GL_GEQUAL;
+                break;
+            case DepthFunc::Always:
+                glFunc = GL_ALWAYS;
+                break;
+        }
+
+        glDepthFunc(glFunc);
+    }
+
     void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);

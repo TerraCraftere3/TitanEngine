@@ -1,14 +1,32 @@
 Scene: Untitled
 Entities:
-  - Entity: 7774000498037357011
+  - Entity: 5974379906442901397
     TagComponent:
-      Tag: Directional Light
+      Tag: Skybox
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, -0.4, -0.3]
+    SkyboxComponent:
+      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+  - Entity: 18095092561200448690
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-3.8050349, 9.840656, 8.162553]
+      Rotation: [-0.22926474, -0.530821, -0.029757192]
+      Scale: [0.99999976, 0.999999, 0.99999976]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
   - Entity: 14367220654640568265
     TagComponent:
       Tag: Sponza
@@ -117,21 +135,12 @@ Entities:
           AlbedoTexture: assets\textures\Sponza\vase_round.tga
           NormalTexture: assets\textures\Sponza\vase_round_ddn.tga
           UVRepeat: [1, 1]
-  - Entity: 18095092561200448690
+  - Entity: 7774000498037357011
     TagComponent:
-      Tag: Camera
+      Tag: Directional Light
     TransformComponent:
-      Translation: [-3.8050349, 9.840656, 8.162553]
-      Rotation: [-0.22926474, -0.530821, -0.029757192]
-      Scale: [0.99999976, 0.999999, 0.99999976]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.7853982
-        PerspectiveNear: 0.01
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1000
-      Primary: true
-      FixedAspectRatio: false
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -0.4, -0.3]

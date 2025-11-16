@@ -80,6 +80,7 @@ namespace Titan
         }
 
         CopyComponent<DirectionalLightComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<SkyboxComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
@@ -121,6 +122,8 @@ namespace Titan
         CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
         CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
         CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<DirectionalLightComponent>(newEntity, entity);
+        CopyComponentIfExists<SkyboxComponent>(newEntity, entity);
         CopyComponentIfExists<CameraComponent>(newEntity, entity);
         CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
         CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -399,6 +402,7 @@ namespace Titan
     template void Scene::OnComponentAdded<CircleRendererComponent>(Entity, CircleRendererComponent&);
     template void Scene::OnComponentAdded<MeshRendererComponent>(Entity, MeshRendererComponent&);
     template void Scene::OnComponentAdded<DirectionalLightComponent>(Entity, DirectionalLightComponent&);
+    template void Scene::OnComponentAdded<SkyboxComponent>(Entity, SkyboxComponent&);
     template void Scene::OnComponentAdded<CameraComponent>(Entity, CameraComponent&);
     template void Scene::OnComponentAdded<NativeScriptComponent>(Entity, NativeScriptComponent&);
     template void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity, Rigidbody2DComponent&);

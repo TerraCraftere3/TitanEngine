@@ -102,6 +102,11 @@ namespace Titan
                     Entity quadEntity = m_Context->CreateEntity("Directional Light");
                     auto& dlc = quadEntity.AddComponent<DirectionalLightComponent>(glm::vec3(1.0f, 1.0f, 1.0f));
                 }
+                if (ImGui::MenuItem("Create Skybox"))
+                {
+                    Entity quadEntity = m_Context->CreateEntity("Skybox");
+                    auto& dlc = quadEntity.AddComponent<SkyboxComponent>();
+                }
             }
 
             ImGui::EndPopup();
@@ -127,6 +132,7 @@ namespace Titan
                 DrawAddComponent<CircleRendererComponent>(m_SelectionContext, "Circle Renderer");
 
                 ImGui::SeparatorText("Lights");
+                DrawAddComponent<SkyboxComponent>(m_SelectionContext, "Skybox");
                 DrawAddComponent<DirectionalLightComponent>(m_SelectionContext, "Directional Light");
 
                 ImGui::SeparatorText("Physics");
@@ -407,6 +413,31 @@ namespace Titan
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });
+        DrawComponent<SkyboxComponent>(
+            "Skybox", entity,
+            [](auto& component)
+            {
+                ImGui::TextUnformatted("Cubemap");
+                if (component.Skybox)
+                {
+                    ImGui::Button(component.Skybox->GetPath().c_str());
+                }
+                else
+                {
+                    ImGui::Button("Empty");
+                }
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
+                        component.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
+                        component.Irradiance = component.Skybox->CreateIrradianceMap();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            });
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,
                                             [](auto& component)
                                             {

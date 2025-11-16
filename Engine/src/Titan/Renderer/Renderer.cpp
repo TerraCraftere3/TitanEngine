@@ -3,6 +3,7 @@
 #include "PBRRenderer.h"
 #include "Renderer2D.h"
 #include "SceneRenderer.h"
+#include "SkyboxRenderer.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
 
@@ -17,15 +18,17 @@ namespace Titan
         Renderer2D::Init();
         GeometryRenderer::Init();
         PBRRenderer::Init();
+        SkyboxRenderer::Init();
         SceneRenderer::Init();
     }
 
     void Renderer::Shutdown()
     {
+        SceneRenderer::Shutdown();
+        SkyboxRenderer::Shutdown();
         PBRRenderer::Shutdown();
         GeometryRenderer::Shutdown();
         Renderer2D::Shutdown();
-        SceneRenderer::Shutdown();
     }
 
     void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)

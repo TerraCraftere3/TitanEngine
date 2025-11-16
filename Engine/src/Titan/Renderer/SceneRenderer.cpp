@@ -4,6 +4,7 @@
 #include "Titan/Renderer/PBRRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/SkyboxRenderer.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
 
@@ -15,6 +16,8 @@ namespace Titan
         Ref<Framebuffer> finalFramebuffer;
 
         // Camera data (shared across passes)
+        glm::mat4 view;
+        glm::mat4 projection;
         glm::mat4 viewProjection;
         glm::vec3 viewPosition;
         uint32_t viewWidth = 1280;
@@ -149,7 +152,16 @@ namespace Titan
                 data.LightDirection = lightDirection;
                 data.ViewPosition = s_SRData->viewPosition;
 
-                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data);
+                Ref<Cubemap> cubemap = nullptr;
+                auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+                for (auto entity : skyboxView)
+                {
+                    auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+                    cubemap = sb.Irradiance;
+                    break;
+                }
+
+                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data, cubemap);
 
                 fb->Unbind();
             });
@@ -206,6 +218,34 @@ namespace Titan
                 }
 
                 Renderer2D::EndScene();
+                fb->Unbind();
+            });
+
+        builder.AddRenderPass(
+            "SkyboxPass", {}, {"SceneFramebuffer"},
+            [](RenderGraph& graph, const RenderPass& pass)
+            {
+                auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                if (!fb)
+                    return;
+
+                fb->Bind();
+                Ref<Cubemap> cubemap = nullptr;
+
+                auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+
+                for (auto entity : skyboxView)
+                {
+                    auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+                    cubemap = sb.Skybox;
+                    break;
+                }
+
+                if (cubemap)
+                {
+                    SkyboxRenderer::Render(cubemap, s_SRData->view, s_SRData->projection);
+                }
+
                 fb->Unbind();
             });
 
@@ -296,6 +336,8 @@ namespace Titan
 
         if (mainCamera)
         {
+            s_SRData->view = glm::inverse(cameraTransform);
+            s_SRData->projection = mainCamera->GetProjection();
             s_SRData->viewProjection = mainCamera->GetProjection() * glm::inverse(cameraTransform);
             s_SRData->viewPosition = glm::vec3(cameraTransform[3]);
             s_SRData->drawOverlay = false;
@@ -307,6 +349,8 @@ namespace Titan
 
     void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera)
     {
+        s_SRData->view = camera.GetViewMatrix();
+        s_SRData->projection = camera.GetProjectionMatrix();
         s_SRData->viewProjection = camera.GetViewProjection();
         s_SRData->viewPosition = camera.GetPosition();
         s_SRData->drawOverlay = true;
