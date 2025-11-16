@@ -29,6 +29,7 @@ Sampler2D gPosition;
 Sampler2D gNormal;
 Sampler2D gAlbedo;
 Sampler2D gMetallicRoughness;
+Sampler2D gEmission;
 Sampler2D gEntityID;
 Sampler2D gDepth;
 SamplerCube IrradianceMap;
@@ -55,6 +56,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     float3 normal = gNormal.Sample(input.texCoord).xyz * 2.0 - 1.0; // convert from [0,1] -> [-1,1]
 
     float4 albedoColor = gAlbedo.Sample(input.texCoord);
+    float3 emission = gEmission.Sample(input.texCoord).rgb;
     float4 mr = gMetallicRoughness.Sample(input.texCoord);
     float metallic = mr.r;
     float roughness = mr.g;
@@ -109,6 +111,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     }
 
     // --- Tonemapping + gamma ---
+    color += emission;
     color = color / (color + float3(1.0));
     color = pow(color, float3(1.0 / 2.2));
 

@@ -70,16 +70,17 @@ namespace Titan
         gbuffer->BindTexture(0, 1); // Position
         gbuffer->BindTexture(1, 2); // Normal
         gbuffer->BindTexture(2, 3); // Albedo
-        gbuffer->BindTexture(3, 4); // Metallic, Roughness, /, /
-        gbuffer->BindTexture(4, 5); // Entity ID
-        gbuffer->BindDepthTexture(6);
+        gbuffer->BindTexture(3, 4); // Metallic, Roughness, AO, /
+        gbuffer->BindTexture(4, 5); // Emission
+        gbuffer->BindTexture(5, 6); // Entity ID
+        gbuffer->BindDepthTexture(7);
 
         if (irradiance)
-            irradiance->Bind(7);
+            irradiance->Bind(8);
         else
-            s_PBRData.DefaultIrradiance->Bind(7);
+            s_PBRData.DefaultIrradiance->Bind(8);
 
-        s_PBRData.Shader->SetInt("IrradianceMap", 7);
+        s_PBRData.Shader->SetInt("IrradianceMap", 8);
 
         s_PBRData.SceneUniformBuffer->Bind();
 

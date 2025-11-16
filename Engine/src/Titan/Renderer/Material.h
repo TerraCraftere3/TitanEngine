@@ -11,6 +11,7 @@ namespace Titan
         std::string Name = "Material";
         glm::vec4 AlbedoColor = glm::vec4(1.0f);
         Ref<Texture2D> AlbedoTexture;
+        Ref<Texture2D> EmissionTexture;
         Ref<Texture2D> MetallicTexture;
         Ref<Texture2D> RoughnessTexture;
         Ref<Texture2D> NormalTexture;

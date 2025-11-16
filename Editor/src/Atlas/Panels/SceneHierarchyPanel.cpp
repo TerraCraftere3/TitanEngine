@@ -398,6 +398,7 @@ namespace Titan
                     {
                         ImGui::ColorEdit4("Diffuse", glm::value_ptr(mat->AlbedoColor));
                         DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
+                        DrawTextureSlot("Emission Texture", mat->EmissionTexture);
                         DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
                         DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
                         DrawTextureSlot("Normal Texture", mat->NormalTexture);

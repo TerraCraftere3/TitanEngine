@@ -1,14 +1,40 @@
 Scene: Untitled
 Entities:
-  - Entity: 5779225809508732683
+  - Entity: 6817584821935004973
     TagComponent:
-      Tag: Skybox
+      Tag: Directional Light
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    SkyboxComponent:
-      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+    DirectionalLightComponent:
+      Direction: [-1, -1, -1]
+  - Entity: 18224009490395026848
+    TagComponent:
+      Tag: Helmet
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [1.5707964, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: assets\models\DamagedHelmet.gltf
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
+          EmissionTexture: assets\textures\Helmet\Default_emissive.jpg
+          MetallicTexture: assets\textures\Helmet\Default_metal.jpg
+          RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
+          NormalTexture: assets\textures\Helmet\Default_normal.jpg
+          AOTexture: assets\textures\Helmet\Default_AO.jpg
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.2
   - Entity: 1229789391634107600
     TagComponent:
       Tag: Camera
@@ -27,37 +53,12 @@ Entities:
         OrthographicFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 18224009490395026848
+  - Entity: 5779225809508732683
     TagComponent:
-      Tag: Helmet
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [1.5707964, 0, 0]
-      Scale: [1, 1, 1]
-    MeshRendererComponent:
-      Mesh: assets\models\DamagedHelmet.gltf
-      Materials:
-        - AlbedoColor: [1, 1, 1, 1]
-          AlbedoTexture: assets\textures\Helmet\Default_albedo.jpg
-          MetallicTexture: assets\textures\Helmet\Default_metal.jpg
-          RoughnessTexture: assets\textures\Helmet\Default_roughness.jpg
-          NormalTexture: assets\textures\Helmet\Default_normal.jpg
-          AOTexture: assets\textures\Helmet\Default_AO.jpg
-          UVRepeat: [1, 1]
-        - AlbedoColor: [1, 1, 1, 1]
-          UVRepeat: [1, 1]
-    ScriptComponent:
-      ClassName: Sandbox.Rotation
-      ScriptFields:
-        - Name: Speed
-          Type: Float
-          Data: 0.2
-  - Entity: 6817584821935004973
-    TagComponent:
-      Tag: Directional Light
+      Tag: Skybox
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, -1, -1]
+    SkyboxComponent:
+      Texture: assets\cubemaps\autumn_hill_view_4k.hdr

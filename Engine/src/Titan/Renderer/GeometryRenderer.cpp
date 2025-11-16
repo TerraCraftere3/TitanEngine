@@ -20,6 +20,7 @@ namespace Titan
     struct Textures
     {
         Ref<Texture2D> DefaultAlbedo;
+        Ref<Texture2D> DefaultEmission;
         Ref<Texture2D> DefaultMetallic;
         Ref<Texture2D> DefaultRoughness;
         Ref<Texture2D> DefaultNormal;
@@ -43,8 +44,7 @@ namespace Titan
         glm::vec4 AlbedoColor; // 16 bytes
 
         glm::uvec2 AlbedoTextureIndex; // 8 bytes
-        float Metallic;                // 4 bytes
-        float Padding0;                // 4 bytes
+        glm::uvec2 EmissionTextureIndex;
 
         glm::uvec2 MetallicTextureIndex; // 8 bytes
         glm::uvec2 AOTextureIndex;       // 8 bytes;
@@ -67,9 +67,21 @@ namespace Titan
             }
             else
             {
+                if (!s_Textures.DefaultAlbedo->isValidBindlessHandle())
+                    s_Textures.DefaultAlbedo->MakeHandleResident();
+                AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
+            }
+            if (mat.EmissionTexture)
+            {
+                if (!mat.EmissionTexture->isValidBindlessHandle())
+                    mat.EmissionTexture->MakeHandleResident();
+                EmissionTextureIndex = HandleToVec2(mat.EmissionTexture->GetBindlessHandle());
+            }
+            else
+            {
                 if (!s_Textures.DefaultAO->isValidBindlessHandle())
                     s_Textures.DefaultAO->MakeHandleResident();
-                AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
+                EmissionTextureIndex = HandleToVec2(s_Textures.DefaultEmission->GetBindlessHandle());
             }
             if (mat.MetallicTexture)
             {
@@ -209,6 +221,12 @@ namespace Titan
         {
             uint32_t data = 0xffffffff; // white
             s_Textures.DefaultAlbedo->SetData(&data, sizeof(uint32_t));
+        }
+
+        s_Textures.DefaultEmission = Texture2D::Create(1, 1);
+        {
+            uint32_t data = 0x00000000; // black
+            s_Textures.DefaultEmission->SetData(&data, sizeof(uint32_t));
         }
 
         s_Textures.DefaultMetallic = Texture2D::Create(1, 1);

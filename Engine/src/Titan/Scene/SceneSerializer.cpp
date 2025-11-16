@@ -270,6 +270,10 @@ namespace Titan
                 {
                     out << YAML::Key << "AlbedoTexture" << YAML::Value << mat->AlbedoTexture->GetPath();
                 }
+                if (mat->EmissionTexture)
+                {
+                    out << YAML::Key << "EmissionTexture" << YAML::Value << mat->EmissionTexture->GetPath();
+                }
                 if (mat->MetallicTexture)
                 {
                     out << YAML::Key << "MetallicTexture" << YAML::Value << mat->MetallicTexture->GetPath();
@@ -535,6 +539,10 @@ namespace Titan
 
                         if (material["AlbedoTexture"])
                             mat->AlbedoTexture = Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
+
+                        if (material["EmissionTexture"])
+                            mat->EmissionTexture =
+                                Assets::Load<Texture2D>(material["EmissionTexture"].as<std::string>());
 
                         if (material["MetallicTexture"])
                             mat->MetallicTexture =

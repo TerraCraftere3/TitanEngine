@@ -7,12 +7,10 @@ struct Material
 {
     float4 AlbedoColor; // 16 bytes
 
-    uint2 AlbedoTextureIndex; // 8 bytes
-    float Metallic;           // 4 bytes
-    float Padding0;           // 4 bytes
-
-    uint2 MetallicTextureIndex; // 8 bytes
-    uint2 AOTextureIndex;
+    uint2 AlbedoTextureIndex;    // 8 bytes
+    uint2 EmissionTextureIndex;  // 8 bytes
+    uint2 MetallicTextureIndex;  // 8 bytes
+    uint2 AOTextureIndex;        // 8 bytes
     uint2 RoughnessTextureIndex; // 8 bytes
     uint2 NormalTextureIndex;    // 8 bytes
 
@@ -49,7 +47,8 @@ struct FragmentOutput
     float4 normal : SV_TARGET1;
     float4 albedo : SV_TARGET2;
     float4 metallic_roughness__ : SV_TARGET3;
-    int entityID : SV_Target4;
+    float4 emission : SV_TARGET4;
+    int entityID : SV_Target5;
 };
 
 static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
@@ -85,15 +84,18 @@ float GET_AO(Material mat, float2 texCoord)
     return GetBindlessTexture(mat.AOTextureIndex).Sample(texCoord).r;
 }
 
+float3 GET_EMISSION(Material mat, float2 texCoord)
+{
+    return GetBindlessTexture(mat.EmissionTextureIndex).Sample(texCoord).rgb;
+}
+
 float3 GET_NORMAL(Material mat, VertexOutput input)
 {
     float3 sampledNormal = GetBindlessTexture(mat.NormalTextureIndex).Sample(input.texCoord * mat.UVRepeat).rgb;
 
     sampledNormal = sampledNormal * 2.0f - 1.0f;
 
-    float3x3 TBN = float3x3(normalize(input.tangent),
-                            normalize(input.bitangent),
-                            normalize(input.normal));
+    float3x3 TBN = float3x3(normalize(input.tangent), normalize(input.bitangent), normalize(input.normal));
 
     return normalize(mul(sampledNormal, TBN));
 }
@@ -131,12 +133,14 @@ FragmentOutput fragmentMain(VertexOutput input)
     float metallic = GET_METALLIC(mat, uv);
     float roughness = GET_ROUGHNESS(mat, uv);
     float ao = GET_AO(mat, uv);
+    float4 emission = float4(GET_EMISSION(mat, uv), 1.0);
 
     // Output raw values
     output.position = input.position;
     output.normal = float4(GET_NORMAL(mat, input), 1.0f);
     output.albedo = albedoColor;
     output.metallic_roughness__ = float4(metallic, roughness, ao, 1.0f);
+    output.emission = emission;
     output.entityID = input.entityID;
 
     return output;
