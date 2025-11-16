@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "FullscreenRenderer.h"
 #include "GeometryRenderer.h"
 #include "PBRRenderer.h"
 #include "Renderer2D.h"
@@ -17,6 +18,7 @@ namespace Titan
         Renderer2D::Init();
         GeometryRenderer::Init();
         PBRRenderer::Init();
+        FullscreenRenderer::Init();
         SkyboxRenderer::Init();
         SceneRenderer::Init();
     }
@@ -28,6 +30,7 @@ namespace Titan
         PBRRenderer::Shutdown();
         GeometryRenderer::Shutdown();
         Renderer2D::Shutdown();
+        FullscreenRenderer::Shutdown();
     }
 
     void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
