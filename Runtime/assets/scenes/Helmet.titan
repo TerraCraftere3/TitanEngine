@@ -52,3 +52,12 @@ Entities:
         OrthographicFar: 1000
       Primary: true
       FixedAspectRatio: false
+  - Entity: 5779225809508732683
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      Texture: assets\cubemaps\derelict_airfield_02_8k.hdr

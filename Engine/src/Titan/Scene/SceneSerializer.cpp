@@ -292,6 +292,7 @@ namespace Titan
             out << YAML::EndSeq; // Materials
             out << YAML::EndMap; // MeshRendererComponent
         }
+
         if (entity.HasComponent<DirectionalLightComponent>())
         {
             out << YAML::Key << "DirectionalLightComponent";
@@ -301,6 +302,17 @@ namespace Titan
             out << YAML::Key << "Direction" << YAML::Value << dlc.Direction;
 
             out << YAML::EndMap; // DirectionalLightComponent
+        }
+
+        if (entity.HasComponent<SkyboxComponent>())
+        {
+            out << YAML::Key << "SkyboxComponent";
+            out << YAML::BeginMap; // SkyboxComponent
+
+            auto& sc = entity.GetComponent<SkyboxComponent>();
+            out << YAML::Key << "Texture" << YAML::Value << sc.Skybox->GetPath();
+
+            out << YAML::EndMap; // SkyboxComponent
         }
 
         if (entity.HasComponent<Rigidbody2DComponent>())
@@ -550,6 +562,13 @@ namespace Titan
                 {
                     auto& dlc = deserializedEntity.AddComponent<DirectionalLightComponent>();
                     dlc.Direction = directionalLightComponent["Direction"].as<glm::vec3>();
+                }
+
+                auto skyboxComponent = entity["SkyboxComponent"];
+                if (skyboxComponent)
+                {
+                    auto& sc = deserializedEntity.AddComponent<SkyboxComponent>();
+                    sc.Skybox = Assets::Load<Cubemap>(skyboxComponent["Texture"].as<std::string>());
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];

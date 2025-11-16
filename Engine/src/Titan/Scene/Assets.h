@@ -1,6 +1,7 @@
 #pragma once
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Cubemap.h"
 #include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
@@ -18,6 +19,7 @@ namespace Titan
     {
         None = 0,
         Texture2D,
+        Cubemap,
         Scene,
         Shader,
         Physics2DMaterial,
@@ -156,6 +158,10 @@ namespace Titan
                 meta.Properties["MinFilter"] = "Linear";
                 meta.Properties["MagFilter"] = "Linear";
             }
+            else if constexpr (std::is_same_v<T, Cubemap>)
+            {
+                meta.Type = AssetType::Cubemap;
+            }
             else if constexpr (std::is_same_v<T, Shader>)
             {
                 meta.Type = AssetType::Shader;
@@ -240,6 +246,10 @@ namespace Titan
                     meta = LoadMetaFromDisk<Texture2D>(assetPath);
                     break;
 
+                case AssetType::Cubemap:
+                    meta = LoadMetaFromDisk<Cubemap>(assetPath);
+                    break;
+
                 case AssetType::Shader:
                     meta = LoadMetaFromDisk<Shader>(assetPath);
                     break;
@@ -291,6 +301,10 @@ namespace Titan
                 if (meta.Properties.contains("MagFilter"))
                     settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
                 asset = Texture2D::Create(std::filesystem::relative(path).string(), settings);
+            }
+            else if constexpr (std::is_same_v<T, Cubemap>)
+            {
+                asset = Cubemap::Create(std::filesystem::relative(path).string());
             }
             else if constexpr (std::is_same_v<T, Shader>)
             {

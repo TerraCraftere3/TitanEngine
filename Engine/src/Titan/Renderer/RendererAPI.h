@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Depth.h"
 #include "Titan/Renderer/VertexArray.h"
 
 namespace Titan
@@ -18,6 +19,7 @@ namespace Titan
     public:
         virtual void Init() = 0;
 
+        virtual void SetDepthFunc(DepthFunc function) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
 

@@ -29,6 +29,7 @@ namespace Titan
             UpdateProjection();
         }
 
+        const glm::mat4& GetProjectionMatrix() const { return m_Projection; }
         const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
         glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
 
