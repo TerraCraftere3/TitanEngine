@@ -140,20 +140,123 @@ namespace Titan
             stbi_image_free(data);
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, TextureFormat format, TextureSettings settings)
         : m_Width(width), m_Height(height), m_Path("[internal]")
     {
-        m_InternalFormat = GL_RGBA8;
-        m_DataFormat = GL_RGBA;
+        // -----------------------------
+        // Convert TextureFormat → GL formats
+        // -----------------------------
+        switch (format)
+        {
+            case TextureFormat::RGBA8:
+                m_InternalFormat = GL_RGBA8;
+                m_DataFormat = GL_RGBA;
+                break;
+            case TextureFormat::RGB8:
+                m_InternalFormat = GL_RGB8;
+                m_DataFormat = GL_RGB;
+                break;
+            case TextureFormat::RG8:
+                m_InternalFormat = GL_RG8;
+                m_DataFormat = GL_RG;
+                break;
+            case TextureFormat::RED8:
+                m_InternalFormat = GL_R8;
+                m_DataFormat = GL_RED;
+                break;
 
+            case TextureFormat::RGBA16F:
+                m_InternalFormat = GL_RGBA16F;
+                m_DataFormat = GL_RGBA;
+                break;
+            case TextureFormat::RGB16F:
+                m_InternalFormat = GL_RGB16F;
+                m_DataFormat = GL_RGB;
+                break;
+            case TextureFormat::RG16F:
+                m_InternalFormat = GL_RG16F;
+                m_DataFormat = GL_RG;
+                break;
+            case TextureFormat::RED16F:
+                m_InternalFormat = GL_R16F;
+                m_DataFormat = GL_RED;
+                break;
+
+            case TextureFormat::RGBA32F:
+                m_InternalFormat = GL_RGBA32F;
+                m_DataFormat = GL_RGBA;
+                break;
+            case TextureFormat::RGB32F:
+                m_InternalFormat = GL_RGB32F;
+                m_DataFormat = GL_RGB;
+                break;
+            case TextureFormat::RG32F:
+                m_InternalFormat = GL_RG32F;
+                m_DataFormat = GL_RG;
+                break;
+
+            default:
+                TI_CORE_ASSERT(false, "Unsupported internal texture format!");
+        }
+
+        // Create texture object + storage
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // -----------------------------
+        // Apply wrap settings
+        // -----------------------------
+        auto wrapToGL = [](TextureWrap w) -> GLenum
+        {
+            switch (w)
+            {
+                case TextureWrap::Repeat:
+                    return GL_REPEAT;
+                case TextureWrap::MirroredRepeat:
+                    return GL_MIRRORED_REPEAT;
+                case TextureWrap::ClampToEdge:
+                    return GL_CLAMP_TO_EDGE;
+                case TextureWrap::ClampToBorder:
+                    return GL_CLAMP_TO_BORDER;
+                default:
+                    return GL_REPEAT;
+            }
+        };
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, wrapToGL(settings.HorizontalWrap));
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, wrapToGL(settings.VerticalWrap));
+
+        // -----------------------------
+        // Apply filtering settings
+        // -----------------------------
+        auto filterToGL = [](TextureFiltering f) -> GLenum
+        {
+            switch (f)
+            {
+                case TextureFiltering::Nearest:
+                    return GL_NEAREST;
+                case TextureFiltering::Linear:
+                    return GL_LINEAR;
+                case TextureFiltering::MipmapNearest:
+                    return GL_NEAREST_MIPMAP_NEAREST;
+                case TextureFiltering::MipmapLinear:
+                    return GL_LINEAR_MIPMAP_LINEAR;
+                default:
+                    return GL_LINEAR;
+            }
+        };
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, filterToGL(settings.MinFilter));
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, filterToGL(settings.MagFilter));
+
+        // -----------------------------
+        // Generate mipmaps if necessary
+        // -----------------------------
+        if (settings.MinFilter == TextureFiltering::MipmapNearest ||
+            settings.MinFilter == TextureFiltering::MipmapLinear)
+        {
+            glGenerateTextureMipmap(m_RendererID);
+        }
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()

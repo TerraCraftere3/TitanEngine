@@ -15,7 +15,8 @@ namespace Titan
     {
     public:
         OpenGLTexture2D(const std::string& path, TextureSettings settings);
-        OpenGLTexture2D(uint32_t width, uint32_t height);
+        OpenGLTexture2D(uint32_t width, uint32_t height, TextureFormat format = TextureFormat::RGBA8,
+                        TextureSettings settings = TextureSettings());
         virtual ~OpenGLTexture2D();
 
         virtual uint32_t GetWidth() const override { return m_Width; }

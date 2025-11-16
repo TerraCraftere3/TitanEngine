@@ -29,6 +29,24 @@ namespace Titan
         virtual bool operator==(const Texture& other) const = 0;
     };
 
+    enum TextureFormat
+    {
+        RGBA8,
+        RGB8,
+        RG8,
+        RED8,
+
+        RGBA16F,
+        RGB16F,
+        RG16F,
+        RED16F,
+
+        RGBA32F,
+        RGB32F,
+        RG32F,
+        RED32F,
+    };
+
     enum TextureWrap
     {
         Repeat,
@@ -58,7 +76,8 @@ namespace Titan
     class TI_API Texture2D : public Texture
     {
     public:
-        static Ref<Texture2D> Create(uint32_t width, uint32_t height);
+        static Ref<Texture2D> Create(uint32_t width, uint32_t height, TextureFormat format = TextureFormat::RGBA8,
+                                     TextureSettings settings = TextureSettings());
         static Ref<Texture2D> Create(const std::string& path, TextureSettings settings = TextureSettings());
     };
 
