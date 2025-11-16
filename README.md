@@ -71,7 +71,8 @@ For now there is no linux support
 - [ ] Audio
 - [ ] 3D PBR Renderer
   - [ ] Shadows
-  - [x] Materials (no textures rn)
+  - [x] Textures
+  - [x] Materials
   - [ ] Custom Shader?
   - [x] Batch Rendering (semi-functioning rn)
   - [ ] Instancing?
@@ -82,7 +83,9 @@ For now there is no linux support
 - [ ] Post Processing
   - [ ] Bloom
   - [ ] Tone Mapping
-  - [x] Anti Aliasing (limited rn)
+  - [x] Anti Aliasing (FXAA)
+  - [ ] SSAO (Screen Space Ambient Occlusion)
+  - [ ] SSR (Screen Space Reflection)
 - [ ] Exporting Projects
 - [ ] Project Files
 - [ ] Custom C# UIs
