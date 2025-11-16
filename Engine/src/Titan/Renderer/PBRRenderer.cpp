@@ -16,6 +16,7 @@ namespace Titan
         Ref<Shader> Shader;
         Ref<UniformBuffer> SceneUniformBuffer;
         Ref<VertexArray> FullscreenQuadVAO;
+        Ref<Cubemap> DefaultIrradiance;
     };
 
     static PBRRendererData s_PBRData;
@@ -26,10 +27,15 @@ namespace Titan
 
         s_PBRData.SceneUniformBuffer = UniformBuffer::Create(sizeof(PBRSceneData), 0);
 
-        // Load shader
+        // Irradiance
+        std::string defaultAmbientPath = "resources/cubemaps/default.hdr";
+        Ref<Cubemap> defaultAmbient = Assets::Load<Cubemap>(defaultAmbientPath);
+        s_PBRData.DefaultIrradiance = defaultAmbient->CreateIrradianceMap();
+
+        // Shader
         s_PBRData.Shader = Shader::Create("assets/shader/RendererPBR.slang");
 
-        // Create fullscreen quad geometry
+        // Vertex Array
         float quadVertices[] = {
             // positions   // texcoords
             -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f};
@@ -38,10 +44,12 @@ namespace Titan
 
         s_PBRData.FullscreenQuadVAO = VertexArray::Create();
 
+        // Vertex Buffer
         Ref<VertexBuffer> vb = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
         vb->SetLayout({{ShaderDataType::Float2, "a_Position"}, {ShaderDataType::Float2, "a_TexCoord"}});
         s_PBRData.FullscreenQuadVAO->AddVertexBuffer(vb);
 
+        // Index Buffer
         Ref<IndexBuffer> ib = IndexBuffer::Create(quadIndices, sizeof(quadIndices) / sizeof(uint32_t));
         s_PBRData.FullscreenQuadVAO->SetIndexBuffer(ib);
     }
@@ -52,7 +60,7 @@ namespace Titan
         s_PBRData = {};
     }
 
-    void PBRRenderer::Render(Ref<Framebuffer> gbuffer, PBRSceneData data)
+    void PBRRenderer::Render(Ref<Framebuffer> gbuffer, PBRSceneData data, Ref<Cubemap> irradiance)
     {
         TI_PROFILE_FUNCTION();
 
@@ -64,9 +72,16 @@ namespace Titan
         gbuffer->BindTexture(2, 3); // Albedo
         gbuffer->BindTexture(3, 4); // Metallic, Roughness, /, /
         gbuffer->BindTexture(4, 5); // Entity ID
-        gbuffer->BindDepthTexture(6),
+        gbuffer->BindDepthTexture(6);
 
-            s_PBRData.SceneUniformBuffer->Bind();
+        if (irradiance)
+            irradiance->Bind(7);
+        else
+            s_PBRData.DefaultIrradiance->Bind(7);
+
+        s_PBRData.Shader->SetInt("IrradianceMap", 7);
+
+        s_PBRData.SceneUniformBuffer->Bind();
 
         RenderCommand::DrawIndexed(s_PBRData.FullscreenQuadVAO);
     }

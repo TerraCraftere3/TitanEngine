@@ -569,6 +569,7 @@ namespace Titan
                 {
                     auto& sc = deserializedEntity.AddComponent<SkyboxComponent>();
                     sc.Skybox = Assets::Load<Cubemap>(skyboxComponent["Texture"].as<std::string>());
+                    sc.Irradiance = sc.Skybox->CreateIrradianceMap();
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];

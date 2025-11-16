@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cubemap.h"
 #include "Framebuffer.h"
 #include "Titan/PCH.h"
 
@@ -19,7 +20,7 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void Render(Ref<Framebuffer> input, PBRSceneData data);
+        static void Render(Ref<Framebuffer> input, PBRSceneData data, Ref<Cubemap> irradiance = nullptr);
     };
 
 } // namespace Titan

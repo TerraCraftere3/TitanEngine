@@ -16,6 +16,7 @@ namespace Titan
 class OpenGLCubemap : public Cubemap
 {
 public:
+    OpenGLCubemap();
     OpenGLCubemap(const std::string& path /*e.g. example.hdr (Equirectangular) */); // if loaded from 6 textures or HDR → cubemap
     virtual ~OpenGLCubemap();
 
@@ -30,6 +31,8 @@ public:
 
     virtual void Bind(uint32_t slot = 0) const override;
     virtual void* GetNativeTexture() const override { return (void*)(uintptr_t)m_RendererID; }
+
+    virtual Ref<Cubemap> CreateIrradianceMap(uint32_t resolution = 32) override;
 
 private:
     uint32_t m_RendererID = 0;     // GLuint texture ID

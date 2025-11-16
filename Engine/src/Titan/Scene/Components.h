@@ -89,6 +89,7 @@ namespace Titan
     struct SkyboxComponent
     {
         Ref<Cubemap> Skybox;
+        Ref<Cubemap> Irradiance;
 
         SkyboxComponent() = default;
         SkyboxComponent(const SkyboxComponent&) = default;

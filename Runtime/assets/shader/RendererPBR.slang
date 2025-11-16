@@ -31,6 +31,7 @@ Sampler2D gAlbedo;
 Sampler2D gMetallicRoughness;
 Sampler2D gEntityID;
 Sampler2D gDepth;
+SamplerCube IrradianceMap;
 
 
 [shader("vertex")]
@@ -42,7 +43,6 @@ VertexOutput vertexMain(VertexInput input)
     return output;
 }
 
-static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
 static const float PI = 3.14159265359;
 
 [shader("fragment")]
@@ -50,22 +50,26 @@ FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 
+    // --- Sample G-buffer ---
     float3 position = gPosition.Sample(input.texCoord).xyz;
-    float3 normal = gNormal.Sample(input.texCoord).xyz;
+    float3 normal = gNormal.Sample(input.texCoord).xyz * 2.0 - 1.0; // convert from [0,1] -> [-1,1]
 
     float4 albedoColor = gAlbedo.Sample(input.texCoord);
-    float4 _ = gMetallicRoughness.Sample(input.texCoord);
-    float metallic = _.r;
-    float roughness = _.g;
-    float ao = _.b;
+    float4 mr = gMetallicRoughness.Sample(input.texCoord);
+    float metallic = mr.r;
+    float roughness = mr.g;
+    float ao = mr.b;
 
     if (albedoColor.a == 0) discard;
 
     float3 N = normalize(normal);
-    float3 V = normalize(u_ViewPosition - (input.position.xyz / input.position.w));
+    float3 V = normalize(u_ViewPosition - position);
 
-    float3 color = AMBIENT_LIGHT * albedoColor.rgb * ao;
+    // --- IBL diffuse irradiance ---
+    float3 irradiance = IrradianceMap.Sample(N).rgb;
+    float3 color = irradiance * albedoColor.rgb * ao;
 
+    // --- Directional lighting ---
     if (u_HasDirectionLight)
     {
         float3 L = normalize(-u_LightDirection);
@@ -76,13 +80,13 @@ FragmentOutput fragmentMain(VertexOutput input)
         F0 = lerp(F0, albedoColor.rgb, metallic);
         float3 F = F0 + (1.0 - F0) * pow(1.0 - saturate(dot(H, V)), 5.0);
 
-        // Distribution GGX
+        // GGX Distribution
         float a = roughness * roughness;
         float a2 = a * a;
         float NdotH = max(dot(N, H), 0.0);
         float D = a2 / (PI * pow(NdotH * NdotH * (a2 - 1.0) + 1.0, 2.0) + 1e-5);
 
-        // Geometry (Schlick-GGX)
+        // Schlick-GGX Geometry
         float k = (roughness + 1.0);
         k = (k * k) / 8.0;
         float NdotV = max(dot(N, V), 0.0);
@@ -104,10 +108,11 @@ FragmentOutput fragmentMain(VertexOutput input)
         color += (diffuse + specular) * radiance * NdotL;
     }
 
+    // --- Tonemapping + gamma ---
     color = color / (color + float3(1.0));
     color = pow(color, float3(1.0 / 2.2));
 
-    output.color = float4(color.rgb, albedoColor.a);
+    output.color = float4(color, albedoColor.a);
     output.entityID = -1;
     output.depth = gDepth.Sample(input.texCoord).r;
 

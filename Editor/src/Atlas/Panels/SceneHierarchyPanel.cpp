@@ -433,6 +433,7 @@ namespace Titan
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
                         component.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
+                        component.Irradiance = component.Skybox->CreateIrradianceMap();
                     }
                     ImGui::EndDragDropTarget();
                 }

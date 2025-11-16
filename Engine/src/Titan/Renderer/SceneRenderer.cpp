@@ -152,7 +152,16 @@ namespace Titan
                 data.LightDirection = lightDirection;
                 data.ViewPosition = s_SRData->viewPosition;
 
-                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data);
+                Ref<Cubemap> cubemap = nullptr;
+                auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+                for (auto entity : skyboxView)
+                {
+                    auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+                    cubemap = sb.Irradiance;
+                    break;
+                }
+
+                PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data, cubemap);
 
                 fb->Unbind();
             });
