@@ -72,6 +72,11 @@ namespace Titan
                     Entity cameraEntity = m_Context->CreateEntity("Camera");
                     cameraEntity.AddComponent<CameraComponent>();
                 }
+                if (ImGui::MenuItem("Create PostFX Entity"))
+                {
+                    Entity postFXEntity = m_Context->CreateEntity("Post Processing");
+                    postFXEntity.AddComponent<PostFXComponent>();
+                }
                 ImGui::SeparatorText("2D");
                 if (ImGui::MenuItem("Create Sprite"))
                 {
@@ -127,6 +132,7 @@ namespace Titan
                 DrawAddComponent<CameraComponent>(m_SelectionContext, "Camera");
 
                 ImGui::SeparatorText("Rendering");
+                DrawAddComponent<PostFXComponent>(m_SelectionContext, "Post Effects");
                 DrawAddComponent<MeshRendererComponent>(m_SelectionContext, "Mesh Renderer");
                 DrawAddComponent<SpriteRendererComponent>(m_SelectionContext, "Sprite Renderer");
                 DrawAddComponent<CircleRendererComponent>(m_SelectionContext, "Circle Renderer");
@@ -356,6 +362,17 @@ namespace Titan
                     ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
                 }
             });
+
+        DrawComponent<PostFXComponent>("Post Processing", entity,
+                                       [](auto& component)
+                                       {
+                                           if (ImGui::TreeNodeEx("FXAA", ImGuiTreeNodeFlags_Framed))
+                                           {
+                                               ImGui::Checkbox("Is Enabled?", &component.FXAASettings.isEnabled);
+                                               ImGui::TreePop();
+                                           }
+                                       });
+
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity,
                                                [](auto& component)
                                                {

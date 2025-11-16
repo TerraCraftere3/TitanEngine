@@ -225,6 +225,22 @@ namespace Titan
             out << YAML::EndMap; // CameraComponent
         }
 
+        if (entity.HasComponent<PostFXComponent>())
+        {
+            out << YAML::Key << "PostFXComponent";
+            out << YAML::BeginMap; // PostFXComponent
+
+            auto& fxc = entity.GetComponent<PostFXComponent>();
+            {
+                out << YAML::Key << "FXAA";
+                out << YAML::BeginMap; // FXAA
+                out << YAML::Key << "Enabled" << YAML::Value << fxc.FXAASettings.isEnabled;
+                out << YAML::EndMap; // FXAA
+            }
+
+            out << YAML::EndMap; // PostFXComponent
+        }
+
         if (entity.HasComponent<SpriteRendererComponent>())
         {
             out << YAML::Key << "SpriteRendererComponent";
@@ -503,6 +519,18 @@ namespace Titan
 
                     cc.Primary = cameraComponent["Primary"].as<bool>();
                     cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+                }
+
+                auto postFXComponent = entity["PostFXComponent"];
+                if (postFXComponent)
+                {
+                    auto& fxc = deserializedEntity.AddComponent<PostFXComponent>();
+
+                    auto fxaaNode = postFXComponent["FXAA"];
+                    if (fxaaNode)
+                    {
+                        fxc.FXAASettings.isEnabled = fxaaNode["Enabled"].as<bool>();
+                    }
                 }
 
                 auto spriteRendererComponent = entity["SpriteRendererComponent"];

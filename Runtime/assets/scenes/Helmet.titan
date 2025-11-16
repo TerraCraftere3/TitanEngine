@@ -1,14 +1,42 @@
 Scene: Untitled
 Entities:
-  - Entity: 6817584821935004973
+  - Entity: 8758640056969562893
     TagComponent:
-      Tag: Directional Light
+      Tag: Post Processing
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, -1, -1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 5779225809508732683
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+  - Entity: 1229789391634107600
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-3, 1.5, 3]
+      Rotation: [-0.2617994, -0.7853982, 0]
+      Scale: [0.99999994, 0.99999976, 0.9999999]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
   - Entity: 18224009490395026848
     TagComponent:
       Tag: Helmet
@@ -35,30 +63,12 @@ Entities:
         - Name: Speed
           Type: Float
           Data: 0.2
-  - Entity: 1229789391634107600
+  - Entity: 6817584821935004973
     TagComponent:
-      Tag: Camera
-    TransformComponent:
-      Translation: [-3, 1.5, 3]
-      Rotation: [-0.2617994, -0.7853982, 0]
-      Scale: [0.99999994, 0.99999976, 0.9999999]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.7853982
-        PerspectiveNear: 0.01
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1000
-      Primary: true
-      FixedAspectRatio: false
-  - Entity: 5779225809508732683
-    TagComponent:
-      Tag: Skybox
+      Tag: Directional Light
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    SkyboxComponent:
-      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+    DirectionalLightComponent:
+      Direction: [-1, -1, -1]

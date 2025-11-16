@@ -1,14 +1,20 @@
 #pragma once
 
-#include "Titan/PCH.h"
-#include "RenderGraph.h"
-#include "Framebuffer.h"
-#include "Texture.h"
-#include "Cubemap.h"
-#include "VertexArray.h"
-#include "Buffer.h"
-#include "RenderCommand.h"
 #include <vector>
+#include "Buffer.h"
+#include "Cubemap.h"
+#include "Framebuffer.h"
+#include "RenderCommand.h"
+#include "RenderGraph.h"
+#include "Shader.h"
+#include "ShaderStorageBuffer.h"
+#include "Texture.h"
+#include "Titan/PCH.h"
+#include "Titan/Scene/Assets.h"
+#include "Titan/Scene/Components.h"
+#include "Titan/Scene/Scene.h"
+#include "UniformBuffer.h"
+#include "VertexArray.h"
 
 namespace Titan
 {
@@ -22,7 +28,8 @@ namespace Titan
 
         virtual void OnAttach() = 0;
         virtual void OnDetach() = 0;
-        virtual void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer) = 0;
+        virtual void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene,
+                             PostFXComponent fxc) = 0;
 
     protected:
         std::string m_Name;
@@ -36,7 +43,7 @@ namespace Titan
         void AddEffect(Ref<PostFX> effect)
         {
             effect->OnAttach();
-                TI_CORE_TRACE("Attached Post Effect {}", effect->GetName());
+            TI_CORE_INFO("Attached Post Effect \"{}\"", effect->GetName());
             m_Effects.push_back(effect);
         }
 
@@ -44,7 +51,7 @@ namespace Titan
             for (auto& effect : m_Effects)
             {
                 effect->OnDetach();
-                TI_CORE_TRACE("Detached Post Effect {}", effect->GetName());
+                TI_CORE_INFO("Detached Post Effect \"{}\"", effect->GetName());
             }
         }
 
@@ -56,11 +63,25 @@ namespace Titan
                 m_Effects.end());
         }
 
-        void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer)
+        void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene)
         {
+            PostFXComponent fxc;
+            bool foundComponent = false;
+            auto postFXView = scene->GetAllEntitiesWith<TransformComponent, PostFXComponent>();
+            for (auto entity : postFXView)
+            {
+                auto [transform, postfxcomponent] = postFXView.get<TransformComponent, PostFXComponent>(entity);
+                fxc = postfxcomponent;
+                foundComponent = true;
+                break;
+            }
+
+            if (!foundComponent)
+                return;
+
             for (auto& effect : m_Effects)
             {
-                effect->Execute(graph, pass, framebuffer);
+                effect->Execute(graph, pass, framebuffer, scene, fxc);
             }
         }
 

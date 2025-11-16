@@ -106,6 +106,19 @@ namespace Titan
         CameraComponent(const CameraComponent&) = default;
     };
 
+    struct PostFXComponent
+    {
+        struct FXAA
+        {
+            bool isEnabled = false;
+        };
+
+        FXAA FXAASettings;
+
+        PostFXComponent() = default;
+        PostFXComponent(const PostFXComponent&) = default;
+    };
+
     struct NativeScriptComponent
     {
         ScriptableEntity* Instance = nullptr;
@@ -183,6 +196,6 @@ namespace Titan
 
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
-                       DirectionalLightComponent, SkyboxComponent, CameraComponent, ScriptComponent,
+                       DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
                        NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 } // namespace Titan

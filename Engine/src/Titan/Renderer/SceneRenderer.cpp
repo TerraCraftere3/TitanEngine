@@ -321,7 +321,7 @@ namespace Titan
                                       return;
                                   TI_PROFILE_PASS();
 
-                                  s_SRData->postFXs->Execute(graph, pass, fb);
+                                  s_SRData->postFXs->Execute(graph, pass, fb, s_SRData->currentScene);
                               });
 
         // Build the graph

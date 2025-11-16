@@ -25,6 +25,9 @@ namespace Titan
         virtual void Resize(uint32_t width, uint32_t height) override;
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
+        virtual uint32_t GetWidth() override { return m_Specification.Width; };
+        virtual uint32_t GetHeight() override { return m_Specification.Height; };
+
         virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
         virtual void BindTexture(uint32_t attachmentIndex = 0, uint32_t bindIndex = 0) const override;
