@@ -53,7 +53,8 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-                SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
+                if (m_EnableRender)
+                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
                 break;
             }
             case SceneState::Simulate:
@@ -61,13 +62,15 @@ namespace Titan
                 m_EditorCamera.OnUpdate(ts);
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
-                SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
+                if (m_EnableRender)
+                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
                 break;
             }
             case SceneState::Play:
             {
                 m_ActiveScene->OnUpdateRuntime(ts);
-                SceneRenderer::RenderSceneRuntime(m_ActiveScene);
+                if (m_EnableRender)
+                    SceneRenderer::RenderSceneRuntime(m_ActiveScene);
                 break;
             }
         }
@@ -354,6 +357,9 @@ namespace Titan
 
         if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
+
+        ImGui::SameLine();
+        ImGui::Checkbox("Enable Rendering", &m_EnableRender);
 
         ImGui::PopStyleVar(2);
         ImGui::End();

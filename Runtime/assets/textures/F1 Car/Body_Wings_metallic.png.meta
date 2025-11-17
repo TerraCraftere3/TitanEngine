@@ -1,0 +1,8 @@
+ID: 12791082734835041677
+Type: 1
+Source: assets\textures\F1 Car\Body_Wings_metallic.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

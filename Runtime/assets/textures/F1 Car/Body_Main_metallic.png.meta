@@ -1,0 +1,8 @@
+ID: 9870108952137176611
+Type: 1
+Source: assets\textures\F1 Car\Body_Main_metallic.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

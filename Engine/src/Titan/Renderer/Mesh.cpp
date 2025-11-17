@@ -13,9 +13,34 @@ namespace Titan
         std::vector<glm::vec3> Tangents;
     };
 
-    static void ProcessMesh(aiMesh* mesh, RawMeshData& data, std::vector<uint8_t>& materialIndexOut,
-                            uint8_t materialIdx)
+    // Convert aiMatrix4x4 → glm::mat4
+    static glm::mat4 ConvertMatrix(const aiMatrix4x4& m)
     {
+        glm::mat4 r;
+        r[0][0] = m.a1;
+        r[1][0] = m.a2;
+        r[2][0] = m.a3;
+        r[3][0] = m.a4;
+        r[0][1] = m.b1;
+        r[1][1] = m.b2;
+        r[2][1] = m.b3;
+        r[3][1] = m.b4;
+        r[0][2] = m.c1;
+        r[1][2] = m.c2;
+        r[2][2] = m.c3;
+        r[3][2] = m.c4;
+        r[0][3] = m.d1;
+        r[1][3] = m.d2;
+        r[2][3] = m.d3;
+        r[3][3] = m.d4;
+        return r;
+    }
+
+    static void ProcessMesh(aiMesh* mesh, RawMeshData& data, std::vector<uint8_t>& materialIndexOut,
+                            uint8_t materialIdx, const glm::mat4& transform)
+    {
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
+
         for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
         {
             const aiFace& face = mesh->mFaces[i];
@@ -38,7 +63,8 @@ namespace Titan
                 mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx1].x, mesh->mTextureCoords[0][idx1].y)
                                           : glm::vec2(0.0f),
                 mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx2].x, mesh->mTextureCoords[0][idx2].y)
-                                          : glm::vec2(0.0f)};
+                                          : glm::vec2(0.0f),
+            };
 
             glm::vec3 n[3] = {
                 mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx0].x, mesh->mNormals[idx0].y, mesh->mNormals[idx0].z)
@@ -46,8 +72,10 @@ namespace Titan
                 mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx1].x, mesh->mNormals[idx1].y, mesh->mNormals[idx1].z)
                                    : glm::vec3(0.0f),
                 mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx2].x, mesh->mNormals[idx2].y, mesh->mNormals[idx2].z)
-                                   : glm::vec3(0.0f)};
+                                   : glm::vec3(0.0f),
+            };
 
+            // Tangent generation
             glm::vec3 edge1 = positions[1] - positions[0];
             glm::vec3 edge2 = positions[2] - positions[0];
             glm::vec2 deltaUV1 = uvs[1] - uvs[0];
@@ -57,28 +85,41 @@ namespace Titan
 
             for (int j = 0; j < 3; ++j)
             {
-                data.Positions.push_back(positions[j]);
-                data.Normals.push_back(n[j]);
+                // Apply transform to positions
+                glm::vec4 worldPos = transform * glm::vec4(positions[j], 1.0f);
+                data.Positions.push_back(glm::vec3(worldPos));
+
+                // Apply normal transform
+                glm::vec3 worldNormal = glm::normalize(normalMatrix * n[j]);
+                data.Normals.push_back(worldNormal);
+
                 data.TexCoords.push_back(uvs[j]);
-                data.Tangents.push_back(tangent);
+
+                // Tangent transform (same as normal, w=0)
+                glm::vec3 worldTangent = glm::normalize(normalMatrix * tangent);
+                data.Tangents.push_back(worldTangent);
+
                 materialIndexOut.push_back(materialIdx);
             }
         }
     }
 
     static void ProcessNode(aiNode* node, const aiScene* scene, RawMeshData& data,
-                            std::vector<uint8_t>& materialIndexOut)
+                            std::vector<uint8_t>& materialIndexOut, const glm::mat4& parentTransform)
     {
+        glm::mat4 nodeTransform = parentTransform * ConvertMatrix(node->mTransformation);
+
         for (unsigned int i = 0; i < node->mNumMeshes; ++i)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             uint8_t matIndex = static_cast<uint8_t>(mesh->mMaterialIndex);
-            ProcessMesh(mesh, data, materialIndexOut, matIndex);
+            ProcessMesh(mesh, data, materialIndexOut, matIndex, nodeTransform);
         }
 
         for (unsigned int i = 0; i < node->mNumChildren; ++i)
-            ProcessNode(node->mChildren[i], scene, data, materialIndexOut);
+            ProcessNode(node->mChildren[i], scene, data, materialIndexOut, nodeTransform);
     }
+
     struct Vec3Hash
     {
         size_t operator()(const glm::vec3& v) const
@@ -135,7 +176,6 @@ namespace Titan
             tangents[i2] += tangent;
         }
 
-        // Normalize
         for (auto& t : tangents)
             t = glm::normalize(t);
     }
@@ -293,27 +333,22 @@ namespace Titan
         RawMeshData data;
         std::vector<uint8_t> materialIndices;
 
-        // Load materials with names
+        // Load materials
         for (unsigned int i = 0; i < scene->mNumMaterials; i++)
         {
             auto material = CreateRef<Material3D>();
 
-            // Try to get the material name from Assimp
             aiString aiMatName;
             if (scene->mMaterials[i]->Get(AI_MATKEY_NAME, aiMatName) == AI_SUCCESS && aiMatName.length > 0)
-            {
                 material->Name = aiMatName.C_Str();
-            }
             else
-            {
-                // Use default naming: "Material 1", "Material 2", etc.
                 material->Name = "Material " + std::to_string(i + 1);
-            }
 
             mesh->m_Materials.push_back(material);
         }
 
-        ProcessNode(scene->mRootNode, scene, data, materialIndices);
+        ProcessNode(scene->mRootNode, scene, data, materialIndices, glm::mat4(1.0f));
+
         ComputeSmoothNormals(data.Positions, data.Normals);
 
         mesh->m_Positions = std::move(data.Positions);

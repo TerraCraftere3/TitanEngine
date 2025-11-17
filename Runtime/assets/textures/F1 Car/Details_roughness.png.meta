@@ -1,0 +1,8 @@
+ID: 3262230856298073173
+Type: 1
+Source: assets\textures\F1 Car\Details_roughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear

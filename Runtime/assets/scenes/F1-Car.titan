@@ -1,0 +1,117 @@
+Scene: Untitled
+Entities:
+  - Entity: 5126520675402429574
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 3981581144072246403
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-5.419147, 3.0117502, 3.3613381]
+      Rotation: [-0.22029689, -1.1279832, 1.0954614e-06]
+      Scale: [0.999996, 0.99999875, 0.9999949]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 8783335533492056516
+    TagComponent:
+      Tag: Quad
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [20, 10, 1]
+    MeshRendererComponent:
+      Mesh: quad
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\Asphalt\aerial_asphalt_01_diff_4k.jpg
+          RoughnessTexture: assets\textures\Asphalt\aerial_asphalt_01_rough_4k.jpg
+          NormalTexture: assets\textures\Asphalt\aerial_asphalt_01_nor_gl_4k.png
+          UVRepeat: [2, 1]
+  - Entity: 7844234167374969534
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+  - Entity: 396563269968923329
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, 1, 1]
+  - Entity: 7212450946684948358
+    TagComponent:
+      Tag: Car
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 1.5707964, 0]
+      Scale: [0.02, 0.02, 0.02]
+    MeshRendererComponent:
+      Mesh: assets\models\F1 Car\scene.gltf
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Body_Main_baseColor.png
+          MetallicTexture: assets\textures\F1 Car\Body_Wings_metallic.png
+          RoughnessTexture: assets\textures\F1 Car\Body_Wings_roughness.png
+          NormalTexture: assets\textures\F1 Car\Body_Main_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Titanium_baseColor.png
+          MetallicTexture: assets\textures\F1 Car\Titanium_metallic.png
+          RoughnessTexture: assets\textures\F1 Car\Titanium_roughness.png
+          NormalTexture: assets\textures\F1 Car\Titanium_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Details_baseColor.png
+          MetallicTexture: assets\textures\F1 Car\Details_metallic.png
+          RoughnessTexture: assets\textures\F1 Car\Details_roughness.png
+          NormalTexture: assets\textures\F1 Car\Details_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Carbon_Fiber_baseColor.png
+          NormalTexture: assets\textures\F1 Car\Carbon_Fiber_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Tyre_baseColor.png
+          MetallicTexture: assets\textures\F1 Car\Tyre_metallic.png
+          RoughnessTexture: assets\textures\F1 Car\Tyre_roughness.png
+          NormalTexture: assets\textures\F1 Car\Tyre_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          AlbedoTexture: assets\textures\F1 Car\Body_Main_baseColor.png
+          MetallicTexture: assets\textures\F1 Car\Body_Main_metallic.png
+          RoughnessTexture: assets\textures\F1 Car\Body_Main_roughness.png
+          NormalTexture: assets\textures\F1 Car\Body_Main_normal.png
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]

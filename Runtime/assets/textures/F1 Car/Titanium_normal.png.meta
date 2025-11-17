@@ -1,0 +1,8 @@
+ID: 1503702343310553265
+Type: 1
+Source: assets\textures\F1 Car\Titanium_normal.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: Linear
+  MagFilter: Linear
