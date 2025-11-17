@@ -1,10 +1,10 @@
 #include "SceneHierarchyPanel.h"
 #include "../Components.h"
+#include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Scene/Assets.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scripting/ScriptEngine.h"
-
-#include "Titan/Scene/Assets.h"
 
 namespace Titan
 {
@@ -391,6 +391,8 @@ namespace Titan
             "Mesh Renderer", entity,
             [](auto& component)
             {
+                bool changed = false;
+
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(
                     std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetFilePath() : "None").c_str(),
@@ -402,6 +404,7 @@ namespace Titan
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path meshPath = std::filesystem::path(g_AssetPath) / path;
                         component.MeshRef = Assets::Load<Mesh>(meshPath.string());
+                        changed = true;
                     }
                     ImGui::EndDragDropTarget();
                 }
@@ -413,14 +416,14 @@ namespace Titan
 
                     if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
-                        ImGui::ColorEdit4("Diffuse", glm::value_ptr(mat->AlbedoColor));
-                        DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
-                        DrawTextureSlot("Emission Texture", mat->EmissionTexture);
-                        DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
-                        DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
-                        DrawTextureSlot("Normal Texture", mat->NormalTexture);
-                        DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
-                        ImGui::DragFloat2("UV Repeat", glm::value_ptr(mat->UVRepeat), 0.1f, 0.01f, 100.0f);
+                        changed |= ImGui::ColorEdit4("Diffuse", glm::value_ptr(mat->AlbedoColor));
+                        changed |= DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
+                        changed |= DrawTextureSlot("Emission Texture", mat->EmissionTexture);
+                        changed |= DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
+                        changed |= DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
+                        changed |= DrawTextureSlot("Normal Texture", mat->NormalTexture);
+                        changed |= DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
+                        changed |= ImGui::DragFloat2("UV Repeat", glm::value_ptr(mat->UVRepeat), 0.1f, 0.01f, 100.0f);
 
                         ImGui::TreePop();
                     }
@@ -428,6 +431,9 @@ namespace Titan
                     ImGui::PopID();
                     index++;
                 }
+
+                if (changed)
+                    GeometryRenderer::ClearCache();
             });
         DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });
