@@ -76,7 +76,22 @@ namespace Titan
         vertexArray->Bind();
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void OpenGLRendererAPI::DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                                 uint32_t instanceCount)
+    {
+        vertexArray->Bind();
+        uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
+        glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr, instanceCount);
+    }
+
+    void OpenGLRendererAPI::DrawIndexedInstancedBaseIndex(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                                          uint32_t instanceCount, uint32_t baseIndex)
+    {
+        vertexArray->Bind();
+        glDrawElementsInstancedBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT,
+                                          (void*)(baseIndex * sizeof(uint32_t)), instanceCount, 0);
     }
 
     void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)

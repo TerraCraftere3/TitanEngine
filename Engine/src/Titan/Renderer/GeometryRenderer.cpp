@@ -12,8 +12,8 @@ namespace Titan
 {
     glm::uvec2 HandleToVec2(uint64_t handle)
     {
-        uint32_t low = static_cast<uint32_t>(handle & 0xFFFFFFFF);          // lower 32 bits
-        uint32_t high = static_cast<uint32_t>((handle >> 32) & 0xFFFFFFFF); // upper 32 bits
+        uint32_t low = static_cast<uint32_t>(handle & 0xFFFFFFFF);
+        uint32_t high = static_cast<uint32_t>((handle >> 32) & 0xFFFFFFFF);
         return glm::uvec2(low, high);
     }
 
@@ -29,127 +29,91 @@ namespace Titan
 
     static Textures s_Textures;
 
+    // Compact vertex format - only what we need
     struct Vertex
     {
         glm::vec3 Position;
         glm::vec3 Normal;
         glm::vec3 Tangent;
         glm::vec2 TexCoord;
-        int EntityID;
-        int MaterialIndex = 0;
+    };
+
+    // Per-instance data (uploaded once per mesh instance)
+    struct alignas(16) InstanceData
+    {
+        glm::mat4 Transform;    // 64 bytes
+        glm::mat4 NormalMatrix; // 64 bytes
+        int EntityID;           // 4 bytes
+        int MaterialIndex;      // 4 bytes
+        float _pad[2];          // 8 bytes padding
     };
 
     struct alignas(16) GPUMaterial
     {
-        glm::vec4 AlbedoColor; // 16 bytes
-
-        glm::uvec2 AlbedoTextureIndex; // 8 bytes
+        glm::vec4 AlbedoColor;
+        glm::uvec2 AlbedoTextureIndex;
         glm::uvec2 EmissionTextureIndex;
-
-        glm::uvec2 MetallicTextureIndex; // 8 bytes
-        glm::uvec2 AOTextureIndex;       // 8 bytes;
-
-        glm::uvec2 RoughnessTextureIndex; // 8 bytes
-        glm::uvec2 NormalTextureIndex;    // 8 bytes
-
-        glm::vec2 UVRepeat; // 8 bytes
+        glm::uvec2 MetallicTextureIndex;
+        glm::uvec2 AOTextureIndex;
+        glm::uvec2 RoughnessTextureIndex;
+        glm::uvec2 NormalTextureIndex;
+        glm::vec2 UVRepeat;
 
         GPUMaterial() = default;
-
         explicit GPUMaterial(const Material3D& mat)
         {
             AlbedoColor = mat.AlbedoColor;
-            if (mat.AlbedoTexture)
-            {
-                if (!mat.AlbedoTexture->isValidBindlessHandle())
-                    mat.AlbedoTexture->MakeHandleResident();
-                AlbedoTextureIndex = HandleToVec2(mat.AlbedoTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultAlbedo->isValidBindlessHandle())
-                    s_Textures.DefaultAlbedo->MakeHandleResident();
-                AlbedoTextureIndex = HandleToVec2(s_Textures.DefaultAlbedo->GetBindlessHandle());
-            }
-            if (mat.EmissionTexture)
-            {
-                if (!mat.EmissionTexture->isValidBindlessHandle())
-                    mat.EmissionTexture->MakeHandleResident();
-                EmissionTextureIndex = HandleToVec2(mat.EmissionTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultAO->isValidBindlessHandle())
-                    s_Textures.DefaultAO->MakeHandleResident();
-                EmissionTextureIndex = HandleToVec2(s_Textures.DefaultEmission->GetBindlessHandle());
-            }
-            if (mat.MetallicTexture)
-            {
-                if (!mat.MetallicTexture->isValidBindlessHandle())
-                    mat.MetallicTexture->MakeHandleResident();
-                MetallicTextureIndex = HandleToVec2(mat.MetallicTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultMetallic->isValidBindlessHandle())
-                    s_Textures.DefaultMetallic->MakeHandleResident();
-                MetallicTextureIndex = HandleToVec2(s_Textures.DefaultMetallic->GetBindlessHandle());
-            }
 
-            if (mat.RoughnessTexture)
+            auto SetTextureHandle = [](glm::uvec2& target, Ref<Texture2D> tex, Ref<Texture2D> defaultTex)
             {
-                if (!mat.RoughnessTexture->isValidBindlessHandle())
-                    mat.RoughnessTexture->MakeHandleResident();
-                RoughnessTextureIndex = HandleToVec2(mat.RoughnessTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultRoughness->isValidBindlessHandle())
-                    s_Textures.DefaultRoughness->MakeHandleResident();
-                RoughnessTextureIndex = HandleToVec2(s_Textures.DefaultRoughness->GetBindlessHandle());
-            }
+                Ref<Texture2D> useTex = tex ? tex : defaultTex;
+                // Always remake resident to ensure handle is valid
+                if (useTex->isValidBindlessHandle())
+                    useTex->MakeHandleNonResident(); // Remove old handle
+                useTex->MakeHandleResident();        // Create new handle
+                target = HandleToVec2(useTex->GetBindlessHandle());
+            };
 
-            if (mat.NormalTexture)
-            {
-                if (!mat.NormalTexture->isValidBindlessHandle())
-                    mat.NormalTexture->MakeHandleResident();
-                NormalTextureIndex = HandleToVec2(mat.NormalTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultNormal->isValidBindlessHandle())
-                    s_Textures.DefaultNormal->MakeHandleResident();
-                NormalTextureIndex = HandleToVec2(s_Textures.DefaultNormal->GetBindlessHandle());
-            }
-
-            if (mat.AOTexture)
-            {
-                if (!mat.AOTexture->isValidBindlessHandle())
-                    mat.AOTexture->MakeHandleResident();
-                AOTextureIndex = HandleToVec2(mat.AOTexture->GetBindlessHandle());
-            }
-            else
-            {
-                if (!s_Textures.DefaultAO->isValidBindlessHandle())
-                    s_Textures.DefaultAO->MakeHandleResident();
-                AOTextureIndex = HandleToVec2(s_Textures.DefaultAO->GetBindlessHandle());
-            }
+            SetTextureHandle(AlbedoTextureIndex, mat.AlbedoTexture, s_Textures.DefaultAlbedo);
+            SetTextureHandle(EmissionTextureIndex, mat.EmissionTexture, s_Textures.DefaultEmission);
+            SetTextureHandle(MetallicTextureIndex, mat.MetallicTexture, s_Textures.DefaultMetallic);
+            SetTextureHandle(RoughnessTextureIndex, mat.RoughnessTexture, s_Textures.DefaultRoughness);
+            SetTextureHandle(NormalTextureIndex, mat.NormalTexture, s_Textures.DefaultNormal);
+            SetTextureHandle(AOTextureIndex, mat.AOTexture, s_Textures.DefaultAO);
 
             UVRepeat = mat.UVRepeat;
         }
     };
 
+    // Submesh represents a range of indices with one material
+    struct Submesh
+    {
+        uint32_t BaseIndex;
+        uint32_t IndexCount;
+        uint32_t MaterialIndex;
+    };
+
+    // Cached mesh GPU data
+    struct MeshGPUData
+    {
+        Ref<VertexArray> VAO;
+        Ref<VertexBuffer> VBO;
+        Ref<IndexBuffer> IBO;
+        uint32_t TotalIndexCount;
+        std::vector<Submesh> Submeshes; // Each submesh has its own material
+    };
+
     struct GeometryRendererData
     {
-        static const uint32_t MaxVertices = 100'000;
+        static const uint32_t MaxInstances = 10000;
         static const uint32_t MaxMaterials = 1000;
-        static const uint32_t MaxTextures = 1024;
 
-        Ref<VertexArray> VertexArray;
-        Ref<VertexBuffer> VertexBuffer;
-        Vertex* VertexBufferBase = nullptr;
-        Vertex* VertexBufferPtr = nullptr;
-        uint32_t VertexCount = 0;
+        std::vector<InstanceData> InstanceBuffer;
+        Ref<ShaderStorageBuffer> InstanceSSBO;
+
+        Ref<Mesh> CurrentMesh;
+        MeshGPUData* CurrentMeshGPU = nullptr;
+        uint32_t CurrentInstanceCount = 0;
 
         struct CameraData
         {
@@ -160,11 +124,11 @@ namespace Titan
         Ref<Shader> Shader;
         Ref<UniformBuffer> CameraUniformBuffer;
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
-        Ref<ShaderStorageBuffer> TextureStorageBuffer;
 
         std::vector<GPUMaterial> GPUMaterials;
-        std::unordered_map<size_t, uint32_t> MaterialIndexMap; // Hash -> Index
-        uint32_t CurrentMaterialIndex = 0;
+        std::unordered_map<size_t, uint32_t> MaterialIndexMap;
+
+        std::unordered_map<Mesh*, MeshGPUData> MeshCache;
 
         GeometryRenderer::Statistics Stats;
     };
@@ -172,7 +136,6 @@ namespace Titan
     static GeometryRendererData s_3DData;
     static bool s_IsRendering = false;
 
-    // Helper function to hash materials
     static size_t HashMaterial(const Material3D& mat)
     {
         size_t hash = 0;
@@ -184,260 +147,261 @@ namespace Titan
         return hash;
     }
 
+    static uint32_t GetOrAddMaterial(const Material3D& mat)
+    {
+        size_t hash = HashMaterial(mat);
+        auto it = s_3DData.MaterialIndexMap.find(hash);
+        if (it != s_3DData.MaterialIndexMap.end())
+            return it->second;
+
+        uint32_t newIndex = static_cast<uint32_t>(s_3DData.GPUMaterials.size());
+        if (newIndex >= s_3DData.MaxMaterials)
+        {
+            TI_CORE_ERROR("Material limit reached!");
+            return 0;
+        }
+
+        s_3DData.GPUMaterials.push_back(GPUMaterial(mat));
+        s_3DData.MaterialIndexMap[hash] = newIndex;
+        return newIndex;
+    }
+
+    MeshGPUData* GetOrCreateMeshGPUData(Mesh* mesh)
+    {
+        auto it = s_3DData.MeshCache.find(mesh);
+        if (it != s_3DData.MeshCache.end())
+            return &it->second;
+
+        MeshGPUData gpuData;
+
+        const auto& positions = mesh->GetPositions();
+        const auto& normals = mesh->GetNormals();
+        const auto& tangents = mesh->GetTangents();
+        const auto& texCoords = mesh->GetTexCoords();
+        const auto& indices = mesh->GetIndices();
+        const auto& matIndices = mesh->GetMaterialIndices(); // Per-vertex material index
+        const auto& materials = mesh->GetMaterials();
+
+        std::vector<Vertex> vertices;
+        vertices.reserve(positions.size());
+
+        for (size_t i = 0; i < positions.size(); ++i)
+        {
+            Vertex v;
+            v.Position = positions[i];
+            v.Normal = normals[i];
+            v.Tangent = tangents[i];
+            v.TexCoord = texCoords[i];
+            vertices.push_back(v);
+        }
+
+        gpuData.VAO = VertexArray::Create();
+        gpuData.VBO = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
+
+        gpuData.VBO->SetLayout({{ShaderDataType::Float3, "a_Position"},
+                                {ShaderDataType::Float3, "a_Normal"},
+                                {ShaderDataType::Float3, "a_Tangent"},
+                                {ShaderDataType::Float2, "a_TexCoord"}});
+
+        gpuData.VAO->AddVertexBuffer(gpuData.VBO);
+
+        if (!indices.empty() && !matIndices.empty())
+        {
+            std::unordered_map<uint8_t, std::vector<uint32_t>> materialGroups;
+
+            for (size_t i = 0; i < indices.size(); i += 3)
+            {
+                uint8_t matIdx = matIndices[indices[i]];
+                materialGroups[matIdx].push_back(indices[i]);
+                materialGroups[matIdx].push_back(indices[i + 1]);
+                materialGroups[matIdx].push_back(indices[i + 2]);
+            }
+
+            std::vector<uint32_t> finalIndices;
+            for (const auto& [localMatIdx, groupIndices] : materialGroups)
+            {
+                Submesh submesh;
+                submesh.BaseIndex = finalIndices.size();
+                submesh.IndexCount = groupIndices.size();
+                submesh.MaterialIndex = GetOrAddMaterial(*materials[localMatIdx]);
+
+                finalIndices.insert(finalIndices.end(), groupIndices.begin(), groupIndices.end());
+                gpuData.Submeshes.push_back(submesh);
+            }
+
+            gpuData.IBO = IndexBuffer::Create(finalIndices.data(), finalIndices.size());
+            gpuData.VAO->SetIndexBuffer(gpuData.IBO);
+            gpuData.TotalIndexCount = finalIndices.size();
+        }
+        else
+        {
+            std::vector<uint32_t> generatedIndices;
+            generatedIndices.reserve(positions.size());
+            for (uint32_t i = 0; i < positions.size(); ++i)
+                generatedIndices.push_back(i);
+
+            gpuData.IBO = IndexBuffer::Create(generatedIndices.data(), generatedIndices.size());
+            gpuData.VAO->SetIndexBuffer(gpuData.IBO);
+            gpuData.TotalIndexCount = generatedIndices.size();
+
+            Submesh submesh;
+            submesh.BaseIndex = 0;
+            submesh.IndexCount = generatedIndices.size();
+            submesh.MaterialIndex = materials.empty() ? 0 : GetOrAddMaterial(*materials[0]);
+            gpuData.Submeshes.push_back(submesh);
+        }
+
+        s_3DData.MeshCache[mesh] = std::move(gpuData);
+        return &s_3DData.MeshCache[mesh];
+    }
+
     void GeometryRenderer::Init()
     {
-        s_3DData.VertexBufferBase = new Vertex[s_3DData.MaxVertices];
-        s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
-        s_3DData.VertexCount = 0;
-
-        s_3DData.VertexArray = VertexArray::Create();
-        s_3DData.VertexBuffer = VertexBuffer::Create(s_3DData.MaxVertices * sizeof(Vertex));
-
-        // clang-format off
-        s_3DData.VertexBuffer->SetLayout({
-            {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float3, "a_Normal"},
-            {ShaderDataType::Float3, "a_Tangent"},
-            {ShaderDataType::Float2, "a_TexCoord"},
-            {ShaderDataType::Int,    "a_EntityID"},
-            {ShaderDataType::Int,    "a_MaterialIndex"}
-        });
-        // clang-format on
-
-        s_3DData.VertexArray->AddVertexBuffer(s_3DData.VertexBuffer);
+        s_3DData.InstanceBuffer.reserve(s_3DData.MaxInstances);
 
         s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(GeometryRendererData::CameraData), 0);
         s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
-        s_3DData.TextureStorageBuffer = ShaderStorageBuffer::Create(sizeof(glm::ivec2) * s_3DData.MaxMaterials, 2);
-        s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
+        s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances, 2);
 
-        // Reserve space for GPU materials
+        s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
 
-        // Textures
         s_Textures.DefaultAlbedo = Texture2D::Create(1, 1);
-        {
-            uint32_t data = 0xffffffff; // white
-            s_Textures.DefaultAlbedo->SetData(&data, sizeof(uint32_t));
-        }
+        uint32_t white = 0xffffffff;
+        s_Textures.DefaultAlbedo->SetData(&white, sizeof(uint32_t));
 
         s_Textures.DefaultEmission = Texture2D::Create(1, 1);
-        {
-            uint32_t data = 0x00000000; // black
-            s_Textures.DefaultEmission->SetData(&data, sizeof(uint32_t));
-        }
+        uint32_t black = 0x00000000;
+        s_Textures.DefaultEmission->SetData(&black, sizeof(uint32_t));
 
         s_Textures.DefaultMetallic = Texture2D::Create(1, 1);
-        {
-            uint32_t data = 0x00000000; // black
-            s_Textures.DefaultMetallic->SetData(&data, sizeof(uint32_t));
-        }
+        s_Textures.DefaultMetallic->SetData(&black, sizeof(uint32_t));
 
         s_Textures.DefaultRoughness = Texture2D::Create(1, 1);
-        {
-            uint32_t data = 0xffffffff; // white
-            s_Textures.DefaultRoughness->SetData(&data, sizeof(uint32_t));
-        }
+        s_Textures.DefaultRoughness->SetData(&white, sizeof(uint32_t));
 
         s_Textures.DefaultNormal = Texture2D::Create(1, 1);
-        {
-            uint32_t data = (255u << 24) | // A
-                            (255u << 16) | // B = 255
-                            (128u << 8) |  // G = 128
-                            (128u);        // R = 128
-            s_Textures.DefaultNormal->SetData(&data, sizeof(uint32_t));
-        }
+        uint32_t normalData = (255u << 24) | (255u << 16) | (128u << 8) | 128u;
+        s_Textures.DefaultNormal->SetData(&normalData, sizeof(uint32_t));
 
         s_Textures.DefaultAO = Texture2D::Create(1, 1);
-        {
-            uint32_t data = 0xffffffff; // white
-            s_Textures.DefaultAO->SetData(&data, sizeof(uint32_t));
-        }
+        s_Textures.DefaultAO->SetData(&white, sizeof(uint32_t));
     }
 
     void GeometryRenderer::Shutdown()
     {
-        delete[] s_3DData.VertexBufferBase;
-        s_3DData.VertexBufferBase = nullptr;
-
-        s_3DData.VertexArray.reset();
-        s_3DData.VertexBuffer.reset();
-        s_3DData.Shader.reset();
-        s_3DData.CameraUniformBuffer.reset();
-        s_3DData.MaterialStorageBuffer.reset();
-
+        s_3DData.MeshCache.clear();
+        s_3DData.InstanceBuffer.clear();
         s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
-
         s_Textures = {};
+    }
+
+    void GeometryRenderer::ClearCache()
+    {
+        s_3DData.MeshCache.clear();
+        s_3DData.GPUMaterials.clear();
+        s_3DData.MaterialIndexMap.clear();
     }
 
     void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix)
     {
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");
-        TI_CORE_ASSERT(s_3DData.VertexBufferBase != nullptr, "GeometryRenderer not initialized!");
 
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
         s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(GeometryRendererData::CameraData));
 
         s_3DData.Shader->Bind();
+        s_3DData.CurrentMesh = nullptr;
+        s_3DData.CurrentMeshGPU = nullptr;
+        s_3DData.CurrentInstanceCount = 0;
+        s_3DData.InstanceBuffer.clear();
 
-        StartBatch();
         s_IsRendering = true;
     }
 
     void GeometryRenderer::EndScene()
     {
-        TI_CORE_ASSERT(s_IsRendering, "Called GeometryRenderer::EndScene() without BeginScene()");
+        TI_CORE_ASSERT(s_IsRendering, "Called EndScene() without BeginScene()");
 
-        Flush();
+        Flush(); // Flush remaining instances
         s_IsRendering = false;
 
-        // Clear materials for next frame
-        s_3DData.GPUMaterials.clear();
-        s_3DData.MaterialIndexMap.clear();
-        s_3DData.CurrentMaterialIndex = 0;
-    }
-
-    void GeometryRenderer::StartBatch()
-    {
-        s_3DData.VertexCount = 0;
-        s_3DData.VertexBufferPtr = s_3DData.VertexBufferBase;
-    }
-
-    void GeometryRenderer::Flush()
-    {
-        // Upload GPU materials to GPU
+        // Upload all materials once per frame
         if (!s_3DData.GPUMaterials.empty())
         {
             s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(),
                                                     s_3DData.GPUMaterials.size() * sizeof(GPUMaterial));
         }
 
-        // Upload vertex data
-        uint32_t dataSize = (uint32_t)((uint8_t*)s_3DData.VertexBufferPtr - (uint8_t*)s_3DData.VertexBufferBase);
-        s_3DData.VertexBuffer->SetData(s_3DData.VertexBufferBase, dataSize);
+        // Clear material cache to force re-creation on next scene
+        // This ensures bindless handles are refreshed
+        s_3DData.GPUMaterials.clear();
+        s_3DData.MaterialIndexMap.clear();
+    }
+
+    void GeometryRenderer::Flush()
+    {
+        if (s_3DData.CurrentInstanceCount == 0 || !s_3DData.CurrentMeshGPU)
+            return;
+
+        // Upload instance data
+        s_3DData.InstanceSSBO->SetData(s_3DData.InstanceBuffer.data(),
+                                       s_3DData.CurrentInstanceCount * sizeof(InstanceData));
+
+        // Bind everything
         s_3DData.Shader->Bind();
-        s_3DData.MaterialStorageBuffer->Bind();
         s_3DData.CameraUniformBuffer->Bind();
+        s_3DData.MaterialStorageBuffer->Bind();
+        s_3DData.InstanceSSBO->Bind();
+        s_3DData.CurrentMeshGPU->VAO->Bind();
 
-        RenderCommand::DrawArrays(s_3DData.VertexArray, s_3DData.VertexCount);
-
-        s_3DData.Stats.DrawCalls++;
-        s_3DData.Stats.VertexCount += s_3DData.VertexCount;
-    }
-
-    void GeometryRenderer::FlushAndReset()
-    {
-        Flush();
-        StartBatch();
-    }
-
-    static uint32_t GetOrAddMaterial(const Material3D& mat)
-    {
-        size_t hash = HashMaterial(mat);
-
-        auto it = s_3DData.MaterialIndexMap.find(hash);
-        if (it != s_3DData.MaterialIndexMap.end())
+        // Draw each submesh with instancing
+        for (const auto& submesh : s_3DData.CurrentMeshGPU->Submeshes)
         {
-            return it->second;
+            for (uint32_t i = 0; i < s_3DData.CurrentInstanceCount; ++i)
+            {
+                s_3DData.InstanceBuffer[i].MaterialIndex = submesh.MaterialIndex;
+            }
+
+            s_3DData.InstanceSSBO->SetData(s_3DData.InstanceBuffer.data(),
+                                           s_3DData.CurrentInstanceCount * sizeof(InstanceData));
+
+            RenderCommand::DrawIndexedInstancedBaseIndex(s_3DData.CurrentMeshGPU->VAO, submesh.IndexCount,
+                                                         s_3DData.CurrentInstanceCount, submesh.BaseIndex);
+
+            s_3DData.Stats.DrawCalls++;
         }
 
-        uint32_t newIndex = static_cast<uint32_t>(s_3DData.GPUMaterials.size());
+        s_3DData.Stats.VertexCount += s_3DData.CurrentMeshGPU->TotalIndexCount * s_3DData.CurrentInstanceCount;
 
-        if (newIndex >= s_3DData.MaxMaterials)
-        {
-            TI_CORE_ERROR("Material limit reached! Max: {}", s_3DData.MaxMaterials);
-            return 0;
-        }
-
-        GPUMaterial gpuMat(mat);
-
-        s_3DData.GPUMaterials.push_back(gpuMat);
-        s_3DData.MaterialIndexMap[hash] = newIndex;
-
-        size_t materialDataSize = s_3DData.GPUMaterials.size() * sizeof(GPUMaterial);
-
-        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&gpuMat);
-        std::string hexDump;
-        for (size_t i = 0; i < sizeof(GPUMaterial); ++i)
-        {
-            char buf[4];
-            snprintf(buf, sizeof(buf), "%02X ", bytes[i]);
-            hexDump += buf;
-        }
-
-        s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(), materialDataSize);
-
-        return newIndex;
+        s_3DData.CurrentInstanceCount = 0;
+        s_3DData.InstanceBuffer.clear();
     }
 
     void GeometryRenderer::DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID)
     {
         TI_CORE_ASSERT(s_IsRendering, "Must call BeginScene() before DrawMesh()");
-
         if (!mesh)
             return;
 
-        const std::vector<glm::vec3>& positions = mesh->GetPositions();
-        const std::vector<glm::vec3>& normals = mesh->GetNormals();
-        const std::vector<glm::vec3>& tangents = mesh->GetTangents();
-        const std::vector<glm::vec2>& texCoords = mesh->GetTexCoords();
-        const std::vector<uint8_t>& matIndices = mesh->GetMaterialIndices();
-        const std::vector<Ref<Material3D>>& materials = mesh->GetMaterials();
+        MeshGPUData* meshGPU = GetOrCreateMeshGPUData(mesh.get());
 
-        uint32_t totalVertexCount = (uint32_t)positions.size();
-
-        // Map local material indices to global shader material indices
-        std::vector<uint32_t> globalMaterialIndices(materials.size());
-        for (size_t i = 0; i < materials.size(); ++i)
+        if (s_3DData.CurrentMesh.get() != mesh.get() || s_3DData.CurrentInstanceCount >= s_3DData.MaxInstances)
         {
-            globalMaterialIndices[i] = GetOrAddMaterial(*materials[i]);
+            Flush();
+            s_3DData.CurrentMesh = mesh;
+            s_3DData.CurrentMeshGPU = meshGPU;
         }
 
-        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
+        InstanceData instance;
+        instance.Transform = transform;
+        instance.NormalMatrix = glm::transpose(glm::inverse(transform));
+        instance.EntityID = entityID;
+        instance.MaterialIndex = 0;
 
-        uint32_t vertexOffset = 0;
-        while (vertexOffset < totalVertexCount)
-        {
-            uint32_t availableSpace = s_3DData.MaxVertices - s_3DData.VertexCount;
-            uint32_t remainingVertices = totalVertexCount - vertexOffset;
-
-            uint32_t verticesThisChunk = min(availableSpace, remainingVertices);
-            verticesThisChunk = (verticesThisChunk / 3) * 3;
-
-            if (verticesThisChunk == 0)
-            {
-                FlushAndReset();
-                availableSpace = s_3DData.MaxVertices;
-                verticesThisChunk = min(availableSpace, remainingVertices);
-                verticesThisChunk = (verticesThisChunk / 3) * 3;
-
-                TI_CORE_ASSERT(verticesThisChunk >= 3, "MaxVertices too small to render triangles!");
-            }
-
-            for (uint32_t i = 0; i < verticesThisChunk; ++i)
-            {
-                uint32_t vertexIndex = vertexOffset + i;
-                uint8_t localMatIndex = matIndices[vertexIndex];
-
-                glm::vec4 transformedPos = transform * glm::vec4(positions[vertexIndex], 1.0f);
-                s_3DData.VertexBufferPtr->Position = glm::vec3(transformedPos);
-
-                s_3DData.VertexBufferPtr->Normal = glm::normalize(normalMatrix * normals[vertexIndex]);
-                s_3DData.VertexBufferPtr->Tangent = glm::normalize(glm::mat3(transform) * tangents[vertexIndex]);
-
-                s_3DData.VertexBufferPtr->TexCoord = texCoords[vertexIndex];
-                s_3DData.VertexBufferPtr->EntityID = entityID;
-                s_3DData.VertexBufferPtr->MaterialIndex = globalMaterialIndices[localMatIndex];
-
-                s_3DData.VertexBufferPtr++;
-            }
-
-            s_3DData.VertexCount += verticesThisChunk;
-            vertexOffset += verticesThisChunk;
-        }
-
+        s_3DData.InstanceBuffer.push_back(instance);
+        s_3DData.CurrentInstanceCount++;
         s_3DData.Stats.MeshCount++;
     }
 

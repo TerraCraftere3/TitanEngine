@@ -17,8 +17,17 @@ struct Material
     float2 UVRepeat;
 };
 
+struct InstanceData
+{
+    column_major float4x4 Transform;    // 64 bytes
+    column_major float4x4 NormalMatrix; // 64 bytes
+    int EntityID;                       // 4 bytes
+    int MaterialIndex;                  // 4 bytes
+    float2 _pad;                        // 8 bytes padding
+};
+
 StructuredBuffer<Material> u_Materials : register(t1);
-StructuredBuffer<uint2> u_TextureHandles : register(t2);
+StructuredBuffer<InstanceData> u_Instances : register(t2);
 
 struct VertexInput
 {
@@ -26,8 +35,6 @@ struct VertexInput
     float3 a_Normal : NORMAL;
     float3 a_Tangent : TANGENT;
     float2 a_TexCoord : TEXCOORD0;
-    int a_EntityID : TEXCOORD3;
-    int a_MaterialIndex : TEXCOORD4;
 };
 
 struct VertexOutput
@@ -59,24 +66,18 @@ Sampler2D GetBindlessTexture(uint2 handle);
 float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
 {
     float3 color = mat.AlbedoColor.rgb;
-
     color *= GetBindlessTexture(mat.AlbedoTextureIndex).Sample(texCoord).rgb;
-
     return float4(color, 1.0);
 }
 
 float GET_METALLIC(Material mat, float2 texCoord)
 {
-    float metallic = GetBindlessTexture(mat.MetallicTextureIndex).Sample(texCoord).r;
-
-    return metallic;
+    return GetBindlessTexture(mat.MetallicTextureIndex).Sample(texCoord).r;
 }
 
 float GET_ROUGHNESS(Material mat, float2 texCoord)
 {
-    float roughness = GetBindlessTexture(mat.RoughnessTextureIndex).Sample(texCoord).g;
-
-    return roughness;
+    return GetBindlessTexture(mat.RoughnessTextureIndex).Sample(texCoord).g;
 }
 
 float GET_AO(Material mat, float2 texCoord)
@@ -92,31 +93,34 @@ float3 GET_EMISSION(Material mat, float2 texCoord)
 float3 GET_NORMAL(Material mat, VertexOutput input)
 {
     float3 sampledNormal = GetBindlessTexture(mat.NormalTextureIndex).Sample(input.texCoord * mat.UVRepeat).rgb;
-
     sampledNormal = sampledNormal * 2.0f - 1.0f;
 
     float3x3 TBN = float3x3(normalize(input.tangent), normalize(input.bitangent), normalize(input.normal));
-
     return normalize(mul(sampledNormal, TBN));
 }
 
 [shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 {
     VertexOutput output;
-    output.position = mul(u_ViewProjection, float4(input.a_Position, 1.0));
-    output.normal = normalize(input.a_Normal);
 
-    // Compute bitangent
-    float3 n = normalize(input.a_Normal);
-    float3 t = normalize(input.a_Tangent);
-    float3 b = cross(n, t); // assuming tangent is orthogonal to normal
+    InstanceData instance = u_Instances[instanceID];
 
-    output.tangent = t;
-    output.bitangent = b;
+    float3 normal = input.a_Normal;
+    float3 tangent = input.a_Tangent;
+
+    float4 worldPos = mul(instance.Transform, float4(input.a_Position, 1.0));
+    output.position = mul(u_ViewProjection, worldPos);
+
+    output.normal = normalize(mul((float3x3)instance.NormalMatrix, normal));
+    output.tangent = normalize(mul((float3x3)instance.Transform, tangent));
+
+    output.bitangent = cross(output.normal, output.tangent);
+
     output.texCoord = input.a_TexCoord;
-    output.entityID = input.a_EntityID;
-    output.materialIndex = input.a_MaterialIndex;
+    output.entityID = instance.EntityID;
+    output.materialIndex = instance.MaterialIndex;
+
     return output;
 }
 
@@ -126,7 +130,6 @@ FragmentOutput fragmentMain(VertexOutput input)
     FragmentOutput output;
 
     Material mat = u_Materials[input.materialIndex];
-
     float2 uv = input.texCoord * mat.UVRepeat;
 
     float4 albedoColor = GET_ALBEDO_COLOR(mat, uv);

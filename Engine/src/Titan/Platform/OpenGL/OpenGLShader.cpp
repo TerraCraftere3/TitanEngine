@@ -10,6 +10,7 @@
 // clang-format on
 namespace Titan
 {
+
     static std::string PatchGeneratedGLSL(const std::string& code)
     {
         std::string result = code;
@@ -24,11 +25,9 @@ namespace Titan
                                     "sampler2D GetBindlessTexture_0(uvec2 handle)\n"
                                     "{\n"
                                     "    return sampler2D(handle);\n"
-                                    "}\n"},
-                                   {"#version 450",
-                                    "#version 450\n"
-                                    "#extension GL_ARB_bindless_texture : require"}};
+                                    "}\n"}};
 
+        // Apply the static rules first
         for (const auto& r : rules)
         {
             size_t pos = 0;
@@ -37,6 +36,25 @@ namespace Titan
                 result.replace(pos, r.from.length(), r.to);
                 pos += r.to.length();
             }
+        }
+
+        // Now patch any #version line to 450
+        size_t pos = result.find("#version");
+        if (pos != std::string::npos)
+        {
+            size_t endLine = result.find('\n', pos);
+            if (endLine == std::string::npos)
+                endLine = result.size();
+            result.replace(
+                pos, endLine - pos,
+                "#version 460\n#extension GL_ARB_bindless_texture : require\n#extension GL_KHR_vulkan_glsl : enable");
+        }
+        else
+        {
+            // No version line found, prepend it
+            result =
+                "#version 460\n#extension GL_ARB_bindless_texture : require\n#extension GL_KHR_vulkan_glsl : enable\n" +
+                result;
         }
 
         return result;

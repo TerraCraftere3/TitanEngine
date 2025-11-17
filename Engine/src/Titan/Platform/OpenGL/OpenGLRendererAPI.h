@@ -16,6 +16,10 @@ namespace Titan
 
         virtual void DrawArrays(const Ref<VertexArray>& vertexArray, uint32_t vertexCount) override;
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount) override;
+        virtual void DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                          uint32_t instanceCount) override;
+        virtual void DrawIndexedInstancedBaseIndex(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                                   uint32_t instanceCount, uint32_t baseIndex) override;
         virtual void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount) override;
 
         virtual void SetLineWidth(float width) override;

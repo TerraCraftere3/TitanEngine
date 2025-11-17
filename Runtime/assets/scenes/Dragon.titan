@@ -1,0 +1,35 @@
+Scene: Untitled
+Entities:
+  - Entity: 5965136739810514573
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, 1, 1]
+  - Entity: 1241225522319248894
+    TagComponent:
+      Tag: Quad
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [5, 5, 1]
+    MeshRendererComponent:
+      Mesh: quad
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+  - Entity: 13656987057509532769
+    TagComponent:
+      Tag: Dragon
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: assets\models\dragon_highres.glb
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]

@@ -12,6 +12,7 @@ namespace Titan
         Float4,
         Mat3,
         Mat4,
+        UInt,
         Int,
         Int2,
         Int3,
@@ -35,6 +36,8 @@ namespace Titan
                 return 4 * 3 * 3;
             case ShaderDataType::Mat4:
                 return 4 * 4 * 4;
+            case ShaderDataType::UInt:
+                return 4;
             case ShaderDataType::Int:
                 return 4;
             case ShaderDataType::Int2:
@@ -82,6 +85,8 @@ namespace Titan
                     return 3 * 3;
                 case ShaderDataType::Mat4:
                     return 4 * 4;
+                case ShaderDataType::UInt:
+                    return 1;
                 case ShaderDataType::Int:
                     return 1;
                 case ShaderDataType::Int2:
@@ -150,6 +155,7 @@ namespace Titan
 
         static Ref<VertexBuffer> Create(uint32_t size);
         static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+        static Ref<VertexBuffer> Create(const void* data, uint32_t size);
     };
 
     class TI_API IndexBuffer

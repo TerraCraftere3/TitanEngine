@@ -532,6 +532,8 @@ namespace Titan
 
         m_EditorScene = m_ActiveScene;
         m_EditorScenePath = std::filesystem::path();
+
+        GeometryRenderer::ClearCache();
     }
 
     void EditorLayer::OpenScene(const std::filesystem::path& path)
@@ -557,6 +559,8 @@ namespace Titan
 
         m_ActiveScene = m_EditorScene;
         m_EditorScenePath = path;
+
+        GeometryRenderer::ClearCache();
     }
 
     void EditorLayer::SaveScene()

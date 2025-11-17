@@ -25,6 +25,18 @@ namespace Titan
             s_RendererAPI->DrawIndexed(vertexArray, indexCount);
         }
 
+        inline static void DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                                uint32_t instanceCount)
+        {
+            s_RendererAPI->DrawIndexedInstanced(vertexArray, indexCount, instanceCount);
+        }
+
+        inline static void DrawIndexedInstancedBaseIndex(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
+                                                         uint32_t instanceCount, uint32_t baseIndex)
+        {
+            s_RendererAPI->DrawIndexedInstancedBaseIndex(vertexArray, indexCount, instanceCount, baseIndex);
+        }
+
         static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
         {
             s_RendererAPI->DrawLines(vertexArray, vertexCount);

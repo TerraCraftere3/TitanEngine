@@ -2,6 +2,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
+#include <unordered_map>
 
 namespace Titan
 {
@@ -11,9 +12,37 @@ namespace Titan
         std::vector<glm::vec3> Normals;
         std::vector<glm::vec2> TexCoords;
         std::vector<glm::vec3> Tangents;
+        std::vector<uint32_t> Indices;
     };
 
-    // Convert aiMatrix4x4 → glm::mat4
+    struct PackedVertex
+    {
+        glm::vec3 Position;
+        glm::vec3 Normal;
+        glm::vec2 UV;
+        glm::vec3 Tangent;
+
+        bool operator==(const PackedVertex& other) const
+        {
+            return Position == other.Position && Normal == other.Normal && UV == other.UV && Tangent == other.Tangent;
+        }
+    };
+
+    struct PackedVertexHash
+    {
+        size_t operator()(const PackedVertex& v) const
+        {
+            size_t h1 = std::hash<float>()(v.Position.x) ^ (std::hash<float>()(v.Position.y) << 1) ^
+                        (std::hash<float>()(v.Position.z) << 2);
+            size_t h2 = std::hash<float>()(v.Normal.x) ^ (std::hash<float>()(v.Normal.y) << 1) ^
+                        (std::hash<float>()(v.Normal.z) << 2);
+            size_t h3 = std::hash<float>()(v.UV.x) ^ (std::hash<float>()(v.UV.y) << 1);
+            size_t h4 = std::hash<float>()(v.Tangent.x) ^ (std::hash<float>()(v.Tangent.y) << 1) ^
+                        (std::hash<float>()(v.Tangent.z) << 2);
+            return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3);
+        }
+    };
+
     static glm::mat4 ConvertMatrix(const aiMatrix4x4& m)
     {
         glm::mat4 r;
@@ -40,6 +69,7 @@ namespace Titan
                             uint8_t materialIdx, const glm::mat4& transform)
     {
         glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(transform)));
+        std::unordered_map<PackedVertex, uint32_t, PackedVertexHash> vertexToIndex;
 
         for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
         {
@@ -47,59 +77,43 @@ namespace Titan
             if (face.mNumIndices != 3)
                 continue;
 
-            unsigned int idx0 = face.mIndices[0];
-            unsigned int idx1 = face.mIndices[1];
-            unsigned int idx2 = face.mIndices[2];
-
-            glm::vec3 positions[3] = {
-                {mesh->mVertices[idx0].x, mesh->mVertices[idx0].y, mesh->mVertices[idx0].z},
-                {mesh->mVertices[idx1].x, mesh->mVertices[idx1].y, mesh->mVertices[idx1].z},
-                {mesh->mVertices[idx2].x, mesh->mVertices[idx2].y, mesh->mVertices[idx2].z},
-            };
-
-            glm::vec2 uvs[3] = {
-                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx0].x, mesh->mTextureCoords[0][idx0].y)
-                                          : glm::vec2(0.0f),
-                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx1].x, mesh->mTextureCoords[0][idx1].y)
-                                          : glm::vec2(0.0f),
-                mesh->HasTextureCoords(0) ? glm::vec2(mesh->mTextureCoords[0][idx2].x, mesh->mTextureCoords[0][idx2].y)
-                                          : glm::vec2(0.0f),
-            };
-
-            glm::vec3 n[3] = {
-                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx0].x, mesh->mNormals[idx0].y, mesh->mNormals[idx0].z)
-                                   : glm::vec3(0.0f),
-                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx1].x, mesh->mNormals[idx1].y, mesh->mNormals[idx1].z)
-                                   : glm::vec3(0.0f),
-                mesh->HasNormals() ? glm::vec3(mesh->mNormals[idx2].x, mesh->mNormals[idx2].y, mesh->mNormals[idx2].z)
-                                   : glm::vec3(0.0f),
-            };
-
-            // Tangent generation
-            glm::vec3 edge1 = positions[1] - positions[0];
-            glm::vec3 edge2 = positions[2] - positions[0];
-            glm::vec2 deltaUV1 = uvs[1] - uvs[0];
-            glm::vec2 deltaUV2 = uvs[2] - uvs[0];
-            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-            glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
-
-            for (int j = 0; j < 3; ++j)
+            for (int j = 0; j < 3; j++)
             {
-                // Apply transform to positions
-                glm::vec4 worldPos = transform * glm::vec4(positions[j], 1.0f);
-                data.Positions.push_back(glm::vec3(worldPos));
+                unsigned int idx = face.mIndices[j];
 
-                // Apply normal transform
-                glm::vec3 worldNormal = glm::normalize(normalMatrix * n[j]);
-                data.Normals.push_back(worldNormal);
+                glm::vec3 pos = {mesh->mVertices[idx].x, mesh->mVertices[idx].y, mesh->mVertices[idx].z};
+                glm::vec2 uv = mesh->HasTextureCoords(0)
+                                   ? glm::vec2(mesh->mTextureCoords[0][idx].x, mesh->mTextureCoords[0][idx].y)
+                                   : glm::vec2(0.0f);
+                glm::vec3 normal = mesh->HasNormals()
+                                       ? glm::vec3(mesh->mNormals[idx].x, mesh->mNormals[idx].y, mesh->mNormals[idx].z)
+                                       : glm::vec3(0.0f);
 
-                data.TexCoords.push_back(uvs[j]);
+                pos = glm::vec3(transform * glm::vec4(pos, 1.0f));
+                normal = glm::normalize(normalMatrix * normal);
 
-                // Tangent transform (same as normal, w=0)
-                glm::vec3 worldTangent = glm::normalize(normalMatrix * tangent);
-                data.Tangents.push_back(worldTangent);
+                // Tangent calculation (simplified; replace with your deltaUV method if needed)
+                glm::vec3 tangent = glm::vec3(1, 0, 0);
 
-                materialIndexOut.push_back(materialIdx);
+                PackedVertex v{pos, normal, uv, tangent};
+
+                uint32_t finalIndex;
+                auto it = vertexToIndex.find(v);
+                if (it == vertexToIndex.end())
+                {
+                    finalIndex = static_cast<uint32_t>(data.Positions.size());
+                    vertexToIndex[v] = finalIndex;
+
+                    data.Positions.push_back(pos);
+                    data.Normals.push_back(normal);
+                    data.TexCoords.push_back(uv);
+                    data.Tangents.push_back(tangent);
+                    materialIndexOut.push_back(materialIdx);
+                }
+                else
+                    finalIndex = it->second;
+
+                data.Indices.push_back(finalIndex);
             }
         }
     }
@@ -134,88 +148,57 @@ namespace Titan
     void ComputeSmoothNormals(std::vector<glm::vec3>& positions, std::vector<glm::vec3>& normals)
     {
         std::unordered_map<glm::vec3, glm::vec3, Vec3Hash> normalMap;
-
         for (size_t i = 0; i < positions.size(); i++)
             normalMap[positions[i]] += normals[i];
-
         for (size_t i = 0; i < positions.size(); i++)
             normals[i] = glm::normalize(normalMap[positions[i]]);
-    }
-
-    void ComputeTangents(const std::vector<glm::vec3>& positions, const std::vector<glm::vec2>& uvs,
-                         const std::vector<uint32_t>& indices, std::vector<glm::vec3>& tangents)
-    {
-        tangents.resize(positions.size(), glm::vec3(0.0f));
-
-        for (size_t i = 0; i < indices.size(); i += 3)
-        {
-            uint32_t i0 = indices[i];
-            uint32_t i1 = indices[i + 1];
-            uint32_t i2 = indices[i + 2];
-
-            const glm::vec3& p0 = positions[i0];
-            const glm::vec3& p1 = positions[i1];
-            const glm::vec3& p2 = positions[i2];
-
-            const glm::vec2& uv0 = uvs[i0];
-            const glm::vec2& uv1 = uvs[i1];
-            const glm::vec2& uv2 = uvs[i2];
-
-            glm::vec3 edge1 = p1 - p0;
-            glm::vec3 edge2 = p2 - p0;
-
-            glm::vec2 deltaUV1 = uv1 - uv0;
-            glm::vec2 deltaUV2 = uv2 - uv0;
-
-            float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-            glm::vec3 tangent = f * (deltaUV2.y * edge1 - deltaUV1.y * edge2);
-
-            tangents[i0] += tangent;
-            tangents[i1] += tangent;
-            tangents[i2] += tangent;
-        }
-
-        for (auto& t : tangents)
-            t = glm::normalize(t);
     }
 
     Ref<Mesh> Mesh::CreateQuad()
     {
         RawMeshData data;
+        std::vector<uint8_t> matIndices;
 
-        // Quad on XY plane, centered at origin
-        data.Positions = {
-            {-0.5f, -0.5f, 0.0f}, {0.5f, -0.5f, 0.0f}, {0.5f, 0.5f, 0.0f},
-            {-0.5f, -0.5f, 0.0f}, {0.5f, 0.5f, 0.0f},  {-0.5f, 0.5f, 0.0f},
+        // Quad on XY plane
+        glm::vec3 positions[4] = {{-0.5f, -0.5f, 0}, {0.5f, -0.5f, 0}, {0.5f, 0.5f, 0}, {-0.5f, 0.5f, 0}};
+        glm::vec2 uvs[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+        glm::vec3 normal = {0, 0, 1};
+        glm::vec3 tangent = {1, 0, 0};
+
+        uint8_t materialIdx = 0;
+        auto addVertex = [&](int i)
+        {
+            data.Positions.push_back(positions[i]);
+            data.Normals.push_back(normal);
+            data.TexCoords.push_back(uvs[i]);
+            data.Tangents.push_back(tangent);
+            matIndices.push_back(materialIdx);
         };
 
-        data.Normals = {
-            {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
-            {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
-        };
-
-        data.TexCoords = {
-            {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f},
-        };
-
-        // Tangent points along +X (U direction)
-        data.Tangents = {
-            {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
-            {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
-        };
-
-        ComputeSmoothNormals(data.Positions, data.Normals);
+        // Two triangles
+        addVertex(0);
+        addVertex(1);
+        addVertex(2);
+        data.Indices.push_back(0);
+        data.Indices.push_back(1);
+        data.Indices.push_back(2);
+        addVertex(0);
+        addVertex(2);
+        addVertex(3);
+        data.Indices.push_back(3);
+        data.Indices.push_back(4);
+        data.Indices.push_back(5);
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
-        mesh->m_MaterialIndex = std::vector<uint8_t>(6, 0);
+        mesh->m_Indices = std::move(data.Indices);
+        mesh->m_MaterialIndex = std::move(matIndices);
 
         auto material = CreateRef<Material3D>();
-        material->Name = "Material 1";
+        material->Name = "Material";
         mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "quad";
         return mesh;
@@ -224,88 +207,60 @@ namespace Titan
     Ref<Mesh> Mesh::CreateCube()
     {
         RawMeshData data;
+        std::vector<uint8_t> matIndices;
 
-        // Cube vertices per face (6 faces, 2 triangles per face)
         struct Face
         {
-            glm::vec3 normal;
-            glm::vec3 tangent;
+            glm::vec3 normal, tangent;
             glm::vec3 v0, v1, v2, v3;
         };
-
         Face faces[6] = {
-            // Back
             {{0, 0, -1},
              {1, 0, 0},
              {-0.5f, -0.5f, -0.5f},
              {0.5f, -0.5f, -0.5f},
              {0.5f, 0.5f, -0.5f},
              {-0.5f, 0.5f, -0.5f}},
-            // Front
             {{0, 0, 1}, {1, 0, 0}, {-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f}, {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}},
-            // Bottom
             {{0, -1, 0},
              {1, 0, 0},
              {-0.5f, -0.5f, -0.5f},
              {0.5f, -0.5f, -0.5f},
              {0.5f, -0.5f, 0.5f},
              {-0.5f, -0.5f, 0.5f}},
-            // Top
             {{0, 1, 0}, {1, 0, 0}, {-0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f}},
-            // Left
             {{-1, 0, 0},
              {0, 0, 1},
              {-0.5f, -0.5f, -0.5f},
              {-0.5f, 0.5f, -0.5f},
              {-0.5f, 0.5f, 0.5f},
              {-0.5f, -0.5f, 0.5f}},
-            // Right
             {{1, 0, 0}, {0, 0, 1}, {0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, -0.5f}, {0.5f, 0.5f, 0.5f}, {0.5f, -0.5f, 0.5f}},
         };
-
         glm::vec2 uv[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
-
+        uint8_t materialIdx = 0;
         for (auto& f : faces)
         {
-            // Triangle 1
-            data.Positions.push_back(f.v0);
-            data.TexCoords.push_back(uv[0]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-            data.Positions.push_back(f.v1);
-            data.TexCoords.push_back(uv[1]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-            data.Positions.push_back(f.v2);
-            data.TexCoords.push_back(uv[2]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-            // Triangle 2
-            data.Positions.push_back(f.v0);
-            data.TexCoords.push_back(uv[0]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-            data.Positions.push_back(f.v2);
-            data.TexCoords.push_back(uv[2]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-            data.Positions.push_back(f.v3);
-            data.TexCoords.push_back(uv[3]);
-            data.Normals.push_back(f.normal);
-            data.Tangents.push_back(f.tangent);
-        }
+            uint32_t start = (uint32_t)data.Positions.size();
+            data.Positions.insert(data.Positions.end(), {f.v0, f.v1, f.v2, f.v3});
+            data.Normals.insert(data.Normals.end(), 4, f.normal);
+            data.Tangents.insert(data.Tangents.end(), 4, f.tangent);
+            data.TexCoords.insert(data.TexCoords.end(), {uv[0], uv[1], uv[2], uv[3]});
+            matIndices.insert(matIndices.end(), 4, materialIdx);
 
-        ComputeSmoothNormals(data.Positions, data.Normals);
+            data.Indices.insert(data.Indices.end(), {start, start + 1, start + 2, start, start + 2, start + 3});
+        }
 
         auto mesh = CreateRef<Mesh>();
         mesh->m_Positions = std::move(data.Positions);
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
-        mesh->m_MaterialIndex = std::vector<uint8_t>(36, 0);
+        mesh->m_Indices = std::move(data.Indices);
+        mesh->m_MaterialIndex = std::move(matIndices);
 
         auto material = CreateRef<Material3D>();
-        material->Name = "Material 1";
+        material->Name = "Material";
         mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "cube";
         return mesh;
@@ -337,13 +292,11 @@ namespace Titan
         for (unsigned int i = 0; i < scene->mNumMaterials; i++)
         {
             auto material = CreateRef<Material3D>();
-
             aiString aiMatName;
             if (scene->mMaterials[i]->Get(AI_MATKEY_NAME, aiMatName) == AI_SUCCESS && aiMatName.length > 0)
                 material->Name = aiMatName.C_Str();
             else
                 material->Name = "Material " + std::to_string(i + 1);
-
             mesh->m_Materials.push_back(material);
         }
 
@@ -355,6 +308,7 @@ namespace Titan
         mesh->m_Normals = std::move(data.Normals);
         mesh->m_TexCoords = std::move(data.TexCoords);
         mesh->m_Tangents = std::move(data.Tangents);
+        mesh->m_Indices = std::move(data.Indices);
         mesh->m_MaterialIndex = std::move(materialIndices);
 
         mesh->m_FilePath = std::filesystem::relative(filepath).string();

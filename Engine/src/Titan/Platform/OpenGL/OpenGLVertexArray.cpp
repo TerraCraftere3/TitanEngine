@@ -28,6 +28,8 @@ namespace Titan
                 return GL_FLOAT;
             case Titan::ShaderDataType::Mat4:
                 return GL_FLOAT;
+            case Titan::ShaderDataType::UInt:
+                return GL_UNSIGNED_INT;
             case Titan::ShaderDataType::Int:
                 return GL_INT;
             case Titan::ShaderDataType::Int2:
@@ -89,6 +91,7 @@ namespace Titan
                     m_VertexBufferIndex++;
                     break;
                 }
+                case ShaderDataType::UInt:
                 case ShaderDataType::Int:
                 case ShaderDataType::Int2:
                 case ShaderDataType::Int3:
