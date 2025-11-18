@@ -1,8 +1,8 @@
-ID: 8328545899114316740
+ID: 15276083305654378586
 Type: 1
 Source: assets\textures\Sponza\sponza_details_diff.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

@@ -1,8 +1,8 @@
-ID: 14316393461735971303
+ID: 1740663335199226456
 Type: 1
 Source: assets\textures\F1 Car\Tyre_roughness.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

@@ -533,6 +533,22 @@ namespace Titan
         DrawLine(origin, origin + forward * 1.5f, forwardColor);
     }
 
+    // 3D Marker
+    void Renderer2D::DrawMarker(const glm::mat4& transform)
+    {
+        const float axisLength = 0.3f;
+        const float size = 0.25f;
+
+        const glm::vec4 color = {1.0f, 1.0f, 0.0f, 1.0f};
+
+        auto T = [&](glm::vec3 p) { return glm::vec3(transform * glm::vec4(p, 1.0f)); };
+        glm::vec3 origin = T(glm::vec3(0.0f));
+
+        DrawLine(T(glm::vec3(-size, 0.0f, 0.0f)), T(glm::vec3(size, 0.0f, 0.0f)), color);
+        DrawLine(T(glm::vec3(0.0f, -size, 0.0f)), T(glm::vec3(0.0f, size, 0.0f)), color);
+        DrawLine(T(glm::vec3(0.0f, 0.0f, -size)), T(glm::vec3(0.0f, 0.0f, size)), color);
+    }
+
     void Renderer2D::DrawGrid(float gridLines, const glm::vec3& position, const glm::vec3& rotation,
                               const glm::vec3& size)
     {

@@ -1,26 +1,23 @@
 Scene: Untitled
 Entities:
-  - Entity: 5965136739810514573
+  - Entity: 14774116428015968762
     TagComponent:
-      Tag: Directional Light
+      Tag: Camera
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [-1, 1, 1]
-  - Entity: 1241225522319248894
-    TagComponent:
-      Tag: Quad
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [-1.5707964, 0, 0]
-      Scale: [5, 5, 1]
-    MeshRendererComponent:
-      Mesh: quad
-      Materials:
-        - AlbedoColor: [1, 1, 1, 1]
-          UVRepeat: [1, 1]
+      Translation: [-2.940392, 2.0887804, 5.2927055]
+      Rotation: [-0.17792423, -0.5070985, -4.261579e-09]
+      Scale: [1, 0.9999981, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
   - Entity: 13656987057509532769
     TagComponent:
       Tag: Dragon
@@ -33,3 +30,24 @@ Entities:
       Materials:
         - AlbedoColor: [1, 1, 1, 1]
           UVRepeat: [1, 1]
+  - Entity: 1241225522319248894
+    TagComponent:
+      Tag: Quad
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-1.5707964, 0, 0]
+      Scale: [5, 5, 1]
+    MeshRendererComponent:
+      Mesh: quad
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+  - Entity: 5965136739810514573
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, 1, 1]

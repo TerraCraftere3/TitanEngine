@@ -1,8 +1,8 @@
-ID: 708196615201011972
+ID: 14733764703149607209
 Type: 1
 Source: assets\textures\F1 Car\Carbon_Fiber_baseColor.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

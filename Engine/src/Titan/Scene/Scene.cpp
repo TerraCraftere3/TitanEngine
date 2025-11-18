@@ -28,6 +28,25 @@ namespace Titan
         return b2_staticBody;
     }
 
+    static glm::vec3 CalculateLookAtEuler3D(const glm::vec3& from, const glm::vec3& to)
+    {
+        glm::vec3 forward = glm::normalize(from - to);
+        if (glm::length2(forward) < 1e-8f)
+            return glm::vec3(0.0f);
+
+        glm::vec3 up(0.0f, 1.0f, 0.0f); // world up
+
+        // Build right and corrected up
+        glm::vec3 right = glm::normalize(glm::cross(up, forward));
+        glm::vec3 newUp = glm::cross(forward, right);
+
+        // Construct rotation matrix with columns = local axes
+        glm::mat3 rotMat(right, newUp, forward); // right, up, forward
+        glm::quat q = glm::quat_cast(rotMat);
+
+        return glm::eulerAngles(q); // returns XYZ Euler
+    }
+
     Scene::Scene() {}
 
     Scene::~Scene()
@@ -92,6 +111,7 @@ namespace Titan
         CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
         CopyComponent<ScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<LookAtComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -132,6 +152,7 @@ namespace Titan
         CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
         CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
         CopyComponentIfExists<ScriptComponent>(newEntity, entity);
+        CopyComponentIfExists<LookAtComponent>(newEntity, entity);
     }
 
     void Scene::DestroyEntity(Entity entity)
@@ -227,6 +248,8 @@ namespace Titan
                 transform.Rotation.z = body->GetAngle();
             }
         }
+
+        UpdateConstraints();
     }
 
     void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
@@ -235,6 +258,7 @@ namespace Titan
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
 
+        // PHYSICS
         {
             const int32_t velocityIterations = 6;
             const int32_t positionIterations = 2;
@@ -254,6 +278,8 @@ namespace Titan
                 transform.Rotation.z = body->GetAngle();
             }
         }
+
+        UpdateConstraints();
     }
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
@@ -261,6 +287,8 @@ namespace Titan
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
+
+        UpdateConstraints();
     }
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -376,6 +404,18 @@ namespace Titan
         m_PhysicsWorld = nullptr;
     }
 
+    void Scene::UpdateConstraints()
+    {
+        auto view = m_Registry.view<TransformComponent, LookAtComponent>();
+        for (auto e : view)
+        {
+            auto& transform = view.get<TransformComponent>(e);
+            auto& lookAt = view.get<LookAtComponent>(e);
+
+            transform.Rotation = CalculateLookAtEuler3D(transform.Translation, lookAt.Position);
+        }
+    }
+
     template <typename T>
     void Scene::OnComponentAdded(Entity entity, T& component)
     {
@@ -401,4 +441,5 @@ namespace Titan
     template void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity, BoxCollider2DComponent&);
     template void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity, CircleCollider2DComponent&);
     template void Scene::OnComponentAdded<ScriptComponent>(Entity, ScriptComponent&);
+    template void Scene::OnComponentAdded<LookAtComponent>(Entity, LookAtComponent&);
 } // namespace Titan

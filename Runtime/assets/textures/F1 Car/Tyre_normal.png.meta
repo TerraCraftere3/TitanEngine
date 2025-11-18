@@ -1,8 +1,8 @@
-ID: 1537171332570598697
+ID: 13979991578097439301
 Type: 1
 Source: assets\textures\F1 Car\Tyre_normal.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

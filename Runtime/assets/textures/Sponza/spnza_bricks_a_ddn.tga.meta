@@ -1,8 +1,8 @@
-ID: 8545766039404482478
+ID: 4770532016149576397
 Type: 1
 Source: assets\textures\Sponza\spnza_bricks_a_ddn.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

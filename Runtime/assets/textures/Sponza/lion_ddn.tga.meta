@@ -1,8 +1,8 @@
-ID: 10154151611520422650
+ID: 17284247293634999957
 Type: 1
 Source: assets\textures\Sponza\lion_ddn.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

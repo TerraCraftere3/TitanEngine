@@ -1,8 +1,8 @@
-ID: 3099791495308776156
+ID: 6040538050476359209
 Type: 1
 Source: assets\textures\Sponza\sponza_roof_diff.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

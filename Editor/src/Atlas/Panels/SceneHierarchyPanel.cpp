@@ -144,8 +144,10 @@ namespace Titan
                 ImGui::SeparatorText("Physics");
                 DrawAddComponent<Rigidbody2DComponent>(m_SelectionContext, "Rigidbody 2D");
                 DrawAddComponent<BoxCollider2DComponent>(m_SelectionContext, "Box Collider 2D");
-
                 DrawAddComponent<CircleCollider2DComponent>(m_SelectionContext, "Circle Collider 2D");
+
+                ImGui::SeparatorText("Constraints");
+                DrawAddComponent<LookAtComponent>(m_SelectionContext, "Look At");
 
                 ImGui::SeparatorText("Scripts");
                 DrawAddComponent<ScriptComponent>(m_SelectionContext, "Empty Script");
@@ -530,6 +532,9 @@ namespace Titan
                     ImGui::EndDragDropTarget();
                 }
             });
+
+        DrawComponent<LookAtComponent>("Constraint: Look At", entity, [](auto& component)
+                                       { ImGui::DragFloat3("Position", glm::value_ptr(component.Position)); });
 
         DrawComponent<ScriptComponent>(
             "Script", entity,

@@ -1,8 +1,8 @@
-ID: 9665277980513540539
+ID: 12043203079311476644
 Type: 1
 Source: assets\textures\Sponza\sponza_floor_a_ddn.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

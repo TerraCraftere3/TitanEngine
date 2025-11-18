@@ -307,6 +307,16 @@ namespace Titan
                     Renderer2D::DrawCamera(transform.GetTransform());
                 }
 
+                auto lookAtView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, LookAtComponent>();
+                for (auto e : lookAtView)
+                {
+                    auto& transform = lookAtView.get<TransformComponent>(e);
+                    auto& lookAt = lookAtView.get<LookAtComponent>(e);
+
+                    glm::mat4 gizmoTransformation = glm::translate(glm::mat4(1.0f), lookAt.Position);
+                    Renderer2D::DrawMarker(gizmoTransformation);
+                }
+
                 Renderer2D::DrawGrid(20.0f);
 
                 Renderer2D::EndScene();

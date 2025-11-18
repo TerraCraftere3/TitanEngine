@@ -1,8 +1,8 @@
-ID: 10522159131577186636
+ID: 10123134091753853520
 Type: 1
 Source: resources/icons/play.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

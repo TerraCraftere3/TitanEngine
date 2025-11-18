@@ -189,6 +189,14 @@ namespace Titan
         ScriptComponent(const ScriptComponent&) = default;
     };
 
+    struct LookAtComponent
+    {
+        glm::vec3 Position;
+
+        LookAtComponent() = default;
+        LookAtComponent(const LookAtComponent&) = default;
+    };
+
     template <typename... Component>
     struct ComponentGroup
     {
@@ -197,5 +205,6 @@ namespace Titan
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
                        DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
-                       NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+                       NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
+                       LookAtComponent>;
 } // namespace Titan

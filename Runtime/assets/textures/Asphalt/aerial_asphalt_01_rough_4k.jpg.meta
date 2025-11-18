@@ -1,8 +1,8 @@
-ID: 5995044985332274741
+ID: 1672568548327226969
 Type: 1
 Source: assets\textures\Asphalt\aerial_asphalt_01_rough_4k.jpg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

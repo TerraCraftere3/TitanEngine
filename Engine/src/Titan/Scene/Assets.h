@@ -155,8 +155,8 @@ namespace Titan
                 meta.Type = AssetType::Texture2D;
                 meta.Properties["WrapS"] = "Repeat";
                 meta.Properties["WrapT"] = "Repeat";
-                meta.Properties["MinFilter"] = "Linear";
-                meta.Properties["MagFilter"] = "Linear";
+                meta.Properties["MinFilter"] = "MipmapLinear";
+                meta.Properties["MagFilter"] = "MipmapLinear";
             }
             else if constexpr (std::is_same_v<T, Cubemap>)
             {

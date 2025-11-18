@@ -55,6 +55,7 @@ namespace Titan
 
         void OnPhysics2DStart();
         void OnPhysics2DStop();
+        void UpdateConstraints();
 
     private:
         entt::registry m_Registry;

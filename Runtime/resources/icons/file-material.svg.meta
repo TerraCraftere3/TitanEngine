@@ -1,8 +1,8 @@
-ID: 3454228205694535736
+ID: 16126771461564000216
 Type: 1
 Source: resources/icons/file-material.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

@@ -1,8 +1,8 @@
-ID: 17975178143788002994
+ID: 17981352487323244414
 Type: 1
 Source: assets\textures\F1 Car\Body_Main_normal.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear

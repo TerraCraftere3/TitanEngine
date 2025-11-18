@@ -1,8 +1,8 @@
-ID: 5566049030793163736
+ID: 3629827116220977393
 Type: 1
 Source: assets\textures\F1 Car\Body_Wings_roughness.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
-  MinFilter: Linear
-  MagFilter: Linear
+  MinFilter: MipmapLinear
+  MagFilter: MipmapLinear
