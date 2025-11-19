@@ -66,6 +66,9 @@ namespace Titan
         if (m_BlockEvents)
             return;
 
+        const float speed = 5.0f;
+        const float moveSpeed = speed * ts;
+
         if (Input::IsKeyPressed(Key::LeftAlt))
         {
             const glm::vec2& mouse{Input::GetMouseX(), Input::GetMouseY()};
@@ -78,6 +81,22 @@ namespace Titan
                 MouseRotate(delta);
             else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
                 MouseZoom(delta.y);
+
+            glm::vec3 move(0.0f);
+            if (Input::IsKeyPressed(Key::W))
+                move += GetForwardDirection();
+            if (Input::IsKeyPressed(Key::S))
+                move -= GetForwardDirection();
+            if (Input::IsKeyPressed(Key::A))
+                move -= GetRightDirection();
+            if (Input::IsKeyPressed(Key::D))
+                move += GetRightDirection();
+            if (Input::IsKeyPressed(Key::Q))
+                move += GetUpDirection();
+            if (Input::IsKeyPressed(Key::E))
+                move -= GetUpDirection();
+
+            m_FocalPoint += move * moveSpeed;
         }
 
         UpdateView();

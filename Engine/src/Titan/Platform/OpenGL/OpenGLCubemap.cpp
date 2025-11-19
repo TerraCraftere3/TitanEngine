@@ -2,7 +2,6 @@
 #include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #undef min
