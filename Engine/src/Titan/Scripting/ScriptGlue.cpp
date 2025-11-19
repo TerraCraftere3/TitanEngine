@@ -130,6 +130,26 @@ namespace Titan
         return entity.GetUUID();
     }
 
+    static void DirectionalLightComponent_GetDirection(UUID entityID, glm::vec3* outDirection)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outDirection = entity.GetComponent<DirectionalLightComponent>().Direction;
+    }
+
+    static void DirectionalLightComponent_SetDirection(UUID entityID, glm::vec3* direction)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<DirectionalLightComponent>().Direction = *direction;
+    }
+
     static void TransformComponent_GetTranslation(UUID entityID, glm::vec3* outTranslation)
     {
         Scene* scene = ScriptEngine::GetSceneContext();
@@ -282,6 +302,9 @@ namespace Titan
 
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
+
+        TI_ADD_INTERNAL_CALL(DirectionalLightComponent_GetDirection);
+        TI_ADD_INTERNAL_CALL(DirectionalLightComponent_SetDirection);
 
         TI_ADD_INTERNAL_CALL(Input_IsKeyDown);
     }

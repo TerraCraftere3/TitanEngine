@@ -46,6 +46,20 @@ namespace Titan
             }
         }
     }
+    
+    // ======================================================================
+    //
+    //            COLLIDER COMPONENTS
+    //
+    // ======================================================================
+
+    public class BoxCollider2DComponent : Component{
+
+    }
+    
+    public class CircleCollider2DComponent : Component{
+        
+    }
 
     public class Rigidbody2DComponent : Component
     {
@@ -58,5 +72,104 @@ namespace Titan
         {
             InternalCalls.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.ID, ref impulse, wake);
         }
+    }
+    
+    // ======================================================================
+    //
+    //            RENDERER COMPONENTS
+    //
+    // ======================================================================
+    public class MeshRendererComponent : Component{
+        
+    }
+    
+    public class SpriteRendererComponent : Component{
+        
+    }
+    
+    public class CircleRendererComponent : Component{
+        
+    }
+
+    // ======================================================================
+    //
+    //            ADDITIONAL RENDERER COMPONENTS
+    //
+    // ======================================================================
+    public class SkyboxComponent : Component{
+        
+    }
+
+    public class CameraComponent : Component{
+        
+    }
+    
+    public class FXAASettings
+    {
+        private Entity m_Entity;
+
+        internal FXAASettings(Entity entity)
+        {
+            m_Entity = entity;
+        }
+
+        public bool Enabled
+        {
+            get => InternalCalls.PostFXComponent_GetFXAAEnabled(m_Entity.ID);
+            set => InternalCalls.PostFXComponent_SetFXAAEnabled(m_Entity.ID, value);
+        }
+    }
+
+    public class PostFXComponent : Component
+    {
+        public FXAASettings FXAA { get; }
+
+        public PostFXComponent()
+        {
+            FXAA = new FXAASettings(Entity);
+        }
+    }
+
+    
+    // ======================================================================
+    //
+    //            LIGHT COMPONENTS
+    //
+    // ======================================================================
+    public class DirectionalLightComponent : Component{
+        public Vector3 Direction
+        {
+            get {
+                InternalCalls.DirectionalLightComponent_GetDirection(Entity.ID, out Vector3 direction);
+                return direction;
+            }
+            set {
+                InternalCalls.DirectionalLightComponent_SetDirection(Entity.ID, ref value);
+            }
+        }
+
+    }
+
+    // ======================================================================
+    //
+    //            SCRIPT COMPONENTS
+    //
+    // ======================================================================
+
+    public class ScriptComponent : Component{
+        
+    }
+    
+    public class NativeScriptComponent : Component{
+        
+    }
+
+    // ======================================================================
+    //
+    //            CONSTRAINT COMPONENTS
+    //
+    // ======================================================================
+    public class LookAtComponent : Component{
+        
     }
 }

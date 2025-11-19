@@ -68,27 +68,29 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
     switch (severity)
     {
         case GL_DEBUG_SEVERITY_HIGH:
+#ifdef TI_ENABLE_ASSERTS
+            TI_CORE_ASSERT(false, "[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
+#else
+            TI_CORE_ERROR("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
+#endif
             severityStr = "High";
             break;
         case GL_DEBUG_SEVERITY_MEDIUM:
             severityStr = "Medium";
+            TI_CORE_WARN("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
             break;
         case GL_DEBUG_SEVERITY_LOW:
             severityStr = "Low";
+            TI_CORE_TRACE("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
             break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
             severityStr = "Notification";
+            TI_CORE_TRACE("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
             break;
         default:
             severityStr = "Unknown";
+            TI_CORE_ERROR("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
             break;
-    }
-
-    TI_CORE_ERROR("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
-
-    if (type == GL_DEBUG_TYPE_ERROR || severity == GL_DEBUG_SEVERITY_HIGH)
-    {
-        TI_CORE_ASSERT(false, "High Severity OpenGL Error");
     }
 }
 

@@ -74,8 +74,7 @@ For now there is no linux support
   - [x] Textures
   - [x] Materials
   - [ ] Custom Shader?
-  - [x] Batch Rendering (semi-functioning rn)
-  - [ ] Instancing?
+  - [x] Instancing
   - [ ] Particle Systems
   - [x] Model Loading
   - [x] Directional Light

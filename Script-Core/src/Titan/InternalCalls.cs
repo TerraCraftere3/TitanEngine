@@ -4,7 +4,10 @@ using System.Runtime.CompilerServices;
 namespace Titan
 {
     public static class InternalCalls
-    {
+    {    
+        // ======================================================================
+        //            LOGGING CALLS
+        // ======================================================================
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void InternalLogTrace(string message);
 
@@ -35,6 +38,9 @@ namespace Titan
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void InternalClientLogCritical(string message);
 
+        // ======================================================================
+        //            ENTITY CALLS
+        // ======================================================================
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static bool Entity_HasComponent(ulong entityID, Type componentType);
 
@@ -44,6 +50,9 @@ namespace Titan
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static object GetScriptInstance(ulong entityID);
 
+        // ======================================================================
+        //            COMPONENT CALLS
+        // ======================================================================
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void TransformComponent_GetTranslation(ulong entityID, out Vector3 translation);
 
@@ -61,6 +70,18 @@ namespace Titan
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void TransformComponent_SetScale(ulong entityID, ref Vector3 scale);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void DirectionalLightComponent_GetDirection(ulong entityID, out Vector3 direction);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void DirectionalLightComponent_SetDirection(ulong entityID, ref Vector3 direction);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static bool PostFXComponent_GetFXAAEnabled(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void PostFXComponent_SetFXAAEnabled(ulong entityID, bool enabled);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void Rigidbody2DComponent_ApplyLinearImpulse(ulong entityID, ref Vector2 impulse,
