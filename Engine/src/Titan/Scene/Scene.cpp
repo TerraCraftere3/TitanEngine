@@ -63,8 +63,9 @@ namespace Titan
             [&]()
             {
                 auto view = src.view<Component>();
-                for (auto srcEntity : view)
+                for (auto it = view.rbegin(); it != view.rend(); ++it)
                 {
+                    entt::entity srcEntity = *it;
                     entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
 
                     auto& srcComponent = src.get<Component>(srcEntity);
@@ -110,10 +111,10 @@ namespace Titan
         auto& dstSceneRegistry = newScene->m_Registry;
         std::unordered_map<UUID, entt::entity> enttMap;
 
-        // Create entities in new scene
         auto idView = srcSceneRegistry.view<IDComponent>();
-        for (auto e : idView)
+        for (auto it = idView.rbegin(); it != idView.rend(); ++it)
         {
+            entt::entity e = *it;
             UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
             const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
             Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);

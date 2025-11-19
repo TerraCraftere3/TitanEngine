@@ -132,7 +132,7 @@ Entities:
       Tag: Camera
     TransformComponent:
       Translation: [-3.8050349, 9.840656, 8.162553]
-      Rotation: [-0.30554566, -0.43620905, 8.220333e-09]
+      Rotation: [-0.09307573, -0.4362089, -6.16525e-09]
       Scale: [0.99999976, 0.999999, 0.99999976]
     CameraComponent:
       Camera:
