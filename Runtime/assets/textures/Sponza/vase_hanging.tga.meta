@@ -1,8 +1,8 @@
-ID: 10422798036460985353
+ID: 2362529336497713941
 Type: 1
 Source: assets\textures\Sponza\vase_hanging.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

@@ -1,8 +1,8 @@
-ID: 731096140827603953
+ID: 17234009542860325266
 Type: 1
 Source: assets\textures\Sponza\vase_plant.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

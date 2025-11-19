@@ -156,7 +156,7 @@ namespace Titan
                 meta.Properties["WrapS"] = "Repeat";
                 meta.Properties["WrapT"] = "Repeat";
                 meta.Properties["MinFilter"] = "MipmapLinear";
-                meta.Properties["MagFilter"] = "MipmapLinear";
+                meta.Properties["MagFilter"] = "Linear";
             }
             else if constexpr (std::is_same_v<T, Cubemap>)
             {

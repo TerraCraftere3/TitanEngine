@@ -1,8 +1,8 @@
-ID: 8320716203452144938
+ID: 2741183365599006951
 Type: 1
 Source: assets\textures\F1 Car\Details_metallic.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

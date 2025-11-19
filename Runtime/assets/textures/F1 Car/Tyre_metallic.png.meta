@@ -1,8 +1,8 @@
-ID: 11060193931212404192
+ID: 5371234980724435911
 Type: 1
 Source: assets\textures\F1 Car\Tyre_metallic.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

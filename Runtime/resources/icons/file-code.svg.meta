@@ -1,8 +1,8 @@
-ID: 15639535206514798692
+ID: 1118212428027976496
 Type: 1
 Source: resources/icons/file-code.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

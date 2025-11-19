@@ -1,8 +1,8 @@
-ID: 15988262192308193663
+ID: 7265337841349649633
 Type: 1
 Source: assets\textures\Sponza\sponza_ceiling_a_diff.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

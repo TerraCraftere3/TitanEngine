@@ -1,8 +1,8 @@
-ID: 5098208850753510740
+ID: 15942923615865315889
 Type: 1
 Source: assets\textures\Asphalt\aerial_asphalt_01_diff_4k.jpg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

@@ -1,8 +1,8 @@
-ID: 7082091285513635748
+ID: 4160289141762480791
 Type: 1
 Source: assets\textures\Helmet\Default_albedo.jpg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

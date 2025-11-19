@@ -1,8 +1,8 @@
-ID: 3771941734531370945
+ID: 13862793397623601488
 Type: 1
 Source: resources/icons/stop.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

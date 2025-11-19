@@ -1,8 +1,8 @@
-ID: 12049007819184758014
+ID: 12839019752823527565
 Type: 1
 Source: assets\textures\F1 Car\Details_baseColor.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

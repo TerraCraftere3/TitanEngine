@@ -85,6 +85,11 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
     }
 
     TI_CORE_ERROR("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
+
+    if (type == GL_DEBUG_TYPE_ERROR || severity == GL_DEBUG_SEVERITY_HIGH)
+    {
+        TI_CORE_ASSERT(false, "High Severity OpenGL Error");
+    }
 }
 
 namespace Titan

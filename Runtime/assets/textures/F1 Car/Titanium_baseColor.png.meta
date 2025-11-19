@@ -1,8 +1,8 @@
-ID: 18287210466267975213
+ID: 9092476086048108874
 Type: 1
 Source: assets\textures\F1 Car\Titanium_baseColor.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

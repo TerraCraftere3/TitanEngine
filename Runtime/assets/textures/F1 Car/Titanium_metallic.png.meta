@@ -1,8 +1,8 @@
-ID: 8132502014411707030
+ID: 13549825529577963953
 Type: 1
 Source: assets\textures\F1 Car\Titanium_metallic.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

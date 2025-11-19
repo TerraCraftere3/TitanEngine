@@ -1,8 +1,8 @@
-ID: 8530867971758441522
+ID: 15166043914007456858
 Type: 1
 Source: assets\textures\Asphalt\aerial_asphalt_01_nor_gl_4k.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

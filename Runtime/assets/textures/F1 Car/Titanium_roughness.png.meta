@@ -1,8 +1,8 @@
-ID: 14481578087653808133
+ID: 6179604216186233224
 Type: 1
 Source: assets\textures\F1 Car\Titanium_roughness.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

@@ -55,27 +55,48 @@ namespace Titan
         m_PhysicsWorld = nullptr;
     }
 
-    template <typename Component>
+    template <typename... Component>
     static void CopyComponent(entt::registry& dst, entt::registry& src,
                               const std::unordered_map<UUID, entt::entity>& enttMap)
     {
-        auto view = src.view<Component>();
-        for (auto e : view)
-        {
-            UUID uuid = src.get<IDComponent>(e).ID;
-            TI_CORE_ASSERT(enttMap.find(uuid) != enttMap.end());
-            entt::entity dstEnttID = enttMap.at(uuid);
+        (
+            [&]()
+            {
+                auto view = src.view<Component>();
+                for (auto srcEntity : view)
+                {
+                    entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
 
-            auto& component = src.get<Component>(e);
-            dst.emplace_or_replace<Component>(dstEnttID, component);
-        }
+                    auto& srcComponent = src.get<Component>(srcEntity);
+                    dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+                }
+            }(),
+            ...);
     }
 
-    template <typename Component>
+    template <typename... Component>
+    static void CopyComponents(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src,
+                               const std::unordered_map<UUID, entt::entity>& enttMap)
+    {
+        CopyComponent<Component...>(dst, src, enttMap);
+    }
+
+    template <typename... Component>
     static void CopyComponentIfExists(Entity dst, Entity src)
     {
-        if (src.HasComponent<Component>())
-            dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+        (
+            [&]()
+            {
+                if (src.HasComponent<Component>())
+                    dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+            }(),
+            ...);
+    }
+
+    template <typename... Component>
+    static void CopyComponentsIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
+    {
+        CopyComponentIfExists<Component...>(dst, src);
     }
 
     Ref<Scene> Scene::Copy(Ref<Scene> other)
@@ -89,6 +110,7 @@ namespace Titan
         auto& dstSceneRegistry = newScene->m_Registry;
         std::unordered_map<UUID, entt::entity> enttMap;
 
+        // Create entities in new scene
         auto idView = srcSceneRegistry.view<IDComponent>();
         for (auto e : idView)
         {
@@ -98,20 +120,7 @@ namespace Titan
             enttMap[uuid] = (entt::entity)newEntity;
         }
 
-        CopyComponent<DirectionalLightComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<SkyboxComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CircleRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<MeshRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<PostFXComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<CircleCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<ScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
-        CopyComponent<LookAtComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponents(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
 
         return newScene;
     }
@@ -139,20 +148,7 @@ namespace Titan
         std::string name = entity.GetName();
         Entity newEntity = CreateEntity(name);
 
-        CopyComponentIfExists<TransformComponent>(newEntity, entity);
-        CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
-        CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-        CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
-        CopyComponentIfExists<DirectionalLightComponent>(newEntity, entity);
-        CopyComponentIfExists<SkyboxComponent>(newEntity, entity);
-        CopyComponentIfExists<CameraComponent>(newEntity, entity);
-        CopyComponentIfExists<PostFXComponent>(newEntity, entity);
-        CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-        CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-        CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-        CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
-        CopyComponentIfExists<ScriptComponent>(newEntity, entity);
-        CopyComponentIfExists<LookAtComponent>(newEntity, entity);
+        CopyComponentsIfExists(AllComponents{}, newEntity, entity);
     }
 
     void Scene::DestroyEntity(Entity entity)

@@ -1,8 +1,8 @@
-ID: 12824419182552052519
+ID: 18243241775287815090
 Type: 1
 Source: assets\textures\Helmet\Default_AO.jpg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

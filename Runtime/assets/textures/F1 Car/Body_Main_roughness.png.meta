@@ -1,8 +1,8 @@
-ID: 12058176282167758116
+ID: 14107466928267053524
 Type: 1
 Source: assets\textures\F1 Car\Body_Main_roughness.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

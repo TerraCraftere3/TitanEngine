@@ -1,8 +1,8 @@
-ID: 4423879411054819336
+ID: 17849500630875192431
 Type: 1
 Source: resources/icons/simulate.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

@@ -1,8 +1,8 @@
-ID: 18166472435263512451
+ID: 15085314649917694682
 Type: 1
 Source: assets\textures\Sponza\sponza_fabric_blue_diff.tga
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

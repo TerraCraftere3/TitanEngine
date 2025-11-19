@@ -533,7 +533,6 @@ namespace Titan
         DrawLine(origin, origin + forward * 1.5f, forwardColor);
     }
 
-    // 3D Marker
     void Renderer2D::DrawMarker(const glm::mat4& transform)
     {
         const float axisLength = 0.3f;

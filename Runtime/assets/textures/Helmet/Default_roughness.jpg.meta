@@ -1,8 +1,8 @@
-ID: 875759803508262006
+ID: 6961225238787186752
 Type: 1
 Source: assets\textures\Helmet\Default_roughness.jpg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

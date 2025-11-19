@@ -1,8 +1,8 @@
-ID: 1013663651010181960
+ID: 10227672015068494530
 Type: 1
 Source: assets\textures\F1 Car\Tyre_baseColor.png
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear

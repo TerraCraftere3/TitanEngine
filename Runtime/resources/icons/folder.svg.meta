@@ -1,8 +1,8 @@
-ID: 10023092893526587833
+ID: 14969085131408945171
 Type: 1
 Source: resources/icons/folder.svg
 Properties:
   WrapS: Repeat
   WrapT: Repeat
   MinFilter: MipmapLinear
-  MagFilter: MipmapLinear
+  MagFilter: Linear
