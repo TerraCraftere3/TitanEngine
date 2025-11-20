@@ -443,25 +443,50 @@ namespace Titan
             "Skybox", entity,
             [](auto& component)
             {
-                ImGui::TextUnformatted("Cubemap");
-                if (component.Skybox)
                 {
-                    ImGui::Button(component.Skybox->GetPath().c_str());
-                }
-                else
-                {
-                    ImGui::Button("Empty");
-                }
-                if (ImGui::BeginDragDropTarget())
-                {
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    const char* current = Utils::SkyboxModeToString(component.mode);
+                    if (ImGui::BeginCombo("Mode##SkyboxMode", current))
                     {
-                        const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
-                        component.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
-                        component.Irradiance = component.Skybox->CreateIrradianceMap();
+                        for (int i = 0; i < (int)SkyboxComponent::Mode::_COUNT; i++)
+                        {
+                            auto mode = (SkyboxComponent::Mode)i;
+                            const bool isSelected = (component.mode == mode);
+
+                            if (ImGui::Selectable(Utils::SkyboxModeToString(mode), isSelected))
+                            {
+                                component.mode = mode;
+                            }
+                        }
+                        ImGui::EndCombo();
                     }
-                    ImGui::EndDragDropTarget();
+                }
+                if (component.mode == SkyboxComponent::Mode::HDRI)
+                {
+                    ImGui::TextUnformatted("Cubemap");
+                    if (component.hdriSettings.Skybox)
+                    {
+                        ImGui::Button(component.hdriSettings.Skybox->GetPath().c_str());
+                    }
+                    else
+                    {
+                        ImGui::Button("Empty");
+                    }
+                    if (ImGui::BeginDragDropTarget())
+                    {
+                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                        {
+                            const wchar_t* path = (const wchar_t*)payload->Data;
+                            std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
+                            component.hdriSettings.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
+                            component.hdriSettings.Irradiance = component.hdriSettings.Skybox->CreateIrradianceMap();
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+                }
+                else if (component.mode == SkyboxComponent::Mode::Colorramp)
+                {
+                    ImGui::ColorEdit3("Top Color", glm::value_ptr(component.colorrampSettings.TopColor));
+                    ImGui::ColorEdit3("Bottom Color", glm::value_ptr(component.colorrampSettings.BottomColor));
                 }
             });
         DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,

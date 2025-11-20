@@ -88,12 +88,25 @@ namespace Titan
 
     struct SkyboxComponent
     {
-        Ref<Cubemap> Skybox;
-        Ref<Cubemap> Irradiance;
+        struct HDRISettings
+        {
+            Ref<Cubemap> Skybox;
+            Ref<Cubemap> Irradiance;
+        } hdriSettings;
+        struct ColorrampSettings
+        {
+            glm::vec3 TopColor = glm::vec3(0.1f, 0.3f, 0.7f);
+            glm::vec3 BottomColor = glm::vec3(0.9f, 0.9f, 1.0f);
+        } colorrampSettings;
+        enum Mode
+        {
+            HDRI = 0,
+            Colorramp = 1,
+            _COUNT
+        } mode = HDRI;
 
         SkyboxComponent() = default;
         SkyboxComponent(const SkyboxComponent&) = default;
-        SkyboxComponent(Ref<Cubemap> map) : Skybox(map) {}
     };
 
     struct CameraComponent
@@ -207,4 +220,33 @@ namespace Titan
                        DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
                        NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
                        LookAtComponent>;
+    namespace Utils
+    {
+        inline const char* SkyboxModeToString(SkyboxComponent::Mode mode)
+        {
+            switch (mode)
+            {
+                case SkyboxComponent::Mode::HDRI:
+                    return "HDRI";
+                case SkyboxComponent::Mode::Colorramp:
+                    return "Colorramp";
+            }
+            return "Colorramp";
+        }
+
+        inline SkyboxComponent::Mode StringToSkyboxMode(const std::string& str)
+        {
+            std::string s = str;
+            std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+
+            if (s == "hdri")
+                return SkyboxComponent::Mode::HDRI;
+
+            if (s == "colorramp")
+                return SkyboxComponent::Mode::Colorramp;
+
+            return SkyboxComponent::Mode::Colorramp;
+        }
+
+    } // namespace Utils
 } // namespace Titan

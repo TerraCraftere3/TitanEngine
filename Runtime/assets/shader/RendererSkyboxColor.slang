@@ -1,24 +1,25 @@
-SamplerCube cubeMap;
-
 cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_View;
     column_major float4x4 u_Projection;
+
+    float3 u_TopColor;
+    float3 u_BottomColor;
 };
 
 struct VertexInput {
     float3 a_Position : POSITION;
-}
+};
 
 struct VertexOutput {
     float4 clipPos : SV_Position;
     float3 localPosition : TEXCOORD0;
-}
+};
 
 struct FragmentOutput {
     float4 color : SV_Target0;
     int entityID : SV_Target1;
-}
+};
 
 [shader("vertex")]
 VertexOutput vertexMain(VertexInput input)
@@ -35,7 +36,8 @@ VertexOutput vertexMain(VertexInput input)
         float4(0.0, 0.0, 0.0, 1.0)
     );
 
-    output.clipPos = mul(u_Projection, mul(rotView, float4(output.localPosition, 1.0))); output.clipPos.z = output.clipPos.w;
+    output.clipPos = mul(u_Projection, mul(rotView, float4(output.localPosition, 1.0)));
+    output.clipPos.z = output.clipPos.w;
 
     return output;
 }
@@ -45,10 +47,13 @@ FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 
-    float3 envColor = cubeMap.Sample(normalize(input.localPosition)).rgb;
+    // Normalize direction of this skybox fragment
+    float3 dir = normalize(input.localPosition);
 
-    //envColor = envColor / (envColor + float3(1.0));
-    //envColor = pow(envColor, float3(1.0 / 2.2));
+    // Blend factor based on vertical direction (y)
+    float t = saturate(dir.y * 0.5 + 0.5);
+
+    float3 envColor = lerp(u_BottomColor, u_TopColor, t);
 
     output.color = float4(envColor, 1.0);
     output.entityID = -1;

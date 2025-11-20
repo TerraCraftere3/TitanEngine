@@ -153,4 +153,9 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SkyboxComponent:
-      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+      HDRI:
+        Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: HDRI

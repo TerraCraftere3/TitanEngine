@@ -168,7 +168,8 @@ namespace Titan
                 for (auto entity : skyboxView)
                 {
                     auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
-                    cubemap = sb.Irradiance;
+                    if (sb.mode == SkyboxComponent::Mode::HDRI)
+                        cubemap = sb.hdriSettings.Irradiance;
                     break;
                 }
 
@@ -244,20 +245,32 @@ namespace Titan
                 TI_PROFILE_PASS();
 
                 fb->Bind();
-                Ref<Cubemap> cubemap = nullptr;
 
                 auto skyboxView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
 
                 for (auto entity : skyboxView)
                 {
                     auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
-                    cubemap = sb.Skybox;
-                    break;
-                }
+                    switch (sb.mode)
+                    {
+                        case SkyboxComponent::Mode::HDRI:
+                        {
+                            Ref<Cubemap> cubemap = sb.hdriSettings.Skybox;
 
-                if (cubemap)
-                {
-                    SkyboxRenderer::Render(cubemap, s_SRData->view, s_SRData->projection);
+                            if (cubemap)
+                            {
+                                SkyboxRenderer::Render(cubemap, s_SRData->view, s_SRData->projection);
+                            }
+                            break;
+                        }
+                        case SkyboxComponent::Mode::Colorramp:
+                        {
+                            SkyboxRenderer::Render(sb.colorrampSettings.TopColor, sb.colorrampSettings.BottomColor,
+                                                   s_SRData->view, s_SRData->projection);
+                            break;
+                        }
+                    }
+                    break;
                 }
 
                 fb->Unbind();

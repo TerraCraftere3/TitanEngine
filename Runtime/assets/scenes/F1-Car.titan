@@ -51,7 +51,12 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SkyboxComponent:
-      Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+      HDRI:
+        {}
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: HDRI
   - Entity: 396563269968923329
     TagComponent:
       Tag: Directional Light

@@ -330,7 +330,19 @@ namespace Titan
             out << YAML::BeginMap; // SkyboxComponent
 
             auto& sc = entity.GetComponent<SkyboxComponent>();
-            out << YAML::Key << "Texture" << YAML::Value << sc.Skybox->GetPath();
+            out << YAML::Key << "HDRI" << YAML::BeginMap;
+            {
+                if (sc.hdriSettings.Skybox)
+                    out << YAML::Key << "Texture" << YAML::Value << sc.hdriSettings.Skybox->GetPath();
+            }
+            out << YAML::EndMap;
+            out << YAML::Key << "Colorramp" << YAML::BeginMap;
+            {
+                out << YAML::Key << "TopColor" << YAML::Value << sc.colorrampSettings.TopColor;
+                out << YAML::Key << "BottomColor" << YAML::Value << sc.colorrampSettings.BottomColor;
+            }
+            out << YAML::EndMap;
+            out << YAML::Key << "Mode" << YAML::Value << Utils::SkyboxModeToString(sc.mode);
 
             out << YAML::EndMap; // SkyboxComponent
         }
@@ -605,8 +617,34 @@ namespace Titan
                 if (skyboxComponent)
                 {
                     auto& sc = deserializedEntity.AddComponent<SkyboxComponent>();
-                    sc.Skybox = Assets::Load<Cubemap>(skyboxComponent["Texture"].as<std::string>());
-                    sc.Irradiance = sc.Skybox->CreateIrradianceMap();
+
+                    auto hdriNode = skyboxComponent["HDRI"];
+                    if (hdriNode)
+                    {
+                        if (hdriNode["Texture"])
+                        {
+                            std::string path = hdriNode["Texture"].as<std::string>();
+                            sc.hdriSettings.Skybox = Assets::Load<Cubemap>(path);
+
+                            if (sc.hdriSettings.Skybox)
+                                sc.hdriSettings.Irradiance = sc.hdriSettings.Skybox->CreateIrradianceMap();
+                        }
+                    }
+                    auto crNode = skyboxComponent["Colorramp"];
+                    if (crNode)
+                    {
+                        if (crNode["TopColor"])
+                            sc.colorrampSettings.TopColor = crNode["TopColor"].as<glm::vec3>();
+
+                        if (crNode["BottomColor"])
+                            sc.colorrampSettings.BottomColor = crNode["BottomColor"].as<glm::vec3>();
+                    }
+
+                    if (skyboxComponent["Mode"])
+                    {
+                        std::string modeStr = skyboxComponent["Mode"].as<std::string>();
+                        sc.mode = Utils::StringToSkyboxMode(modeStr);
+                    }
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];
