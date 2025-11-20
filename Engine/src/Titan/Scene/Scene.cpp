@@ -1,12 +1,14 @@
 #include "Scene.h"
 #include "Components.h"
 #include "Entity.h"
+#include "EnttCompat.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scripting/ScriptEngine.h"
 
+#include <algorithm>
 #include "box2d/box2d.h"
 
 namespace Titan
@@ -198,6 +200,9 @@ namespace Titan
 
     void Scene::OnUpdateRuntime(Timestep ts)
     {
+        // Ensure world transforms are up to date so scripts/physics/use correct values
+        UpdateTransforms();
+
         // C# SCRIPTS
         {
             auto view = GetAllEntitiesWith<ScriptComponent>();
@@ -206,23 +211,6 @@ namespace Titan
                 Entity entity = {e, this};
                 ScriptEngine::OnUpdateEntity(entity, ts);
             }
-        }
-
-        // NATIVE SCRIPTS
-        {
-            GetAllEntitiesWith<NativeScriptComponent>().each(
-                [=](auto entity, auto& nsc)
-                {
-                    if (!nsc.Instance)
-                    {
-                        nsc.Instance = nsc.InstantiateScript();
-                        nsc.Instance->m_Entity = Entity{entity, this};
-
-                        nsc.Instance->OnCreate();
-                    }
-
-                    nsc.Instance->OnUpdate(ts);
-                });
         }
 
         // PHYSICS
@@ -255,6 +243,9 @@ namespace Titan
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
 
+        // Update world transforms before simulation so child transforms are correct
+        UpdateTransforms();
+
         // PHYSICS
         {
             const int32_t velocityIterations = 6;
@@ -284,6 +275,9 @@ namespace Titan
         RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
+
+        // Update world transforms for editor preview
+        UpdateTransforms();
 
         UpdateConstraints();
     }
@@ -413,6 +407,134 @@ namespace Titan
         }
     }
 
+    void Scene::UpdateTransforms()
+    {
+        // Reset UseWorldTransform for all transforms by default
+        auto allTransforms = m_Registry.view<TransformComponent>();
+        for (auto e : allTransforms)
+        {
+            auto& tc = Titan::EnttCompat::registry_get<decltype(m_Registry), TransformComponent>(m_Registry, e);
+            tc.UseWorldTransform = false;
+            tc.WorldTransform = tc.GetLocalTransform();
+        }
+
+        // For entities with RelationshipComponent, find roots and recurse
+        auto relView = m_Registry.view<RelationshipComponent, TransformComponent>();
+        for (auto e : relView)
+        {
+            auto& rel = Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, e);
+            if (rel.Parent == entt::null)
+            {
+                UpdateTransformRecursive(e, glm::mat4(1.0f));
+            }
+        }
+    }
+
+    void Scene::UpdateTransformRecursive(entt::entity entity, const glm::mat4& parentTransform)
+    {
+        if (!m_Registry.valid(entity))
+            return;
+
+        auto& tc = Titan::EnttCompat::registry_get<decltype(m_Registry), TransformComponent>(m_Registry, entity);
+
+        glm::mat4 local = tc.GetLocalTransform();
+        glm::mat4 world = parentTransform * local;
+
+        tc.WorldTransform = world;
+        tc.UseWorldTransform = true;
+
+        if (Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, entity))
+        {
+            auto& rel =
+                Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, entity);
+            for (auto child : rel.Children)
+            {
+                if (child != entt::null)
+                    UpdateTransformRecursive(child, world);
+            }
+        }
+    }
+
+    void Scene::SetParent(Entity child, Entity parent)
+    {
+        if (!child || !parent)
+            return;
+
+        entt::entity childHandle = (entt::entity)child;
+        entt::entity parentHandle = (entt::entity)parent;
+
+        // Prevent cycles: ensure parent is not a descendant of child
+        entt::entity cur = parentHandle;
+        while (cur != entt::null)
+        {
+            if (cur == childHandle)
+                return; // would create a cycle
+
+            if (!Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, cur))
+                break;
+
+            cur = Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, cur).Parent;
+        }
+
+        // Remove from previous parent if any
+        if (Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle))
+        {
+            auto& childRel =
+                Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle);
+            if (childRel.Parent != entt::null && childRel.Parent != parentHandle)
+            {
+                auto& prevRel = Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(
+                    m_Registry, childRel.Parent);
+                auto& prevChildren = prevRel.Children;
+                prevChildren.erase(std::remove(prevChildren.begin(), prevChildren.end(), childHandle),
+                                   prevChildren.end());
+            }
+        }
+
+        // Ensure relationship components exist
+        if (!Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle))
+            m_Registry.emplace<RelationshipComponent>(childHandle);
+        if (!Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, parentHandle))
+            m_Registry.emplace<RelationshipComponent>(parentHandle);
+
+        auto& childRel2 =
+            Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle);
+        auto& parentRel2 =
+            Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, parentHandle);
+
+        childRel2.Parent = parentHandle;
+
+        // add to parent's children if not present
+        if (std::find(parentRel2.Children.begin(), parentRel2.Children.end(), childHandle) == parentRel2.Children.end())
+            parentRel2.Children.push_back(childHandle);
+    }
+
+    void Scene::RemoveParent(Entity child)
+    {
+        if (!child)
+            return;
+
+        entt::entity childHandle = (entt::entity)child;
+        if (!Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle))
+            return;
+
+        auto& childRel =
+            Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, childHandle);
+        if (childRel.Parent == entt::null)
+            return;
+
+        entt::entity parentHandle = childRel.Parent;
+        if (Titan::EnttCompat::registry_has<decltype(m_Registry), RelationshipComponent>(m_Registry, parentHandle))
+        {
+            auto& parentRel =
+                Titan::EnttCompat::registry_get<decltype(m_Registry), RelationshipComponent>(m_Registry, parentHandle);
+            parentRel.Children.erase(std::remove(parentRel.Children.begin(), parentRel.Children.end(), childHandle),
+                                     parentRel.Children.end());
+        }
+
+        childRel.Parent = entt::null;
+    }
+
     template <typename T>
     void Scene::OnComponentAdded(Entity entity, T& component)
     {
@@ -433,7 +555,6 @@ namespace Titan
     template void Scene::OnComponentAdded<DirectionalLightComponent>(Entity, DirectionalLightComponent&);
     template void Scene::OnComponentAdded<SkyboxComponent>(Entity, SkyboxComponent&);
     template void Scene::OnComponentAdded<CameraComponent>(Entity, CameraComponent&);
-    template void Scene::OnComponentAdded<NativeScriptComponent>(Entity, NativeScriptComponent&);
     template void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity, Rigidbody2DComponent&);
     template void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity, BoxCollider2DComponent&);
     template void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity, CircleCollider2DComponent&);

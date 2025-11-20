@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include "Components.h"
+#include "EnttCompat.h"
 #include "Scene.h"
 #include "Titan/PCH.h"
 
@@ -9,10 +12,14 @@ namespace Titan
     class TI_API Entity
     {
     public:
-        Entity();
-        Entity(entt::entity handle, Scene* scene);
+        Entity() = default;
+        Entity(entt::entity handle, Scene* scene) : m_EntityHandle(handle), m_Scene(scene) {}
+
         Entity(const Entity& other) = default;
 
+        // ============================
+        // Component Management
+        // ============================
         template <typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
@@ -50,13 +57,41 @@ namespace Titan
             m_Scene->m_Registry.remove<T>(m_EntityHandle);
         }
 
-        operator bool() const { return m_EntityHandle != entt::null; }
+        // ============================
+        // Operators
+        // ============================
+        explicit operator bool() const { return m_EntityHandle != entt::null; }
         operator entt::entity() const { return m_EntityHandle; }
-        operator uint32_t() const { return (uint32_t)m_EntityHandle; }
+        operator uint32_t() const { return static_cast<uint32_t>(m_EntityHandle); }
 
+        // ============================
+        // Entity Info
+        // ============================
         UUID GetUUID();
         std::string GetName();
 
+        // ============================
+        // Hierarchy Helpers
+        // ============================
+        void SetParent(Entity parent)
+        {
+            TI_CORE_ASSERT(m_Scene, "Entity does not belong to a scene!");
+            m_Scene->SetParent(*this, parent);
+        }
+
+        void RemoveParent()
+        {
+            TI_CORE_ASSERT(m_Scene, "Entity does not belong to a scene!");
+            m_Scene->RemoveParent(*this);
+        }
+
+        Entity GetParent();
+
+        std::vector<Entity> GetChildren();
+
+        // ============================
+        // Comparisons
+        // ============================
         bool operator==(const Entity& other) const
         {
             return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
@@ -65,7 +100,7 @@ namespace Titan
         bool operator!=(const Entity& other) const { return !(*this == other); }
 
     private:
-        entt::entity m_EntityHandle{0};
+        entt::entity m_EntityHandle{entt::null};
         Scene* m_Scene = nullptr;
     };
 

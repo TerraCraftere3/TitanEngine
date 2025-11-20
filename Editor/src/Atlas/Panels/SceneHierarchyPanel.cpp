@@ -1,4 +1,5 @@
 #include "SceneHierarchyPanel.h"
+#include <vector>
 #include "../Components.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
@@ -38,11 +39,23 @@ namespace Titan
     {
         ImGui::Begin("Scene Hierarchy");
 
+        // Build list of root entities (entities without a parent)
+        std::vector<Entity> roots;
         auto view = m_Context->m_Registry.view<entt::entity>();
         for (auto entity : view)
         {
             Entity e{entity, m_Context.get()};
-            DrawEntityNode(e);
+            if (!e)
+                continue;
+            Entity parent = e.GetParent();
+            if (!parent)
+                roots.push_back(e);
+        }
+
+        // Draw hierarchical tree
+        for (auto& root : roots)
+        {
+            DrawEntityNode(root);
         }
 
         if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -173,18 +186,56 @@ namespace Titan
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity)
     {
+        if (!entity)
+            return;
+
         auto& tag = entity.GetComponent<TagComponent>().Tag;
 
         ImGuiTreeNodeFlags flags =
             ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+
+        // If entity has children, show as folder, else leaf
+        bool hasChildren = entity.GetChildren().size() > 0;
+        if (!hasChildren)
+            flags |= ImGuiTreeNodeFlags_Leaf;
+
         bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+
+        // Selection
         if (ImGui::IsItemClicked())
-        {
             m_SelectionContext = entity;
+
+        // Drag source
+        if (ImGui::BeginDragDropSource())
+        {
+            uint32_t payload = (uint32_t)entity;
+            ImGui::SetDragDropPayload("SCENE_ENTITY", &payload, sizeof(uint32_t));
+            ImGui::TextUnformatted(tag.c_str());
+            ImGui::EndDragDropSource();
+        }
+
+        // Accept drops (parenting)
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_ENTITY"))
+            {
+                uint32_t src = *(const uint32_t*)payload->Data;
+                Entity srcEntity((entt::entity)src, m_Context.get());
+                if (srcEntity && srcEntity != entity)
+                {
+                    srcEntity.SetParent(entity);
+                }
+            }
+            ImGui::EndDragDropTarget();
         }
 
         if (opened)
         {
+            // Draw children recursively
+            auto children = entity.GetChildren();
+            for (auto& child : children)
+                DrawEntityNode(child);
+
             ImGui::TreePop();
         }
     }

@@ -295,9 +295,7 @@ namespace Titan
                     out << YAML::Key << "MetallicTexture" << YAML::Value << mat->MetallicTexture->GetPath();
                 }
                 if (mat->RoughnessTexture)
-                {
                     out << YAML::Key << "RoughnessTexture" << YAML::Value << mat->RoughnessTexture->GetPath();
-                }
                 if (mat->NormalTexture)
                 {
                     out << YAML::Key << "NormalTexture" << YAML::Value << mat->NormalTexture->GetPath();
@@ -437,6 +435,18 @@ namespace Titan
             out << YAML::EndMap; // ScriptComponent
         }
 
+        if (entity.HasComponent<RelationshipComponent>())
+        {
+            auto parent = entity.GetParent();
+            if (parent)
+            {
+                out << YAML::Key << "RelationshipComponent";
+                out << YAML::BeginMap; // RelationshipComponent
+                out << YAML::Key << "Parent" << YAML::Value << (size_t)parent.GetUUID();
+                out << YAML::EndMap; // RelationshipComponent
+            }
+        }
+
         out << YAML::EndMap; // Entity
     }
 
@@ -489,6 +499,8 @@ namespace Titan
         TI_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
         auto entities = data["Entities"];
+        // pending parent links to resolve after all entities are created
+        std::vector<std::pair<UUID, UUID>> pendingParentLinks;
         if (entities)
         {
             for (auto entity : entities)
@@ -735,7 +747,25 @@ namespace Titan
                         }
                     }
                 }
+
+                // Record relationship parent if present; resolution happens after all entities are created
+                auto relationshipComponent = entity["RelationshipComponent"];
+                if (relationshipComponent)
+                {
+                    uint64_t parentUUID = relationshipComponent["Parent"].as<uint64_t>();
+                    if (parentUUID != 0)
+                        pendingParentLinks.emplace_back(UUID(uuid), UUID(parentUUID));
+                }
             }
+        }
+
+        // Resolve parent links
+        for (auto& pr : pendingParentLinks)
+        {
+            Entity child = m_Scene->GetEntityByUUID(pr.first);
+            Entity parent = m_Scene->GetEntityByUUID(pr.second);
+            if (child && parent)
+                m_Scene->SetParent(child, parent);
         }
 
         return true;

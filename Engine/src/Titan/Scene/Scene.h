@@ -57,6 +57,13 @@ namespace Titan
         void OnPhysics2DStop();
         void UpdateConstraints();
 
+        // Update world transforms for entities that have parent/child relations
+        void UpdateTransforms();
+        void UpdateTransformRecursive(entt::entity entity, const glm::mat4& parentTransform);
+        // Set/clear parent-child relationships
+        void SetParent(Entity child, Entity parent);
+        void RemoveParent(Entity child);
+
     private:
         entt::registry m_Registry;
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;

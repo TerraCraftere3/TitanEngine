@@ -1,8 +1,9 @@
 #pragma once
 
+#include <entt/entt.hpp>
+#include <vector>
 #include "PhysicsMaterial.h"
 #include "SceneCamera.h"
-#include "ScriptableEntity.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Cubemap.h"
@@ -36,16 +37,33 @@ namespace Titan
         glm::vec3 Rotation = {0.0f, 0.0f, 0.0f};
         glm::vec3 Scale = {1.0f, 1.0f, 1.0f};
 
+        // Cached world transform (computed by Scene when a parent relation exists)
+        glm::mat4 WorldTransform = glm::mat4(1.0f);
+        // When true, GetTransform() will return WorldTransform instead of local transform
+        bool UseWorldTransform = false;
+
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
         TransformComponent(const glm::vec3& translation) : Translation(translation) {}
 
-        glm::mat4 GetTransform() const
+        glm::mat4 GetLocalTransform() const
         {
             glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
             return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
         }
+
+        glm::mat4 GetTransform() const { return UseWorldTransform ? WorldTransform : GetLocalTransform(); }
+    };
+
+    // Relationship component to store parent/children hierarchy (entt-style)
+    struct RelationshipComponent
+    {
+        entt::entity Parent = entt::null;
+        std::vector<entt::entity> Children;
+
+        RelationshipComponent() = default;
+        RelationshipComponent(const RelationshipComponent&) = default;
     };
 
     struct SpriteRendererComponent
@@ -132,25 +150,6 @@ namespace Titan
         PostFXComponent(const PostFXComponent&) = default;
     };
 
-    struct NativeScriptComponent
-    {
-        ScriptableEntity* Instance = nullptr;
-
-        ScriptableEntity* (*InstantiateScript)();
-        void (*DestroyScript)(NativeScriptComponent*);
-
-        template <typename T>
-        void Bind()
-        {
-            InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
-            DestroyScript = [](NativeScriptComponent* nsc)
-            {
-                delete nsc->Instance;
-                nsc->Instance = nullptr;
-            };
-        }
-    };
-
     struct Rigidbody2DComponent
     {
         enum class BodyType
@@ -218,8 +217,8 @@ namespace Titan
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
                        DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
-                       NativeScriptComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
-                       LookAtComponent>;
+                       Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent, LookAtComponent,
+                       RelationshipComponent>;
     namespace Utils
     {
         inline const char* SkyboxModeToString(SkyboxComponent::Mode mode)

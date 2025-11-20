@@ -1,0 +1,84 @@
+Scene: Untitled
+Entities:
+  - Entity: 14547845847602563518
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      HDRI:
+        {}
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: HDRI
+  - Entity: 7172829530391615036
+    TagComponent:
+      Tag: A
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 9329354342991432106
+    TagComponent:
+      Tag: B (Cube)
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: cube
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+    RelationshipComponent:
+      Parent: 7172829530391615036
+  - Entity: 14288420062618809782
+    TagComponent:
+      Tag: C
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 1.1920929e-07, 0]
+      Scale: [0.9999504, 1, 0.9999504]
+    ScriptComponent:
+      ClassName: Sandbox.Rotation3D
+      ScriptFields:
+        - Name: Speed
+          Type: Vector3
+          Data: [0, 1, 0]
+    RelationshipComponent:
+      Parent: 7172829530391615036
+  - Entity: 7870501300130964451
+    TagComponent:
+      Tag: D (Cube)
+    TransformComponent:
+      Translation: [-2, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: cube
+      Materials:
+        - AlbedoColor: [1, 1, 1, 1]
+          UVRepeat: [1, 1]
+    RelationshipComponent:
+      Parent: 14288420062618809782
+  - Entity: 13861405933909057267
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 2, 6.5]
+      Rotation: [-0.29849893, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
