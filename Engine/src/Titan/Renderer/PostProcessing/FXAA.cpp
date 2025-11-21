@@ -9,7 +9,7 @@ namespace Titan{
 
     void FXAAEffect::OnAttach()
     {
-        m_Shader = Assets::Load<Shader>("assets/shader/PostFXAA.slang");
+        m_Shader = Assets::Load<Shader>("resources/shader/PostFXAA.slang");
         m_UniformBuffer = UniformBuffer::Create(sizeof(FXAAUniformData), 0);
     }
 

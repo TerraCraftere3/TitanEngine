@@ -263,7 +263,7 @@ namespace Titan
         s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
         s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances, 2);
 
-        s_3DData.Shader = Shader::Create("assets/shader/RendererGeometry.slang");
+        s_3DData.Shader = Shader::Create("resources/shader/RendererGeometry.slang");
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
 
         s_Textures.DefaultAlbedo = Texture2D::Create(1, 1);

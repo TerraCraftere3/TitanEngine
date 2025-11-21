@@ -30,7 +30,7 @@ namespace Titan
         s_PBRData.DefaultIrradiance = defaultAmbient->CreateIrradianceMap();
 
         // Shader
-        s_PBRData.Shader = Shader::Create("assets/shader/RendererPBR.slang");
+        s_PBRData.Shader = Shader::Create("resources/shader/RendererPBR.slang");
     }
 
     void PBRRenderer::Shutdown()

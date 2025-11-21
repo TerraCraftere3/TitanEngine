@@ -175,8 +175,6 @@ void main()
             return;
         }
 
-        TI_CORE_INFO("Loaded HDR image: {0} ({1}x{2}, {3} channels)", path, width, height, channels);
-
         // Create temporary equirectangular texture
         GLuint hdrTexture;
         glGenTextures(1, &hdrTexture);

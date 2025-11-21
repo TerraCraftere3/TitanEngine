@@ -51,8 +51,8 @@ namespace Titan
 
     void SkyboxRenderer::Init()
     {
-        s_SBData.CubemapShader = Shader::Create("assets/shader/RendererSkyboxHDRI.slang");
-        s_SBData.ColorShader = Shader::Create("assets/shader/RendererSkyboxColor.slang");
+        s_SBData.CubemapShader = Shader::Create("resources/shader/RendererSkyboxHDRI.slang");
+        s_SBData.ColorShader = Shader::Create("resources/shader/RendererSkyboxColor.slang");
 
         s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData), 0);
 

@@ -171,9 +171,9 @@ namespace Titan
         s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
         // Shader
-        s_Data.CircleShader = Assets::Load<Shader>("assets/shader/RendererCircle.slang");
-        s_Data.QuadShader = Assets::Load<Shader>("assets/shader/RendererQuad.slang");
-        s_Data.LineShader = Assets::Load<Shader>("assets/shader/RendererLine.slang");
+        s_Data.CircleShader = Assets::Load<Shader>("resources/shader/RendererCircle.slang");
+        s_Data.QuadShader = Assets::Load<Shader>("resources/shader/RendererQuad.slang");
+        s_Data.LineShader = Assets::Load<Shader>("resources/shader/RendererLine.slang");
 
         s_Data.QuadShader->Bind();
         // Sampler / Textures
