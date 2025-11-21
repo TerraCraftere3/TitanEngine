@@ -5,12 +5,6 @@ cbuffer FXAAParams : register(b0)
     float2 u_InvScreenSize;  // 1.0 / screen resolution (width, height)
 }
 
-typealias ISampler2D<
-    T : ITexelElement = int,
-    let sampleCount : int = 0,
-    let format : int = 0
-> = _Texture<T, __Shape2D, 0, 0, sampleCount, 0, 0, 1, format>;
-
 Sampler2D u_Input : register(t0);
 ISampler2D u_Entity : register(t1);
 

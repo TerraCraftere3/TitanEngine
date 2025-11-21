@@ -61,8 +61,6 @@ struct FragmentOutput
 static const float3 AMBIENT_LIGHT = float3(0.05f, 0.04f, 0.03f);
 static const float PI = 3.14159265359;
 
-Sampler2D GetBindlessTexture(uint2 handle);
-
 float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
 {
     float3 color = mat.AlbedoColor.rgb;

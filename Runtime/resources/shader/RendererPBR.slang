@@ -25,12 +25,6 @@ struct FragmentOutput
     float depth : SV_Depth;
 };
 
-typealias ISampler2D<
-    T : ITexelElement = int,
-    let sampleCount : int = 0,
-    let format : int = 0
-> = _Texture<T, __Shape2D, 0, 0, sampleCount, 0, 0, 1, format>;
-
 Sampler2D gPosition;
 Sampler2D gNormal;
 Sampler2D gAlbedo;
