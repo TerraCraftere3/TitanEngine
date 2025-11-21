@@ -21,7 +21,7 @@ namespace Titan
     class PostFX
     {
     public:
-        inline PostFX(const char* Name) { m_Name = std::string(Name);}
+        inline PostFX(const char* Name) { m_Name = std::string(Name); }
         inline PostFX(std::string Name) { m_Name = Name; };
         virtual ~PostFX() = default;
         inline const std::string& GetName() const { return m_Name; }
@@ -47,7 +47,8 @@ namespace Titan
             m_Effects.push_back(effect);
         }
 
-        void Shutdown(){
+        void Shutdown()
+        {
             for (auto& effect : m_Effects)
             {
                 effect->OnDetach();
@@ -57,10 +58,9 @@ namespace Titan
 
         void RemoveEffect(const std::string& name)
         {
-            m_Effects.erase(
-                std::remove_if(m_Effects.begin(), m_Effects.end(),
-                               [&](const Ref<PostFX>& effect) { return effect->GetName() == name; }),
-                m_Effects.end());
+            m_Effects.erase(std::remove_if(m_Effects.begin(), m_Effects.end(),
+                                           [&](const Ref<PostFX>& effect) { return effect->GetName() == name; }),
+                            m_Effects.end());
         }
 
         void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene)

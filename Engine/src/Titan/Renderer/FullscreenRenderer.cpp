@@ -12,22 +12,15 @@ namespace Titan
         // Fullscreen quad vertices
         float quadVertices[] = {
             // positions   // texcoords
-            -1.0f, -1.0f, 0.0f, 0.0f,
-             1.0f, -1.0f, 1.0f, 0.0f,
-             1.0f,  1.0f, 1.0f, 1.0f,
-            -1.0f,  1.0f, 0.0f, 1.0f
-        };
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f};
 
-        uint32_t quadIndices[] = { 0, 1, 2, 2, 3, 0 };
+        uint32_t quadIndices[] = {0, 1, 2, 2, 3, 0};
 
         s_Data.FullscreenQuadVAO = VertexArray::Create();
 
         // Vertex Buffer
         Ref<VertexBuffer> vb = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
-        vb->SetLayout({
-            { ShaderDataType::Float2, "a_Position" },
-            { ShaderDataType::Float2, "a_TexCoord" }
-        });
+        vb->SetLayout({{ShaderDataType::Float2, "a_Position"}, {ShaderDataType::Float2, "a_TexCoord"}});
         s_Data.FullscreenQuadVAO->AddVertexBuffer(vb);
 
         // Index Buffer
@@ -45,4 +38,4 @@ namespace Titan
         RenderCommand::DrawIndexed(s_Data.FullscreenQuadVAO);
     }
 
-}
+} // namespace Titan

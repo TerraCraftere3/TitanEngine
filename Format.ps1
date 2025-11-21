@@ -3,21 +3,26 @@ function Format-FilesInDirectory {
         [string]$Path
     )
 
-    $extensions = "*.cpp", "*.c", "*.cc", "*.cxx", "*.h", "*.hpp", "*.hxx", "*.inl", "*.glsl", "*.vert", "*.frag", "*.comp", "*.geom", "*.tesc", "*.tese", "*.proto", "*.cs"
+    $extensions = "*.cpp", "*.c", "*.cc", "*.cxx", "*.h", "*.hpp", "*.hxx", "*.inl",
+                  "*.glsl", "*.vert", "*.frag", "*.comp", "*.geom", "*.tesc", "*.tese",
+                  "*.proto", "*.cs"
 
-    Get-ChildItem -Path $Path -Recurse -Include $extensions | ForEach-Object {
-        $original = Get-Content $_.FullName -Raw
-        clang-format -i $_.FullName
-        $formatted = Get-Content $_.FullName -Raw
+    Get-ChildItem -Path $Path -Recurse -Include $extensions |
+        Where-Object { $_.Name -notmatch "generated" } | 
+        ForEach-Object {
+            $original = Get-Content $_.FullName -Raw
+            clang-format -i $_.FullName
+            $formatted = Get-Content $_.FullName -Raw
 
-        if ($original -ne $formatted) {
-            Write-Host "$($_.FullName)" -ForegroundColor Green
+            if ($original -ne $formatted) {
+                Write-Host "$($_.FullName)" -ForegroundColor Green
+            }
+            else {
+                Write-Host "$($_.FullName)" -ForegroundColor Gray
+            }
         }
-        else {
-            Write-Host "$($_.FullName)" -ForegroundColor Gray
-        }
-    }
 }
+
 
 Write-Host "Starting Formatting..." -ForegroundColor Cyan
 

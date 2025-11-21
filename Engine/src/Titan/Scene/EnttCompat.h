@@ -1,50 +1,65 @@
 #pragma once
 
+#include <entt/entt.hpp>
 #include <type_traits>
 #include <utility>
 #include "Titan/PCH.h"
-#include <entt/entt.hpp>
 
 namespace Titan::EnttCompat
 {
     // Detection helpers
     template <typename R, typename T, typename = void>
-    struct has_any_of : std::false_type {};
+    struct has_any_of : std::false_type
+    {
+    };
 
     template <typename R, typename T>
-    struct has_any_of<R, T, std::void_t<decltype(std::declval<R>().template any_of<T>(std::declval<entt::entity>()))>> : std::true_type
+    struct has_any_of<R, T, std::void_t<decltype(std::declval<R>().template any_of<T>(std::declval<entt::entity>()))>>
+        : std::true_type
     {
     };
 
     template <typename R, typename T, typename = void>
-    struct has_all_of : std::false_type {};
+    struct has_all_of : std::false_type
+    {
+    };
 
     template <typename R, typename T>
-    struct has_all_of<R, T, std::void_t<decltype(std::declval<R>().template all_of<T>(std::declval<entt::entity>()))>> : std::true_type
+    struct has_all_of<R, T, std::void_t<decltype(std::declval<R>().template all_of<T>(std::declval<entt::entity>()))>>
+        : std::true_type
     {
     };
 
     template <typename R, typename T, typename = void>
-    struct has_has : std::false_type {};
+    struct has_has : std::false_type
+    {
+    };
 
     template <typename R, typename T>
-    struct has_has<R, T, std::void_t<decltype(std::declval<R>().template has<T>(std::declval<entt::entity>()))>> : std::true_type
+    struct has_has<R, T, std::void_t<decltype(std::declval<R>().template has<T>(std::declval<entt::entity>()))>>
+        : std::true_type
     {
     };
 
     template <typename R, typename T, typename = void>
-    struct has_try_get : std::false_type {};
+    struct has_try_get : std::false_type
+    {
+    };
 
     template <typename R, typename T>
-    struct has_try_get<R, T, std::void_t<decltype(std::declval<R>().template try_get<T>(std::declval<entt::entity>()))>> : std::true_type
+    struct has_try_get<R, T, std::void_t<decltype(std::declval<R>().template try_get<T>(std::declval<entt::entity>()))>>
+        : std::true_type
     {
     };
 
     template <typename R, typename T, typename = void>
-    struct has_get : std::false_type {};
+    struct has_get : std::false_type
+    {
+    };
 
     template <typename R, typename T>
-    struct has_get<R, T, std::void_t<decltype(std::declval<R>().template get<T>(std::declval<entt::entity>()))>> : std::true_type
+    struct has_get<R, T, std::void_t<decltype(std::declval<R>().template get<T>(std::declval<entt::entity>()))>>
+        : std::true_type
     {
     };
 
@@ -61,8 +76,9 @@ namespace Titan::EnttCompat
         else if constexpr (has_try_get<R, T>::value)
             return reg.template try_get<T>(e) != nullptr;
         else
-            static_assert(has_any_of<R, T>::value || has_all_of<R, T>::value || has_has<R, T>::value || has_try_get<R, T>::value,
-                          "Entt registry has no known component-test API");
+            static_assert(
+                has_any_of<R, T>::value || has_all_of<R, T>::value || has_has<R, T>::value || has_try_get<R, T>::value,
+                "Entt registry has no known component-test API");
     }
 
     // registry_get: returns reference to component T. If only try_get is available it will assert on null.

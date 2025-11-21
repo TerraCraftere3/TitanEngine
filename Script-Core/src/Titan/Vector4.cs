@@ -13,10 +13,7 @@ namespace Titan
         public static Vector4 UnitZ => new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
         public static Vector4 UnitW => new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 
-        public Vector4(float scalar)
-        {
-            X = Y = Z = W = scalar;
-        }
+        public Vector4(float scalar) { X = Y = Z = W = scalar; }
 
         public Vector4(float x, float y, float z, float w)
         {
@@ -37,8 +34,7 @@ namespace Titan
         public Vector3 XYZ
         {
             get => new Vector3(X, Y, Z);
-            set
-            {
+            set {
                 X = value.X;
                 Y = value.Y;
                 Z = value.Z;
@@ -48,17 +44,21 @@ namespace Titan
         public Vector4 WithW(float w) => new Vector4(X, Y, Z, w);
 
         // --- Operators ---
-        public static Vector4 operator +(Vector4 a, Vector4 b) => new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
+        public static Vector4 operator +(Vector4 a, Vector4 b) => new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z,
+                                                                              a.W + b.W);
 
-        public static Vector4 operator -(Vector4 a, Vector4 b) => new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
+        public static Vector4 operator -(Vector4 a, Vector4 b) => new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z,
+                                                                              a.W - b.W);
 
         public static Vector4 operator -(Vector4 v) => new Vector4(-v.X, -v.Y, -v.Z, -v.W);
 
-        public static Vector4 operator *(Vector4 v, float scalar) => new Vector4(v.X * scalar, v.Y * scalar, v.Z * scalar, v.W * scalar);
+        public static Vector4 operator*(Vector4 v, float scalar) => new Vector4(v.X * scalar, v.Y* scalar, v.Z* scalar,
+                                                                                v.W* scalar);
 
-        public static Vector4 operator *(float scalar, Vector4 v) => v * scalar;
+        public static Vector4 operator*(float scalar, Vector4 v) => v * scalar;
 
-        public static Vector4 operator /(Vector4 v, float scalar) => new Vector4(v.X / scalar, v.Y / scalar, v.Z / scalar, v.W / scalar);
+        public static Vector4 operator /(Vector4 v, float scalar) => new Vector4(v.X / scalar, v.Y / scalar,
+                                                                                 v.Z / scalar, v.W / scalar);
 
         public static bool operator ==(Vector4 a, Vector4 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W;
 

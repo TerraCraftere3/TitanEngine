@@ -1,7 +1,8 @@
 #include "FXAA.h"
 #include "Titan/Renderer/FullscreenRenderer.h"
 
-namespace Titan{
+namespace Titan
+{
     struct FXAAUniformData
     {
         glm::vec2 InvScreenSize;
@@ -33,4 +34,4 @@ namespace Titan{
         FullscreenRenderer::Render();
         framebuffer->Unbind();
     }
-}
+} // namespace Titan

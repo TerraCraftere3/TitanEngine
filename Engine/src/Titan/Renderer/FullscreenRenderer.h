@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VertexArray.h"
 #include "RenderCommand.h"
+#include "VertexArray.h"
 
 namespace Titan
 {
@@ -21,4 +21,4 @@ namespace Titan
 
         static Data s_Data;
     };
-}
+} // namespace Titan

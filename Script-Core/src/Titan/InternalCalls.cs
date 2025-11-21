@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace Titan
 {
     public static class InternalCalls
-    {    
+    {
         // ======================================================================
         //            LOGGING CALLS
         // ======================================================================
@@ -127,7 +127,8 @@ namespace Titan
 
         // Skybox
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        internal extern static void SkyboxComponent_SetSkyboxPaths(ulong entityID, string skyboxPath, string irradiancePath);
+        internal extern static void SkyboxComponent_SetSkyboxPaths(ulong entityID, string skyboxPath,
+                                                                   string irradiancePath);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static string SkyboxComponent_GetSkyboxPath(ulong entityID);
@@ -140,7 +141,6 @@ namespace Titan
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static int SkyboxComponent_GetMode(ulong entityID);
-
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void SkyboxComponent_SetTopBottomColor(ulong entityID, Vector3 top, Vector3 bottom);
