@@ -13,6 +13,10 @@
 // clang-format on
 namespace Titan
 {
+    OpenGLTexture2D::OpenGLTexture2D(void* ptr, const std::string& path) : m_Path(path)
+    {
+        m_RendererID = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ptr));
+    }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, TextureSettings settings) : m_Path(path)
     {

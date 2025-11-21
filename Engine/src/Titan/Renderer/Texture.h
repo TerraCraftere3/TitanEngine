@@ -79,6 +79,8 @@ namespace Titan
         static Ref<Texture2D> Create(uint32_t width, uint32_t height, TextureFormat format = TextureFormat::RGBA8,
                                      TextureSettings settings = TextureSettings());
         static Ref<Texture2D> Create(const std::string& path, TextureSettings settings = TextureSettings());
+        // ptr = gluint as void* or pointer to vulkan texture, etc.
+        static Ref<Texture2D> Create(void* ptr, const std::string& path = "internal");
     };
 
     namespace Utils

@@ -64,12 +64,13 @@ For now there is no linux support
 - [x] Platform Independent Code
 - [x] 2D Batch Renderer
   - [ ] Particle Systems
+  - [x] Textures 
 - [x] Entity Component System
-  - [ ] Children
+  - [x] Children
   - [ ] Multiple Components of same Type
 - [x] Scene Renderer
 - [ ] Audio
-- [ ] 3D PBR Renderer
+- [x] 3D PBR Renderer
   - [ ] Shadows
   - [x] Textures
   - [x] Materials
@@ -85,8 +86,8 @@ For now there is no linux support
   - [x] Anti Aliasing (FXAA)
   - [ ] SSAO (Screen Space Ambient Occlusion)
   - [ ] SSR (Screen Space Reflection)
-- [ ] Exporting Projects
 - [ ] Project Files
+  - [ ] Exporting Projects
 - [ ] Custom C# UIs
 - [ ] Asset Refactor
 
