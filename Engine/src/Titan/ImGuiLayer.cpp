@@ -38,19 +38,19 @@ namespace Titan
         GLFWwindow* window = static_cast<GLFWwindow*>(app->GetWindow().GetNativeWindow());
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 410");
+        ImGui_ImplTitan_Init();
     }
 
     void ImGuiLayer::OnDetach()
     {
-        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplTitan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
 
     void ImGuiLayer::Begin()
     {
-        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplTitan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGuizmo::BeginFrame();
@@ -63,7 +63,7 @@ namespace Titan
         io.DisplaySize = ImVec2(app->GetWindow().GetWidth(), app->GetWindow().GetHeight());
 
         ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplTitan_RenderDrawData(ImGui::GetDrawData());
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
