@@ -27,6 +27,7 @@ namespace Titan
         uint32_t viewHeight = 720;
 
         bool drawOverlay = false;
+        bool drawAABBOVerlay = false;
 
         Ref<Scene> currentScene;
     };
@@ -106,9 +107,6 @@ namespace Titan
                 TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
 
-                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-                bool hasMeshes = meshView.begin() != meshView.end();
-
                 if (!fb)
                     return;
 
@@ -118,6 +116,8 @@ namespace Titan
                 RenderCommand::Clear();
                 GeometryRenderer::BeginScene(s_SRData->viewProjection);
 
+                auto meshView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                bool hasMeshes = meshView.begin() != meshView.end();
                 for (auto entity : meshView)
                 {
                     auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
@@ -330,6 +330,35 @@ namespace Titan
                     Renderer2D::DrawMarker(gizmoTransformation);
                 }
 
+                if (s_SRData->drawAABBOVerlay)
+                {
+                    auto meshView =
+                        s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                    bool hasMeshes = meshView.begin() != meshView.end();
+                    for (auto entity : meshView)
+                    {
+                        auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
+                        if (meshComp.MeshRef)
+                        {
+                            AABB bounds = meshComp.MeshRef->GetBounds();
+                            glm::mat4 world = transform.GetTransform();
+
+                            // Compute box center and extents in mesh local space
+                            glm::vec3 center = (bounds.Min + bounds.Max) * 0.5f;
+                            glm::vec3 size = (bounds.Max - bounds.Min);
+
+                            glm::mat4 local =
+                                glm::translate(glm::mat4(1.0f), center) * glm::scale(glm::mat4(1.0f), size);
+
+                            glm::mat4 finalTransform = world * local;
+
+                            glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f};
+
+                            Renderer2D::DrawCube(finalTransform, color);
+                        }
+                    }
+                }
+
                 Renderer2D::DrawGrid(20.0f);
 
                 Renderer2D::EndScene();
@@ -394,13 +423,14 @@ namespace Titan
         }
     }
 
-    void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera)
+    void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay)
     {
         s_SRData->view = camera.GetViewMatrix();
         s_SRData->projection = camera.GetProjectionMatrix();
         s_SRData->viewProjection = camera.GetViewProjection();
         s_SRData->viewPosition = camera.GetPosition();
-        s_SRData->drawOverlay = true;
+        s_SRData->drawOverlay = overlay.enableOverlay;
+        s_SRData->drawAABBOVerlay = overlay.enableBoundingBoxRender;
         s_SRData->currentScene = scene;
 
         s_SRData->renderGraph->Execute();

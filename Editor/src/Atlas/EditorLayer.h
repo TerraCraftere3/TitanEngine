@@ -6,6 +6,7 @@
 #include <Titan/Events/MouseEvent.h>
 #include <Titan/Renderer/Framebuffer.h>
 #include <Titan/Renderer/Mesh.h>
+#include <Titan/Renderer/SceneRenderer.h>
 #include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
 #include "Panels/ContentBrowserPanel.h"
@@ -96,5 +97,8 @@ namespace Titan
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
         ContentBrowserPanel m_ContentBrowserPanel;
+
+        // Debug Settings
+        OverlaySettings m_OverlaySettings;
     };
 } // namespace Titan

@@ -201,6 +201,7 @@ namespace Titan
         material->Name = "Material";
         mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "quad";
+        mesh->ComputeBounds();
         return mesh;
     }
 
@@ -263,6 +264,7 @@ namespace Titan
         material->Name = "Material";
         mesh->m_Materials.push_back(material);
         mesh->m_FilePath = "cube";
+        mesh->ComputeBounds();
         return mesh;
     }
 
@@ -312,6 +314,15 @@ namespace Titan
         mesh->m_MaterialIndex = std::move(materialIndices);
 
         mesh->m_FilePath = std::filesystem::relative(filepath).string();
+        mesh->ComputeBounds();
         return mesh;
+    }
+
+    void Mesh::ComputeBounds()
+    {
+        m_Bounds.Reset();
+
+        for (const auto& p : m_Positions)
+            m_Bounds.ExpandToInclude(p);
     }
 } // namespace Titan

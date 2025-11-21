@@ -2,6 +2,7 @@
 
 #include "Material.h"
 #include "Titan/PCH.h"
+#include "Titan/Utils/AABB.h"
 
 namespace Titan
 {
@@ -17,13 +18,19 @@ namespace Titan
         const std::vector<glm::vec2>& GetTexCoords() const { return m_TexCoords; }
         const std::vector<uint32_t>& GetIndices() const { return m_Indices; };
         const std::vector<uint8_t>& GetMaterialIndices() const { return m_MaterialIndex; }
+
         const std::vector<Ref<Material3D>>& GetMaterials() const { return m_Materials; }
         const Ref<Material3D>& GetMaterial(int index) const { return m_Materials[index]; }
+
+        const AABB& GetBounds() const { return m_Bounds; }
         const std::string& GetFilePath() const { return m_FilePath; }
 
         static Ref<Mesh> CreateQuad();
         static Ref<Mesh> CreateCube();
         static Ref<Mesh> Create(const std::string& filepath);
+
+    private:
+        void ComputeBounds();
 
     private:
         std::vector<glm::vec3> m_Positions;
@@ -33,7 +40,7 @@ namespace Titan
         std::vector<uint32_t> m_Indices;
         std::vector<Ref<Material3D>> m_Materials;
         std::vector<uint8_t> m_MaterialIndex;
-
+        AABB m_Bounds;
         std::string m_FilePath;
 
         friend class Renderer3D;

@@ -54,7 +54,7 @@ namespace Titan
 
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
                 if (m_EnableRender)
-                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
+                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera, m_OverlaySettings);
                 break;
             }
             case SceneState::Simulate:
@@ -63,7 +63,7 @@ namespace Titan
 
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
                 if (m_EnableRender)
-                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera);
+                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera, m_OverlaySettings);
                 break;
             }
             case SceneState::Play:
@@ -359,7 +359,7 @@ namespace Titan
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
         ImGui::SameLine();
-        ImGui::Checkbox("Enable Rendering", &m_EnableRender);
+        ImGui::Checkbox("Enable AABB Rendering", &m_OverlaySettings.enableBoundingBoxRender);
 
         ImGui::PopStyleVar(2);
         ImGui::End();

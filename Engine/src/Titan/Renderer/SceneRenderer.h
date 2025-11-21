@@ -9,6 +9,11 @@
 
 namespace Titan
 {
+    struct OverlaySettings
+    {
+        bool enableOverlay = true;
+        bool enableBoundingBoxRender = false;
+    };
 
     class TI_API SceneRenderer
     {
@@ -16,7 +21,7 @@ namespace Titan
         static void Init();
         static void Shutdown();
         static void RenderSceneRuntime(Ref<Scene> scene);
-        static void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera);
+        static void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay = {});
         static void Resize(uint32_t width, uint32_t height);
 
         static Ref<Framebuffer> GetFramebuffer();

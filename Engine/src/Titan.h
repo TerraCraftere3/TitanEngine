@@ -19,6 +19,7 @@
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/FullscreenRenderer.h
 #include "Titan/Renderer/SceneRenderer.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
@@ -30,8 +31,8 @@
 #include "Titan/Scene/Scene.h"
 #include "Titan/Scene/SceneCamera.h"
 #include "Titan/Scene/SceneSerializer.h"
-#include "Titan/Scene/ScriptableEntity.h"
 // Utils
+#include "Titan/Utils/AABB.h"
 #include "Titan/Utils/Math.h"
 #include "Titan/Utils/PlatformUtils.h"
 // Other

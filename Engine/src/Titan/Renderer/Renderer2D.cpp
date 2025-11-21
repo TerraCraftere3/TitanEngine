@@ -548,6 +548,33 @@ namespace Titan
         DrawLine(T(glm::vec3(0.0f, 0.0f, -size)), T(glm::vec3(0.0f, 0.0f, size)), color);
     }
 
+    void Renderer2D::DrawCube(const glm::mat4& transform, const glm::vec4& color)
+    {
+        static const glm::vec3 vertices[8] = {
+            {-0.5f, -0.5f, -0.5f}, // 0
+            {0.5f, -0.5f, -0.5f},  // 1
+            {0.5f, 0.5f, -0.5f},   // 2
+            {-0.5f, 0.5f, -0.5f},  // 3
+            {-0.5f, -0.5f, 0.5f},  // 4
+            {0.5f, -0.5f, 0.5f},   // 5
+            {0.5f, 0.5f, 0.5f},    // 6
+            {-0.5f, 0.5f, 0.5f}    // 7
+        };
+
+        static const uint32_t edges[12][2] = {
+            {0, 1}, {1, 2}, {2, 3}, {3, 0}, // bottom face
+            {4, 5}, {5, 6}, {6, 7}, {7, 4}, // top face
+            {0, 4}, {1, 5}, {2, 6}, {3, 7}  // vertical edges
+        };
+
+        for (int i = 0; i < 12; i++)
+        {
+            glm::vec3 p0 = glm::vec3(transform * glm::vec4(vertices[edges[i][0]], 1.0f));
+            glm::vec3 p1 = glm::vec3(transform * glm::vec4(vertices[edges[i][1]], 1.0f));
+            DrawLine(p0, p1, color, -1);
+        }
+    }
+
     void Renderer2D::DrawGrid(float gridLines, const glm::vec3& position, const glm::vec3& rotation,
                               const glm::vec3& size)
     {
