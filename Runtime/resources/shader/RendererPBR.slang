@@ -25,12 +25,18 @@ struct FragmentOutput
     float depth : SV_Depth;
 };
 
+typealias ISampler2D<
+    T : ITexelElement = int,
+    let sampleCount : int = 0,
+    let format : int = 0
+> = _Texture<T, __Shape2D, 0, 0, sampleCount, 0, 0, 1, format>;
+
 Sampler2D gPosition;
 Sampler2D gNormal;
 Sampler2D gAlbedo;
 Sampler2D gMetallicRoughness;
 Sampler2D gEmission;
-Sampler2D gEntityID;
+ISampler2D gEntityID;
 Sampler2D gDepth;
 SamplerCube IrradianceMap;
 
@@ -116,7 +122,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     color = pow(color, float3(1.0 / 2.2));
 
     output.color = float4(color, albedoColor.a);
-    output.entityID = -1;
+    output.entityID = (int)gEntityID.Sample(input.texCoord).r;
     output.depth = gDepth.Sample(input.texCoord).r;
 
     return output;

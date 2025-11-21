@@ -75,8 +75,6 @@ namespace Titan
             }
         }
 
-        UpdateHoveredEntity();
-
         m_EditorCamera.SetBlockEvents(!m_ViewportHovered);
     }
 
@@ -106,34 +104,6 @@ namespace Titan
     // ============================================================================
     // Private Helper Methods
     // ============================================================================
-    void EditorLayer::UpdateHoveredEntity()
-    {
-        if (!m_ViewportHovered || m_ViewportImageSize.x <= 0 || m_ViewportImageSize.y <= 0)
-        {
-            m_HoveredEntity = {};
-            return;
-        }
-
-        ImVec2 mouse = ImGui::GetMousePos();
-        float mx = mouse.x - m_ViewportImagePos.x;
-        float my = mouse.y - m_ViewportImagePos.y;
-
-        my = m_ViewportImageSize.y - my;
-
-        int mouseX = static_cast<int>(mx);
-        int mouseY = static_cast<int>(my);
-
-        /*if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
-            mouseY < static_cast<int>(m_ViewportImageSize.y))
-        {
-            int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
-            m_HoveredEntity = (pixel == -1) ? Entity() : Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
-        }
-        else
-        {
-            m_HoveredEntity = {};
-        }*/ // TODO: REFACTOR THIS FCKNG FRAMEBUFFER
-    }
 
     void EditorLayer::RenderDockspace()
     {
@@ -513,8 +483,23 @@ namespace Titan
     {
         if (e.GetMouseButton() == static_cast<int>(MouseButton::ButtonLeft))
         {
-            if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
-                m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+            if (m_ViewportHovered && m_ViewportImageSize.x > 0 && m_ViewportImageSize.y > 0 && !ImGuizmo::IsOver() &&
+                !Input::IsKeyPressed(Key::LeftAlt))
+            {
+                ImVec2 mouse = ImGui::GetMousePos();
+                float mx = mouse.x - m_ViewportImagePos.x;
+                float my = mouse.y - m_ViewportImagePos.y;
+                int mouseX = static_cast<int>(mx);
+                int mouseY = static_cast<int>(my);
+                if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
+                    mouseY < static_cast<int>(m_ViewportImageSize.y))
+                {
+                    int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
+                    auto entity = Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
+                    TI_WARN("{}", pixel);
+                    m_SceneHierarchyPanel.SetSelectedEntity(entity);
+                }
+            }
         }
         return false;
     }

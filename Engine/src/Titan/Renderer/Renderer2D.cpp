@@ -446,7 +446,7 @@ namespace Titan
         s_Data.LineVertexCount += 2;
     }
 
-    void Renderer2D::DrawCamera(const glm::mat4& transform)
+    void Renderer2D::DrawCamera(const glm::mat4& transform, int entityID)
     {
         // Customize look
         const glm::vec4 color = {0.9f, 0.9f, 0.2f, 1.0f};        // yellow-ish
@@ -507,22 +507,22 @@ namespace Titan
         glm::vec3 f3(-frustumHalfW * 2, frustumHalfH * 2, -frustumFar);
 
         // Near quad
-        DrawLine(T(n0), T(n1), color);
-        DrawLine(T(n1), T(n2), color);
-        DrawLine(T(n2), T(n3), color);
-        DrawLine(T(n3), T(n0), color);
+        DrawLine(T(n0), T(n1), color, entityID);
+        DrawLine(T(n1), T(n2), color, entityID);
+        DrawLine(T(n2), T(n3), color, entityID);
+        DrawLine(T(n3), T(n0), color, entityID);
 
         // Far quad
-        DrawLine(T(f0), T(f1), color);
-        DrawLine(T(f1), T(f2), color);
-        DrawLine(T(f2), T(f3), color);
-        DrawLine(T(f3), T(f0), color);
+        DrawLine(T(f0), T(f1), color, entityID);
+        DrawLine(T(f1), T(f2), color, entityID);
+        DrawLine(T(f2), T(f3), color, entityID);
+        DrawLine(T(f3), T(f0), color, entityID);
 
         // Connect near & far
-        DrawLine(T(n0), T(f0), color);
-        DrawLine(T(n1), T(f1), color);
-        DrawLine(T(n2), T(f2), color);
-        DrawLine(T(n3), T(f3), color);
+        DrawLine(T(n0), T(f0), color, entityID);
+        DrawLine(T(n1), T(f1), color, entityID);
+        DrawLine(T(n2), T(f2), color, entityID);
+        DrawLine(T(n3), T(f3), color, entityID);
 
         // -----------------------------------------
         // Forward direction
@@ -533,7 +533,7 @@ namespace Titan
         DrawLine(origin, origin + forward * 1.5f, forwardColor);
     }
 
-    void Renderer2D::DrawMarker(const glm::mat4& transform)
+    void Renderer2D::DrawMarker(const glm::mat4& transform, int entityID)
     {
         const float axisLength = 0.3f;
         const float size = 0.25f;
@@ -543,9 +543,9 @@ namespace Titan
         auto T = [&](glm::vec3 p) { return glm::vec3(transform * glm::vec4(p, 1.0f)); };
         glm::vec3 origin = T(glm::vec3(0.0f));
 
-        DrawLine(T(glm::vec3(-size, 0.0f, 0.0f)), T(glm::vec3(size, 0.0f, 0.0f)), color);
-        DrawLine(T(glm::vec3(0.0f, -size, 0.0f)), T(glm::vec3(0.0f, size, 0.0f)), color);
-        DrawLine(T(glm::vec3(0.0f, 0.0f, -size)), T(glm::vec3(0.0f, 0.0f, size)), color);
+        DrawLine(T(glm::vec3(-size, 0.0f, 0.0f)), T(glm::vec3(size, 0.0f, 0.0f)), color, entityID);
+        DrawLine(T(glm::vec3(0.0f, -size, 0.0f)), T(glm::vec3(0.0f, size, 0.0f)), color, entityID);
+        DrawLine(T(glm::vec3(0.0f, 0.0f, -size)), T(glm::vec3(0.0f, 0.0f, size)), color, entityID);
     }
 
     void Renderer2D::DrawCube(const glm::mat4& transform, const glm::vec4& color)

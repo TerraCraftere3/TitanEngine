@@ -36,8 +36,6 @@ namespace Titan
         void SaveScene();
         void SaveSceneAs();
 
-        void UpdateHoveredEntity();
-
         void RenderDockspace();
         void RenderMenuBar();
         void RenderStatisticsPanel();
@@ -91,7 +89,6 @@ namespace Titan
         Ref<Scene> m_ActiveScene;
         Ref<Scene> m_EditorScene;
         std::filesystem::path m_EditorScenePath;
-        Entity m_HoveredEntity;
         EditorCamera m_EditorCamera;
 
         // Panels

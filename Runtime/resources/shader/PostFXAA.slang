@@ -5,7 +5,14 @@ cbuffer FXAAParams : register(b0)
     float2 u_InvScreenSize;  // 1.0 / screen resolution (width, height)
 }
 
-Sampler2D    u_Input  : register(t0);
+typealias ISampler2D<
+    T : ITexelElement = int,
+    let sampleCount : int = 0,
+    let format : int = 0
+> = _Texture<T, __Shape2D, 0, 0, sampleCount, 0, 0, 1, format>;
+
+Sampler2D u_Input : register(t0);
+ISampler2D u_Entity : register(t1);
 
 struct VertexInput
 {
@@ -28,9 +35,17 @@ VertexOutput vertexMain(VertexInput input)
     return output;
 }
 
-[shader("fragment")]
-float4 fragmentMain(VertexOutput input) : SV_TARGET
+struct FragmentOutput
 {
+    float4 color : SV_Target0;
+    int entityID : SV_Target1;
+};
+
+[shader("fragment")]
+FragmentOutput fragmentMain(VertexOutput input)
+{
+    FragmentOutput out;
+
     float2 uv = input.TexCoord;
 
 // Sample luminance at current pixel and neighbors
@@ -66,8 +81,14 @@ float4 fragmentMain(VertexOutput input) : SV_TARGET
     float lumaMin = min(lumaM, min(min(lumaN, lumaS), min(lumaE, lumaW)));
     float lumaMax = max(lumaM, max(max(lumaN, lumaS), max(lumaE, lumaW)));
 
-    if (dot(rgbB.rgb, float3(0.299,0.587,0.114)) < lumaMin || dot(rgbB.rgb, float3(0.299,0.587,0.114)) > lumaMax)
-        return rgbA;
+    float4 finalColor = rgbB;
+    if (dot(rgbB.rgb, float3(0.299, 0.587, 0.114)) < lumaMin || dot(rgbB.rgb, float3(0.299, 0.587, 0.114)) > lumaMax)
+        finalColor = rgbA;
 
-    return rgbB;
+    out.color = finalColor;
+
+    // Propagate entity ID from the bound entity attachment so picking still works
+    out.entityID = (int)u_Entity.Sample(uv).r;
+
+    return out;
 }

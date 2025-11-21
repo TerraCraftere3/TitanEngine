@@ -26,9 +26,13 @@ namespace Titan
         data.InvScreenSize = glm::vec2(1.0f / (float)framebuffer->GetWidth(), 1.0f / (float)framebuffer->GetHeight());
 
         framebuffer->Bind();
-        framebuffer->BindTexture(0);
+        // Bind color and entity attachments so the FXAA shader can
+        // process color and preserve entity IDs.
+        framebuffer->BindTexture(0, 0); // Color -> slot 0
+        framebuffer->BindTexture(1, 1); // EntityID -> slot 1
         m_Shader->Bind();
         m_Shader->SetInt("u_Input", 0);
+        m_Shader->SetInt("u_Entity", 1);
         m_UniformBuffer->Bind();
         m_UniformBuffer->SetData(&data, sizeof(FXAAUniformData));
         FullscreenRenderer::Render();

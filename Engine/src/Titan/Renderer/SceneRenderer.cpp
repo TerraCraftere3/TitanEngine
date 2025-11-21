@@ -317,7 +317,7 @@ namespace Titan
                 for (auto entity : cameraView)
                 {
                     auto [transform, cc] = cameraView.get<TransformComponent, CameraComponent>(entity);
-                    Renderer2D::DrawCamera(transform.GetTransform());
+                    Renderer2D::DrawCamera(transform.GetTransform(), (uint32_t)entity);
                 }
 
                 auto lookAtView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, LookAtComponent>();

@@ -34,8 +34,8 @@ namespace Titan
 
         // Lines
         static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID = -1);
-        static void DrawCamera(const glm::mat4& transform);
-        static void DrawMarker(const glm::mat4& transform);
+        static void DrawCamera(const glm::mat4& transform, int entityID = -1);
+        static void DrawMarker(const glm::mat4& transform, int entityID = -1);
         static void DrawCube(const glm::mat4& transform, const glm::vec4& color);
         static void DrawGrid(float gridLines = 10.0f, const glm::vec3& position = glm::vec3(0.0f),
                              const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& size = glm::vec3(1.0f));

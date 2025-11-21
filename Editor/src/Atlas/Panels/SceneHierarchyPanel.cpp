@@ -75,56 +75,54 @@ namespace Titan
                     m_Context->DuplicateEntity(m_SelectionContext);
                 }
             }
-            else
-            {
-                if (ImGui::MenuItem("Create Empty Entity"))
-                    m_Context->CreateEntity("Empty Entity");
 
-                if (ImGui::MenuItem("Create Camera Entity"))
-                {
-                    Entity cameraEntity = m_Context->CreateEntity("Camera");
-                    cameraEntity.AddComponent<CameraComponent>();
-                }
-                if (ImGui::MenuItem("Create PostFX Entity"))
-                {
-                    Entity postFXEntity = m_Context->CreateEntity("Post Processing");
-                    postFXEntity.AddComponent<PostFXComponent>();
-                }
-                ImGui::SeparatorText("2D");
-                if (ImGui::MenuItem("Create Sprite"))
-                {
-                    Entity spriteEntity = m_Context->CreateEntity("Sprite");
-                    spriteEntity.AddComponent<SpriteRendererComponent>();
-                }
-                if (ImGui::MenuItem("Create Circle"))
-                {
-                    Entity circleEntity = m_Context->CreateEntity("Circle");
-                    circleEntity.AddComponent<CircleRendererComponent>();
-                }
-                ImGui::SeparatorText("3D Primitives");
-                if (ImGui::MenuItem("Create Cube"))
-                {
-                    Entity cubeEntity = m_Context->CreateEntity("Cube");
-                    auto& mrc = cubeEntity.AddComponent<MeshRendererComponent>();
-                    mrc.MeshRef = Mesh::CreateCube();
-                }
-                if (ImGui::MenuItem("Create Quad"))
-                {
-                    Entity quadEntity = m_Context->CreateEntity("Quad");
-                    auto& mrc = quadEntity.AddComponent<MeshRendererComponent>();
-                    mrc.MeshRef = Mesh::CreateQuad();
-                }
-                ImGui::SeparatorText("Lights");
-                if (ImGui::MenuItem("Create Directional Light"))
-                {
-                    Entity quadEntity = m_Context->CreateEntity("Directional Light");
-                    auto& dlc = quadEntity.AddComponent<DirectionalLightComponent>(glm::vec3(1.0f, 1.0f, 1.0f));
-                }
-                if (ImGui::MenuItem("Create Skybox"))
-                {
-                    Entity quadEntity = m_Context->CreateEntity("Skybox");
-                    auto& dlc = quadEntity.AddComponent<SkyboxComponent>();
-                }
+            if (ImGui::MenuItem("Create Empty Entity"))
+                m_Context->CreateEntity("Empty Entity");
+
+            if (ImGui::MenuItem("Create Camera Entity"))
+            {
+                Entity cameraEntity = m_Context->CreateEntity("Camera");
+                cameraEntity.AddComponent<CameraComponent>();
+            }
+            if (ImGui::MenuItem("Create PostFX Entity"))
+            {
+                Entity postFXEntity = m_Context->CreateEntity("Post Processing");
+                postFXEntity.AddComponent<PostFXComponent>();
+            }
+            ImGui::SeparatorText("2D");
+            if (ImGui::MenuItem("Create Sprite"))
+            {
+                Entity spriteEntity = m_Context->CreateEntity("Sprite");
+                spriteEntity.AddComponent<SpriteRendererComponent>();
+            }
+            if (ImGui::MenuItem("Create Circle"))
+            {
+                Entity circleEntity = m_Context->CreateEntity("Circle");
+                circleEntity.AddComponent<CircleRendererComponent>();
+            }
+            ImGui::SeparatorText("3D Primitives");
+            if (ImGui::MenuItem("Create Cube"))
+            {
+                Entity cubeEntity = m_Context->CreateEntity("Cube");
+                auto& mrc = cubeEntity.AddComponent<MeshRendererComponent>();
+                mrc.MeshRef = Mesh::CreateCube();
+            }
+            if (ImGui::MenuItem("Create Quad"))
+            {
+                Entity quadEntity = m_Context->CreateEntity("Quad");
+                auto& mrc = quadEntity.AddComponent<MeshRendererComponent>();
+                mrc.MeshRef = Mesh::CreateQuad();
+            }
+            ImGui::SeparatorText("Lights");
+            if (ImGui::MenuItem("Create Directional Light"))
+            {
+                Entity quadEntity = m_Context->CreateEntity("Directional Light");
+                auto& dlc = quadEntity.AddComponent<DirectionalLightComponent>(glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+            if (ImGui::MenuItem("Create Skybox"))
+            {
+                Entity quadEntity = m_Context->CreateEntity("Skybox");
+                auto& dlc = quadEntity.AddComponent<SkyboxComponent>();
             }
 
             ImGui::EndPopup();
