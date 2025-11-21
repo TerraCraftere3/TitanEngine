@@ -368,12 +368,7 @@ namespace Titan
             Ref<ScriptClass> scriptClass = CreateRef<ScriptClass>(nameSpace, className);
             s_Data->EntityClasses[fullName] = scriptClass;
 
-            // This routine is an iterator routine for retrieving the fields in a class.
-            // You must pass a gpointer that points to zero and is treated as an opaque handle
-            // to iterate over all of the elements. When no more values are available, the return value is NULL.
-
             int fieldCount = mono_class_num_fields(monoClass);
-            TI_CORE_WARN("{} has {} fields:", className, fieldCount);
             void* iterator = nullptr;
             while (MonoClassField* field = mono_class_get_fields(monoClass, &iterator))
             {
@@ -383,7 +378,6 @@ namespace Titan
                 {
                     MonoType* type = mono_field_get_type(field);
                     ScriptFieldType fieldType = Utils::MonoTypeToScriptFieldType(type);
-                    TI_CORE_WARN("  {} ({})", fieldName, Utils::ScriptFieldTypeToString(fieldType));
 
                     scriptClass->m_Fields[fieldName] = {fieldType, fieldName, field};
                 }
@@ -398,6 +392,12 @@ namespace Titan
     MonoImage* ScriptEngine::GetCoreAssemblyImage()
     {
         return s_Data->CoreAssemblyImage;
+    }
+
+    MonoDomain* ScriptEngine::GetMonoDomain()
+    {
+        // Prefer AppDomain if available, otherwise fall back to root domain
+        return s_Data->AppDomain ? s_Data->AppDomain : s_Data->RootDomain;
     }
 
     MonoObject* ScriptEngine::GetManagedInstance(UUID uuid)

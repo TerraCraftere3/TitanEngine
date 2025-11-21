@@ -92,5 +92,120 @@ namespace Titan
                                                                                     bool wake);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static bool Input_IsKeyDown(KeyCode keycode);
+
+        // Sprite/Mesh renderer
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SpriteRendererComponent_SetTexture(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string SpriteRendererComponent_GetTexture(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void MeshRendererComponent_SetMesh(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string MeshRendererComponent_GetMesh(ulong entityID);
+
+        // Circle renderer
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleRendererComponent_GetColor(ulong entityID, out Vector4 color);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleRendererComponent_SetColor(ulong entityID, ref Vector4 color);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static float CircleRendererComponent_GetThickness(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleRendererComponent_SetThickness(ulong entityID, float thickness);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static float CircleRendererComponent_GetFade(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleRendererComponent_SetFade(ulong entityID, float fade);
+
+        // Skybox
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_SetSkyboxPaths(ulong entityID, string skyboxPath, string irradiancePath);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string SkyboxComponent_GetSkyboxPath(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string SkyboxComponent_GetIrradiancePath(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_SetMode(ulong entityID, int mode);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static int SkyboxComponent_GetMode(ulong entityID);
+
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_SetTopBottomColor(ulong entityID, Vector3 top, Vector3 bottom);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_GetTopColor(ulong entityID, out Vector3 top);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_GetBottomColor(ulong entityID, out Vector3 bottom);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_SetTopColor(ulong entityID, Vector3 top);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SkyboxComponent_SetBottomColor(ulong entityID, Vector3 bottom);
+
+        // Camera
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static bool CameraComponent_GetPrimary(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CameraComponent_SetPrimary(ulong entityID, bool primary);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static bool CameraComponent_GetFixedAspectRatio(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CameraComponent_SetFixedAspectRatio(ulong entityID, bool value);
+
+        // Box collider
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void BoxCollider2DComponent_GetOffset(ulong entityID, out Vector2 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void BoxCollider2DComponent_SetOffset(ulong entityID, ref Vector2 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void BoxCollider2DComponent_GetSize(ulong entityID, out Vector2 size);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void BoxCollider2DComponent_SetSize(ulong entityID, ref Vector2 size);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void BoxCollider2DComponent_SetMaterialPath(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string BoxCollider2DComponent_GetMaterialPath(ulong entityID);
+
+        // Circle collider
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleCollider2DComponent_GetOffset(ulong entityID, out Vector2 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleCollider2DComponent_SetOffset(ulong entityID, ref Vector2 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static float CircleCollider2DComponent_GetRadius(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleCollider2DComponent_SetRadius(ulong entityID, float radius);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CircleCollider2DComponent_SetMaterialPath(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string CircleCollider2DComponent_GetMaterialPath(ulong entityID);
     }
 }

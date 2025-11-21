@@ -15,6 +15,7 @@ extern "C"
     typedef struct _MonoAssembly MonoAssembly;
     typedef struct _MonoImage MonoImage;
     typedef struct _MonoClassField MonoClassField;
+    typedef struct _MonoDomain MonoDomain;
 }
 
 namespace Titan
@@ -177,6 +178,8 @@ namespace Titan
         static ScriptFieldMap& GetScriptFieldMap(Entity entity);
 
         static MonoImage* GetCoreAssemblyImage();
+
+        static MonoDomain* GetMonoDomain();
 
         static MonoObject* GetManagedInstance(UUID uuid);
 

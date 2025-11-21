@@ -378,7 +378,6 @@ namespace Titan
         {
             out << generatedCode;
             out.close();
-            TI_CORE_TRACE("Wrote generated GLSL to: {}", outputPath);
         }
 #endif
 

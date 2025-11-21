@@ -70,7 +70,6 @@ namespace Titan
     {
         Ref<Texture2D> Tex;
         glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
-
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
         SpriteRendererComponent(const Ref<Texture2D> texture, const glm::vec4& color) : Tex(texture), Color(color) {}

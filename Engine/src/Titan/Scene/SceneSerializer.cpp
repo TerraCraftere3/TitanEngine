@@ -496,10 +496,8 @@ namespace Titan
         }
 
         std::string sceneName = data["Scene"].as<std::string>();
-        TI_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
         auto entities = data["Entities"];
-        // pending parent links to resolve after all entities are created
         std::vector<std::pair<UUID, UUID>> pendingParentLinks;
         if (entities)
         {
@@ -511,8 +509,6 @@ namespace Titan
                 auto tagComponent = entity["TagComponent"];
                 if (tagComponent)
                     name = tagComponent["Tag"].as<std::string>();
-
-                TI_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
                 Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
