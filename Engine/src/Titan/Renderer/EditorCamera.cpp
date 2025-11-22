@@ -28,6 +28,15 @@ namespace Titan
 
     void EditorCamera::UpdateView()
     {
+        if (m_FpvEnabled)
+        {
+            m_Position = m_FpvPosition;
+            glm::quat orientation = glm::quat(glm::vec3(glm::radians(-m_FpvPitch), glm::radians(-m_FpvYaw), 0.0f));
+            m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+            m_ViewMatrix = glm::inverse(m_ViewMatrix);
+            return;
+        }
+
         // m_Yaw = m_Pitch = 0.0f; // Lock the camera's rotation
         m_Position = CalculatePosition();
 
@@ -69,6 +78,86 @@ namespace Titan
         const float speed = 5.0f;
         const float moveSpeed = speed * ts;
 
+        // FPV Toggle: press F to toggle First-Person View mode (edge-detected)
+        bool fPressed = Input::IsKeyPressed(Key::F);
+        if (fPressed && !m_FKeyPrevPressed)
+        {
+            m_FpvEnabled = !m_FpvEnabled;
+            // When enabling FPV, initialize the FPV position and orientation from current camera
+            if (m_FpvEnabled)
+            {
+                m_FpvPosition = m_Position;
+                m_FpvYaw = glm::degrees(m_Yaw);
+                m_FpvPitch = glm::degrees(m_Pitch);
+                // Avoid large first-frame mouse delta when entering FPV
+                m_InitialMousePosition = glm::vec2(Input::GetMouseX(), Input::GetMouseY());
+            }
+        }
+        m_FKeyPrevPressed = fPressed;
+
+        if (m_FpvEnabled)
+        {
+            // FPV mouse-look (right mouse) and WASDQE movement
+            const glm::vec2 mouse{Input::GetMouseX(), Input::GetMouseY()};
+            glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+            bool rmbPressed = Input::IsMouseButtonPressed(Mouse::ButtonRight);
+            if (rmbPressed)
+            {
+                if (!m_RmbPrevPressed)
+                {
+                    // RMB was just pressed: initialize and skip applying rotation this frame
+                    m_InitialMousePosition = mouse;
+                }
+                else
+                {
+                    // Apply rotation when RMB is continuously held
+                    float sensitivity = 100.0f;
+                    m_FpvYaw += delta.x * sensitivity;
+                    // Match editor convention: positive mouse Y -> increase pitch
+                    m_FpvPitch += delta.y * sensitivity;
+                    if (m_FpvPitch > 89.0f)
+                        m_FpvPitch = 89.0f;
+                    if (m_FpvPitch < -89.0f)
+                        m_FpvPitch = -89.0f;
+                    m_InitialMousePosition = mouse;
+                }
+            }
+            m_RmbPrevPressed = rmbPressed;
+
+            // Build orientation quaternion matching UpdateView() (note the negated pitch/yaw)
+            glm::quat orientation = glm::quat(glm::vec3(glm::radians(-m_FpvPitch), glm::radians(-m_FpvYaw), 0.0f));
+
+            // Derive basis vectors by rotating local axes so they match view orientation
+            glm::vec3 forward = glm::normalize(glm::rotate(orientation, glm::vec3(0.0f, 0.0f, -1.0f)));
+            glm::vec3 right = glm::normalize(glm::rotate(orientation, glm::vec3(1.0f, 0.0f, 0.0f)));
+            glm::vec3 up = glm::normalize(glm::rotate(orientation, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+            glm::vec3 move(0.0f);
+            if (Input::IsKeyPressed(Key::W))
+                move += forward;
+            if (Input::IsKeyPressed(Key::S))
+                move -= forward;
+            if (Input::IsKeyPressed(Key::A))
+                move -= right;
+            if (Input::IsKeyPressed(Key::D))
+                move += right;
+            if (Input::IsKeyPressed(Key::Q))
+                move += up;
+            if (Input::IsKeyPressed(Key::E))
+                move -= up;
+
+            if (glm::length(move) > 0.0f)
+                move = glm::normalize(move);
+
+            float fpvSpeed = 5.0f; // base speed for FPV
+            m_FpvPosition += move * fpvSpeed * ts;
+
+            // Update camera position/orientation from FPV state
+            m_Position = m_FpvPosition;
+            UpdateView();
+            return;
+        }
+
         if (Input::IsKeyPressed(Key::LeftAlt))
         {
             const glm::vec2& mouse{Input::GetMouseX(), Input::GetMouseY()};
@@ -81,22 +170,6 @@ namespace Titan
                 MouseRotate(delta);
             else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
                 MouseZoom(delta.y);
-
-            glm::vec3 move(0.0f);
-            if (Input::IsKeyPressed(Key::W))
-                move += GetForwardDirection();
-            if (Input::IsKeyPressed(Key::S))
-                move -= GetForwardDirection();
-            if (Input::IsKeyPressed(Key::A))
-                move -= GetRightDirection();
-            if (Input::IsKeyPressed(Key::D))
-                move += GetRightDirection();
-            if (Input::IsKeyPressed(Key::Q))
-                move += GetUpDirection();
-            if (Input::IsKeyPressed(Key::E))
-                move -= GetUpDirection();
-
-            m_FocalPoint += move * moveSpeed;
         }
 
         UpdateView();

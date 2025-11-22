@@ -513,6 +513,28 @@ namespace Titan
         m_ActiveScene = CreateRef<Scene>();
         m_ActiveScene->OnViewportResize(static_cast<uint32_t>(m_ViewportSize.x),
                                         static_cast<uint32_t>(m_ViewportSize.y));
+
+        {
+            auto cube = m_ActiveScene->CreateEntity("Cube");
+            auto& mrc = cube.AddComponent<MeshRendererComponent>();
+            mrc.MeshRef = Mesh::Create("cube");
+        }
+
+        {
+            auto skybox = m_ActiveScene->CreateEntity("Skybox");
+            auto& sbc = skybox.AddComponent<SkyboxComponent>();
+            sbc.mode = SkyboxComponent::Mode::Colorramp;
+        }
+
+        {
+            auto camera = m_ActiveScene->CreateEntity("Camera");
+            auto& t = camera.GetComponent<TransformComponent>();
+            t.Translation = glm::vec3(-5.0f, 3.0f, 5.0f);
+            auto& cc = camera.AddComponent<CameraComponent>();
+            cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
+            auto& lcc = camera.AddComponent<LookAtComponent>();
+        }
+
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
         m_EditorScene = m_ActiveScene;

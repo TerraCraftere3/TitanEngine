@@ -584,32 +584,36 @@ namespace Titan
                     for (auto material : materials)
                     {
                         auto mat = mrc.MeshRef->GetMaterial(matIndex);
-                        mat->AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
+                        if (mat)
+                        {
+                            mat->AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
 
-                        if (material["AlbedoTexture"])
-                            mat->AlbedoTexture = Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
+                            if (material["AlbedoTexture"])
+                                mat->AlbedoTexture =
+                                    Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
 
-                        if (material["EmissionTexture"])
-                            mat->EmissionTexture =
-                                Assets::Load<Texture2D>(material["EmissionTexture"].as<std::string>());
+                            if (material["EmissionTexture"])
+                                mat->EmissionTexture =
+                                    Assets::Load<Texture2D>(material["EmissionTexture"].as<std::string>());
 
-                        if (material["MetallicTexture"])
-                            mat->MetallicTexture =
-                                Assets::Load<Texture2D>(material["MetallicTexture"].as<std::string>());
+                            if (material["MetallicTexture"])
+                                mat->MetallicTexture =
+                                    Assets::Load<Texture2D>(material["MetallicTexture"].as<std::string>());
 
-                        if (material["RoughnessTexture"])
-                            mat->RoughnessTexture =
-                                Assets::Load<Texture2D>(material["RoughnessTexture"].as<std::string>());
+                            if (material["RoughnessTexture"])
+                                mat->RoughnessTexture =
+                                    Assets::Load<Texture2D>(material["RoughnessTexture"].as<std::string>());
 
-                        if (material["NormalTexture"])
-                            mat->NormalTexture = Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
+                            if (material["NormalTexture"])
+                                mat->NormalTexture =
+                                    Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
 
-                        if (material["AOTexture"])
-                            mat->AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
+                            if (material["AOTexture"])
+                                mat->AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
 
-                        if (material["UVRepeat"])
-                            mat->UVRepeat = material["UVRepeat"].as<glm::vec2>();
-
+                            if (material["UVRepeat"])
+                                mat->UVRepeat = material["UVRepeat"].as<glm::vec2>();
+                        }
                         matIndex++;
                     }
                 }

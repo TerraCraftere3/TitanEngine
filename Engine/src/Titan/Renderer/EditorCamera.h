@@ -75,6 +75,14 @@ namespace Titan
         bool m_BlockEvents = false;
 
         float m_ViewportWidth = 1280, m_ViewportHeight = 720;
+
+        glm::vec3 m_FpvPosition = {0.0f, 1.5f, 5.0f};
+        float m_FpvYaw = -90.0f;
+        float m_FpvPitch = 0.0f;
+        bool m_FpvEnabled = false;
+        bool m_FKeyPrevPressed = false;
+        bool m_RmbPrevPressed = false;
+
         friend class EditorLayer;
     };
 
