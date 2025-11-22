@@ -1,4 +1,5 @@
 #include "ContentBrowserPanel.h"
+#include "Titan/Renderer/GeometryRenderer.h"
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
@@ -225,6 +226,7 @@ namespace Titan
                         Assets::UpdateMeta(m_Selected, m_SelectedMeta);
                         Assets::SaveMetaToDisk(m_Selected);
                         Assets::Reload<Texture2D>(m_Selected);
+                        GeometryRenderer::ClearTextureCache();
                     }
                 }
                 else

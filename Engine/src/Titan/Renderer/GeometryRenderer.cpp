@@ -304,6 +304,16 @@ namespace Titan
         s_3DData.MaterialIndexMap.clear();
     }
 
+    void GeometryRenderer::ClearTextureCache()
+    {
+        s_3DData.GPUMaterials.clear();
+    }
+
+    void GeometryRenderer::ClearMeshCache()
+    {
+        s_3DData.MeshCache.clear();
+    }
+
     void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix)
     {
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");

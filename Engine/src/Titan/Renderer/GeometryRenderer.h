@@ -17,6 +17,8 @@ namespace Titan
 
         static void BeginScene(const glm::mat4& viewTransform);
         static void ClearCache();
+        static void ClearTextureCache();
+        static void ClearMeshCache();
         static void EndScene();
         static void Flush();
 
