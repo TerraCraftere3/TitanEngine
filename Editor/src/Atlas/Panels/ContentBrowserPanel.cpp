@@ -154,6 +154,78 @@ namespace Titan
                 if (type == AssetType::Texture2D)
                 {
                     ImGui::Text("Type: Texture");
+
+                    bool changed = false;
+
+                    // Wrap options
+                    const char* wrapOptions[] = {"Repeat", "MirroredRepeat", "ClampToEdge", "ClampToBorder"};
+                    const char* filterOptions[] = {"Nearest", "MipmapNearest", "Linear", "MipmapLinear"};
+
+                    std::string wrapS = "Repeat";
+                    std::string wrapT = "Repeat";
+                    std::string minFilter = "MipmapLinear";
+                    std::string magFilter = "Linear";
+
+                    if (m_SelectedMeta.Properties.contains("WrapS"))
+                        wrapS = m_SelectedMeta.Properties["WrapS"];
+                    if (m_SelectedMeta.Properties.contains("WrapT"))
+                        wrapT = m_SelectedMeta.Properties["WrapT"];
+                    if (m_SelectedMeta.Properties.contains("MinFilter"))
+                        minFilter = m_SelectedMeta.Properties["MinFilter"];
+                    if (m_SelectedMeta.Properties.contains("MagFilter"))
+                        magFilter = m_SelectedMeta.Properties["MagFilter"];
+
+                    int wrapSIdx = 0;
+                    int wrapTIdx = 0;
+                    int minFilterIdx = 0;
+                    int magFilterIdx = 0;
+
+                    for (int i = 0; i < IM_ARRAYSIZE(wrapOptions); i++)
+                    {
+                        if (wrapS == wrapOptions[i])
+                            wrapSIdx = i;
+                        if (wrapT == wrapOptions[i])
+                            wrapTIdx = i;
+                    }
+                    for (int i = 0; i < IM_ARRAYSIZE(filterOptions); i++)
+                    {
+                        if (minFilter == filterOptions[i])
+                            minFilterIdx = i;
+                        if (magFilter == filterOptions[i])
+                            magFilterIdx = i;
+                    }
+
+                    if (ImGui::Combo("Wrap S", &wrapSIdx, wrapOptions, IM_ARRAYSIZE(wrapOptions)))
+                    {
+                        m_SelectedMeta.Properties["WrapS"] = wrapOptions[wrapSIdx];
+                        changed = true;
+                    }
+
+                    if (ImGui::Combo("Wrap T", &wrapTIdx, wrapOptions, IM_ARRAYSIZE(wrapOptions)))
+                    {
+                        m_SelectedMeta.Properties["WrapT"] = wrapOptions[wrapTIdx];
+                        changed = true;
+                    }
+
+                    if (ImGui::Combo("Min Filter", &minFilterIdx, filterOptions, IM_ARRAYSIZE(filterOptions)))
+                    {
+                        m_SelectedMeta.Properties["MinFilter"] = filterOptions[minFilterIdx];
+                        changed = true;
+                    }
+
+                    if (ImGui::Combo("Mag Filter", &magFilterIdx, filterOptions, IM_ARRAYSIZE(filterOptions)))
+                    {
+                        m_SelectedMeta.Properties["MagFilter"] = filterOptions[magFilterIdx];
+                        changed = true;
+                    }
+
+                    if (changed)
+                    {
+                        // Update meta in memory and on disk, then reload the texture with new settings
+                        Assets::UpdateMeta(m_Selected, m_SelectedMeta);
+                        Assets::SaveMetaToDisk(m_Selected);
+                        Assets::Reload<Texture2D>(m_Selected);
+                    }
                 }
                 else
                 {

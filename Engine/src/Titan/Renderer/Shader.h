@@ -29,6 +29,10 @@ namespace Titan
 
         virtual const std::string& GetName() const = 0;
 
+        // Reload shader from the given file path. Implementations should update the shader object
+        // in-place so existing `Ref<Shader>` instances remain valid.
+        virtual void Reload(const std::string& path) = 0;
+
         static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc,
                                   const std::string& fragmentSrc);
         static Ref<Shader> Create(const std::string& path);

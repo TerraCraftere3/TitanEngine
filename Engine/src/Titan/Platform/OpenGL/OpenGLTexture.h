@@ -34,6 +34,8 @@ namespace Titan
 
         virtual void Bind(uint32_t slot = 0) const override;
 
+        virtual void Reload(const std::string& path, TextureSettings settings) override;
+
         virtual uint64_t GetBindlessHandle() override;
         virtual void MakeHandleResident() override;
         virtual void MakeHandleNonResident() override;

@@ -505,4 +505,12 @@ namespace Titan
             glDetachShader(program, id);
     }
 
+    void OpenGLShader::Reload(const std::string& path)
+    {
+        // Construct a temporary shader (compiles new program) and swap internals.
+        OpenGLShader tmp(path);
+        std::swap(m_RendererID, tmp.m_RendererID);
+        std::swap(m_Name, tmp.m_Name);
+    }
+
 } // namespace Titan

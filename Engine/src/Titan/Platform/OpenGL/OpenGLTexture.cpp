@@ -281,6 +281,24 @@ namespace Titan
         glBindTextureUnit(slot, m_RendererID);
     }
 
+    void OpenGLTexture2D::Reload(const std::string& path, TextureSettings settings)
+    {
+        // Create a temporary texture (loads and creates GL texture), then swap internals so
+        // existing shared_ptrs keep referring to the same object instance while its content
+        // is replaced by the newly loaded texture.
+        OpenGLTexture2D tmp(path, settings);
+
+        std::swap(m_Path, tmp.m_Path);
+        std::swap(m_Width, tmp.m_Width);
+        std::swap(m_Height, tmp.m_Height);
+        std::swap(m_RendererID, tmp.m_RendererID);
+        std::swap(m_InternalFormat, tmp.m_InternalFormat);
+        std::swap(m_DataFormat, tmp.m_DataFormat);
+        std::swap(m_BindlessHandle, tmp.m_BindlessHandle);
+        std::swap(m_HandleResident, tmp.m_HandleResident);
+        std::swap(m_CreatedHandle, tmp.m_CreatedHandle);
+    }
+
     uint64_t OpenGLTexture2D::GetBindlessHandle()
     {
         if (Debug::isRenderdocAttached())

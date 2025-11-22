@@ -5,8 +5,10 @@
 #undef min
 #undef max
 
-namespace Titan {
-    class TI_API AABB {
+namespace Titan
+{
+    class TI_API AABB
+    {
     public:
         glm::vec3 Min;
         glm::vec3 Max;
@@ -42,18 +44,12 @@ namespace Titan {
         glm::vec3 ClosestPoint(const glm::vec3& p) const noexcept;
         float DistanceSquaredToPoint(const glm::vec3& p) const noexcept;
 
-        bool IntersectRay(
-            const glm::vec3& rayOrigin,
-            const glm::vec3& rayDir,
-            float tMinLimit,
-            float tMaxLimit,
-            float& outTNear,
-            float& outTFar
-        ) const noexcept;
+        bool IntersectRay(const glm::vec3& rayOrigin, const glm::vec3& rayDir, float tMinLimit, float tMaxLimit,
+                          float& outTNear, float& outTFar) const noexcept;
 
         AABB Transform(const glm::mat4& m) const noexcept;
 
         bool operator==(const AABB& o) const noexcept;
         bool operator!=(const AABB& o) const noexcept;
     };
-}
+} // namespace Titan

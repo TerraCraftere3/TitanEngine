@@ -344,8 +344,44 @@ namespace Titan
         template <typename T>
         void Reload(const std::filesystem::path& path)
         {
-            // TODO: Implement asset reloading (maybe in the asset itself?)
-            TI_CORE_ASSERT(false, "Not implemented yet!");
+            // If the asset is not loaded yet, just load it.
+            if (!AssetLibrary::Exists(path))
+            {
+                Load<T>(path);
+                return;
+            }
+
+            Ref<T> asset = AssetLibrary::Get<T>(path);
+            if (!asset)
+                return;
+
+            // Ensure meta is up-to-date (creates default meta if missing)
+            AssetMeta meta = LoadMeta<T>(path);
+
+            if constexpr (std::is_same_v<T, Texture2D>)
+            {
+                TextureSettings settings;
+                if (meta.Properties.contains("WrapS"))
+                    settings.HorizontalWrap = Utils::StringToTextureWrap(meta.Properties["WrapS"]);
+                if (meta.Properties.contains("WrapT"))
+                    settings.VerticalWrap = Utils::StringToTextureWrap(meta.Properties["WrapT"]);
+                if (meta.Properties.contains("MinFilter"))
+                    settings.MinFilter = Utils::StringToTextureFiltering(meta.Properties["MinFilter"]);
+                if (meta.Properties.contains("MagFilter"))
+                    settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
+
+                asset->Reload(std::filesystem::relative(path).string(), settings);
+                AssetLibrary::UpdateMeta(path, meta);
+            }
+            else if constexpr (std::is_same_v<T, Shader>)
+            {
+                asset->Reload(std::filesystem::relative(path).string());
+                AssetLibrary::UpdateMeta(path, meta);
+            }
+            else
+            {
+                static_assert(always_false<T>::value, "Unsupported asset type in Assets::Reload<T>");
+            }
         }
 
     } // namespace Assets

@@ -33,6 +33,7 @@ namespace Titan
         virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 
         virtual const std::string& GetName() const override { return m_Name; }
+        virtual void Reload(const std::string& path) override;
 
     private:
         std::unordered_map<GLenum, std::string> ParseShaderFile(const std::string& source);
