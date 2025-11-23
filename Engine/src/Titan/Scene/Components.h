@@ -159,6 +159,7 @@ namespace Titan
         };
         BodyType Type = BodyType::Static;
         bool FixedRotation = false;
+        void* RuntimeBody = nullptr;
 
         RigidbodyComponent() = default;
         RigidbodyComponent(const RigidbodyComponent&) = default;

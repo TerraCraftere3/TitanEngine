@@ -12,6 +12,10 @@ namespace Titan
     {
         class PhysicsWorld;
     }
+    namespace Physics3D
+    {
+        class PhysicsWorld;
+    }
 } // namespace Titan
 
 namespace Titan
@@ -61,6 +65,8 @@ namespace Titan
 
         void OnPhysics2DStart();
         void OnPhysics2DStop();
+        void OnPhysics3DStart();
+        void OnPhysics3DStop();
         void UpdateConstraints();
 
         // Update world transforms for entities that have parent/child relations
@@ -76,6 +82,7 @@ namespace Titan
         bool m_IsRunning = false;
 
         Physics2D::PhysicsWorld* m_PhysicsWorld = nullptr;
+        Physics3D::PhysicsWorld* m_Physics3D = nullptr;
 
         std::unordered_map<UUID, entt::entity> m_EntityMap;
 

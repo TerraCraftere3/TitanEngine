@@ -6,7 +6,7 @@ Entities:
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [10, 0.1, 10]
+      Scale: [20, 0.2, 20]
     MeshRendererComponent:
       Mesh: cube
       Materials:
@@ -78,9 +78,9 @@ Entities:
     TagComponent:
       Tag: "Wall #1"
     TransformComponent:
-      Translation: [-5, 1, 0]
+      Translation: [-10, 1, 0]
       Rotation: [0, 0, 0]
-      Scale: [0.1, 2, 10]
+      Scale: [0.2, 4, 20]
     MeshRendererComponent:
       Mesh: cube
       Materials:
@@ -102,14 +102,14 @@ Entities:
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
-      Scale: [2, 2, 2]
+      Scale: [1, 1, 1]
   - Entity: 17612345914875848076
     TagComponent:
       Tag: "Wall #2"
     TransformComponent:
-      Translation: [5, 1, 0]
+      Translation: [10, 1, 0]
       Rotation: [0, 0, 0.017453292]
-      Scale: [0.1, 2, 10]
+      Scale: [0.2, 4, 20]
     MeshRendererComponent:
       Mesh: cube
       Materials:
@@ -129,9 +129,9 @@ Entities:
     TagComponent:
       Tag: "Wall #3"
     TransformComponent:
-      Translation: [0, 1, 5]
+      Translation: [0, 1, 10]
       Rotation: [0, 0, 0]
-      Scale: [10, 2, 0.1]
+      Scale: [20, 4, 0.2]
     MeshRendererComponent:
       Mesh: cube
       Materials:
@@ -151,9 +151,9 @@ Entities:
     TagComponent:
       Tag: "Wall #4"
     TransformComponent:
-      Translation: [0, 1, -5]
+      Translation: [0, 1, -10]
       Rotation: [0, 0, 0]
-      Scale: [10, 2, 0.1]
+      Scale: [20, 4, 0.2]
     MeshRendererComponent:
       Mesh: cube
       Materials:
@@ -183,7 +183,7 @@ Entities:
           AlbedoTexture: assets\textures\Checkerboard.png
           UVRepeat: [1, 1]
     RigidbodyComponent:
-      BodyType: Static
+      BodyType: Dynamic
       FixedRotation: false
     CubeColliderComponent:
       Offset: [0, 0, 0]

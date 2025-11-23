@@ -83,6 +83,26 @@ namespace Titan::Physics3D
         TI_CORE_INFO("PhysX initialized successfully");
     }
 
+    PxFoundation* GetFoundation()
+    {
+        return g_Foundation;
+    }
+
+    PxPhysics* GetPhysics()
+    {
+        return g_Physics;
+    }
+
+    PxPvd* GetPvd()
+    {
+        return g_Pvd;
+    }
+
+    PxDefaultCpuDispatcher* GetDispatcher()
+    {
+        return g_Dispatcher;
+    }
+
     void Shutdown()
     {
         // Ensure proper shutdown order
