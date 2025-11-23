@@ -30,6 +30,7 @@ message(STATUS "NanoSVG Include: ${NANOSVG_INCLUDE_DIR}")
 message(STATUS "STB Include: ${STB_INCLUDE_DIR}")
 message(STATUS "PhysX Root: ${PHYSX_ROOT_DIR}")
 message(STATUS "PhysX Include: ${PHYSX_INCLUDE_DIR}")
+message(STATUS "PhysX Libraries: ${PHYSX_BIN_DIR}")
 
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore assimp)
@@ -56,24 +57,36 @@ endif()
 add_dependencies(engine Titan-ScriptCore)
 add_dependencies(engine Titan-GameCore)
 
-# Link PhysX targets if the PhysX SDK was added by Vendor CMake
-if(DEFINED PHYSX_ROOT_DIR)
-    target_include_directories(engine PUBLIC "${PHYSX_ROOT_DIR}/include")
-endif()
-if(TARGET PhysX)
-    target_link_libraries(engine PUBLIC
-        PhysX
-        PhysXCommon
-        PhysXFoundation
-        PhysXCooking
-        PhysXExtensions
-        LowLevel
-        LowLevelAABB
-        LowLevelDynamics
-    )
-    add_dependencies(engine PhysX)
+target_link_libraries(engine PUBLIC
+    "${PHYSX_BIN_DIR}/PhysXExtensions_static_64.lib"
+    "${PHYSX_BIN_DIR}/PhysX_64.lib"
+    "${PHYSX_BIN_DIR}/PhysXPvdSDK_static_64.lib"
+    "${PHYSX_BIN_DIR}/PhysXCommon_64.lib"
+    "${PHYSX_BIN_DIR}/PhysXFoundation_64.lib"
+    "${PHYSX_BIN_DIR}/PhysXCooking_64.lib"
+)
+
+file(GLOB PHYSX_DLLS
+    "${PHYSX_BIN_DIR}/PhysX_64.dll"
+    "${PHYSX_BIN_DIR}/PhysXCommon_64.dll"
+    "${PHYSX_BIN_DIR}/PhysXCooking_64.dll"
+    "${PHYSX_BIN_DIR}/PhysXFoundation_64.dll"
+    "${PHYSX_BIN_DIR}/PVDRuntime_64.dll"
+)
+
+get_target_property(ENGINE_OUTPUT_DIR engine RUNTIME_OUTPUT_DIRECTORY)
+if(NOT ENGINE_OUTPUT_DIR)
+    set(ENGINE_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/Engine")
 endif()
 
+# Loop and add a post-build copy for each DLL
+foreach(_dll ${PHYSX_DLLS})
+    add_custom_command(TARGET engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${_dll}"
+            "${ENGINE_OUTPUT_DIR}"
+    )
+endforeach()
 # ---- Include directories ----
 target_include_directories(engine PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
@@ -82,6 +95,7 @@ target_include_directories(engine PUBLIC
     "${SLANG_INCLUDE_DIR}"
     "${MONO_INCLUDE_DIR}"
     "${FILEWATCH_INCLUDE_DIR}"
+    "${PHYSX_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----
