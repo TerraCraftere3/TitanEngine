@@ -28,6 +28,8 @@ message(STATUS "Mono Include: ${MONO_INCLUDE_DIR}")
 message(STATUS "Filewatch Include: ${FILEWATCH_INCLUDE_DIR}")
 message(STATUS "NanoSVG Include: ${NANOSVG_INCLUDE_DIR}")
 message(STATUS "STB Include: ${STB_INCLUDE_DIR}")
+message(STATUS "PhysX Root: ${PHYSX_ROOT_DIR}")
+message(STATUS "PhysX Include: ${PHYSX_INCLUDE_DIR}")
 
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore assimp)
@@ -53,6 +55,24 @@ endif()
 
 add_dependencies(engine Titan-ScriptCore)
 add_dependencies(engine Titan-GameCore)
+
+# Link PhysX targets if the PhysX SDK was added by Vendor CMake
+if(DEFINED PHYSX_ROOT_DIR)
+    target_include_directories(engine PUBLIC "${PHYSX_ROOT_DIR}/include")
+endif()
+if(TARGET PhysX)
+    target_link_libraries(engine PUBLIC
+        PhysX
+        PhysXCommon
+        PhysXFoundation
+        PhysXCooking
+        PhysXExtensions
+        LowLevel
+        LowLevelAABB
+        LowLevelDynamics
+    )
+    add_dependencies(engine PhysX)
+endif()
 
 # ---- Include directories ----
 target_include_directories(engine PUBLIC

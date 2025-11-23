@@ -76,3 +76,18 @@ else()
     message(WARNING "Unknown CMAKE_BUILD_TYPE='${CMAKE_BUILD_TYPE}', defaulting to Release libs")
     set(MONO_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/mono/lib/Release" PARENT_SCOPE)
 endif()
+
+# ---- PhysX (optional) ----
+option(TI_BUILD_PHYSX "Build/Integrate NVIDIA PhysX SDK from Vendor/PhysX" OFF)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PhysX/physx")
+    set(PHYSX_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/PhysX/physx" CACHE PATH "PhysX root directory")
+    set(PHYSX_INCLUDE_DIR "${PHYSX_ROOT_DIR}/include" PARENT_SCOPE)
+    set(PHYSX_ROOT_DIR "${PHYSX_ROOT_DIR}" PARENT_SCOPE)
+    message(STATUS "Found PhysX sources at: ${PHYSX_ROOT_DIR}")
+    if(TI_BUILD_PHYSX)
+        # PhysX provides a public CMake wrapper which expects PHYSX_ROOT_DIR to be set
+        add_subdirectory(${PHYSX_ROOT_DIR}/compiler/public ${CMAKE_CURRENT_BINARY_DIR}/physx_build)
+    endif()
+else()
+    message(STATUS "PhysX not present in Vendor/PhysX")
+endif()
