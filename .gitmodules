@@ -37,6 +37,9 @@
 [submodule "Vendor/assimp"]
 	path = Vendor/assimp
 	url = https://github.com/assimp/assimp
+[submodule "Vendor/PhysX"]
+	path = Vendor/PhysX
+	url = https://github.com/TerraCraftere3/PhysX
 [submodule "Runtime/mono/lib/mono/4.5"]
 	path = Runtime/mono/lib/mono/4.5
 	url = https://github.com/TerraCraftere3/CSharp-Mono
