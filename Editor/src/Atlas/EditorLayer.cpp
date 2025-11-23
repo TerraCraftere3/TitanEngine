@@ -37,7 +37,15 @@ namespace Titan
         m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
     }
 
-    void EditorLayer::OnDetach() {}
+    void EditorLayer::OnDetach()
+    {
+        if (m_SceneState == SceneState::Play)
+            m_ActiveScene->OnRuntimeStop();
+        else if (m_SceneState == SceneState::Simulate)
+            m_ActiveScene->OnSimulationStop();
+
+        m_ActiveScene = nullptr;
+    }
 
     void EditorLayer::OnUpdate(Timestep ts)
     {
@@ -84,12 +92,18 @@ namespace Titan
 
         RenderDockspace();
 
-        m_SceneHierarchyPanel.OnImGuiRender();
-        m_ContentBrowserPanel.OnImGuiRender();
+        if (m_EditorProperties.ShowSceneHierarchy)
+            m_SceneHierarchyPanel.OnImGuiRender(&m_EditorProperties.ShowSceneHierarchy,
+                                                &m_EditorProperties.ShowSceneHierarchyProperties);
+        if (m_EditorProperties.ShowContentBrowser)
+            m_ContentBrowserPanel.OnImGuiRender(&m_EditorProperties.ShowContentBrowser,
+                                                &m_EditorProperties.ShowContentBrowserFile);
 
-        RenderStatisticsPanel();
-        RenderViewport();
-        Profiler::Get().DrawProfilerUI();
+        RenderStatisticsPanel(&m_EditorProperties.ShowStatistics);
+        RenderViewport(&m_EditorProperties.ShowViewport);
+
+        if (m_EditorProperties.ShowProfiler)
+            Profiler::Get().DrawProfilerUI();
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -163,13 +177,45 @@ namespace Titan
 
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Windows"))
+            {
+                if (ImGui::MenuItem("Scene Hierarchy", nullptr, &m_EditorProperties.ShowSceneHierarchy))
+                {
+                }
+                if (ImGui::MenuItem("Properties", nullptr, &m_EditorProperties.ShowSceneHierarchyProperties))
+                {
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Content Browser", nullptr, &m_EditorProperties.ShowContentBrowser))
+                {
+                }
+                if (ImGui::MenuItem("File/Properties", nullptr, &m_EditorProperties.ShowContentBrowserFile))
+                {
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Statistics", nullptr, &m_EditorProperties.ShowStatistics))
+                {
+                }
+                if (ImGui::MenuItem("Viewport", nullptr, &m_EditorProperties.ShowViewport))
+                {
+                }
+                if (ImGui::MenuItem("Profiler", nullptr, &m_EditorProperties.ShowProfiler))
+                {
+                }
+
+                ImGui::EndMenu();
+            }
             ImGui::EndMenuBar();
         }
     }
 
-    void EditorLayer::RenderStatisticsPanel()
+    void EditorLayer::RenderStatisticsPanel(bool* open)
     {
-        ImGui::Begin("Statistics");
+        ImGui::Begin("Statistics", open);
 
         ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::Separator();
@@ -184,13 +230,13 @@ namespace Titan
         ImGui::End();
     }
 
-    void EditorLayer::RenderViewport()
+    void EditorLayer::RenderViewport(bool* open)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         ImGui::SetNextWindowSizeConstraints(ImVec2(256, 256), ImVec2(8192, 8192));
-        ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::Begin("Viewport", open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
         // Render the scene control toolbar at the top
         RenderSceneControlToolbar();

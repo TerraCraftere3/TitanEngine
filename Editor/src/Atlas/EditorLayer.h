@@ -9,6 +9,7 @@
 #include <Titan/Renderer/SceneRenderer.h>
 #include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
+#include "EditorProperties.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
@@ -38,8 +39,8 @@ namespace Titan
 
         void RenderDockspace();
         void RenderMenuBar();
-        void RenderStatisticsPanel();
-        void RenderViewport();
+        void RenderStatisticsPanel(bool* open = nullptr);
+        void RenderViewport(bool* open = nullptr);
 
         void UpdateViewportBounds();
         void HandleViewportResize();
@@ -95,7 +96,8 @@ namespace Titan
         SceneHierarchyPanel m_SceneHierarchyPanel;
         ContentBrowserPanel m_ContentBrowserPanel;
 
-        // Debug Settings
+        // Editor properties
+        EditorProperties m_EditorProperties;
         OverlaySettings m_OverlaySettings;
     };
 } // namespace Titan

@@ -14,15 +14,18 @@ namespace Titan
         m_FileMaterialIcon = Assets::Load<Texture2D>("resources/icons/file-material.svg");
     }
 
-    void ContentBrowserPanel::OnImGuiRender()
+    void ContentBrowserPanel::OnImGuiRender(bool* openBrowser, bool* openFile)
     {
-        RenderBrowser();
-        RenderProperties();
+        RenderBrowser(openBrowser);
+        RenderProperties(openFile);
     }
 
-    void ContentBrowserPanel::RenderBrowser()
+    void ContentBrowserPanel::RenderBrowser(bool* openBrowser)
     {
-        ImGui::Begin("Content Browser");
+        if (openBrowser && !*openBrowser)
+            return;
+
+        ImGui::Begin("Content Browser", openBrowser);
 
         try
         {
@@ -130,9 +133,12 @@ namespace Titan
         ImGui::End();
     }
 
-    void ContentBrowserPanel::RenderProperties()
+    void ContentBrowserPanel::RenderProperties(bool* openFile)
     {
-        ImGui::Begin("File");
+        if (openFile && !*openFile)
+            return;
+
+        ImGui::Begin("File", openFile);
         if (!m_Selected.empty())
         {
             std::string sel = m_Selected.string();
@@ -265,7 +271,7 @@ namespace Titan
         if (ext == ".cs")
             return m_FileCodeIcon;
 
-        if (ext == ".phys2d")
+        if (ext == ".phys2d" || ext == ".phys")
             return m_FileMaterialIcon;
 
         return m_FileTextIcon;

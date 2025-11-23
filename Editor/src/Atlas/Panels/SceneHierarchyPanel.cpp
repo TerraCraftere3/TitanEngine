@@ -35,9 +35,12 @@ namespace Titan
         }
     }
 
-    void SceneHierarchyPanel::OnImGuiRender()
+    void SceneHierarchyPanel::OnImGuiRender(bool* openHierarchy, bool* openProperties)
     {
-        ImGui::Begin("Scene Hierarchy");
+        if (openHierarchy && !*openHierarchy)
+            return;
+
+        ImGui::Begin("Scene Hierarchy", openHierarchy);
 
         // Build list of root entities (entities without a parent)
         std::vector<Entity> roots;
@@ -130,7 +133,8 @@ namespace Titan
 
         ImGui::End();
 
-        ImGui::Begin("Properties");
+        if (!(openProperties && !*openProperties))
+            ImGui::Begin("Properties", openProperties);
         if (m_SelectionContext)
         {
             DrawComponents(m_SelectionContext);
@@ -184,7 +188,8 @@ namespace Titan
             }
         }
 
-        ImGui::End();
+        if (!(openProperties && !*openProperties))
+            ImGui::End();
     }
 
     void SceneHierarchyPanel::DrawEntityNode(Entity entity)

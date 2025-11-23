@@ -16,7 +16,7 @@ namespace Titan
 
         void SetContext(const Ref<Scene>& scene);
 
-        void OnImGuiRender();
+        void OnImGuiRender(bool* openHierarchy = nullptr, bool* openProperties = nullptr);
 
         Entity GetSelectedEntity() const { return m_SelectionContext; }
         void SetSelectedEntity(Entity entity) { m_SelectionContext = entity; }

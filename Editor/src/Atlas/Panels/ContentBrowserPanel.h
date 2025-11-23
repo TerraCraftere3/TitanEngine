@@ -12,11 +12,11 @@ namespace Titan
     public:
         ContentBrowserPanel();
 
-        void OnImGuiRender();
+        void OnImGuiRender(bool* openBrowser = nullptr, bool* openFile = nullptr);
 
     private:
-        void RenderBrowser();
-        void RenderProperties();
+        void RenderBrowser(bool* openBrowser = nullptr);
+        void RenderProperties(bool* openFile = nullptr);
         Ref<Texture2D> GetIconForFile(const std::filesystem::path& filePath);
         AssetType GetTypeForFile(const std::filesystem::path& filePath);
 
