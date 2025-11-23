@@ -56,7 +56,7 @@
 
 // ---- Internal Engine Includes ----
 #include "Titan/Core.h"
+#include "Titan/Core/Log.h"
 #include "Titan/Debug/Macros.h"
 #include "Titan/Debug/Instrumentor.h"
-#include "Titan/Core/Log.h"
 // clang-format on

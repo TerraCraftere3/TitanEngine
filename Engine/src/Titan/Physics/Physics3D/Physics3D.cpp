@@ -13,18 +13,19 @@ namespace Titan::Physics3D
         public:
             void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) override
             {
-                TI_CORE_ERROR("PhysX Error: {} ({}:{}) code={}", message ? message : "(null)", file ? file : "(unknown)", line, static_cast<int>(code));
+                TI_CORE_ERROR("PhysX Error: {} ({}:{}) code={}", message ? message : "(null)",
+                              file ? file : "(unknown)", line, static_cast<int>(code));
             }
         };
 
-        PxDefaultAllocator*        g_Allocator      = nullptr;
-        PhysXErrorCallback*        g_ErrorCallback  = nullptr;
-        PxFoundation*              g_Foundation     = nullptr;
-        PxPhysics*                 g_Physics        = nullptr;
-        PxPvd*                     g_Pvd            = nullptr;
-        PxPvdTransport*            g_PvdTransport   = nullptr;
-        PxDefaultCpuDispatcher*    g_Dispatcher     = nullptr;
-    }
+        PxDefaultAllocator* g_Allocator = nullptr;
+        PhysXErrorCallback* g_ErrorCallback = nullptr;
+        PxFoundation* g_Foundation = nullptr;
+        PxPhysics* g_Physics = nullptr;
+        PxPvd* g_Pvd = nullptr;
+        PxPvdTransport* g_PvdTransport = nullptr;
+        PxDefaultCpuDispatcher* g_Dispatcher = nullptr;
+    } // namespace
 
     void Init()
     {

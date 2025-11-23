@@ -149,6 +149,32 @@ namespace Titan
         PostFXComponent(const PostFXComponent&) = default;
     };
 
+    struct RigidbodyComponent
+    {
+        enum class BodyType
+        {
+            Static = 0,
+            Dynamic,
+            Kinematic
+        };
+        BodyType Type = BodyType::Static;
+        bool FixedRotation = false;
+
+        RigidbodyComponent() = default;
+        RigidbodyComponent(const RigidbodyComponent&) = default;
+    };
+
+    struct CubeColliderComponent
+    {
+        glm::vec3 Offset = {0.0f, 0.0f, 0.0f};
+        glm::vec3 Size = {0.5f, 0.5f, 0.5f};
+
+        Ref<PhysicsMaterial> Material;
+
+        CubeColliderComponent() { Material = CreateRef<PhysicsMaterial>(); };
+        CubeColliderComponent(const CubeColliderComponent&) = default;
+    };
+
     struct Rigidbody2DComponent
     {
         enum class BodyType
@@ -216,8 +242,8 @@ namespace Titan
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
                        DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
-                       Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent, LookAtComponent,
-                       RelationshipComponent>;
+                       RigidbodyComponent, CubeColliderComponent, Rigidbody2DComponent, BoxCollider2DComponent,
+                       CircleCollider2DComponent, LookAtComponent, RelationshipComponent>;
     namespace Utils
     {
         inline const char* SkyboxModeToString(SkyboxComponent::Mode mode)

@@ -21,4 +21,18 @@ namespace Titan
         static Ref<Physics2DMaterial> TI_API Create(const std::string& path);
     };
 
+    struct PhysicsMaterial
+    {
+        float Friction = 0.5f;
+        float Restitution = 0.1f;
+
+        std::string SourcePath = "";
+
+        PhysicsMaterial() = default;
+        PhysicsMaterial(const PhysicsMaterial&) = default;
+
+        void TI_API Save();
+        static Ref<PhysicsMaterial> TI_API Create(const std::string& path);
+    };
+
 } // namespace Titan
