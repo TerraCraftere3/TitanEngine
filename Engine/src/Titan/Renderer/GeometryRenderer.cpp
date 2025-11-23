@@ -343,9 +343,6 @@ namespace Titan
             s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(),
                                                     s_3DData.GPUMaterials.size() * sizeof(GPUMaterial));
         }
-
-        // Clear material cache to force re-creation on next scene
-        // This ensures bindless handles are refreshed
         s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
     }

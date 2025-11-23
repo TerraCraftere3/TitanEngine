@@ -16,6 +16,8 @@ namespace Titan
         glm::vec2 TexCoord;
         int TexIndex;
         float TilingFactor;
+
+        // Editor-only
         int EntityID;
     };
 
@@ -215,6 +217,7 @@ namespace Titan
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.CamBuffer.ViewProjection = viewTransform;
         s_Data.CamUniformBuffer->SetData(&s_Data.CamBuffer, sizeof(Renderer2DData::CameraData));
+        s_Data.CamUniformBuffer->Bind();
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -224,12 +227,15 @@ namespace Titan
         s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
         s_Data.TextureSlotIndex = 1;
 
+        RenderCommand::SetDepthFunc(DepthFunc::Always);
+
         s_IsRendering = true;
     }
 
     void Renderer2D::EndScene()
     {
         Flush();
+        RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
         s_IsRendering = false;
     }
 

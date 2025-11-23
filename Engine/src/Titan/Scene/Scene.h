@@ -6,7 +6,13 @@
 #include "Titan/PCH.h"
 #include "Titan/Renderer/EditorCamera.h"
 
-class b2World;
+namespace Titan
+{
+    namespace Physics2D
+    {
+        class PhysicsWorld;
+    }
+} // namespace Titan
 
 namespace Titan
 {
@@ -69,7 +75,7 @@ namespace Titan
         uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
         bool m_IsRunning = false;
 
-        b2World* m_PhysicsWorld = nullptr;
+        Physics2D::PhysicsWorld* m_PhysicsWorld = nullptr;
 
         std::unordered_map<UUID, entt::entity> m_EntityMap;
 

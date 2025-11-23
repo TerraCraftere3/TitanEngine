@@ -9,26 +9,12 @@
 #include "Titan/Scripting/ScriptEngine.h"
 
 #include <algorithm>
-#include "box2d/box2d.h"
+#include "Titan/Physics/Physics2D/Physics2D.h"
 
 namespace Titan
 {
 
-    static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType)
-    {
-        switch (bodyType)
-        {
-            case Rigidbody2DComponent::BodyType::Static:
-                return b2_staticBody;
-            case Rigidbody2DComponent::BodyType::Dynamic:
-                return b2_dynamicBody;
-            case Rigidbody2DComponent::BodyType::Kinematic:
-                return b2_kinematicBody;
-        }
-
-        TI_CORE_ASSERT(false, "Unknown body type");
-        return b2_staticBody;
-    }
+    // Physics2D is abstracted into Titan::Physics2D::PhysicsWorld
 
     static glm::vec3 CalculateLookAtEuler3D(const glm::vec3& from, const glm::vec3& to)
     {
@@ -226,11 +212,14 @@ namespace Titan
                 auto& transform = entity.GetComponent<TransformComponent>();
                 auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
-                b2Body* body = (b2Body*)rb2d.RuntimeBody;
-                const auto& position = body->GetPosition();
-                transform.Translation.x = position.x;
-                transform.Translation.y = position.y;
-                transform.Rotation.z = body->GetAngle();
+                void* body = rb2d.RuntimeBody;
+                if (body)
+                {
+                    glm::vec2 position = m_PhysicsWorld->GetBodyPosition(body);
+                    transform.Translation.x = position.x;
+                    transform.Translation.y = position.y;
+                    transform.Rotation.z = m_PhysicsWorld->GetBodyAngle(body);
+                }
             }
         }
 
@@ -259,11 +248,14 @@ namespace Titan
                 auto& transform = entity.GetComponent<TransformComponent>();
                 auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
-                b2Body* body = (b2Body*)rb2d.RuntimeBody;
-                const auto& position = body->GetPosition();
-                transform.Translation.x = position.x;
-                transform.Translation.y = position.y;
-                transform.Rotation.z = body->GetAngle();
+                void* body = rb2d.RuntimeBody;
+                if (body)
+                {
+                    glm::vec2 position = m_PhysicsWorld->GetBodyPosition(body);
+                    transform.Translation.x = position.x;
+                    transform.Translation.y = position.y;
+                    transform.Rotation.z = m_PhysicsWorld->GetBodyAngle(body);
+                }
             }
         }
 
@@ -334,7 +326,7 @@ namespace Titan
 
     void Scene::OnPhysics2DStart()
     {
-        m_PhysicsWorld = new b2World({0.0f, -9.8f});
+        m_PhysicsWorld = new Physics2D::PhysicsWorld({0.0f, -9.8f});
 
         auto view = m_Registry.view<Rigidbody2DComponent>();
         for (auto e : view)
@@ -343,49 +335,15 @@ namespace Titan
             auto& transform = entity.GetComponent<TransformComponent>();
             auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
-            b2BodyDef bodyDef;
-            bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
-            bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
-            bodyDef.angle = transform.Rotation.z;
-
-            b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-            body->SetFixedRotation(rb2d.FixedRotation);
-            rb2d.RuntimeBody = body;
-
+            const BoxCollider2DComponent* box = nullptr;
+            const CircleCollider2DComponent* circle = nullptr;
             if (entity.HasComponent<BoxCollider2DComponent>())
-            {
-                auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
-                auto mat = bc2d.Material;
-
-                b2PolygonShape boxShape;
-                boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x, bc2d.Size.y * transform.Scale.y);
-
-                b2FixtureDef fixtureDef;
-                fixtureDef.shape = &boxShape;
-                fixtureDef.density = mat->Density;
-                fixtureDef.friction = mat->Friction;
-                fixtureDef.restitution = mat->Restitution;
-                fixtureDef.restitutionThreshold = mat->RestitutionThreshold;
-                body->CreateFixture(&fixtureDef);
-            }
-
+                box = &entity.GetComponent<BoxCollider2DComponent>();
             if (entity.HasComponent<CircleCollider2DComponent>())
-            {
-                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
-                auto mat = cc2d.Material;
+                circle = &entity.GetComponent<CircleCollider2DComponent>();
 
-                b2CircleShape circleShape;
-                circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-                circleShape.m_radius = transform.Scale.x * cc2d.Radius;
-
-                b2FixtureDef fixtureDef;
-                fixtureDef.shape = &circleShape;
-                fixtureDef.density = mat->Density;
-                fixtureDef.friction = mat->Friction;
-                fixtureDef.restitution = mat->Restitution;
-                fixtureDef.restitutionThreshold = mat->RestitutionThreshold;
-                body->CreateFixture(&fixtureDef);
-            }
+            void* body = m_PhysicsWorld->CreateBody(rb2d, transform, box, circle);
+            rb2d.RuntimeBody = body;
         }
     }
 
