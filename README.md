@@ -53,6 +53,7 @@ For now there is no linux support
 | **nanosvg**   | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
 | **codicons**  | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
 | **Box2D**     | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
+| **PhysX**     | 3D Physics Simulations                                          | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX)       |
 | **Slang**     | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
 | **Optick**    | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
 | **Filewatch** | Watching Files (for e.g. Hot Code Reloading)                    | [ThomasMonkman/filewatch](https://github.com/ThomasMonkman/filewatch)     |
@@ -90,6 +91,9 @@ For now there is no linux support
   - [ ] Exporting Projects
 - [ ] Custom C# UIs
 - [ ] Asset Refactor
+- [ ] Physics
+  - [x] 2D
+  - [ ] 3D
 
 
 

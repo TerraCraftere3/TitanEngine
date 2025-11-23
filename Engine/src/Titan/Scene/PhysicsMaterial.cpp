@@ -60,4 +60,55 @@ namespace Titan
         return mat;
     }
 
+    void PhysicsMaterial::Save()
+    {
+        if (SourcePath.empty())
+        {
+            TI_CORE_WARN("Couldnt save Physics Material!");
+            return;
+        }
+        try
+        {
+            YAML::Emitter out;
+            out << YAML::BeginMap;
+            out << YAML::Key << "Friction" << YAML::Value << Friction;
+            out << YAML::Key << "Restitution" << YAML::Value << Restitution;
+            out << YAML::EndMap;
+
+            std::ofstream fout(SourcePath);
+            fout << out.c_str();
+
+            TI_CORE_TRACE("Saved Physics Material {}", SourcePath.c_str());
+        }
+        catch (YAML::ParserException e)
+        {
+            TI_CORE_ERROR("Couldnt save Physics Material: {}", e.msg.c_str());
+        }
+    }
+
+    Ref<PhysicsMaterial> PhysicsMaterial::Create(const std::string& path)
+    {
+        auto mat = CreateRef<PhysicsMaterial>();
+        if (path.empty())
+        {
+            TI_CORE_WARN("Couldnt load Physics Material!");
+            return mat;
+        }
+
+        try
+        {
+            YAML::Node data = YAML::LoadFile(path);
+            mat->Friction = data["Friction"].as<float>();
+            mat->Restitution = data["Restitution"].as<float>();
+
+            mat->SourcePath = path;
+            TI_CORE_TRACE("Loaded Physics Material {}", path.c_str());
+        }
+        catch (YAML::ParserException e)
+        {
+            TI_CORE_ERROR("Couldnt load Physics Material: {}", e.msg.c_str());
+        }
+        return mat;
+    }
+
 } // namespace Titan

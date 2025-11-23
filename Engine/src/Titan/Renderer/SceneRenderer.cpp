@@ -293,24 +293,53 @@ namespace Titan
 
                 Renderer2D::BeginScene(s_SRData->viewProjection);
 
-                // Box Colliders
+                // Box Colliders (2D) - respect offset and size
                 auto boxColliderView =
                     s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
                 for (auto entity : boxColliderView)
                 {
                     auto [transform, collider] =
                         boxColliderView.get<TransformComponent, BoxCollider2DComponent>(entity);
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+
+                    glm::mat4 world = transform.GetTransform();
+                    glm::mat4 local = glm::translate(glm::mat4(1.0f), glm::vec3(collider.Offset, 0.0f)) *
+                                      glm::scale(glm::mat4(1.0f), glm::vec3(collider.Size * 2.0f, 1.0f));
+                    glm::mat4 finalTransform = world * local;
+
+                    Renderer2D::DrawRect(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
                 }
 
-                // Circle Colliders
+                // Circle Colliders (2D) - respect offset and radius
                 auto circleColliderView =
                     s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
                 for (auto entity : circleColliderView)
                 {
                     auto [transform, collider] =
                         circleColliderView.get<TransformComponent, CircleCollider2DComponent>(entity);
-                    Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
+
+                    glm::mat4 world = transform.GetTransform();
+                    glm::mat4 local =
+                        glm::translate(glm::mat4(1.0f), glm::vec3(collider.Offset, 0.0f)) *
+                        glm::scale(glm::mat4(1.0f), glm::vec3(collider.Radius * 2.0f, collider.Radius * 2.0f, 1.0f));
+                    glm::mat4 finalTransform = world * local;
+
+                    Renderer2D::DrawCircle(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0f));
+                }
+
+                // Cube Colliders (3D) - respect offset and size
+                auto cubeColliderView =
+                    s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CubeColliderComponent>();
+                for (auto entity : cubeColliderView)
+                {
+                    auto [transform, collider] =
+                        cubeColliderView.get<TransformComponent, CubeColliderComponent>(entity);
+
+                    glm::mat4 world = transform.GetTransform();
+                    glm::mat4 local = glm::translate(glm::mat4(1.0f), collider.Offset) *
+                                      glm::scale(glm::mat4(1.0f), collider.Size * 2.0f);
+                    glm::mat4 finalTransform = world * local;
+
+                    Renderer2D::DrawCube(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0f));
                 }
 
                 auto cameraView = s_SRData->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();

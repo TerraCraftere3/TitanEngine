@@ -3,6 +3,7 @@
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
 #include "Titan/PCH.h"
+#include "Titan/Physics/Physics3D/Physics3D.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Scripting/ScriptEngine.h"
 // clang-format off
@@ -27,6 +28,7 @@ namespace Titan
 
         Renderer::Init();
         ScriptEngine::Init();
+        Physics3D::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -36,6 +38,7 @@ namespace Titan
     {
         ScriptEngine::Shutdown();
         Renderer::Shutdown();
+        Physics3D::Shutdown();
     }
 
     void Application::Close()

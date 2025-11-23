@@ -23,6 +23,7 @@ namespace Titan
         Scene,
         Shader,
         Physics2DMaterial,
+        PhysicsMaterial,
         Mesh
     };
 
@@ -174,6 +175,10 @@ namespace Titan
             {
                 meta.Type = AssetType::Physics2DMaterial;
             }
+            else if constexpr (std::is_same_v<T, PhysicsMaterial>)
+            {
+                meta.Type = AssetType::PhysicsMaterial;
+            }
             else if constexpr (std::is_same_v<T, Mesh>)
             {
                 meta.Type = AssetType::Mesh;
@@ -262,6 +267,10 @@ namespace Titan
                     meta = LoadMetaFromDisk<Physics2DMaterial>(assetPath);
                     break;
 
+                case AssetType::PhysicsMaterial:
+                    meta = LoadMetaFromDisk<PhysicsMaterial>(assetPath);
+                    break;
+
                 case AssetType::Mesh:
                     meta = LoadMetaFromDisk<Mesh>(assetPath);
                     break;
@@ -319,6 +328,10 @@ namespace Titan
             else if constexpr (std::is_same_v<T, Physics2DMaterial>)
             {
                 asset = Physics2DMaterial::Create(std::filesystem::relative(path).string());
+            }
+            else if constexpr (std::is_same_v<T, PhysicsMaterial>)
+            {
+                asset = PhysicsMaterial::Create(std::filesystem::relative(path).string());
             }
             else if constexpr (std::is_same_v<T, Mesh>)
             {

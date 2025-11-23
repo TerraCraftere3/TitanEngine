@@ -169,6 +169,35 @@ namespace Titan
         return Rigidbody2DComponent::BodyType::Static;
     }
 
+    static std::string RigidBodyBodyTypeToString(RigidbodyComponent::BodyType bodyType)
+    {
+        switch (bodyType)
+        {
+            case RigidbodyComponent::BodyType::Static:
+                return "Static";
+            case RigidbodyComponent::BodyType::Dynamic:
+                return "Dynamic";
+            case RigidbodyComponent::BodyType::Kinematic:
+                return "Kinematic";
+        }
+
+        TI_CORE_ASSERT(false, "Unknown body type");
+        return {};
+    }
+
+    static RigidbodyComponent::BodyType RigidBodyBodyTypeFromString(const std::string& bodyTypeString)
+    {
+        if (bodyTypeString == "Static")
+            return RigidbodyComponent::BodyType::Static;
+        if (bodyTypeString == "Dynamic")
+            return RigidbodyComponent::BodyType::Dynamic;
+        if (bodyTypeString == "Kinematic")
+            return RigidbodyComponent::BodyType::Kinematic;
+
+        TI_CORE_ASSERT(false, "Unknown body type");
+        return RigidbodyComponent::BodyType::Static;
+    }
+
     static void SerializeEntity(YAML::Emitter& out, Entity entity)
     {
         TI_CORE_ASSERT(entity.HasComponent<IDComponent>());
@@ -343,6 +372,46 @@ namespace Titan
             out << YAML::Key << "Mode" << YAML::Value << Utils::SkyboxModeToString(sc.mode);
 
             out << YAML::EndMap; // SkyboxComponent
+        }
+
+        if (entity.HasComponent<RigidbodyComponent>())
+        {
+            out << YAML::Key << "RigidbodyComponent";
+            out << YAML::BeginMap; // RigidbodyComponent
+
+            auto& rbComponent = entity.GetComponent<RigidbodyComponent>();
+            out << YAML::Key << "BodyType" << YAML::Value << RigidBodyBodyTypeToString(rbComponent.Type);
+            out << YAML::Key << "FixedRotation" << YAML::Value << rbComponent.FixedRotation;
+
+            out << YAML::EndMap; // RigidbodyComponent
+        }
+
+        if (entity.HasComponent<CubeColliderComponent>())
+        {
+            out << YAML::Key << "CubeColliderComponent";
+            out << YAML::BeginMap; // CubeColliderComponent
+
+            auto& ccComponent = entity.GetComponent<CubeColliderComponent>();
+            out << YAML::Key << "Offset" << YAML::Value << ccComponent.Offset;
+            out << YAML::Key << "Size" << YAML::Value << ccComponent.Size;
+            if (ccComponent.Material)
+                out << YAML::Key << "Material" << YAML::Value << ccComponent.Material->SourcePath;
+
+            out << YAML::EndMap; // CubeColliderComponent
+        }
+
+        if (entity.HasComponent<SphereColliderComponent>())
+        {
+            out << YAML::Key << "SphereColliderComponent";
+            out << YAML::BeginMap; // SphereColliderComponent
+
+            auto& scComponent = entity.GetComponent<SphereColliderComponent>();
+            out << YAML::Key << "Offset" << YAML::Value << scComponent.Offset;
+            out << YAML::Key << "Radius" << YAML::Value << scComponent.Radius;
+            if (scComponent.Material)
+                out << YAML::Key << "Material" << YAML::Value << scComponent.Material->SourcePath;
+
+            out << YAML::EndMap; // SphereColliderComponent
         }
 
         if (entity.HasComponent<Rigidbody2DComponent>())
@@ -657,6 +726,36 @@ namespace Titan
                         std::string modeStr = skyboxComponent["Mode"].as<std::string>();
                         sc.mode = Utils::StringToSkyboxMode(modeStr);
                     }
+                }
+
+                auto rigidbodyComponent = entity["RigidbodyComponent"];
+                if (rigidbodyComponent)
+                {
+                    auto& rb = deserializedEntity.AddComponent<RigidbodyComponent>();
+                    rb.Type = RigidBodyBodyTypeFromString(rigidbodyComponent["BodyType"].as<std::string>());
+                    rb.FixedRotation = rigidbodyComponent["FixedRotation"].as<bool>();
+                }
+
+                auto cubeColliderComponent = entity["CubeColliderComponent"];
+                if (cubeColliderComponent)
+                {
+                    auto& cube = deserializedEntity.AddComponent<CubeColliderComponent>();
+                    cube.Offset = cubeColliderComponent["Offset"].as<glm::vec3>();
+                    cube.Size = cubeColliderComponent["Size"].as<glm::vec3>();
+                    if (cubeColliderComponent["Material"])
+                        cube.Material =
+                            Assets::Load<PhysicsMaterial>(cubeColliderComponent["Material"].as<std::string>());
+                }
+
+                auto sphereColliderComponent = entity["SphereColliderComponent"];
+                if (sphereColliderComponent)
+                {
+                    auto& sphere = deserializedEntity.AddComponent<SphereColliderComponent>();
+                    sphere.Offset = sphereColliderComponent["Offset"].as<glm::vec3>();
+                    sphere.Radius = sphereColliderComponent["Radius"].as<float>();
+                    if (sphereColliderComponent["Material"])
+                        sphere.Material =
+                            Assets::Load<PhysicsMaterial>(sphereColliderComponent["Material"].as<std::string>());
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];

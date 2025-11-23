@@ -5,10 +5,7 @@ namespace Titan::Physics2D
 {
     struct PhysicsWorld::Impl
     {
-        Impl(const glm::vec2& gravity)
-        {
-            world = new b2World(b2Vec2(gravity.x, gravity.y));
-        }
+        Impl(const glm::vec2& gravity) { world = new b2World(b2Vec2(gravity.x, gravity.y)); }
 
         ~Impl()
         {
@@ -23,12 +20,12 @@ namespace Titan::Physics2D
     {
         switch (bodyType)
         {
-        case Rigidbody2DComponent::BodyType::Static:
-            return b2_staticBody;
-        case Rigidbody2DComponent::BodyType::Dynamic:
-            return b2_dynamicBody;
-        case Rigidbody2DComponent::BodyType::Kinematic:
-            return b2_kinematicBody;
+            case Rigidbody2DComponent::BodyType::Static:
+                return b2_staticBody;
+            case Rigidbody2DComponent::BodyType::Dynamic:
+                return b2_dynamicBody;
+            case Rigidbody2DComponent::BodyType::Kinematic:
+                return b2_kinematicBody;
         }
 
         TI_CORE_ASSERT(false, "Unknown body type");

@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include "Titan/Physics/Physics2D/Physics2D.h"
+#include "Titan/Physics/Physics3D/Physics3D.h"
+#include "Titan/Physics/Physics3D/PhysicsWorld.h"
 
 namespace Titan
 {
@@ -41,6 +43,25 @@ namespace Titan
     {
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
+
+        if (m_Physics3D)
+        {
+            // Destroy 3D bodies first
+            auto view = m_Registry.view<RigidbodyComponent>();
+            for (auto e : view)
+            {
+                Entity entity{e, this};
+                auto& rb = entity.GetComponent<RigidbodyComponent>();
+                if (rb.RuntimeBody)
+                {
+                    m_Physics3D->DestroyBody(rb.RuntimeBody);
+                    rb.RuntimeBody = nullptr;
+                }
+            }
+
+            delete m_Physics3D;
+            m_Physics3D = nullptr;
+        }
     }
 
     template <typename... Component>
@@ -151,6 +172,7 @@ namespace Titan
         m_IsRunning = true;
 
         OnPhysics2DStart();
+        OnPhysics3DStart();
 
         {
             ScriptEngine::OnRuntimeStart(this);
@@ -170,6 +192,7 @@ namespace Titan
         m_IsRunning = false;
 
         OnPhysics2DStop();
+        OnPhysics3DStop();
 
         ScriptEngine::OnRuntimeStop();
     }
@@ -177,16 +200,17 @@ namespace Titan
     void Scene::OnSimulationStart()
     {
         OnPhysics2DStart();
+        OnPhysics3DStart();
     }
 
     void Scene::OnSimulationStop()
     {
         OnPhysics2DStop();
+        OnPhysics3DStop();
     }
 
     void Scene::OnUpdateRuntime(Timestep ts)
     {
-        // Ensure world transforms are up to date so scripts/physics/use correct values
         UpdateTransforms();
 
         // C# SCRIPTS
@@ -199,11 +223,12 @@ namespace Titan
             }
         }
 
-        // PHYSICS
+        // PHYSICS 2D
         {
             const int32_t velocityIterations = 6;
             const int32_t positionIterations = 2;
-            m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+            if (m_PhysicsWorld)
+                m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
             auto view = GetAllEntitiesWith<Rigidbody2DComponent>();
             for (auto e : view)
@@ -223,6 +248,36 @@ namespace Titan
             }
         }
 
+        // PHYSICS 3D
+        {
+            if (m_Physics3D)
+                m_Physics3D->Step(ts);
+
+            auto view3 = GetAllEntitiesWith<RigidbodyComponent>();
+            for (auto e : view3)
+            {
+                Entity entity = {e, this};
+                auto& transform = entity.GetComponent<TransformComponent>();
+                auto& rb = entity.GetComponent<RigidbodyComponent>();
+
+                void* body = rb.RuntimeBody;
+                if (body)
+                {
+                    glm::vec3 pos(0.0f);
+                    glm::vec3 euler(0.0f);
+                    if (m_Physics3D->GetBodyTransform(body, pos, euler))
+                    {
+                        // Set world transform so renderer/scene use physics pose directly
+                        glm::mat4 rot = glm::toMat4(glm::quat(euler));
+                        glm::mat4 trans = glm::translate(glm::mat4(1.0f), pos);
+                        glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform.Scale);
+                        transform.WorldTransform = trans * rot * scale;
+                        transform.UseWorldTransform = true;
+                    }
+                }
+            }
+        }
+
         UpdateConstraints();
     }
 
@@ -232,14 +287,14 @@ namespace Titan
         RenderCommand::Clear();
         RenderCommand::SetLineWidth(2.0f);
 
-        // Update world transforms before simulation so child transforms are correct
         UpdateTransforms();
 
-        // PHYSICS
+        // PHYSICS 2D
         {
             const int32_t velocityIterations = 6;
             const int32_t positionIterations = 2;
-            m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
+            if (m_PhysicsWorld)
+                m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
 
             auto view = GetAllEntitiesWith<Rigidbody2DComponent>();
             for (auto e : view)
@@ -255,6 +310,35 @@ namespace Titan
                     transform.Translation.x = position.x;
                     transform.Translation.y = position.y;
                     transform.Rotation.z = m_PhysicsWorld->GetBodyAngle(body);
+                }
+            }
+        }
+
+        // PHYSICS 3D
+        {
+            if (m_Physics3D)
+                m_Physics3D->Step(ts);
+
+            auto view3 = GetAllEntitiesWith<RigidbodyComponent>();
+            for (auto e : view3)
+            {
+                Entity entity = {e, this};
+                auto& transform = entity.GetComponent<TransformComponent>();
+                auto& rb = entity.GetComponent<RigidbodyComponent>();
+
+                void* body = rb.RuntimeBody;
+                if (body)
+                {
+                    glm::vec3 pos(0.0f);
+                    glm::vec3 euler(0.0f);
+                    if (m_Physics3D->GetBodyTransform(body, pos, euler))
+                    {
+                        glm::mat4 rot = glm::toMat4(glm::quat(euler));
+                        glm::mat4 trans = glm::translate(glm::mat4(1.0f), pos);
+                        glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform.Scale);
+                        transform.WorldTransform = trans * rot * scale;
+                        transform.UseWorldTransform = true;
+                    }
                 }
             }
         }
@@ -351,6 +435,51 @@ namespace Titan
     {
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
+    }
+
+    void Scene::OnPhysics3DStart()
+    {
+        m_Physics3D = new Physics3D::PhysicsWorld({0.0f, -9.8f, 0.0f});
+
+        auto view = m_Registry.view<RigidbodyComponent>();
+        for (auto e : view)
+        {
+            Entity entity = {e, this};
+            auto& transform = entity.GetComponent<TransformComponent>();
+            auto& rb = entity.GetComponent<RigidbodyComponent>();
+
+            const CubeColliderComponent* cube = nullptr;
+            if (entity.HasComponent<CubeColliderComponent>())
+                cube = &entity.GetComponent<CubeColliderComponent>();
+
+            const SphereColliderComponent* sphere = nullptr;
+            if (entity.HasComponent<SphereColliderComponent>())
+                sphere = &entity.GetComponent<SphereColliderComponent>();
+
+            void* body = m_Physics3D->CreateBody(rb, transform, cube, sphere);
+            rb.RuntimeBody = body;
+        }
+    }
+
+    void Scene::OnPhysics3DStop()
+    {
+        if (m_Physics3D)
+        {
+            auto view = m_Registry.view<RigidbodyComponent>();
+            for (auto e : view)
+            {
+                Entity entity = {e, this};
+                auto& rb = entity.GetComponent<RigidbodyComponent>();
+                if (rb.RuntimeBody)
+                {
+                    m_Physics3D->DestroyBody(rb.RuntimeBody);
+                    rb.RuntimeBody = nullptr;
+                }
+            }
+
+            delete m_Physics3D;
+            m_Physics3D = nullptr;
+        }
     }
 
     void Scene::UpdateConstraints()

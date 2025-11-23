@@ -32,6 +32,9 @@
     #include <Windows.h>
 #endif
 
+// ---- Physics ----
+#include <PxPhysicsAPI.h>
+
 // ---- Logging (spdlog) ----
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -53,7 +56,7 @@
 
 // ---- Internal Engine Includes ----
 #include "Titan/Core.h"
+#include "Titan/Core/Log.h"
 #include "Titan/Debug/Macros.h"
 #include "Titan/Debug/Instrumentor.h"
-#include "Titan/Core/Log.h"
 // clang-format on
