@@ -70,68 +70,94 @@ namespace Titan::Physics3D
         m_Impl->Scene->fetchResults(true);
     }
 
-void* PhysicsWorld::CreateBody(RigidbodyComponent& rb, TransformComponent& transform, const CubeColliderComponent* cube)
-{
-    if (!m_Impl || !m_Impl->Scene)
-        return nullptr;
-
-    PxPhysics* physics = GetPhysics();
-    if (!physics)
-        return nullptr;
-
-    PxTransform pose = ToPxTransform(transform);
-
-    PxRigidActor* actor = nullptr;
-    if (rb.Type == RigidbodyComponent::BodyType::Static)
+    void* PhysicsWorld::CreateBody(RigidbodyComponent& rb, TransformComponent& transform,
+                                   const CubeColliderComponent* cube, const SphereColliderComponent* sphere)
     {
-        actor = physics->createRigidStatic(pose);
-    }
-    else
-    {
-        PxRigidDynamic* dyn = physics->createRigidDynamic(pose);
-        if (rb.FixedRotation)
+        if (!m_Impl || !m_Impl->Scene)
+            return nullptr;
+
+        PxPhysics* physics = GetPhysics();
+        if (!physics)
+            return nullptr;
+
+        PxTransform pose = ToPxTransform(transform);
+
+        PxRigidActor* actor = nullptr;
+        if (rb.Type == RigidbodyComponent::BodyType::Static)
         {
-            PxRigidDynamicLockFlags lockFlags = PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | 
-                                              PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
-                                              PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z;
-            dyn->setRigidDynamicLockFlags(lockFlags);
+            actor = physics->createRigidStatic(pose);
         }
-        actor = dyn;
-    }
-
-    if (!actor)
-        return nullptr;
-
-    if (cube)
-    {
-        glm::vec3 size = cube->Size * transform.Scale;
-        
-        PxBoxGeometry geom(size.x , size.y , size.z );
-
-        float friction = 0.5f;
-        float restitution = 0.1f;
-        if (cube->Material)
+        else
         {
-            friction = cube->Material->Friction;
-            restitution = cube->Material->Restitution;
+            PxRigidDynamic* dyn = physics->createRigidDynamic(pose);
+            if (rb.FixedRotation)
+            {
+                PxRigidDynamicLockFlags lockFlags = PxRigidDynamicLockFlag::eLOCK_ANGULAR_X |
+                                                    PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+                                                    PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z;
+                dyn->setRigidDynamicLockFlags(lockFlags);
+            }
+            actor = dyn;
         }
 
-        PxMaterial* pxMat = physics->createMaterial(friction, friction, restitution);
+        if (!actor)
+            return nullptr;
 
-        PxShape* shape = physics->createShape(geom, *pxMat);
-        if (shape)
+        if (cube)
         {
-            actor->attachShape(*shape);
-            shape->release(); 
+            glm::vec3 size = cube->Size * transform.Scale;
+
+            PxBoxGeometry geom(size.x, size.y, size.z);
+
+            float friction = 0.5f;
+            float restitution = 0.1f;
+            if (cube->Material)
+            {
+                friction = cube->Material->Friction;
+                restitution = cube->Material->Restitution;
+            }
+
+            PxMaterial* pxMat = physics->createMaterial(friction, friction, restitution);
+
+            PxShape* shape = physics->createShape(geom, *pxMat);
+            if (shape)
+            {
+                actor->attachShape(*shape);
+                shape->release();
+            }
+
+            pxMat->release();
         }
-        
-        pxMat->release();
+        if (sphere)
+        {
+            float scaledRadius = sphere->Radius * transform.Scale.x;
+
+            PxSphereGeometry geom(scaledRadius);
+
+            float friction = 0.5f;
+            float restitution = 0.1f;
+            if (sphere->Material)
+            {
+                friction = sphere->Material->Friction;
+                restitution = sphere->Material->Restitution;
+            }
+
+            PxMaterial* pxMat = physics->createMaterial(friction, friction, restitution);
+
+            PxShape* shape = physics->createShape(geom, *pxMat);
+            if (shape)
+            {
+                actor->attachShape(*shape);
+                shape->release();
+            }
+
+            pxMat->release();
+        }
+
+        m_Impl->Scene->addActor(*actor);
+
+        return actor;
     }
-
-    m_Impl->Scene->addActor(*actor);
-
-    return actor;
-}
 
     bool PhysicsWorld::GetBodyTransform(void* actorPtr, glm::vec3& outPosition, glm::vec3& outEulerAngles)
     {

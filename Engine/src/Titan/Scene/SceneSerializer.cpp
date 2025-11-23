@@ -400,6 +400,20 @@ namespace Titan
             out << YAML::EndMap; // CubeColliderComponent
         }
 
+        if (entity.HasComponent<SphereColliderComponent>())
+        {
+            out << YAML::Key << "SphereColliderComponent";
+            out << YAML::BeginMap; // SphereColliderComponent
+
+            auto& scComponent = entity.GetComponent<SphereColliderComponent>();
+            out << YAML::Key << "Offset" << YAML::Value << scComponent.Offset;
+            out << YAML::Key << "Radius" << YAML::Value << scComponent.Radius;
+            if (scComponent.Material)
+                out << YAML::Key << "Material" << YAML::Value << scComponent.Material->SourcePath;
+
+            out << YAML::EndMap; // SphereColliderComponent
+        }
+
         if (entity.HasComponent<Rigidbody2DComponent>())
         {
             out << YAML::Key << "Rigidbody2DComponent";
@@ -731,6 +745,17 @@ namespace Titan
                     if (cubeColliderComponent["Material"])
                         cube.Material =
                             Assets::Load<PhysicsMaterial>(cubeColliderComponent["Material"].as<std::string>());
+                }
+
+                auto sphereColliderComponent = entity["SphereColliderComponent"];
+                if (sphereColliderComponent)
+                {
+                    auto& sphere = deserializedEntity.AddComponent<SphereColliderComponent>();
+                    sphere.Offset = sphereColliderComponent["Offset"].as<glm::vec3>();
+                    sphere.Radius = sphereColliderComponent["Radius"].as<float>();
+                    if (sphereColliderComponent["Material"])
+                        sphere.Material =
+                            Assets::Load<PhysicsMaterial>(sphereColliderComponent["Material"].as<std::string>());
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];

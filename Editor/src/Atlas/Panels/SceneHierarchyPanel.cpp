@@ -155,6 +155,9 @@ namespace Titan
                 ImGui::SeparatorText("Physics");
                 DrawAddComponent<RigidbodyComponent>(m_SelectionContext, "Rigidbody");
                 DrawAddComponent<CubeColliderComponent>(m_SelectionContext, "Cube Collider");
+                DrawAddComponent<SphereColliderComponent>(m_SelectionContext, "Sphere Collider");
+
+                ImGui::SeparatorText("2D Physics");
                 DrawAddComponent<Rigidbody2DComponent>(m_SelectionContext, "Rigidbody 2D");
                 DrawAddComponent<BoxCollider2DComponent>(m_SelectionContext, "Box Collider 2D");
                 DrawAddComponent<CircleCollider2DComponent>(m_SelectionContext, "Circle Collider 2D");
@@ -573,6 +576,27 @@ namespace Titan
             {
                 ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
                 ImGui::DragFloat3("Size", glm::value_ptr(component.Size));
+                float buttonWidth = ImGui::GetContentRegionAvail().x;
+                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                              ImVec2(buttonWidth, 0.0f));
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        component.Material = Assets::Load<PhysicsMaterial>(materialPath.string());
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            });
+
+        DrawComponent<SphereColliderComponent>(
+            "Sphere Collider", entity,
+            [](auto& component)
+            {
+                ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+                ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
                               ImVec2(buttonWidth, 0.0f));

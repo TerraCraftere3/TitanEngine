@@ -16,7 +16,8 @@ namespace Titan::Physics3D
         void Step(Timestep ts);
 
         // Returns a pointer to the created Px actor (user should treat as opaque void*)
-        void* CreateBody(RigidbodyComponent& rb, TransformComponent& transform, const CubeColliderComponent* cube = nullptr);
+        void* CreateBody(RigidbodyComponent& rb, TransformComponent& transform,
+                         const CubeColliderComponent* cube = nullptr, const SphereColliderComponent* sphere = nullptr);
         void DestroyBody(void* actor);
 
         // Read back actor/global pose. Returns true if successful.

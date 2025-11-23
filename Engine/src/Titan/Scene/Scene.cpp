@@ -452,7 +452,11 @@ namespace Titan
             if (entity.HasComponent<CubeColliderComponent>())
                 cube = &entity.GetComponent<CubeColliderComponent>();
 
-            void* body = m_Physics3D->CreateBody(rb, transform, cube);
+            const SphereColliderComponent* sphere = nullptr;
+            if (entity.HasComponent<SphereColliderComponent>())
+                sphere = &entity.GetComponent<SphereColliderComponent>();
+
+            void* body = m_Physics3D->CreateBody(rb, transform, cube, sphere);
             rb.RuntimeBody = body;
         }
     }
