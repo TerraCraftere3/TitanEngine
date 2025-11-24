@@ -7,7 +7,7 @@ namespace Titan
     class AtlasApp : public Titan::Application
     {
     public:
-        AtlasApp() : Application("Atlas Editor")
+        AtlasApp(const ApplicationSpecification& spec) : Application(spec)
         {
             PushLayer(new EditorLayer());
             Application::GetInstance()->GetWindow().Maximize();
@@ -16,7 +16,11 @@ namespace Titan
     };
 } // namespace Titan
 
-Titan::Application* Titan::CreateApplication()
+Titan::Application* Titan::CreateApplication(ApplicationCommandLineArgs args)
 {
-    return new Titan::AtlasApp();
+    ApplicationSpecification spec;
+    spec.Name = "Atlas Editor";
+    spec.CommandLineArgs = args;
+
+    return new Titan::AtlasApp(spec);
 }

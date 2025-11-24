@@ -10,13 +10,33 @@
 
 namespace Titan
 {
+
+    struct ApplicationCommandLineArgs
+    {
+        int Count = 0;
+        char** Args = nullptr;
+
+        const char* operator[](int index) const
+        {
+            TI_CORE_ASSERT(index < Count);
+            return Args[index];
+        }
+    };
+
+    struct ApplicationSpecification
+    {
+        std::string Name = "Titan Application";
+        std::string WorkingDirectory;
+        ApplicationCommandLineArgs CommandLineArgs;
+    };
+
     /// @brief The Application that manages Render Context, Window, Scenes, etc.
     class TI_API Application
     {
     public:
         /// @brief Creates the Application (which manages window, etc)
         /// @param name The Window Title
-        Application(const std::string& name = "Titan App");
+        Application(const ApplicationSpecification& specification);
         /// @brief Destructs the Application
         virtual ~Application();
 
@@ -47,6 +67,10 @@ namespace Titan
         /// @return the instance
         inline static Application* GetInstance() { return s_Instance; };
 
+        /// @brief Gets the application specification
+        /// @return the specification
+        inline const ApplicationSpecification& GetSpecification() const { return m_Specification; }
+
     private:
         bool OnWindowClosed(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
@@ -55,6 +79,7 @@ namespace Titan
 
     private:
         static Application* s_Instance;
+        ApplicationSpecification m_Specification;
         Scope<Window> m_Window;
         bool m_Running = true;
         bool m_Minimized = false;
@@ -68,6 +93,6 @@ namespace Titan
     void TI_API DeleteApplication(Application* app);
 
     // Declared by Client
-    Application* CreateApplication();
+    Application* CreateApplication(ApplicationCommandLineArgs args);
 
 } // namespace Titan

@@ -8,7 +8,6 @@ namespace Titan
     class TI_API FileDialogs
     {
     public:
-        // These return empty strings if cancelled
         static std::string OpenFile(const char* filter);
         static std::string SaveFile(const char* filter);
     };
@@ -17,6 +16,14 @@ namespace Titan
     {
     public:
         static bool isRenderdocAttached();
+    };
+
+    class TI_API Filesystem
+    {
+    public:
+        static std::string GetAppDataDirectory();
+        static std::string GetExecutablePath();
+        static std::string GetExecutableDirectory();
     };
 
 } // namespace Titan
