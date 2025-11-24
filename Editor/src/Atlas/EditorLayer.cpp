@@ -25,6 +25,9 @@ namespace Titan
         // Setup
         Application::GetInstance()->GetWindow().SetVSync(false);
 
+        std::filesystem::path configPath = std::filesystem::path(Filesystem::GetAppDataDirectory()) / "Config.yml";
+        LoadEditorProperties(m_EditorProperties, configPath);
+
         m_ActiveScene = Assets::Load<Scene>("assets/scenes/Helmet.titan");
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
@@ -39,6 +42,9 @@ namespace Titan
 
     void EditorLayer::OnDetach()
     {
+        std::filesystem::path configPath = std::filesystem::path(Filesystem::GetAppDataDirectory()) / "Config.yml";
+        SaveEditorProperties(m_EditorProperties, configPath);
+
         if (m_SceneState == SceneState::Play)
             m_ActiveScene->OnRuntimeStop();
         else if (m_SceneState == SceneState::Simulate)
