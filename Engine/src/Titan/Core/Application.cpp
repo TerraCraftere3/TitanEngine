@@ -23,7 +23,7 @@ namespace Titan
         TI_CORE_ASSERT(!s_Instance, "Application already exists! There can only be one");
         s_Instance = this;
 
-        m_Window = Scope<Window>(Window::Create(WindowProps(specification.Name)));
+        m_Window = Scope<Window>(Window::Create(specification.WindowProperties));
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();

@@ -26,7 +26,7 @@ namespace Titan
     struct ApplicationSpecification
     {
         std::string Name = "Titan Application";
-        std::string WorkingDirectory;
+        WindowProps WindowProperties;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
