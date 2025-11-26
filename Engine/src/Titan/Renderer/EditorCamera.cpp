@@ -23,7 +23,19 @@ namespace Titan
     void EditorCamera::UpdateProjection()
     {
         m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
-        m_Projection = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
+
+        if (m_IsOrthographic)
+        {
+            float orthoLeft = -m_OrthoSize * m_AspectRatio * 0.5f;
+            float orthoRight = m_OrthoSize * m_AspectRatio * 0.5f;
+            float orthoBottom = -m_OrthoSize * 0.5f;
+            float orthoTop = m_OrthoSize * 0.5f;
+            m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_NearClip, m_FarClip);
+        }
+        else
+        {
+            m_Projection = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
+        }
     }
 
     void EditorCamera::UpdateView()
@@ -77,6 +89,38 @@ namespace Titan
 
         const float speed = 5.0f;
         const float moveSpeed = speed * ts;
+
+        // Numpad camera controls (edge-detected)
+        bool kp8Pressed = Input::IsKeyPressed(Key::KP8);
+        bool kp2Pressed = Input::IsKeyPressed(Key::KP2);
+        bool kp4Pressed = Input::IsKeyPressed(Key::KP4);
+        bool kp6Pressed = Input::IsKeyPressed(Key::KP6);
+
+        if (kp8Pressed && !m_NumpadKeysPrevPressed[0])
+        {
+            // Top view: looking down (-90 pitch, 0 yaw)
+            SnapToOrthographicView(-90.0f, 0.0f);
+        }
+        else if (kp2Pressed && !m_NumpadKeysPrevPressed[1])
+        {
+            // Bottom view: looking up (90 pitch, 0 yaw)
+            SnapToOrthographicView(90.0f, 0.0f);
+        }
+        else if (kp4Pressed && !m_NumpadKeysPrevPressed[2])
+        {
+            // Left view: looking right (0 pitch, 90 yaw)
+            SnapToOrthographicView(0.0f, 90.0f);
+        }
+        else if (kp6Pressed && !m_NumpadKeysPrevPressed[3])
+        {
+            // Right view: looking left (0 pitch, -90 yaw)
+            SnapToOrthographicView(0.0f, -90.0f);
+        }
+
+        m_NumpadKeysPrevPressed[0] = kp8Pressed;
+        m_NumpadKeysPrevPressed[1] = kp2Pressed;
+        m_NumpadKeysPrevPressed[2] = kp4Pressed;
+        m_NumpadKeysPrevPressed[3] = kp6Pressed;
 
         // FPV Toggle: press F to toggle First-Person View mode (edge-detected)
         bool fPressed = Input::IsKeyPressed(Key::F);
@@ -167,7 +211,15 @@ namespace Titan
             if (Input::IsMouseButtonPressed(Mouse::ButtonRight))
                 MousePan(delta);
             else if (Input::IsMouseButtonPressed(Mouse::ButtonLeft))
+            {
+                // Switch back to perspective when manually rotating
+                if (m_IsOrthographic)
+                {
+                    m_IsOrthographic = false;
+                    UpdateProjection();
+                }
                 MouseRotate(delta);
+            }
             else if (Input::IsMouseButtonPressed(Mouse::ButtonMiddle))
                 MouseZoom(delta.y);
         }
@@ -239,6 +291,15 @@ namespace Titan
     glm::quat EditorCamera::GetOrientation() const
     {
         return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
+    }
+
+    void EditorCamera::SnapToOrthographicView(float pitch, float yaw)
+    {
+        m_IsOrthographic = true;
+        m_Pitch = glm::radians(pitch);
+        m_Yaw = glm::radians(yaw);
+        UpdateProjection();
+        UpdateView();
     }
 
 } // namespace Titan

@@ -40,6 +40,7 @@ struct VertexInput
 struct VertexOutput
 {
     float4 position : SV_Position;
+    float3 worldPosition : TEXCOORD5;
     float3 normal : COLOR;
     float3 tangent : TEXCOORD1;
     float3 bitangent : TEXCOORD2;
@@ -109,6 +110,7 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 
     float4 worldPos = mul(instance.Transform, float4(input.a_Position, 1.0));
     output.position = mul(u_ViewProjection, worldPos);
+    output.worldPosition = worldPos.xyz;
 
     output.normal = normalize(mul((float3x3)instance.NormalMatrix, normal));
     output.tangent = normalize(mul((float3x3)instance.Transform, tangent));
@@ -137,7 +139,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     float4 emission = float4(GET_EMISSION(mat, uv), 1.0);
 
     // Output raw values
-    output.position = input.position;
+    output.position = float4(input.worldPosition, 1.0);
     output.normal = float4(GET_NORMAL(mat, input), 1.0f);
     output.albedo = albedoColor;
     output.metallic_roughness_ao_ = float4(metallic, roughness, ao, 1.0f);

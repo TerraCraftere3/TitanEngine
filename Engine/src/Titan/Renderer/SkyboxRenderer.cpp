@@ -30,24 +30,27 @@ namespace Titan
 
     static SkyboxRendererData s_SBData;
 
+#define CUBE_MAX 20.0f
+
     // Cube vertices
-    static float s_CubeVertices[] = {-1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
-                                     1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
+    static float s_CubeVertices[] = {
+        -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX,
+        CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX,
 
-                                     -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
-                                     -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
+        -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX,
+        -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,
 
-                                     1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
-                                     1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
+        CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,
+        CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX,
 
-                                     -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
-                                     1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+        -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,
+        CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, CUBE_MAX,
 
-                                     -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
-                                     1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
+        -CUBE_MAX, CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  CUBE_MAX,
+        CUBE_MAX,  CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX,  -CUBE_MAX,
 
-                                     -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
-                                     1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
+        -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, -CUBE_MAX,
+        CUBE_MAX,  -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, -CUBE_MAX, CUBE_MAX,  CUBE_MAX,  -CUBE_MAX, CUBE_MAX};
 
     void SkyboxRenderer::Init()
     {

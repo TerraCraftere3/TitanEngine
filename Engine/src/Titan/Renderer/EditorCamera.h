@@ -44,6 +44,8 @@ namespace Titan
 
         void SetBlockEvents(bool value) { m_BlockEvents = value; }
 
+        void SnapToOrthographicView(float pitch, float yaw);
+
     private:
         void UpdateProjection();
         void UpdateView();
@@ -82,6 +84,10 @@ namespace Titan
         bool m_FpvEnabled = false;
         bool m_FKeyPrevPressed = false;
         bool m_RmbPrevPressed = false;
+
+        bool m_IsOrthographic = false;
+        float m_OrthoSize = 10.0f;
+        bool m_NumpadKeysPrevPressed[4] = {false, false, false, false}; // Track KP2, KP4, KP6, KP8
 
         friend class EditorLayer;
     };
