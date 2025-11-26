@@ -1,0 +1,8 @@
+ID: 6284003655459156728
+Type: 1
+Source: assets\textures\F1 Car\Tyre_metallicRoughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

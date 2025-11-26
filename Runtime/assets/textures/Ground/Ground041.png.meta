@@ -1,0 +1,8 @@
+ID: 2160875439945662620
+Type: 1
+Source: assets\textures\Ground\Ground041.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

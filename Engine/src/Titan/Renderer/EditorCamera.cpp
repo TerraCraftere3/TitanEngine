@@ -47,10 +47,10 @@ namespace Titan
 
     std::pair<float, float> EditorCamera::PanSpeed() const
     {
-        float x = min(m_ViewportWidth / 1000.0f, 2.4f); // max = 2.4f
+        float x = std::min(m_ViewportWidth / 1000.0f, 2.4f); // max = 2.4f
         float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
-        float y = min(m_ViewportHeight / 1000.0f, 2.4f); // max = 2.4f
+        float y = std::min(m_ViewportHeight / 1000.0f, 2.4f); // max = 2.4f
         float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
         return {xFactor, yFactor};
@@ -64,9 +64,9 @@ namespace Titan
     float EditorCamera::ZoomSpeed() const
     {
         float distance = m_Distance * 0.2f;
-        distance = max(distance, 0.0f);
+        distance = std::max(distance, 0.0f);
         float speed = distance * distance;
-        speed = min(speed, 100.0f); // max speed = 100
+        speed = std::min(speed, 100.0f); // max speed = 100
         return speed;
     }
 

@@ -4,15 +4,7 @@ namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
 
-    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath), m_Selected("")
-    {
-        m_DirectoryIcon = Assets::Load<Texture2D>("resources/icons/folder.svg");
-        m_DirectoryOpenIcon = Assets::Load<Texture2D>("resources/icons/folder-opened.svg");
-        m_FileTextIcon = Assets::Load<Texture2D>("resources/icons/file.svg");
-        m_FileCodeIcon = Assets::Load<Texture2D>("resources/icons/file-code.svg");
-        m_FileImageIcon = Assets::Load<Texture2D>("resources/icons/file-media.svg");
-        m_FileMaterialIcon = Assets::Load<Texture2D>("resources/icons/file-material.svg");
-    }
+    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath), m_Selected("") {}
 
     void ContentBrowserPanel::OnImGuiRender(bool* openBrowser, bool* openFile)
     {
@@ -84,7 +76,7 @@ namespace Titan
                 auto relativePath = std::filesystem::relative(path, g_AssetPath);
                 std::string filenameString = relativePath.filename().string();
 
-                Ref<Texture2D> icon = GetIconForFile(path);
+                Ref<Texture2D> icon = Assets::GetThumbnailForFile(path);
 
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
                 ImGui::BeginGroup();
@@ -94,7 +86,7 @@ namespace Titan
                                        {0, 1}, {1, 0}))
                 {
                     m_Selected = path;
-                    m_SelectedType = GetTypeForFile(path);
+                    m_SelectedType = Assets::GetTypeForFile(path);
                     m_SelectedMeta = Assets::LoadMeta(path);
                 }
 
@@ -246,58 +238,6 @@ namespace Titan
             }
         }
         ImGui::End();
-    }
-
-    Ref<Texture2D> ContentBrowserPanel::GetIconForFile(const std::filesystem::path& filePath)
-    {
-        if (std::filesystem::is_directory(filePath))
-        {
-            if (!std::filesystem::is_empty(filePath))
-                return m_DirectoryOpenIcon;
-            else
-                return m_DirectoryIcon;
-        }
-
-        std::string ext = filePath.extension().string();
-        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga")
-            return m_FileImageIcon;
-
-        if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
-            ext == ".hlsl" || ext == ".slang")
-            return m_FileCodeIcon;
-
-        if (ext == ".cs")
-            return m_FileCodeIcon;
-
-        if (ext == ".phys2d" || ext == ".phys")
-            return m_FileMaterialIcon;
-
-        return m_FileTextIcon;
-    }
-
-    AssetType ContentBrowserPanel::GetTypeForFile(const std::filesystem::path& filePath)
-    {
-        if (std::filesystem::is_directory(filePath))
-        {
-            return AssetType::None;
-        }
-
-        std::string ext = filePath.extension().string();
-        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-        if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga")
-            return AssetType::Texture2D;
-
-        if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
-            ext == ".hlsl")
-            return AssetType::Shader;
-
-        if (ext == ".titan")
-            return AssetType::Scene;
-
-        return AssetType::None;
     }
 
 } // namespace Titan

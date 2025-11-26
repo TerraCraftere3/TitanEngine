@@ -5,6 +5,7 @@
 #include "Titan/PCH.h"
 #include "Titan/Physics/Physics3D/Physics3D.h"
 #include "Titan/Renderer/Renderer.h"
+#include "Titan/Scene/Assets.h"
 #include "Titan/Scripting/ScriptEngine.h"
 // clang-format off
 #ifdef APIENTRY
@@ -26,6 +27,7 @@ namespace Titan
         m_Window = Scope<Window>(Window::Create(specification.WindowProperties));
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
 
+        Assets::Init();
         Renderer::Init();
         ScriptEngine::Init();
         Physics3D::Init();
@@ -39,6 +41,7 @@ namespace Titan
         ScriptEngine::Shutdown();
         Renderer::Shutdown();
         Physics3D::Shutdown();
+        Assets::Shutdown();
     }
 
     void Application::Close()

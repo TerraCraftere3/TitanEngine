@@ -17,8 +17,6 @@ namespace Titan
     private:
         void RenderBrowser(bool* openBrowser = nullptr);
         void RenderProperties(bool* openFile = nullptr);
-        Ref<Texture2D> GetIconForFile(const std::filesystem::path& filePath);
-        AssetType GetTypeForFile(const std::filesystem::path& filePath);
 
     private:
         std::filesystem::path m_CurrentDirectory;
@@ -27,14 +25,6 @@ namespace Titan
         AssetMeta m_SelectedMeta;
         std::vector<char> m_SelectedBuf = std::vector<char>(1024);
         std::string m_LastSelectedStr;
-
-        // Icons
-        Ref<Texture2D> m_DirectoryIcon;
-        Ref<Texture2D> m_DirectoryOpenIcon;
-        Ref<Texture2D> m_FileTextIcon;
-        Ref<Texture2D> m_FileCodeIcon;
-        Ref<Texture2D> m_FileImageIcon;
-        Ref<Texture2D> m_FileMaterialIcon;
     };
 
 } // namespace Titan

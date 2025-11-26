@@ -1,0 +1,8 @@
+ID: 10152019344780612497
+Type: 1
+Source: assets\textures\Ground\Ground041_2K-PNG_AmbientOcclusion.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

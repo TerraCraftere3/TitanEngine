@@ -1,0 +1,8 @@
+ID: 17935969751694744940
+Type: 1
+Source: assets\textures\Sponza\background.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

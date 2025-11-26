@@ -1,0 +1,8 @@
+ID: 14151890496518561040
+Type: 1
+Source: assets\textures\Ground\Ground041_2K-PNG_Displacement.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

@@ -1,0 +1,8 @@
+ID: 779989586759427453
+Type: 1
+Source: assets\textures\Worn Shiny Metal\worn-shiny-metal-Metallic.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

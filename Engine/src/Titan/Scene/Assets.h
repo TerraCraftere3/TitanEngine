@@ -106,6 +106,10 @@ namespace Titan
 
     namespace Assets
     {
+
+        void Init();
+        void Shutdown();
+
         template <class T>
         struct always_false : std::false_type
         {
@@ -396,6 +400,9 @@ namespace Titan
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::Reload<T>");
             }
         }
+
+        Ref<Texture2D> GetThumbnailForFile(const std::filesystem::path& filePath);
+        AssetType GetTypeForFile(const std::filesystem::path& filePath);
 
     } // namespace Assets
 

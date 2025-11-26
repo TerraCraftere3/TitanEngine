@@ -264,16 +264,16 @@ namespace Titan
             for (const auto& input : pass->GetInputs())
             {
                 auto& lifetime = m_ResourceLifetimes[input];
-                lifetime.FirstUse = min(lifetime.FirstUse, i);
-                lifetime.LastUse = max(lifetime.LastUse, i);
+                lifetime.FirstUse = std::min(lifetime.FirstUse, i);
+                lifetime.LastUse = std::max(lifetime.LastUse, i);
             }
 
             // Update lifetimes for outputs
             for (const auto& output : pass->GetOutputs())
             {
                 auto& lifetime = m_ResourceLifetimes[output];
-                lifetime.FirstUse = min(lifetime.FirstUse, i);
-                lifetime.LastUse = max(lifetime.LastUse, i);
+                lifetime.FirstUse = std::min(lifetime.FirstUse, i);
+                lifetime.LastUse = std::max(lifetime.LastUse, i);
             }
         }
 

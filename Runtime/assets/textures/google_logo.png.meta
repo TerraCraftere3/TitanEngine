@@ -1,0 +1,8 @@
+ID: 18151729269441757104
+Type: 1
+Source: assets\textures\google_logo.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

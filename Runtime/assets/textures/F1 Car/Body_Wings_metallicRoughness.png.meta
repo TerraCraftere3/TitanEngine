@@ -1,0 +1,8 @@
+ID: 13263642909055435305
+Type: 1
+Source: assets\textures\F1 Car\Body_Wings_metallicRoughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

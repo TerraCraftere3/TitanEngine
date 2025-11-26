@@ -1,0 +1,8 @@
+ID: 10111963572650979902
+Type: 1
+Source: assets\textures\F1 Car\Body_Wings_baseColor.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

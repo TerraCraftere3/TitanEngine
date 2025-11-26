@@ -1,0 +1,8 @@
+ID: 9803542503099981561
+Type: 1
+Source: assets\textures\F1 Car\Details_metallicRoughness.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

@@ -1,0 +1,8 @@
+ID: 16690492608152024008
+Type: 1
+Source: assets\textures\Sponza\sponza_thorn_diff.tga
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

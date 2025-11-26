@@ -1,0 +1,8 @@
+ID: 5540106595469113162
+Type: 1
+Source: assets\textures\F1 Car\Body_Wings_normal.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

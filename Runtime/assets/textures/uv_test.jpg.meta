@@ -1,0 +1,8 @@
+ID: 7164324678491086686
+Type: 1
+Source: assets\textures\uv_test.jpg
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear
