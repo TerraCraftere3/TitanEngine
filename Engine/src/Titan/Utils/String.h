@@ -8,6 +8,10 @@
 
 namespace Titan
 {
+    /// @brief Formats a number with thousands separators according to the user's locale
+    /// @tparam T  The numeric type of the value
+    /// @param value the numeric value to format
+    /// @return the formatted string
     template <typename T>
     std::string FormatNumber(T value)
     {
@@ -35,5 +39,18 @@ namespace Titan
             result.begin(), result.end(),
             [](char c) { return !std::isalnum(static_cast<unsigned char>(c)) && c != '-' && c != '_'; }, '_');
         return result;
+    }
+
+    /// @brief Truncates a string to a maximum length, adding ellipsis if truncated
+    /// @param input the input string
+    /// @param maxLen the length limit
+    /// @return the truncated string
+    inline std::string TruncateString(const std::string& input, std::size_t maxLen)
+    {
+        const std::string ellipsis = "...";
+        if (input.size() <= maxLen || maxLen <= ellipsis.size())
+            return input;
+
+        return input.substr(0, maxLen - ellipsis.size()) + ellipsis;
     }
 } // namespace Titan

@@ -1,5 +1,6 @@
 #include "ContentBrowserPanel.h"
 #include "Titan/Renderer/GeometryRenderer.h"
+#include "Titan/Utils/String.h"
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
@@ -75,45 +76,102 @@ namespace Titan
 
                 auto relativePath = std::filesystem::relative(path, g_AssetPath);
                 std::string filenameString = relativePath.filename().string();
+                std::string filename = TruncateString(filenameString, 20);
 
                 Ref<Texture2D> icon = Assets::GetThumbnailForFile(path);
 
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-                ImGui::BeginGroup();
+                // --- Card layout ---
+                float cardWidth = thumbnailSize + 20.0f;
+                float cardHeight = thumbnailSize + 76.0f;
 
-                // --- Image ---
-                if (ImGui::ImageButton(filenameString.c_str(), icon->GetNativeTexture(), {thumbnailSize, thumbnailSize},
-                                       {0, 1}, {1, 0}))
-                {
-                    m_Selected = path;
-                    m_SelectedType = Assets::GetTypeForFile(path);
-                    m_SelectedMeta = Assets::LoadMeta(path);
-                }
+                // Darkened background
+                ImVec4 bg = ImGui::GetStyleColorVec4(ImGuiCol_WindowBg);
+                float factor = 0.85f;
+                bg.x *= factor;
+                bg.y *= factor;
+                bg.z *= factor;
 
-                if (ImGui::BeginDragDropSource())
+                ImGui::PushID(filenameString.c_str());
+                ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 6.0f);
+                ImGui::PushStyleColor(ImGuiCol_ChildBg, bg);
+
+                // Begin card
+                bool opened = ImGui::BeginChild("Card", {cardWidth, cardHeight}, false,
+                                                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+                // --- card rect for hover outline ---
+                ImVec2 cardMin = ImGui::GetItemRectMin();
+                ImVec2 cardMax = ImGui::GetItemRectMax();
+                bool hovered = ImGui::IsItemHovered();
+
+                if (opened)
                 {
-                    const wchar_t* itemPath = relativePath.c_str();
-                    ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath,
-                                              (wcslen(itemPath) + 1) * sizeof(wchar_t));
-                    ImGui::EndDragDropSource();
+                    ImGui::BeginGroup();
+                    {
+                        // --- Thumbnail ---
+                        float centerThumbX = (cardWidth - thumbnailSize) * 0.5f;
+                        ImGui::SetCursorPosX(centerThumbX);
+
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+
+                        ImVec2 imagePos = ImGui::GetCursorScreenPos();
+                        ImGui::Image(icon->GetNativeTexture(), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+
+                        ImGui::SetCursorScreenPos(imagePos);
+                        ImGui::InvisibleButton("##thumbnail", {thumbnailSize, thumbnailSize});
+
+                        // Click
+                        if (ImGui::IsItemClicked())
+                        {
+                            m_Selected = path;
+                            m_SelectedType = Assets::GetTypeForFile(path);
+                            m_SelectedMeta = Assets::LoadMeta(path);
+                        }
+
+                        // Double-click open
+                        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                        {
+                            if (directoryEntry.is_directory())
+                                m_CurrentDirectory /= path.filename();
+                        }
+
+                        // Drag-drop
+                        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                        {
+                            const wchar_t* itemPath = relativePath.c_str();
+                            ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath,
+                                                      (wcslen(itemPath) + 1) * sizeof(wchar_t));
+
+                            ImGui::TextUnformatted(filename.c_str());
+                            ImGui::EndDragDropSource();
+                        }
+
+                        // --- Filename ---
+                        ImGui::Spacing();
+                        float nameWidth = ImGui::CalcTextSize(filename.c_str()).x;
+                        ImGui::SetCursorPosX((cardWidth - nameWidth) * 0.5f);
+                        ImGui::TextWrapped("%s", filename.c_str());
+
+                        // Add vertical spacing to avoid overlap
+                        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+
+                        // --- Asset Type ---
+                        std::string typeStr = Assets::AssetTypeToString(Assets::GetTypeForFile(path));
+                        if (typeStr.empty())
+                            typeStr = "Unknown";
+
+                        float typeWidth = ImGui::CalcTextSize(typeStr.c_str()).x;
+                        ImGui::SetCursorPosX((cardWidth - typeWidth) * 0.5f);
+                        ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "%s", typeStr.c_str());
+                    }
+                    ImGui::EndGroup();
                 }
+                ImGui::EndChild();
+
                 ImGui::PopStyleColor();
+                ImGui::PopStyleVar();
+                ImGui::PopID();
 
-                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                {
-                    if (directoryEntry.is_directory())
-                        m_CurrentDirectory /= path.filename();
-                }
-
-                // --- Centered Text ---
-                float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
-                float textOffset = (thumbnailSize - textWidth) * 0.5f;
-                if (textOffset > 0.0f)
-                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffset);
-
-                ImGui::TextWrapped("%s", filenameString.c_str());
-
-                ImGui::EndGroup();
                 ImGui::NextColumn();
             }
         }
