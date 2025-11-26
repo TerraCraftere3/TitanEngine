@@ -427,9 +427,42 @@ namespace Titan
         DrawComponent<PostFXComponent>("Post Processing", entity,
                                        [](auto& component)
                                        {
-                                           if (ImGui::TreeNodeEx("FXAA", ImGuiTreeNodeFlags_Framed))
+                                           // FXAA Section
+                                           if (ImGui::TreeNodeEx("FXAA"))
                                            {
-                                               ImGui::Checkbox("Is Enabled?", &component.FXAASettings.isEnabled);
+                                               ImGui::Checkbox("Enabled", &component.FXAASettings.isEnabled);
+                                               ImGui::TreePop();
+                                           }
+
+                                           // Tonemapping Section
+                                           if (ImGui::TreeNodeEx("Tonemapping"))
+                                           {
+                                               ImGui::Checkbox("Enabled", &component.TonemappingSettings.isEnabled);
+                                               // Operator combo
+                                               const char* current =
+                                                   TonemappingOperatorToString(component.TonemappingSettings.Operator);
+                                               if (ImGui::BeginCombo("Operator", current))
+                                               {
+                                                   for (int i = 0; i < (int)TonemappingOperator::_COUNT; i++)
+                                                   {
+                                                       TonemappingOperator op = (TonemappingOperator)i;
+                                                       const bool selected =
+                                                           (component.TonemappingSettings.Operator == op);
+                                                       if (ImGui::Selectable(TonemappingOperatorToString(op), selected))
+                                                           component.TonemappingSettings.Operator = op;
+                                                       if (selected)
+                                                           ImGui::SetItemDefaultFocus();
+                                                   }
+                                                   ImGui::EndCombo();
+                                               }
+
+                                               ImGui::DragFloat("Exposure", &component.TonemappingSettings.Exposure,
+                                                                0.01f, 0.0f, 10.0f);
+                                               ImGui::DragFloat("Gamma", &component.TonemappingSettings.Gamma, 0.01f,
+                                                                0.1f, 5.0f);
+                                               ImGui::DragFloat("White Point",
+                                                                &component.TonemappingSettings.WhitePoint, 0.1f, 0.0f,
+                                                                50.0f);
                                                ImGui::TreePop();
                                            }
                                        });

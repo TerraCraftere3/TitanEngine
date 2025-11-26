@@ -1,0 +1,25 @@
+#pragma once
+
+#include "Titan/PCH.h"
+#include "Titan/Renderer/PostProcessing.h" // For PostFX base
+#include "TonemappingTypes.h" // TonemappingOperator enum
+
+namespace Titan
+{
+    // TonemappingOperator enum + helper now defined in TonemappingTypes.h
+
+    class TonemappingEffect : public PostFX
+    {
+    public:
+        TonemappingEffect() : PostFX("Tonemapping"){};
+
+        virtual void OnAttach() override;
+        virtual void OnDetach() override;
+        void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene,
+                     PostFXComponent fxc) override;
+
+    private:
+        Ref<Shader> m_Shader;
+        Ref<UniformBuffer> m_UniformBuffer;
+    };
+} // namespace Titan

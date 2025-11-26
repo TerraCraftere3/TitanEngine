@@ -1,6 +1,7 @@
 #include "SceneRenderer.h"
 #include "PostProcessing.h"
 #include "PostProcessing/FXAA.h"
+#include "PostProcessing/Tonemapping.h"
 #include "RenderGraph.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/PBRRenderer.h"
@@ -41,7 +42,7 @@ namespace Titan
 
         // Create final output framebuffer
         FramebufferSpecification fbSpec;
-        fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,
+        fbSpec.Attachments = {FramebufferTextureFormat::RGB16F, FramebufferTextureFormat::RED_INTEGER,
                               FramebufferTextureFormat::Depth};
         fbSpec.Width = s_SRData->viewWidth;
         fbSpec.Height = s_SRData->viewHeight;
@@ -49,6 +50,7 @@ namespace Titan
         s_SRData->finalFramebuffer = Framebuffer::Create(fbSpec);
 
         s_SRData->postFXs = CreateRef<PostProcessingStack>();
+        s_SRData->postFXs->AddEffect(CreateRef<TonemappingEffect>());
         s_SRData->postFXs->AddEffect(CreateRef<FXAAEffect>());
 
         SetupRenderGraph();
@@ -63,7 +65,7 @@ namespace Titan
         builder
             .CreateFramebuffer("SceneFramebuffer",
                                {
-                                   FramebufferTextureFormat::RGBA8,       // SceneColor
+                                   FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // SceneDepth
                                },
@@ -81,7 +83,7 @@ namespace Titan
                                s_SRData->viewWidth, s_SRData->viewHeight, 1)
             .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
                                      s_SRData->viewHeight, 1)
-            .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
+            .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGB16F, s_SRData->viewWidth,
                                      s_SRData->viewHeight, 1);
 
         builder.AddRenderPass(

@@ -9,6 +9,7 @@
 #include "Titan/Renderer/Cubemap.h"
 #include "Titan/Renderer/Material.h"
 #include "Titan/Renderer/Mesh.h"
+#include "Titan/Renderer/PostProcessing/TonemappingTypes.h"
 #include "Titan/Renderer/Texture.h"
 
 namespace Titan
@@ -143,7 +144,17 @@ namespace Titan
             bool isEnabled = false;
         };
 
+        struct Tonemapping
+        {
+            bool isEnabled = true;
+            TonemappingOperator Operator = TonemappingOperator::Filmic;
+            float Exposure = 1.0f;
+            float Gamma = 2.2f;
+            float WhitePoint = 11.2f; // Used by Uncharted2
+        };
+
         FXAA FXAASettings;
+        Tonemapping TonemappingSettings;
 
         PostFXComponent() = default;
         PostFXComponent(const PostFXComponent&) = default;

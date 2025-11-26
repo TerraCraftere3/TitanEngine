@@ -18,6 +18,7 @@
 
 namespace Titan
 {
+
     class PostFX
     {
     public:

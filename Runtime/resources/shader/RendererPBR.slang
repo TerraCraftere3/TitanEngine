@@ -110,10 +110,7 @@ FragmentOutput fragmentMain(VertexOutput input)
         color += (diffuse + specular) * radiance * NdotL;
     }
 
-    // --- Tonemapping + gamma ---
     color += emission;
-    color = color / (color + float3(1.0));
-    color = pow(color, float3(1.0 / 2.2));
 
     output.color = float4(color, albedoColor.a);
     output.entityID = (int)gEntityID.Sample(input.texCoord).r;
