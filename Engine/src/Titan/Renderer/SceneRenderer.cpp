@@ -29,6 +29,7 @@ namespace Titan
 
         bool drawOverlay = false;
         bool drawAABBOVerlay = false;
+        bool drawWireframe = false;
 
         Ref<Scene> currentScene;
     };
@@ -114,6 +115,12 @@ namespace Titan
 
                 fb->Bind();
 
+                // Apply wireframe mode if enabled
+                if (s_SRData->drawWireframe)
+                    RenderCommand::SetPolygonMode(PolygonMode::Line);
+                else
+                    RenderCommand::SetPolygonMode(PolygonMode::Fill);
+
                 RenderCommand::SetClearColor(glm::vec4(0.0));
                 RenderCommand::Clear();
                 GeometryRenderer::BeginScene(s_SRData->viewProjection);
@@ -128,6 +135,10 @@ namespace Titan
                 }
 
                 GeometryRenderer::EndScene();
+
+                // Reset to fill mode
+                RenderCommand::SetPolygonMode(PolygonMode::Fill);
+
                 fb->Unbind();
             });
 
@@ -462,6 +473,7 @@ namespace Titan
         s_SRData->viewPosition = camera.GetPosition();
         s_SRData->drawOverlay = overlay.enableOverlay;
         s_SRData->drawAABBOVerlay = overlay.enableBoundingBoxRender;
+        s_SRData->drawWireframe = overlay.enableWireframe;
         s_SRData->currentScene = scene;
 
         s_SRData->renderGraph->Execute();

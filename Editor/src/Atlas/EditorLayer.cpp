@@ -383,6 +383,9 @@ namespace Titan
         ImGui::SameLine();
         ImGui::Checkbox("Enable AABB Rendering", &m_OverlaySettings.enableBoundingBoxRender);
 
+        ImGui::SameLine();
+        ImGui::Checkbox("Wireframe Mode", &m_OverlaySettings.enableWireframe);
+
         ImGui::PopStyleVar(2);
         ImGui::End();
     }

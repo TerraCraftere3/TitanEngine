@@ -6,6 +6,12 @@
 
 namespace Titan
 {
+    enum class PolygonMode
+    {
+        Fill = 0,
+        Line = 1,
+        Point = 2
+    };
 
     class TI_API RendererAPI
     {
@@ -19,6 +25,7 @@ namespace Titan
     public:
         virtual void Init() = 0;
 
+        virtual void SetPolygonMode(PolygonMode mode) = 0;
         virtual void SetDepthFunc(DepthFunc function) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;

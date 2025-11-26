@@ -157,6 +157,8 @@ namespace Titan
 
                         // --- Asset Type ---
                         std::string typeStr = Assets::AssetTypeToString(Assets::GetTypeForFile(path));
+                        if (directoryEntry.is_directory())
+                            typeStr = "Folder";
                         if (typeStr.empty())
                             typeStr = "Unknown";
 

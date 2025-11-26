@@ -20,6 +20,26 @@ namespace Titan
         glEnable(GL_LINE_SMOOTH);
     }
 
+    void OpenGLRendererAPI::SetPolygonMode(PolygonMode mode)
+    {
+        GLenum glMode = GL_FILL;
+
+        switch (mode)
+        {
+            case PolygonMode::Fill:
+                glMode = GL_FILL;
+                break;
+            case PolygonMode::Line:
+                glMode = GL_LINE;
+                break;
+            case PolygonMode::Point:
+                glMode = GL_POINT;
+                break;
+        }
+
+        glPolygonMode(GL_FRONT_AND_BACK, glMode);
+    }
+
     void OpenGLRendererAPI::SetDepthFunc(DepthFunc function)
     {
         GLenum glFunc = GL_LESS;

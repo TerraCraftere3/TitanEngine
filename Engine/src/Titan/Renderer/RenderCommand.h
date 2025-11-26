@@ -9,6 +9,8 @@ namespace Titan
     public:
         inline static void Init() { s_RendererAPI->Init(); }
 
+        inline static void SetPolygonMode(PolygonMode mode) { s_RendererAPI->SetPolygonMode(mode); }
+
         inline static void SetDepthFunc(DepthFunc function) { s_RendererAPI->SetDepthFunc(function); }
 
         inline static void SetClearColor(const glm::vec4& color) { s_RendererAPI->SetClearColor(color); }

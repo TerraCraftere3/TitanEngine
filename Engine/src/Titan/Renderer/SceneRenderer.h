@@ -13,6 +13,7 @@ namespace Titan
     {
         bool enableOverlay = true;
         bool enableBoundingBoxRender = false;
+        bool enableWireframe = false;
     };
 
     class TI_API SceneRenderer
