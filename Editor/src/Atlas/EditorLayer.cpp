@@ -4,6 +4,7 @@
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
+#include <Titan/FontAwesome7.h>
 #include <Titan/Renderer/GeometryRenderer.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
@@ -248,7 +249,8 @@ namespace Titan
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         ImGui::SetNextWindowSizeConstraints(ImVec2(256, 256), ImVec2(8192, 8192));
-        ImGui::Begin("Viewport", open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::Begin(ICON_FA_CIRCLE_INFO " Viewport###Viewport", open,
+                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
         // Render the scene control toolbar at the top
         RenderSceneControlToolbar();
@@ -557,7 +559,6 @@ namespace Titan
                 {
                     int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
                     auto entity = Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
-                    TI_WARN("{}", pixel);
                     m_SceneHierarchyPanel->SetSelectedEntity(entity);
                 }
             }

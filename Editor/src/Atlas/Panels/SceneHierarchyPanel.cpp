@@ -3,6 +3,7 @@
 #include "../Components.h"
 #include "ImReflect.hpp"
 #include "Titan/ImReflect_glm.hpp"
+#include "Titan/FontAwesome7.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -42,7 +43,7 @@ namespace Titan
         if (openHierarchy && !*openHierarchy)
             return;
 
-        ImGui::Begin("Scene Hierarchy", openHierarchy);
+        ImGui::Begin(ICON_FA_SITEMAP " Scene Hierarchy", openHierarchy);
 
         // Build list of root entities (entities without a parent)
         std::vector<Entity> roots;
@@ -136,7 +137,7 @@ namespace Titan
         ImGui::End();
 
         if (!(openProperties && !*openProperties))
-            ImGui::Begin("Properties", openProperties);
+            ImGui::Begin(ICON_FA_SLIDERS " Properties", openProperties);
         if (m_SelectionContext)
         {
             DrawComponents(m_SelectionContext);
@@ -354,7 +355,7 @@ namespace Titan
         }
 
         DrawComponent<TransformComponent>(
-            "Transform", entity,
+            ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT " Transform", entity,
             [](auto& component)
             {
                 Component::Vec3Control("Translation", component.Translation);
@@ -366,7 +367,7 @@ namespace Titan
             false);
 
         DrawComponent<CameraComponent>(
-            "Camera", entity,
+            ICON_FA_CAMERA " Camera", entity,
             [](auto& component)
             {
                 auto& camera = component.Camera;
@@ -426,7 +427,7 @@ namespace Titan
                 }
             });
 
-        DrawComponent<PostFXComponent>("Post Processing", entity,
+        DrawComponent<PostFXComponent>(ICON_FA_SLIDERS " Post Processing", entity,
                                        [](auto& component)
                                        {
                                            // FXAA Section
@@ -458,7 +459,7 @@ namespace Titan
                                            }
                                        });
 
-        DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity,
+        DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " Sprite Renderer", entity,
                                                [](auto& component)
                                                {
                                                    auto config = ImSettings();
@@ -466,7 +467,7 @@ namespace Titan
                                                    ImReflect::Input("Color", component.Color, config);
                                                    DrawTextureSlot("Texture", component.Tex);
                                                });
-        DrawComponent<CircleRendererComponent>("Circle Renderer", entity,
+        DrawComponent<CircleRendererComponent>(ICON_FA_CIRCLE " Circle Renderer", entity,
                                                [](auto& component)
                                                {
                                                    auto config = ImSettings();
@@ -477,7 +478,7 @@ namespace Titan
                                                    ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
                                                });
         DrawComponent<MeshRendererComponent>(
-            "Mesh Renderer", entity,
+            ICON_FA_CUBE " Mesh Renderer", entity,
             [](auto& component)
             {
                 bool changed = false;
@@ -532,10 +533,10 @@ namespace Titan
                 if (changed)
                     GeometryRenderer::ClearCache();
             });
-        DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
+        DrawComponent<DirectionalLightComponent>(ICON_FA_SUN " Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });
         DrawComponent<SkyboxComponent>(
-            "Skybox", entity,
+            ICON_FA_CLOUD " Skybox", entity,
             [](auto& component)
             {
                 {
@@ -575,7 +576,7 @@ namespace Titan
                 }
             });
 
-        DrawComponent<RigidbodyComponent>("Rigidbody", entity,
+        DrawComponent<RigidbodyComponent>(ICON_FA_GEAR " Rigidbody", entity,
                                           [](auto& component)
                                           {
                                               const char* bodyTypeStrings[] = {"Static", "Dynamic", "Kinematic"};
@@ -602,7 +603,7 @@ namespace Titan
                                           });
 
         DrawComponent<CubeColliderComponent>(
-            "Cube Collider", entity,
+            ICON_FA_CUBE " Cube Collider", entity,
             [](auto& component)
             {
                 auto config = ImSettings();
@@ -625,7 +626,7 @@ namespace Titan
             });
 
         DrawComponent<SphereColliderComponent>(
-            "Sphere Collider", entity,
+            ICON_FA_CIRCLE " Sphere Collider", entity,
             [](auto& component)
             {
                 auto config = ImSettings();
@@ -647,7 +648,7 @@ namespace Titan
                 }
             });
 
-        DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity,
+        DrawComponent<Rigidbody2DComponent>(ICON_FA_GEARS " Rigidbody 2D", entity,
                                             [](auto& component)
                                             {
                                                 const char* bodyTypeStrings[] = {"Static", "Dynamic", "Kinematic"};
@@ -675,7 +676,7 @@ namespace Titan
                                             });
 
         DrawComponent<BoxCollider2DComponent>(
-            "Box Collider 2D", entity,
+            ICON_FA_BOX " Box Collider 2D", entity,
             [](auto& component)
             {
                 auto config = ImSettings();
@@ -698,7 +699,7 @@ namespace Titan
             });
 
         DrawComponent<CircleCollider2DComponent>(
-            "Circle Collider 2D", entity,
+            ICON_FA_CIRCLE " Circle Collider 2D", entity,
             [](auto& component)
             {
                 auto config = ImSettings();
@@ -720,7 +721,7 @@ namespace Titan
                 }
             });
 
-        DrawComponent<LookAtComponent>("Constraint: Look At", entity,
+        DrawComponent<LookAtComponent>(ICON_FA_EYE " Constraint: Look At", entity,
                                        [](auto& component)
                                        {
                                            auto config = ImSettings();
@@ -729,7 +730,7 @@ namespace Titan
                                        });
 
         DrawComponent<ScriptComponent>(
-            "Script", entity,
+            ICON_FA_CODE " Script", entity,
             [entity, scene = m_Context](auto& component) mutable
             {
                 bool scriptClassExists = ScriptEngine::EntityClassExists(component.ClassName);

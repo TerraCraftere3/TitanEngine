@@ -1,4 +1,5 @@
 #include "ContentBrowserPanel.h"
+#include "Titan/FontAwesome7.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Utils/String.h"
 namespace Titan
@@ -18,7 +19,7 @@ namespace Titan
         if (openBrowser && !*openBrowser)
             return;
 
-        ImGui::Begin("Content Browser", openBrowser);
+        ImGui::Begin(ICON_FA_FOLDER_OPEN " Content Browser", openBrowser);
 
         try
         {
@@ -190,7 +191,7 @@ namespace Titan
         if (openFile && !*openFile)
             return;
 
-        ImGui::Begin("File", openFile);
+        ImGui::Begin(ICON_FA_FILE " File", openFile);
         if (!m_Selected.empty())
         {
             std::string sel = m_Selected.string();

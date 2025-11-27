@@ -78,13 +78,22 @@ namespace Titan
     {
         ImGuiIO& io = ImGui::GetIO();
 
+        const float fontSize = 18.0f;
+
 #ifdef TI_PLATFORM_WINDOWS
         // Try to load a system font (Segoe UI) — modern and crisp
-        io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+        io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", fontSize);
 #else
         // Fallback to the default ImGui font
         io.Fonts->AddFontDefault();
 #endif
+
+        static const ImWchar iconRanges[] = {0xf000, 0xf3ff, 0}; // FontAwesome
+        ImFontConfig config;
+        config.MergeMode = true;
+        config.PixelSnapH = true;
+
+        io.Fonts->AddFontFromFileTTF("resources/fonts/fa-solid-900.ttf", fontSize, &config, iconRanges);
 
         ImGuiStyle& style = ImGui::GetStyle();
 

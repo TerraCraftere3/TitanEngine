@@ -44,7 +44,7 @@ For now there is no linux support
 | ------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | **spdlog**    | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
 | **glfw**      | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
-| **imgui**     | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
+| **ImGui**     | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
 | **ImGuizmo**  | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
 | **ImReflect** | Reflection for ImGui                                            | [Sven-vh/ImReflect](https://github.com/Sven-vh/ImReflect)                 |
 | **glm**       | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
