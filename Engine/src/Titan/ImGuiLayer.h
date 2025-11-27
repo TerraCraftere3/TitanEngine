@@ -28,6 +28,7 @@ namespace Titan
 
     private:
         float m_Time = 0.0f;
+        std::string m_ImGuiConfigPath;
     };
 
 } // namespace Titan

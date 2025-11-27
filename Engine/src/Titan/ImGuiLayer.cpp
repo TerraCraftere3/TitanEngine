@@ -1,6 +1,7 @@
 #include "Titan/ImGuiLayer.h"
 #include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
+#include "Titan/Utils/PlatformUtils.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY
@@ -29,6 +30,18 @@ namespace Titan
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+
+        std::filesystem::path configPath = std::filesystem::path(Filesystem::GetAppDataDirectory()) / "Layout.ini";
+        TI_CORE_TRACE("ImGui config path: {0}", configPath.string());
+        try
+        {
+            std::filesystem::create_directories(configPath.parent_path());
+        }
+        catch (...)
+        {
+        }
+        m_ImGuiConfigPath = configPath.string();
+        io.IniFilename = m_ImGuiConfigPath.c_str();
 
         ImGui::StyleColorsDark();
 
