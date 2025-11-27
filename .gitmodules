@@ -43,3 +43,6 @@
 [submodule "Runtime/mono/lib/mono/4.5"]
 	path = Runtime/mono/lib/mono/4.5
 	url = https://github.com/TerraCraftere3/CSharp-Mono
+[submodule "Vendor/ImReflect"]
+	path = Vendor/ImReflect
+	url = https://github.com/Sven-vh/ImReflect.git

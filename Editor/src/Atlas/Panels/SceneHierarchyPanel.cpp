@@ -1,6 +1,7 @@
 #include "SceneHierarchyPanel.h"
 #include <vector>
 #include "../Components.h"
+#include "ImReflect.hpp"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -438,22 +439,11 @@ namespace Titan
                                            if (ImGui::TreeNodeEx("Tonemapping"))
                                            {
                                                ImGui::Checkbox("Enabled", &component.TonemappingSettings.isEnabled);
-                                               // Operator combo
-                                               const char* current =
-                                                   TonemappingOperatorToString(component.TonemappingSettings.Operator);
-                                               if (ImGui::BeginCombo("Operator", current))
                                                {
-                                                   for (int i = 0; i < (int)TonemappingOperator::_COUNT; i++)
-                                                   {
-                                                       TonemappingOperator op = (TonemappingOperator)i;
-                                                       const bool selected =
-                                                           (component.TonemappingSettings.Operator == op);
-                                                       if (ImGui::Selectable(TonemappingOperatorToString(op), selected))
-                                                           component.TonemappingSettings.Operator = op;
-                                                       if (selected)
-                                                           ImGui::SetItemDefaultFocus();
-                                                   }
-                                                   ImGui::EndCombo();
+                                                   auto config = ImSettings();
+                                                   config.push<TonemappingOperator>().as_dropdown().pop();
+                                                   ImReflect::Input("Mode", component.TonemappingSettings.Operator,
+                                                                    config);
                                                }
 
                                                ImGui::DragFloat("Exposure", &component.TonemappingSettings.Exposure,
@@ -536,21 +526,9 @@ namespace Titan
             [](auto& component)
             {
                 {
-                    const char* current = Utils::SkyboxModeToString(component.mode);
-                    if (ImGui::BeginCombo("Mode##SkyboxMode", current))
-                    {
-                        for (int i = 0; i < (int)SkyboxComponent::Mode::_COUNT; i++)
-                        {
-                            auto mode = (SkyboxComponent::Mode)i;
-                            const bool isSelected = (component.mode == mode);
-
-                            if (ImGui::Selectable(Utils::SkyboxModeToString(mode), isSelected))
-                            {
-                                component.mode = mode;
-                            }
-                        }
-                        ImGui::EndCombo();
-                    }
+                    auto config = ImSettings();
+                    config.push<SkyboxComponent::Mode>().as_dropdown().pop();
+                    ImReflect::Input("Mode", component.mode, config);
                 }
                 if (component.mode == SkyboxComponent::Mode::HDRI)
                 {

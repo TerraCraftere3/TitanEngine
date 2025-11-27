@@ -31,6 +31,7 @@ message(STATUS "STB Include: ${STB_INCLUDE_DIR}")
 message(STATUS "PhysX Root: ${PHYSX_ROOT_DIR}")
 message(STATUS "PhysX Include: ${PHYSX_INCLUDE_DIR}")
 message(STATUS "PhysX Libraries: ${PHYSX_BIN_DIR}")
+message(STATUS "ImReflect Include: ${IMREFLECT_INCLUDE_DIR}")
 
 # ---- Dependencies ----
 target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore assimp)
@@ -96,6 +97,7 @@ target_include_directories(engine PUBLIC
     "${MONO_INCLUDE_DIR}"
     "${FILEWATCH_INCLUDE_DIR}"
     "${PHYSX_INCLUDE_DIR}"
+    "${IMREFLECT_INCLUDE_DIR}"
 )
 
 # ---- C++ Standard ----
