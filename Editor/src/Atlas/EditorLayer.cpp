@@ -1,4 +1,6 @@
 #include "EditorLayer.h"
+#include "Panels/ContentBrowserPanel.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
@@ -28,8 +30,12 @@ namespace Titan
         std::filesystem::path configPath = std::filesystem::path(Filesystem::GetAppDataDirectory()) / "Config.yml";
         LoadEditorProperties(m_EditorProperties, configPath);
 
+        // Initialize panels
+        m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>();
+        m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+
         m_ActiveScene = Assets::Load<Scene>("assets/scenes/Helmet.titan");
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel->SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
@@ -99,11 +105,11 @@ namespace Titan
         RenderDockspace();
 
         if (m_EditorProperties.ShowSceneHierarchy)
-            m_SceneHierarchyPanel.OnImGuiRender(&m_EditorProperties.ShowSceneHierarchy,
-                                                &m_EditorProperties.ShowSceneHierarchyProperties);
+            m_SceneHierarchyPanel->OnImGuiRender(&m_EditorProperties.ShowSceneHierarchy,
+                                                 &m_EditorProperties.ShowSceneHierarchyProperties);
         if (m_EditorProperties.ShowContentBrowser)
-            m_ContentBrowserPanel.OnImGuiRender(&m_EditorProperties.ShowContentBrowser,
-                                                &m_EditorProperties.ShowContentBrowserFile);
+            m_ContentBrowserPanel->OnImGuiRender(&m_EditorProperties.ShowContentBrowser,
+                                                 &m_EditorProperties.ShowContentBrowserFile);
 
         RenderStatisticsPanel(&m_EditorProperties.ShowStatistics);
         RenderViewport(&m_EditorProperties.ShowViewport);
@@ -417,7 +423,7 @@ namespace Titan
         if (m_SceneState == SceneState::Play)
             return;
 
-        Entity selected = m_SceneHierarchyPanel.GetSelectedEntity();
+        Entity selected = m_SceneHierarchyPanel->GetSelectedEntity();
 
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
@@ -552,7 +558,7 @@ namespace Titan
                     int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
                     auto entity = Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
                     TI_WARN("{}", pixel);
-                    m_SceneHierarchyPanel.SetSelectedEntity(entity);
+                    m_SceneHierarchyPanel->SetSelectedEntity(entity);
                 }
             }
         }
@@ -590,7 +596,7 @@ namespace Titan
             auto& lcc = camera.AddComponent<LookAtComponent>();
         }
 
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel->SetContext(m_ActiveScene);
 
         m_EditorScene = m_ActiveScene;
         m_EditorScenePath = std::filesystem::path();
@@ -617,7 +623,7 @@ namespace Titan
         Ref<Scene> newScene = Assets::Load<Scene>(path);
         m_EditorScene = newScene;
         m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-        m_SceneHierarchyPanel.SetContext(m_EditorScene);
+        m_SceneHierarchyPanel->SetContext(m_EditorScene);
 
         m_ActiveScene = m_EditorScene;
         m_EditorScenePath = path;
@@ -668,7 +674,7 @@ namespace Titan
         m_ActiveScene = Scene::Copy(m_EditorScene);
         m_ActiveScene->OnRuntimeStart();
 
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel->SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnSceneSimulate()
@@ -681,7 +687,7 @@ namespace Titan
         m_ActiveScene = Scene::Copy(m_EditorScene);
         m_ActiveScene->OnSimulationStart();
 
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel->SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnSceneStop()
@@ -696,7 +702,7 @@ namespace Titan
         m_SceneState = SceneState::Edit;
         m_ActiveScene = m_EditorScene;
 
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+        m_SceneHierarchyPanel->SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnDuplicateEntity()
@@ -704,7 +710,7 @@ namespace Titan
         if (m_SceneState != SceneState::Edit)
             return;
 
-        Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+        Entity selectedEntity = m_SceneHierarchyPanel->GetSelectedEntity();
         if (selectedEntity)
             m_EditorScene->DuplicateEntity(selectedEntity);
     }

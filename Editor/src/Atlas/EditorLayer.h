@@ -10,11 +10,11 @@
 #include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
 #include "EditorProperties.h"
-#include "Panels/ContentBrowserPanel.h"
-#include "Panels/SceneHierarchyPanel.h"
 
 namespace Titan
 {
+    class SceneHierarchyPanel;
+    class ContentBrowserPanel;
     class EditorLayer : public Layer
     {
     public:
@@ -93,8 +93,8 @@ namespace Titan
         EditorCamera m_EditorCamera;
 
         // Panels
-        SceneHierarchyPanel m_SceneHierarchyPanel;
-        ContentBrowserPanel m_ContentBrowserPanel;
+        Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
+        Scope<ContentBrowserPanel> m_ContentBrowserPanel;
 
         // Editor properties
         EditorProperties m_EditorProperties;

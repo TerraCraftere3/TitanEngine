@@ -45,11 +45,12 @@ For now there is no linux support
 | **spdlog**    | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
 | **glfw**      | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
 | **imgui**     | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
+| **ImGuizmo**  | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
+| **ImReflect** | Reflection for ImGui                                            | [Sven-vh/ImReflect](https://github.com/Sven-vh/ImReflect)                 |
 | **glm**       | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
 | **stb**       | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
 | **entt**      | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
 | **yaml-cpp**  | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
-| **ImGuizmo**  | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
 | **nanosvg**   | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
 | **codicons**  | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
 | **Box2D**     | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
@@ -73,6 +74,7 @@ For now there is no linux support
 - [ ] Audio
 - [x] 3D PBR Renderer
   - [ ] Shadows
+    - [ ] Point Lights
   - [x] Textures
   - [x] Materials
   - [ ] Custom Shader?
@@ -80,7 +82,6 @@ For now there is no linux support
   - [ ] Particle Systems
   - [x] Model Loading
   - [x] Directional Light
-  - [ ] Point Lights
 - [ ] Post Processing
   - [ ] Bloom
   - [ ] Tone Mapping
@@ -91,9 +92,14 @@ For now there is no linux support
   - [ ] Exporting Projects
 - [ ] Custom C# UIs
 - [ ] Asset Refactor
-- [ ] Physics
+- [x] Physics
   - [x] 2D
+    - [x] Circle Collider
+    - [x] Quad Collider
   - [ ] 3D
+    - [ ] Mesh Collider
+    - [x] Cube Collider
+    - [x] Sphere Collider
 
 
 
