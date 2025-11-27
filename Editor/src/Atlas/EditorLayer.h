@@ -15,6 +15,7 @@ namespace Titan
 {
     class SceneHierarchyPanel;
     class ContentBrowserPanel;
+    class LogPanel;
     class EditorLayer : public Layer
     {
     public:
@@ -95,6 +96,7 @@ namespace Titan
         // Panels
         Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
         Scope<ContentBrowserPanel> m_ContentBrowserPanel;
+        Scope<LogPanel> m_LogPanel;
 
         // Editor properties
         EditorProperties m_EditorProperties;

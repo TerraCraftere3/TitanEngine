@@ -32,6 +32,8 @@ namespace Titan
             if (panels["ShowStatistics"])              props.ShowStatistics = panels["ShowStatistics"].as<bool>();
             if (panels["ShowViewport"])                props.ShowViewport = panels["ShowViewport"].as<bool>();
             if (panels["ShowProfiler"])                props.ShowProfiler = panels["ShowProfiler"].as<bool>();
+            if (panels["ShowLog"])
+                props.ShowLog = panels["ShowLog"].as<bool>();
         }
 
         TI_CORE_INFO("Loaded Editor Properties from '{}'", filepath.string());
@@ -59,6 +61,7 @@ namespace Titan
         out << YAML::Key << "ShowStatistics" << YAML::Value << props.ShowStatistics;
         out << YAML::Key << "ShowViewport" << YAML::Value << props.ShowViewport;
         out << YAML::Key << "ShowProfiler" << YAML::Value << props.ShowProfiler;
+        out << YAML::Key << "ShowLog" << YAML::Value << props.ShowLog;
         out << YAML::EndMap;
         out << YAML::EndMap;
 

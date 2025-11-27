@@ -16,6 +16,7 @@ namespace Titan
         bool ShowStatistics = true;
         bool ShowViewport = true;
         bool ShowProfiler = true;
+        bool ShowLog = true;
     };
 
     // Loads editor properties from a YAML configuration file.
