@@ -2,6 +2,7 @@
 #include <vector>
 #include "../Components.h"
 #include "ImReflect.hpp"
+#include "Titan/ImReflect_glm.hpp"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -460,13 +461,17 @@ namespace Titan
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity,
                                                [](auto& component)
                                                {
-                                                   ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+                                                   auto config = ImSettings();
+                                                   config.push<glm::vec4>().as_color().pop();
+                                                   ImReflect::Input("Color", component.Color, config);
                                                    DrawTextureSlot("Texture", component.Tex);
                                                });
         DrawComponent<CircleRendererComponent>("Circle Renderer", entity,
                                                [](auto& component)
                                                {
-                                                   ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+                                                   auto config = ImSettings();
+                                                   config.push<glm::vec4>().as_color().pop();
+                                                   ImReflect::Input("Color", component.Color, config);
                                                    ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f,
                                                                     1.0f);
                                                    ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
@@ -500,14 +505,22 @@ namespace Titan
 
                     if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
-                        changed |= ImGui::ColorEdit4("Diffuse", glm::value_ptr(mat->AlbedoColor));
+                        auto config = ImSettings();
+                        config.push<glm::vec4>().as_color().pop();
+                        auto response = ImResponse();
+                        ImReflect::Input("Diffuse", mat->AlbedoColor, config, response);
+                        changed |= response.get<glm::vec4>().is_changed();
                         changed |= DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
                         changed |= DrawTextureSlot("Emission Texture", mat->EmissionTexture);
                         changed |= DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
                         changed |= DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
                         changed |= DrawTextureSlot("Normal Texture", mat->NormalTexture);
                         changed |= DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
-                        changed |= ImGui::DragFloat2("UV Repeat", glm::value_ptr(mat->UVRepeat), 0.1f, 0.01f, 100.0f);
+                        auto config2 = ImSettings();
+                        config2.push<glm::vec2>().as_position().pop();
+                        auto response2 = ImResponse();
+                        ImReflect::Input("UV Repeat", mat->UVRepeat, config2, response2);
+                        changed |= response2.get<glm::vec2>().is_changed();
 
                         ImGui::TreePop();
                     }
@@ -555,8 +568,10 @@ namespace Titan
                 }
                 else if (component.mode == SkyboxComponent::Mode::Colorramp)
                 {
-                    ImGui::ColorEdit3("Top Color", glm::value_ptr(component.colorrampSettings.TopColor));
-                    ImGui::ColorEdit3("Bottom Color", glm::value_ptr(component.colorrampSettings.BottomColor));
+                    auto config = ImSettings();
+                    config.push<glm::vec3>().as_color().pop();
+                    ImReflect::Input("Top Color", component.colorrampSettings.TopColor, config);
+                    ImReflect::Input("Bottom Color", component.colorrampSettings.BottomColor, config);
                 }
             });
 
@@ -590,8 +605,10 @@ namespace Titan
             "Cube Collider", entity,
             [](auto& component)
             {
-                ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
-                ImGui::DragFloat3("Size", glm::value_ptr(component.Size));
+                auto config = ImSettings();
+                config.push<glm::vec3>().as_position().pop();
+                ImReflect::Input("Offset", component.Offset, config);
+                ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
@@ -611,7 +628,9 @@ namespace Titan
             "Sphere Collider", entity,
             [](auto& component)
             {
-                ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+                auto config = ImSettings();
+                config.push<glm::vec3>().as_position().pop();
+                ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
@@ -659,8 +678,10 @@ namespace Titan
             "Box Collider 2D", entity,
             [](auto& component)
             {
-                ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-                ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+                auto config = ImSettings();
+                config.push<glm::vec2>().as_position().pop();
+                ImReflect::Input("Offset", component.Offset, config);
+                ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
@@ -680,7 +701,9 @@ namespace Titan
             "Circle Collider 2D", entity,
             [](auto& component)
             {
-                ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
+                auto config = ImSettings();
+                config.push<glm::vec2>().as_position().pop();
+                ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
@@ -697,8 +720,13 @@ namespace Titan
                 }
             });
 
-        DrawComponent<LookAtComponent>("Constraint: Look At", entity, [](auto& component)
-                                       { ImGui::DragFloat3("Position", glm::value_ptr(component.Position)); });
+        DrawComponent<LookAtComponent>("Constraint: Look At", entity,
+                                       [](auto& component)
+                                       {
+                                           auto config = ImSettings();
+                                           config.push<glm::vec3>().as_position().pop();
+                                           ImReflect::Input("Position", component.Position, config);
+                                       });
 
         DrawComponent<ScriptComponent>(
             "Script", entity,
@@ -805,19 +833,31 @@ namespace Titan
                             else if (field.Type == ScriptFieldType::Vector2)
                             {
                                 glm::vec2 data = scriptInstance->GetFieldValue<glm::vec2>(name);
-                                if (ImGui::DragFloat2(name.c_str(), &data.x))
+                                auto config = ImSettings();
+                                config.push<glm::vec2>().as_position().pop();
+                                auto response = ImResponse();
+                                ImReflect::Input(name.c_str(), data, config, response);
+                                if (response.get<glm::vec2>().is_changed())
                                     scriptInstance->SetFieldValue(name, data);
                             }
                             else if (field.Type == ScriptFieldType::Vector3)
                             {
                                 glm::vec3 data = scriptInstance->GetFieldValue<glm::vec3>(name);
-                                if (ImGui::DragFloat3(name.c_str(), &data.x))
+                                auto config = ImSettings();
+                                config.push<glm::vec3>().as_position().pop();
+                                auto response = ImResponse();
+                                ImReflect::Input(name.c_str(), data, config, response);
+                                if (response.get<glm::vec3>().is_changed())
                                     scriptInstance->SetFieldValue(name, data);
                             }
                             else if (field.Type == ScriptFieldType::Vector4)
                             {
                                 glm::vec4 data = scriptInstance->GetFieldValue<glm::vec4>(name);
-                                if (ImGui::DragFloat4(name.c_str(), &data.x))
+                                auto config = ImSettings();
+                                config.push<glm::vec4>().as_position().pop();
+                                auto response = ImResponse();
+                                ImReflect::Input(name.c_str(), data, config, response);
+                                if (response.get<glm::vec4>().is_changed())
                                     scriptInstance->SetFieldValue(name, data);
                             }
                         }
@@ -943,7 +983,11 @@ namespace Titan
                                 {
                                     glm::vec2 data =
                                         fieldAlreadyExists ? scriptField->GetValue<glm::vec2>() : glm::vec2(0.0f);
-                                    if (ImGui::DragFloat2(name.c_str(), &data.x))
+                                    auto config = ImSettings();
+                                    config.push<glm::vec2>().as_position().pop();
+                                    auto response = ImResponse();
+                                    ImReflect::Input(name.c_str(), data, config, response);
+                                    if (response.get<glm::vec2>().is_changed())
                                         scriptField->SetValue(data);
                                     break;
                                 }
@@ -951,7 +995,11 @@ namespace Titan
                                 {
                                     glm::vec3 data =
                                         fieldAlreadyExists ? scriptField->GetValue<glm::vec3>() : glm::vec3(0.0f);
-                                    if (ImGui::DragFloat3(name.c_str(), &data.x))
+                                    auto config = ImSettings();
+                                    config.push<glm::vec3>().as_position().pop();
+                                    auto response = ImResponse();
+                                    ImReflect::Input(name.c_str(), data, config, response);
+                                    if (response.get<glm::vec3>().is_changed())
                                         scriptField->SetValue(data);
                                     break;
                                 }
@@ -959,7 +1007,11 @@ namespace Titan
                                 {
                                     glm::vec4 data =
                                         fieldAlreadyExists ? scriptField->GetValue<glm::vec4>() : glm::vec4(0.0f);
-                                    if (ImGui::DragFloat4(name.c_str(), &data.x))
+                                    auto config = ImSettings();
+                                    config.push<glm::vec4>().as_position().pop();
+                                    auto response = ImResponse();
+                                    ImReflect::Input(name.c_str(), data, config, response);
+                                    if (response.get<glm::vec4>().is_changed())
                                         scriptField->SetValue(data);
                                     break;
                                 }
