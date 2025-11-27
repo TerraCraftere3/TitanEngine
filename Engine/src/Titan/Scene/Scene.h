@@ -45,6 +45,9 @@ namespace Titan
         void OnUpdateEditor(Timestep ts, EditorCamera& camera);
         void OnViewportResize(uint32_t width, uint32_t height);
 
+        void SetParent(Entity child, Entity parent);
+        void RemoveParent(Entity child);
+
         void DuplicateEntity(Entity entity);
 
         Entity FindEntityByName(std::string_view name);
@@ -72,9 +75,6 @@ namespace Titan
         // Update world transforms for entities that have parent/child relations
         void UpdateTransforms();
         void UpdateTransformRecursive(entt::entity entity, const glm::mat4& parentTransform);
-        // Set/clear parent-child relationships
-        void SetParent(Entity child, Entity parent);
-        void RemoveParent(Entity child);
 
     private:
         entt::registry m_Registry;

@@ -1,8 +1,8 @@
 #include "EditorProperties.h"
 
-#include <yaml-cpp/yaml.h>
-#include <Titan/Utils/PlatformUtils.h>
 #include <Titan/PCH.h>
+#include <Titan/Utils/PlatformUtils.h>
+#include <yaml-cpp/yaml.h>
 
 namespace Titan
 {
@@ -25,15 +25,16 @@ namespace Titan
         auto panels = data["Panels"];
         if (panels)
         {
-            if (panels["ShowSceneHierarchy"])          props.ShowSceneHierarchy = panels["ShowSceneHierarchy"].as<bool>();
+            // clang-format off
+            if (panels["ShowSceneHierarchy"])           props.ShowSceneHierarchy = panels["ShowSceneHierarchy"].as<bool>();
             if (panels["ShowSceneHierarchyProperties"]) props.ShowSceneHierarchyProperties = panels["ShowSceneHierarchyProperties"].as<bool>();
-            if (panels["ShowContentBrowser"])          props.ShowContentBrowser = panels["ShowContentBrowser"].as<bool>();
-            if (panels["ShowContentBrowserFile"])      props.ShowContentBrowserFile = panels["ShowContentBrowserFile"].as<bool>();
-            if (panels["ShowStatistics"])              props.ShowStatistics = panels["ShowStatistics"].as<bool>();
-            if (panels["ShowViewport"])                props.ShowViewport = panels["ShowViewport"].as<bool>();
-            if (panels["ShowProfiler"])                props.ShowProfiler = panels["ShowProfiler"].as<bool>();
-            if (panels["ShowLog"])
-                props.ShowLog = panels["ShowLog"].as<bool>();
+            if (panels["ShowContentBrowser"])           props.ShowContentBrowser = panels["ShowContentBrowser"].as<bool>();
+            if (panels["ShowContentBrowserFile"])       props.ShowContentBrowserFile = panels["ShowContentBrowserFile"].as<bool>();
+            if (panels["ShowStatistics"])               props.ShowStatistics = panels["ShowStatistics"].as<bool>();
+            if (panels["ShowViewport"])                 props.ShowViewport = panels["ShowViewport"].as<bool>();
+            if (panels["ShowProfiler"])                 props.ShowProfiler = panels["ShowProfiler"].as<bool>();
+            if (panels["ShowLog"])                      props.ShowLog = panels["ShowLog"].as<bool>();
+            // clang-format on
         }
 
         TI_CORE_INFO("Loaded Editor Properties from '{}'", filepath.string());
@@ -54,14 +55,16 @@ namespace Titan
         out << YAML::BeginMap;
         out << YAML::Key << "Panels" << YAML::Value;
         out << YAML::BeginMap;
-        out << YAML::Key << "ShowSceneHierarchy" << YAML::Value << props.ShowSceneHierarchy;
+        // clang-format off
+        out << YAML::Key << "ShowSceneHierarchy" << YAML::Value <<           props.ShowSceneHierarchy;
         out << YAML::Key << "ShowSceneHierarchyProperties" << YAML::Value << props.ShowSceneHierarchyProperties;
-        out << YAML::Key << "ShowContentBrowser" << YAML::Value << props.ShowContentBrowser;
-        out << YAML::Key << "ShowContentBrowserFile" << YAML::Value << props.ShowContentBrowserFile;
-        out << YAML::Key << "ShowStatistics" << YAML::Value << props.ShowStatistics;
-        out << YAML::Key << "ShowViewport" << YAML::Value << props.ShowViewport;
-        out << YAML::Key << "ShowProfiler" << YAML::Value << props.ShowProfiler;
-        out << YAML::Key << "ShowLog" << YAML::Value << props.ShowLog;
+        out << YAML::Key << "ShowContentBrowser" << YAML::Value <<           props.ShowContentBrowser;
+        out << YAML::Key << "ShowContentBrowserFile" << YAML::Value <<       props.ShowContentBrowserFile;
+        out << YAML::Key << "ShowStatistics" << YAML::Value <<               props.ShowStatistics;
+        out << YAML::Key << "ShowViewport" << YAML::Value <<                 props.ShowViewport;
+        out << YAML::Key << "ShowProfiler" << YAML::Value <<                 props.ShowProfiler;
+        out << YAML::Key << "ShowLog" << YAML::Value <<                      props.ShowLog;
+        // clang-format on
         out << YAML::EndMap;
         out << YAML::EndMap;
 

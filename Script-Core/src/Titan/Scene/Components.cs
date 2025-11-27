@@ -47,6 +47,37 @@ namespace Titan
         }
     }
 
+    public class RelationshipComponent : Component
+    {
+        public Entity Parent
+        {
+            get {
+                ulong parentID = InternalCalls.RelationshipComponent_GetParent(Entity.ID);
+                if (parentID == 0)
+                    return null;
+                return null;
+            }
+            set {
+                if (value == null)
+                    InternalCalls.RelationshipComponent_SetParent(Entity.ID, 0);
+                else
+                    InternalCalls.RelationshipComponent_SetParent(Entity.ID, value.ID);
+            }
+        }
+
+        public uint ChildrenCount
+        {
+            get {
+                return InternalCalls.RelationshipComponent_GetChildrenCount(Entity.ID);
+            }
+        }
+
+        public ulong GetChildID(uint index)
+        {
+            return InternalCalls.RelationshipComponent_GetChildByIndex(Entity.ID, index);
+        }
+    }
+
     // ======================================================================
     //
     //            COLLIDER COMPONENTS
@@ -133,6 +164,33 @@ namespace Titan
 
     public class Rigidbody2DComponent : Component
     {
+        public enum BodyType
+        {
+            Static = 0,
+            Dynamic = 1,
+            Kinematic = 2
+        }
+
+        public BodyType Type
+        {
+            get {
+                return (BodyType)InternalCalls.Rigidbody2DComponent_GetType(Entity.ID);
+            }
+            set {
+                InternalCalls.Rigidbody2DComponent_SetType(Entity.ID, (int)value);
+            }
+        }
+
+        public bool FixedRotation
+        {
+            get {
+                return InternalCalls.Rigidbody2DComponent_GetFixedRotation(Entity.ID);
+            }
+            set {
+                InternalCalls.Rigidbody2DComponent_SetFixedRotation(Entity.ID, value);
+            }
+        }
+
         public void ApplyLinearImpulse(Vector2 impulse, Vector2 worldPosition, bool wake)
         {
             InternalCalls.Rigidbody2DComponent_ApplyLinearImpulse(Entity.ID, ref impulse, ref worldPosition, wake);
@@ -141,6 +199,111 @@ namespace Titan
         public void ApplyLinearImpulse(Vector2 impulse, bool wake)
         {
             InternalCalls.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.ID, ref impulse, wake);
+        }
+    }
+
+    // ======================================================================
+    //
+    //            3D PHYSICS COMPONENTS
+    //
+    // ======================================================================
+
+    public class RigidbodyComponent : Component
+    {
+        public enum BodyType
+        {
+            Static = 0,
+            Dynamic = 1,
+            Kinematic = 2
+        }
+
+        public BodyType Type
+        {
+            get {
+                return (BodyType)InternalCalls.RigidbodyComponent_GetType(Entity.ID);
+            }
+            set {
+                InternalCalls.RigidbodyComponent_SetType(Entity.ID, (int)value);
+            }
+        }
+
+        public bool FixedRotation
+        {
+            get {
+                return InternalCalls.RigidbodyComponent_GetFixedRotation(Entity.ID);
+            }
+            set {
+                InternalCalls.RigidbodyComponent_SetFixedRotation(Entity.ID, value);
+            }
+        }
+    }
+
+    public class CubeColliderComponent : Component
+    {
+        public Vector3 Offset
+        {
+            get {
+                InternalCalls.CubeColliderComponent_GetOffset(Entity.ID, out Vector3 offset);
+                return offset;
+            }
+            set {
+                InternalCalls.CubeColliderComponent_SetOffset(Entity.ID, ref value);
+            }
+        }
+
+        public Vector3 Size
+        {
+            get {
+                InternalCalls.CubeColliderComponent_GetSize(Entity.ID, out Vector3 size);
+                return size;
+            }
+            set {
+                InternalCalls.CubeColliderComponent_SetSize(Entity.ID, ref value);
+            }
+        }
+
+        public string MaterialPath
+        {
+            get {
+                return InternalCalls.CubeColliderComponent_GetMaterialPath(Entity.ID);
+            }
+            set {
+                InternalCalls.CubeColliderComponent_SetMaterialPath(Entity.ID, value);
+            }
+        }
+    }
+
+    public class SphereColliderComponent : Component
+    {
+        public Vector3 Offset
+        {
+            get {
+                InternalCalls.SphereColliderComponent_GetOffset(Entity.ID, out Vector3 offset);
+                return offset;
+            }
+            set {
+                InternalCalls.SphereColliderComponent_SetOffset(Entity.ID, ref value);
+            }
+        }
+
+        public float Radius
+        {
+            get {
+                return InternalCalls.SphereColliderComponent_GetRadius(Entity.ID);
+            }
+            set {
+                InternalCalls.SphereColliderComponent_SetRadius(Entity.ID, value);
+            }
+        }
+
+        public string MaterialPath
+        {
+            get {
+                return InternalCalls.SphereColliderComponent_GetMaterialPath(Entity.ID);
+            }
+            set {
+                InternalCalls.SphereColliderComponent_SetMaterialPath(Entity.ID, value);
+            }
         }
     }
 

@@ -71,6 +71,83 @@ namespace Titan
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void TransformComponent_SetScale(ulong entityID, ref Vector3 scale);
 
+        // Relationship component
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static ulong RelationshipComponent_GetParent(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static uint RelationshipComponent_GetChildrenCount(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static ulong RelationshipComponent_GetChildByIndex(ulong entityID, uint index);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void RelationshipComponent_SetParent(ulong entityID, ulong parentID);
+
+        // Rigidbody2D component
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static int Rigidbody2DComponent_GetType(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void Rigidbody2DComponent_SetType(ulong entityID, int type);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static bool Rigidbody2DComponent_GetFixedRotation(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void Rigidbody2DComponent_SetFixedRotation(ulong entityID, bool value);
+
+        // Rigidbody component (3D)
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static int RigidbodyComponent_GetType(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void RigidbodyComponent_SetType(ulong entityID, int type);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static bool RigidbodyComponent_GetFixedRotation(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void RigidbodyComponent_SetFixedRotation(ulong entityID, bool value);
+
+        // Cube collider component (3D)
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CubeColliderComponent_GetOffset(ulong entityID, out Vector3 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CubeColliderComponent_SetOffset(ulong entityID, ref Vector3 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CubeColliderComponent_GetSize(ulong entityID, out Vector3 size);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CubeColliderComponent_SetSize(ulong entityID, ref Vector3 size);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void CubeColliderComponent_SetMaterialPath(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string CubeColliderComponent_GetMaterialPath(ulong entityID);
+
+        // Sphere collider component (3D)
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SphereColliderComponent_GetOffset(ulong entityID, out Vector3 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SphereColliderComponent_SetOffset(ulong entityID, ref Vector3 offset);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static float SphereColliderComponent_GetRadius(ulong entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SphereColliderComponent_SetRadius(ulong entityID, float radius);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static void SphereColliderComponent_SetMaterialPath(ulong entityID, string path);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal extern static string SphereColliderComponent_GetMaterialPath(ulong entityID);
+
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal extern static void DirectionalLightComponent_GetDirection(ulong entityID, out Vector3 direction);
 

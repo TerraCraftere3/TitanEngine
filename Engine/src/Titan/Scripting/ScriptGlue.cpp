@@ -434,6 +434,306 @@ namespace Titan
         entity.GetComponent<CameraComponent>().FixedAspectRatio = value;
     }
 
+    // ----------------------- RelationshipComponent -----------------------
+    static uint64_t RelationshipComponent_GetParent(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        if (!entity.HasComponent<RelationshipComponent>())
+            return 0;
+
+        Entity parent = entity.GetParent();
+        if (!parent)
+            return 0;
+
+        return (uint64_t)parent.GetUUID();
+    }
+
+    static uint32_t RelationshipComponent_GetChildrenCount(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        if (!entity.HasComponent<RelationshipComponent>())
+            return 0;
+
+        auto children = entity.GetChildren();
+        return (uint32_t)children.size();
+    }
+
+    static uint64_t RelationshipComponent_GetChildByIndex(UUID entityID, uint32_t index)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        if (!entity.HasComponent<RelationshipComponent>())
+            return 0;
+
+        auto children = entity.GetChildren();
+        if (index >= children.size())
+            return 0;
+
+        return (uint64_t)children[index].GetUUID();
+    }
+
+    static void RelationshipComponent_SetParent(UUID entityID, UUID parentID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        if (parentID == 0)
+        {
+            // Remove parent if 0 is passed
+            // Not implemented yet in the Scene API, so we just return
+            return;
+        }
+
+        Entity parent = scene->GetEntityByUUID(parentID);
+        if (!parent)
+            return;
+
+        scene->SetParent(entity, parent);
+    }
+
+    // ----------------------- Rigidbody2DComponent -----------------------
+    static int Rigidbody2DComponent_GetType(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        return (int)rb2d.Type;
+    }
+
+    static void Rigidbody2DComponent_SetType(UUID entityID, int type)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        rb2d.Type = (Rigidbody2DComponent::BodyType)type;
+    }
+
+    static bool Rigidbody2DComponent_GetFixedRotation(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        return rb2d.FixedRotation;
+    }
+
+    static void Rigidbody2DComponent_SetFixedRotation(UUID entityID, bool value)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        rb2d.FixedRotation = value;
+    }
+
+    // ----------------------- RigidbodyComponent (3D) -----------------------
+    static int RigidbodyComponent_GetType(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb = entity.GetComponent<RigidbodyComponent>();
+        return (int)rb.Type;
+    }
+
+    static void RigidbodyComponent_SetType(UUID entityID, int type)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb = entity.GetComponent<RigidbodyComponent>();
+        rb.Type = (RigidbodyComponent::BodyType)type;
+    }
+
+    static bool RigidbodyComponent_GetFixedRotation(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb = entity.GetComponent<RigidbodyComponent>();
+        return rb.FixedRotation;
+    }
+
+    static void RigidbodyComponent_SetFixedRotation(UUID entityID, bool value)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& rb = entity.GetComponent<RigidbodyComponent>();
+        rb.FixedRotation = value;
+    }
+
+    // ----------------------- CubeColliderComponent -----------------------
+    static void CubeColliderComponent_GetOffset(UUID entityID, glm::vec3* outOffset)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outOffset = entity.GetComponent<CubeColliderComponent>().Offset;
+    }
+
+    static void CubeColliderComponent_SetOffset(UUID entityID, glm::vec3* offset)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<CubeColliderComponent>().Offset = *offset;
+    }
+
+    static void CubeColliderComponent_GetSize(UUID entityID, glm::vec3* outSize)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outSize = entity.GetComponent<CubeColliderComponent>().Size;
+    }
+
+    static void CubeColliderComponent_SetSize(UUID entityID, glm::vec3* size)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<CubeColliderComponent>().Size = *size;
+    }
+
+    static void CubeColliderComponent_SetMaterialPath(UUID entityID, MonoString* path)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        char* s = mono_string_to_utf8(path);
+        std::string p(s);
+        mono_free(s);
+
+        auto& comp = entity.GetComponent<CubeColliderComponent>();
+        comp.Material = Titan::Assets::Load<PhysicsMaterial>(p);
+    }
+
+    static MonoString* CubeColliderComponent_GetMaterialPath(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& comp = entity.GetComponent<CubeColliderComponent>();
+        std::string p = "[internal]";
+        if (comp.Material)
+            p = comp.Material->SourcePath;
+        return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
+    }
+
+    // ----------------------- SphereColliderComponent -----------------------
+    static void SphereColliderComponent_GetOffset(UUID entityID, glm::vec3* outOffset)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        *outOffset = entity.GetComponent<SphereColliderComponent>().Offset;
+    }
+
+    static void SphereColliderComponent_SetOffset(UUID entityID, glm::vec3* offset)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<SphereColliderComponent>().Offset = *offset;
+    }
+
+    static float SphereColliderComponent_GetRadius(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        return entity.GetComponent<SphereColliderComponent>().Radius;
+    }
+
+    static void SphereColliderComponent_SetRadius(UUID entityID, float radius)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<SphereColliderComponent>().Radius = radius;
+    }
+
+    static void SphereColliderComponent_SetMaterialPath(UUID entityID, MonoString* path)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        char* s = mono_string_to_utf8(path);
+        std::string p(s);
+        mono_free(s);
+
+        auto& comp = entity.GetComponent<SphereColliderComponent>();
+        comp.Material = Titan::Assets::Load<PhysicsMaterial>(p);
+    }
+
+    static MonoString* SphereColliderComponent_GetMaterialPath(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        auto& comp = entity.GetComponent<SphereColliderComponent>();
+        std::string p = "[internal]";
+        if (comp.Material)
+            p = comp.Material->SourcePath;
+        return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
+    }
+
     // ----------------------- BoxCollider -----------------------
     static void BoxCollider2DComponent_GetOffset(UUID entityID, glm::vec2* outOffset)
     {
@@ -724,6 +1024,15 @@ namespace Titan
         TI_ADD_INTERNAL_CALL(TransformComponent_GetScale);
         TI_ADD_INTERNAL_CALL(TransformComponent_SetScale);
 
+        TI_ADD_INTERNAL_CALL(RelationshipComponent_GetParent);
+        TI_ADD_INTERNAL_CALL(RelationshipComponent_GetChildrenCount);
+        TI_ADD_INTERNAL_CALL(RelationshipComponent_GetChildByIndex);
+        TI_ADD_INTERNAL_CALL(RelationshipComponent_SetParent);
+
+        TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_GetType);
+        TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_SetType);
+        TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_GetFixedRotation);
+        TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_SetFixedRotation);
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
         TI_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
 
@@ -758,6 +1067,25 @@ namespace Titan
         TI_ADD_INTERNAL_CALL(CameraComponent_SetPrimary);
         TI_ADD_INTERNAL_CALL(CameraComponent_GetFixedAspectRatio);
         TI_ADD_INTERNAL_CALL(CameraComponent_SetFixedAspectRatio);
+
+        TI_ADD_INTERNAL_CALL(RigidbodyComponent_GetType);
+        TI_ADD_INTERNAL_CALL(RigidbodyComponent_SetType);
+        TI_ADD_INTERNAL_CALL(RigidbodyComponent_GetFixedRotation);
+        TI_ADD_INTERNAL_CALL(RigidbodyComponent_SetFixedRotation);
+
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_GetOffset);
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_SetOffset);
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_GetSize);
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_SetSize);
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_SetMaterialPath);
+        TI_ADD_INTERNAL_CALL(CubeColliderComponent_GetMaterialPath);
+
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_GetOffset);
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_SetOffset);
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_GetRadius);
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_SetRadius);
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_SetMaterialPath);
+        TI_ADD_INTERNAL_CALL(SphereColliderComponent_GetMaterialPath);
 
         TI_ADD_INTERNAL_CALL(BoxCollider2DComponent_GetOffset);
         TI_ADD_INTERNAL_CALL(BoxCollider2DComponent_SetOffset);
