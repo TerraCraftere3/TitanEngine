@@ -13,8 +13,10 @@
     #else
         #define TI_API
     #endif
+    #define TI_PLATFORM_STRING "Windows"
 #else
     #error Titan Engine only supports Windows for now!
+    #define TI_PLATFORM_STRING "NO PLATFORM SPECIFIED"
 #endif
 
 #ifdef TI_BUILD_DEBUG
@@ -24,6 +26,28 @@
     #ifndef TI_ENABLE_LOGGING
         #define TI_ENABLE_LOGGING
     #endif
+    #define TI_VARIANT_STRING "Debug"
+#elif defined(TI_BUILD_RELEASE)
+    #define TI_VARIANT_STRING "Release"
+#else
+    #define TI_VARIANT_STRING "NO VARIANT SPECIFIED"
+#endif
+
+#if defined(_M_X64) || defined(__amd64__) || defined(__x86_64__)
+    #define TI_ARCH_X64
+    #define TI_ARCH_STRING "x64"
+#elif defined(_M_IX86) || defined(__i386__)
+    #define TI_ARCH_X86
+    #define TI_ARCH_STRING "x86"
+#elif defined(_M_ARM) || defined(__arm__)
+    #define TI_ARCH_ARM32
+    #define TI_ARCH_STRING "ARM32"
+#elif defined(_M_ARM64) || defined(__aarch64__)
+    #define TI_ARCH_ARM64
+    #define TI_ARCH_STRING "ARM64"
+#else
+    #error Unknown architecture!
+    #define TI_ARCH_STRING "Unknown"
 #endif
 
 #ifdef TI_ENABLE_ASSERTS

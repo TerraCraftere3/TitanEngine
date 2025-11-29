@@ -26,4 +26,12 @@ namespace Titan
         static std::string GetExecutableDirectory();
     };
 
+    class TI_API Platform
+    {
+    public:
+        static std::string GetPlatform();
+        static std::string GetArchitecture();
+        static std::string GetVariant();
+    };
+
 } // namespace Titan
