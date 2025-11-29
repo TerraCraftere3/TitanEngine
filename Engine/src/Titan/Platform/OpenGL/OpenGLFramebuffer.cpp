@@ -11,9 +11,10 @@ namespace Titan
     namespace Utils
     {
 
-        static GLenum TextureTarget(bool multisampled)
+        static GLenum TextureTarget(bool /*multisampled*/)
         {
-            return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+            // MSAA removed: always use 2D textures
+            return GL_TEXTURE_2D;
         }
 
         static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
@@ -26,48 +27,32 @@ namespace Titan
             glBindTexture(TextureTarget(multisampled), id);
         }
 
-        static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, GLenum type,
+        static void AttachColorTexture(uint32_t id, int /*samples*/, GLenum internalFormat, GLenum format, GLenum type,
                                        uint32_t width, uint32_t height, int index)
         {
-            bool multisampled = samples > 1;
-            if (multisampled)
-            {
-                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
-            }
-            else
-            {
-                glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, nullptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, nullptr);
 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            }
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(false), id, 0);
         }
 
-        static void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width,
-                                       uint32_t height)
+        static void AttachDepthTexture(uint32_t id, int /*samples*/, GLenum format, GLenum attachmentType,
+                                       uint32_t width, uint32_t height)
         {
-            bool multisampled = samples > 1;
-            if (multisampled)
-            {
-                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
-            }
-            else
-            {
-                glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+            glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            }
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampled), id, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(false), id, 0);
         }
 
         static bool IsDepthFormat(FramebufferTextureFormat format)
@@ -359,7 +344,6 @@ namespace Titan
         glDeleteTextures(1, &m_DepthAttachment);
         m_ColorAttachmentTex.clear();
         m_DepthAttachmentTex.reset();
-        m_ResolvedColorAttachmentTex.clear();
     }
 
     void OpenGLFramebuffer::Invalidate()
@@ -370,16 +354,8 @@ namespace Titan
             glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
             glDeleteTextures(1, &m_DepthAttachment);
 
-            if (m_ResolvedRendererID)
-            {
-                glDeleteFramebuffers(1, &m_ResolvedRendererID);
-                glDeleteTextures(m_ResolvedColorAttachments.size(), m_ResolvedColorAttachments.data());
-            }
-
             m_ColorAttachments.clear();
-            m_ResolvedColorAttachments.clear();
             m_ColorAttachmentTex.clear();
-            m_ResolvedColorAttachmentTex.clear();
             m_DepthAttachment = 0;
             m_DepthAttachmentTex.reset();
         }
@@ -387,22 +363,19 @@ namespace Titan
         glCreateFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
-        bool multisample = m_Specification.Samples > 1;
-
         // Attachments
         if (m_ColorAttachmentSpecifications.size())
         {
             m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
             m_ColorAttachmentTex.resize(m_ColorAttachmentSpecifications.size());
-            Utils::CreateTextures(multisample, m_ColorAttachments.data(), m_ColorAttachments.size());
+            Utils::CreateTextures(false, m_ColorAttachments.data(), m_ColorAttachments.size());
 
             for (size_t i = 0; i < m_ColorAttachments.size(); i++)
             {
-                Utils::BindTexture(multisample, m_ColorAttachments[i]);
+                Utils::BindTexture(false, m_ColorAttachments[i]);
                 auto formatInfo = Utils::GetFormatInfo(m_ColorAttachmentSpecifications[i].TextureFormat);
-                Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, formatInfo.internalFormat,
-                                          formatInfo.format, formatInfo.type, m_Specification.Width,
-                                          m_Specification.Height, i);
+                Utils::AttachColorTexture(m_ColorAttachments[i], 1, formatInfo.internalFormat, formatInfo.format,
+                                          formatInfo.type, m_Specification.Width, m_Specification.Height, i);
 
                 // Wrap GL texture ID as Texture2D for engine usage
                 m_ColorAttachmentTex[i] = Texture2D::Create((void*)(intptr_t)m_ColorAttachments[i]);
@@ -411,23 +384,21 @@ namespace Titan
 
         if (m_DepthAttachmentSpecification.TextureFormat != FramebufferTextureFormat::None)
         {
-            Utils::CreateTextures(multisample, &m_DepthAttachment, 1);
-            Utils::BindTexture(multisample, m_DepthAttachment);
+            Utils::CreateTextures(false, &m_DepthAttachment, 1);
+            Utils::BindTexture(false, m_DepthAttachment);
             switch (m_DepthAttachmentSpecification.TextureFormat)
             {
                 case FramebufferTextureFormat::DEPTH24STENCIL8:
-                    Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH24_STENCIL8,
-                                              GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width,
-                                              m_Specification.Height);
+                    Utils::AttachDepthTexture(m_DepthAttachment, 1, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT,
+                                              m_Specification.Width, m_Specification.Height);
                     break;
                 case FramebufferTextureFormat::DEPTH32F:
-                    Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH_COMPONENT32F,
-                                              GL_DEPTH_ATTACHMENT, m_Specification.Width, m_Specification.Height);
+                    Utils::AttachDepthTexture(m_DepthAttachment, 1, GL_DEPTH_COMPONENT32F, GL_DEPTH_ATTACHMENT,
+                                              m_Specification.Width, m_Specification.Height);
                     break;
                 case FramebufferTextureFormat::DEPTH32F_STENCIL8:
-                    Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samples, GL_DEPTH32F_STENCIL8,
-                                              GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width,
-                                              m_Specification.Height);
+                    Utils::AttachDepthTexture(m_DepthAttachment, 1, GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT,
+                                              m_Specification.Width, m_Specification.Height);
                     break;
             }
 
@@ -455,40 +426,6 @@ namespace Titan
         TI_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
                        "Framebuffer is incomplete!");
 
-        if (multisample && m_ColorAttachmentSpecifications.size())
-        {
-            glCreateFramebuffers(1, &m_ResolvedRendererID);
-            glBindFramebuffer(GL_FRAMEBUFFER, m_ResolvedRendererID);
-
-            m_ResolvedColorAttachments.resize(m_ColorAttachmentSpecifications.size());
-            m_ResolvedColorAttachmentTex.resize(m_ColorAttachmentSpecifications.size());
-            Utils::CreateTextures(false, m_ResolvedColorAttachments.data(), m_ResolvedColorAttachments.size());
-
-            for (size_t i = 0; i < m_ResolvedColorAttachments.size(); i++)
-            {
-                Utils::BindTexture(false, m_ResolvedColorAttachments[i]);
-                auto formatInfo = Utils::GetFormatInfo(m_ColorAttachmentSpecifications[i].TextureFormat);
-                Utils::AttachColorTexture(m_ResolvedColorAttachments[i], 1, formatInfo.internalFormat,
-                                          formatInfo.format, formatInfo.type, m_Specification.Width,
-                                          m_Specification.Height, i);
-
-                m_ResolvedColorAttachmentTex[i] = Texture2D::Create((void*)(intptr_t)m_ResolvedColorAttachments[i]);
-            }
-
-            if (m_ResolvedColorAttachments.size() > 1)
-            {
-                std::vector<GLenum> buffers(m_ResolvedColorAttachments.size());
-                for (size_t i = 0; i < m_ResolvedColorAttachments.size(); i++)
-                {
-                    buffers[i] = GL_COLOR_ATTACHMENT0 + i;
-                }
-                glDrawBuffers(m_ResolvedColorAttachments.size(), buffers.data());
-            }
-
-            TI_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
-                           "Resolved framebuffer is incomplete!");
-        }
-
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -503,31 +440,7 @@ namespace Titan
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void OpenGLFramebuffer::Resolve()
-    {
-        if (m_Specification.Samples <= 1 || !m_ResolvedRendererID)
-            return;
-
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ResolvedRendererID);
-
-        for (size_t i = 0; i < m_ColorAttachments.size(); i++)
-        {
-            auto& spec = m_ColorAttachmentSpecifications[i];
-
-            // Only blit non-integer textures
-            if (Utils::IsIntegerFormat(spec.TextureFormat))
-                continue;
-
-            glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
-            glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
-
-            glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width,
-                              m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-        }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    void OpenGLFramebuffer::Resolve() {}
 
     void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
     {
@@ -550,34 +463,7 @@ namespace Titan
 
         int pixelData = 0;
 
-        if (m_Specification.Samples > 1)
-        {
-            // For integer attachments, read manually
-            if (Utils::IsIntegerFormat(spec.TextureFormat))
-            {
-                glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-
-                // Cannot blit multisample integer, must read via glReadPixels
-                glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
-            }
-            else
-            {
-                // For non-integer formats, blit to resolved FBO
-                Resolve();
-
-                glBindFramebuffer(GL_FRAMEBUFFER, m_ResolvedRendererID);
-                glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
-                unsigned char data[4];
-                glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                pixelData = data[0]; // return red channel
-            }
-
-            glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-            return pixelData;
-        }
-
-        // Single-sample
+        // Single-sample only (MSAA removed)
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 

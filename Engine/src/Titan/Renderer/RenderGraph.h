@@ -37,7 +37,6 @@ namespace Titan
         FramebufferTextureFormat Format = FramebufferTextureFormat::RGBA8;
         uint32_t Width = 0;
         uint32_t Height = 0;
-        uint32_t Samples = 1;
         bool Persistent = false; // If true, resource persists between frames
     };
 
@@ -185,22 +184,23 @@ namespace Titan
 
         // Fluent API for building render passes
         RenderGraphBuilder& CreateTexture(const std::string& name, FramebufferTextureFormat format, uint32_t width,
-                                          uint32_t height, uint32_t samples = 1);
+                                          uint32_t height);
 
         RenderGraphBuilder& CreatePersistentTexture(const std::string& name, FramebufferTextureFormat format,
-                                                    uint32_t width, uint32_t height, uint32_t samples = 1);
+                                                                  uint32_t width, uint32_t height);
 
-        RenderGraphBuilder& CreateFramebuffer(const std::string& name,
-                                              const std::vector<FramebufferTextureFormat>& attachments, uint32_t width,
-                                              uint32_t height, uint32_t samples);
+          RenderGraphBuilder& CreateFramebuffer(const std::string& name,
+                                                const std::vector<FramebufferTextureFormat>& attachments,
+                                                uint32_t width, uint32_t height);
 
-        RenderGraphBuilder& AddRenderPass(const std::string& name, const std::vector<std::string>& inputs,
-                                          const std::vector<std::string>& outputs, RenderPass::ExecuteFunc executeFunc);
+          RenderGraphBuilder& AddRenderPass(const std::string& name, const std::vector<std::string>& inputs,
+                                            const std::vector<std::string>& outputs,
+                                            RenderPass::ExecuteFunc executeFunc);
 
-        void Build();
+          void Build();
 
-    private:
-        RenderGraph& m_Graph;
+      private:
+          RenderGraph& m_Graph;
     };
 
 } // namespace Titan

@@ -186,12 +186,7 @@ namespace Titan
                             style = "dashed";
                         }
 
-                        // MSAA → blue dotted
-                        if (desc.Samples > 1)
-                        {
-                            color = "blue";
-                            style = "dotted";
-                        }
+                        // MSAA removed: no special styling for samples
                     }
 
                     out << "    \"" << pName << "\" -> \"" << oName << "\" [label=\"" << label << "\" tooltip=\""
@@ -366,7 +361,7 @@ namespace Titan
                 FramebufferSpecification fbSpec;
                 fbSpec.Width = desc.Width > 0 ? desc.Width : m_Width;
                 fbSpec.Height = desc.Height > 0 ? desc.Height : m_Height;
-                fbSpec.Samples = desc.Samples;
+                // MSAA removed: single-sample only
 
                 // Use either the multiple formats or the single one
                 if (!desc.AttachmentFormats.empty())
@@ -582,7 +577,7 @@ namespace Titan
     // ============================================================================
 
     RenderGraphBuilder& RenderGraphBuilder::CreateTexture(const std::string& name, FramebufferTextureFormat format,
-                                                          uint32_t width, uint32_t height, uint32_t samples)
+                                                          uint32_t width, uint32_t height)
     {
         ResourceDescriptor desc;
         desc.Name = name;
@@ -590,7 +585,6 @@ namespace Titan
         desc.Format = format;
         desc.Width = width;
         desc.Height = height;
-        desc.Samples = samples;
         desc.Persistent = false;
 
         m_Graph.RegisterResource(desc);
@@ -599,7 +593,7 @@ namespace Titan
 
     RenderGraphBuilder& RenderGraphBuilder::CreatePersistentTexture(const std::string& name,
                                                                     FramebufferTextureFormat format, uint32_t width,
-                                                                    uint32_t height, uint32_t samples)
+                                                                    uint32_t height)
     {
         ResourceDescriptor desc;
         desc.Name = name;
@@ -607,7 +601,6 @@ namespace Titan
         desc.Format = format;
         desc.Width = width;
         desc.Height = height;
-        desc.Samples = samples;
         desc.Persistent = true;
 
         m_Graph.RegisterResource(desc);
@@ -616,7 +609,7 @@ namespace Titan
 
     RenderGraphBuilder& RenderGraphBuilder::CreateFramebuffer(const std::string& name,
                                                               const std::vector<FramebufferTextureFormat>& attachments,
-                                                              uint32_t width, uint32_t height, uint32_t samples)
+                                                              uint32_t width, uint32_t height)
     {
         ResourceDescriptor desc;
         desc.Name = name;
@@ -624,7 +617,6 @@ namespace Titan
         desc.AttachmentFormats = attachments;
         desc.Width = width;
         desc.Height = height;
-        desc.Samples = samples;
         desc.Persistent = false;
 
         m_Graph.RegisterResource(desc);

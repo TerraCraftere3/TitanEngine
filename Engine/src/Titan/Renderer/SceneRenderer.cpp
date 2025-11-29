@@ -47,7 +47,7 @@ namespace Titan
                               FramebufferTextureFormat::Depth};
         fbSpec.Width = s_SRData->viewWidth;
         fbSpec.Height = s_SRData->viewHeight;
-        fbSpec.Samples = 1;
+        // MSAA removed: single-sample enforced by backend
         s_SRData->finalFramebuffer = Framebuffer::Create(fbSpec);
 
         s_SRData->postFXs = CreateRef<PostProcessingStack>();
@@ -70,7 +70,7 @@ namespace Titan
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // SceneDepth
                                },
-                               s_SRData->viewWidth, s_SRData->viewHeight, 1)
+                               s_SRData->viewWidth, s_SRData->viewHeight)
             .CreateFramebuffer("GeometryBuffer",
                                {
                                    FramebufferTextureFormat::RGBA16F,     // Position
@@ -81,11 +81,11 @@ namespace Titan
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // Depth
                                },
-                               s_SRData->viewWidth, s_SRData->viewHeight, 1)
+                               s_SRData->viewWidth, s_SRData->viewHeight)
             .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, s_SRData->viewWidth,
-                                     s_SRData->viewHeight, 1)
+                                     s_SRData->viewHeight)
             .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGB16F, s_SRData->viewWidth,
-                                     s_SRData->viewHeight, 1);
+                                     s_SRData->viewHeight);
 
         builder.AddRenderPass(
             "ClearPass", {}, {"SceneFramebuffer", "PreFX"},

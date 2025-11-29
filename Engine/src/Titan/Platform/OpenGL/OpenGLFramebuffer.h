@@ -34,10 +34,6 @@ namespace Titan
         virtual Ref<Texture2D> GetColorAttachmentTexture(uint32_t index = 0) const override
         {
             TI_CORE_ASSERT(index < m_ColorAttachmentTex.size());
-
-            if (m_Specification.Samples > 1 && !m_ResolvedColorAttachmentTex.empty())
-                return m_ResolvedColorAttachmentTex[index];
-
             return m_ColorAttachmentTex[index];
         }
 
@@ -55,10 +51,6 @@ namespace Titan
 
         std::vector<Ref<Texture2D>> m_ColorAttachmentTex;
         Ref<Texture2D> m_DepthAttachmentTex;
-
-        uint32_t m_ResolvedRendererID = 0;
-        std::vector<uint32_t> m_ResolvedColorAttachments; // GL IDs (internal)
-        std::vector<Ref<Texture2D>> m_ResolvedColorAttachmentTex;
     };
 
 } // namespace Titan
