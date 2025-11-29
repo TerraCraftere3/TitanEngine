@@ -32,8 +32,8 @@ namespace Titan
         data.WhitePoint = fxc.TonemappingSettings.WhitePoint;
 
         framebuffer->Bind();
-        framebuffer->BindTexture(0, 0); // HDR Color -> slot 0
-        framebuffer->BindTexture(1, 1); // EntityID -> slot 1
+        framebuffer->GetColorAttachmentTexture(0)->Bind(0); // HDR Color -> slot 0
+        framebuffer->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
         m_Shader->Bind();
         m_Shader->SetInt("u_HDRInput", 0);
         m_Shader->SetInt("u_Entity", 1);

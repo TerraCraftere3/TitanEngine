@@ -81,8 +81,7 @@ namespace Titan
         static Ref<Texture2D> Create(const std::string& path, TextureSettings settings = TextureSettings());
         // ptr = gluint as void* or pointer to vulkan texture, etc.
         static Ref<Texture2D> Create(void* ptr, const std::string& path = "internal");
-        // Reload the texture from `path` with the provided `settings`.
-        // Implementations should update the texture object in-place so existing `Ref`s remain valid.
+        
         virtual void Reload(const std::string& path, TextureSettings settings) = 0;
     };
 

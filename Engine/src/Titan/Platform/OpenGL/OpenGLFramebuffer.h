@@ -30,17 +30,15 @@ namespace Titan
 
         virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
-        virtual void BindTexture(uint32_t attachmentIndex = 0, uint32_t bindIndex = 0) const override;
-        virtual void BindDepthTexture(uint32_t bindIndex = 0) const override;
-        virtual void* GetDepthAttachment() const override { return (void*)(intptr_t)m_DepthAttachment; }
-        virtual void* GetColorAttachment(uint32_t index = 0) const override
+        virtual Ref<Texture2D> GetDepthAttachmentTexture() const override { return m_DepthAttachmentTex; }
+        virtual Ref<Texture2D> GetColorAttachmentTexture(uint32_t index = 0) const override
         {
-            TI_CORE_ASSERT(index < m_ColorAttachments.size());
+            TI_CORE_ASSERT(index < m_ColorAttachmentTex.size());
 
-            if (m_Specification.Samples > 1 && !m_ResolvedColorAttachments.empty())
-                return (void*)(intptr_t)m_ResolvedColorAttachments[index];
+            if (m_Specification.Samples > 1 && !m_ResolvedColorAttachmentTex.empty())
+                return m_ResolvedColorAttachmentTex[index];
 
-            return (void*)(intptr_t)m_ColorAttachments[index];
+            return m_ColorAttachmentTex[index];
         }
 
         virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
@@ -52,11 +50,15 @@ namespace Titan
         std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
         FramebufferTextureSpecification m_DepthAttachmentSpecification = FramebufferTextureFormat::None;
 
-        std::vector<uint32_t> m_ColorAttachments;
-        uint32_t m_DepthAttachment = 0;
+        std::vector<uint32_t> m_ColorAttachments; // GL IDs (internal)
+        uint32_t m_DepthAttachment = 0;           // GL ID (internal)
+
+        std::vector<Ref<Texture2D>> m_ColorAttachmentTex;
+        Ref<Texture2D> m_DepthAttachmentTex;
 
         uint32_t m_ResolvedRendererID = 0;
-        std::vector<uint32_t> m_ResolvedColorAttachments;
+        std::vector<uint32_t> m_ResolvedColorAttachments; // GL IDs (internal)
+        std::vector<Ref<Texture2D>> m_ResolvedColorAttachmentTex;
     };
 
 } // namespace Titan

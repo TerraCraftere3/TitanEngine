@@ -412,7 +412,8 @@ namespace Titan
         m_ViewportImageSize = ImGui::GetContentRegionAvail();
 
         ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        ImGui::Image(SceneRenderer::GetFramebuffer()->GetColorAttachment(), viewportSize, ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(SceneRenderer::GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(), viewportSize,
+                     ImVec2(0, 1), ImVec2(1, 0));
     }
 
     void EditorLayer::HandleSceneDragDrop()

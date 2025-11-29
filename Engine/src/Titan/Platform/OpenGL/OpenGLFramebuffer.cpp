@@ -357,6 +357,9 @@ namespace Titan
         glDeleteFramebuffers(1, &m_RendererID);
         glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
         glDeleteTextures(1, &m_DepthAttachment);
+        m_ColorAttachmentTex.clear();
+        m_DepthAttachmentTex.reset();
+        m_ResolvedColorAttachmentTex.clear();
     }
 
     void OpenGLFramebuffer::Invalidate()
@@ -375,7 +378,10 @@ namespace Titan
 
             m_ColorAttachments.clear();
             m_ResolvedColorAttachments.clear();
+            m_ColorAttachmentTex.clear();
+            m_ResolvedColorAttachmentTex.clear();
             m_DepthAttachment = 0;
+            m_DepthAttachmentTex.reset();
         }
 
         glCreateFramebuffers(1, &m_RendererID);
@@ -387,6 +393,7 @@ namespace Titan
         if (m_ColorAttachmentSpecifications.size())
         {
             m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
+            m_ColorAttachmentTex.resize(m_ColorAttachmentSpecifications.size());
             Utils::CreateTextures(multisample, m_ColorAttachments.data(), m_ColorAttachments.size());
 
             for (size_t i = 0; i < m_ColorAttachments.size(); i++)
@@ -396,6 +403,9 @@ namespace Titan
                 Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, formatInfo.internalFormat,
                                           formatInfo.format, formatInfo.type, m_Specification.Width,
                                           m_Specification.Height, i);
+
+                // Wrap GL texture ID as Texture2D for engine usage
+                m_ColorAttachmentTex[i] = Texture2D::Create((void*)(intptr_t)m_ColorAttachments[i]);
             }
         }
 
@@ -420,6 +430,9 @@ namespace Titan
                                               m_Specification.Height);
                     break;
             }
+
+            // Wrap GL depth texture ID
+            m_DepthAttachmentTex = Texture2D::Create((void*)(intptr_t)m_DepthAttachment);
         }
 
         if (m_ColorAttachments.size() > 1)
@@ -448,6 +461,7 @@ namespace Titan
             glBindFramebuffer(GL_FRAMEBUFFER, m_ResolvedRendererID);
 
             m_ResolvedColorAttachments.resize(m_ColorAttachmentSpecifications.size());
+            m_ResolvedColorAttachmentTex.resize(m_ColorAttachmentSpecifications.size());
             Utils::CreateTextures(false, m_ResolvedColorAttachments.data(), m_ResolvedColorAttachments.size());
 
             for (size_t i = 0; i < m_ResolvedColorAttachments.size(); i++)
@@ -457,6 +471,8 @@ namespace Titan
                 Utils::AttachColorTexture(m_ResolvedColorAttachments[i], 1, formatInfo.internalFormat,
                                           formatInfo.format, formatInfo.type, m_Specification.Width,
                                           m_Specification.Height, i);
+
+                m_ResolvedColorAttachmentTex[i] = Texture2D::Create((void*)(intptr_t)m_ResolvedColorAttachments[i]);
             }
 
             if (m_ResolvedColorAttachments.size() > 1)
@@ -598,68 +614,6 @@ namespace Titan
         }
     }
 
-    void OpenGLFramebuffer::BindTexture(uint32_t attachmentIndex, uint32_t bindIndex) const
-    {
-        TI_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "Attachment index out of range!");
-
-        uint32_t textureID = 0;
-        bool textureIsMultisample = (m_Specification.Samples > 1);
-
-        if (m_Specification.Samples > 1 && !m_ResolvedColorAttachments.empty())
-        {
-            if (attachmentIndex < m_ResolvedColorAttachments.size())
-            {
-                textureID = m_ResolvedColorAttachments[attachmentIndex];
-                textureIsMultisample = false;
-            }
-            else
-            {
-                textureID = m_ColorAttachments[attachmentIndex];
-                textureIsMultisample = true;
-            }
-        }
-        else
-        {
-            textureID = m_ColorAttachments[attachmentIndex];
-            textureIsMultisample = (m_Specification.Samples > 1);
-        }
-
-        TI_CORE_ASSERT(textureID != 0, "Trying to bind a zero texture ID!");
-
-        glActiveTexture(GL_TEXTURE0 + bindIndex);
-        GLenum target = Utils::TextureTarget(textureIsMultisample);
-        glBindTexture(target, textureID);
-
-        if (textureIsMultisample)
-        {
-            TI_CORE_WARN(
-                "Bound a multisample texture for sampling. Make sure your shader uses sampler2DMS (in opengl) if you "
-                "intend to sample it directly.");
-        }
-    }
-
-    void OpenGLFramebuffer::BindDepthTexture(uint32_t bindIndex) const
-    {
-        TI_CORE_ASSERT(m_DepthAttachment, "No depth attachment in framebuffer!");
-
-        uint32_t textureID = 0;
-        bool textureIsMultisample = (m_Specification.Samples > 1);
-
-        textureID = m_DepthAttachment;
-
-        TI_CORE_ASSERT(textureID != 0, "Trying to bind a zero depth texture ID!");
-
-        glActiveTexture(GL_TEXTURE0 + bindIndex);
-
-        GLenum target = Utils::TextureTarget(textureIsMultisample);
-        glBindTexture(target, textureID);
-
-        if (textureIsMultisample)
-        {
-            TI_CORE_WARN(
-                "Bound a multisample depth texture for sampling. Make sure your shader uses sampler2DMS and "
-                "texelFetch.");
-        }
-    }
+    // Bind helpers removed; attachments are now exposed as Texture2D
 
 } // namespace Titan

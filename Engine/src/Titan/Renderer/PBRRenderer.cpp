@@ -43,13 +43,13 @@ namespace Titan
         s_PBRData.SceneUniformBuffer->SetData(&data, sizeof(PBRSceneData));
 
         s_PBRData.Shader->Bind();
-        gbuffer->BindTexture(0, 1); // Position
-        gbuffer->BindTexture(1, 2); // Normal
-        gbuffer->BindTexture(2, 3); // Albedo
-        gbuffer->BindTexture(3, 4); // Metallic, Roughness, AO
-        gbuffer->BindTexture(4, 5); // Emission
-        gbuffer->BindTexture(5, 6); // Entity ID
-        gbuffer->BindDepthTexture(7);
+        gbuffer->GetColorAttachmentTexture(0)->Bind(1); // Position
+        gbuffer->GetColorAttachmentTexture(1)->Bind(2); // Normal
+        gbuffer->GetColorAttachmentTexture(2)->Bind(3); // Albedo
+        gbuffer->GetColorAttachmentTexture(3)->Bind(4); // Metallic, Roughness, AO
+        gbuffer->GetColorAttachmentTexture(4)->Bind(5); // Emission
+        gbuffer->GetColorAttachmentTexture(5)->Bind(6); // Entity ID
+        gbuffer->GetDepthAttachmentTexture()->Bind(7);
 
         if (irradiance)
             irradiance->Bind(8);
