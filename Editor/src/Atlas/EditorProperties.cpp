@@ -37,6 +37,9 @@ namespace Titan
             // clang-format on
         }
 
+        if (data["EnableMultiViewports"])
+            props.EnableMultiViewports = data["EnableMultiViewports"].as<bool>();
+
         TI_CORE_INFO("Loaded Editor Properties from '{}'", filepath.string());
         return true;
     }
@@ -66,6 +69,7 @@ namespace Titan
         out << YAML::Key << "ShowLog" << YAML::Value <<                      props.ShowLog;
         // clang-format on
         out << YAML::EndMap;
+        out << YAML::Key << "EnableMultiViewports" << YAML::Value << props.EnableMultiViewports;
         out << YAML::EndMap;
 
         std::ofstream fout(filepath);

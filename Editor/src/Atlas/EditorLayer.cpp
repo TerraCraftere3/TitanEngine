@@ -80,7 +80,7 @@ namespace Titan
         {
             case SceneState::Edit:
             {
-                if (m_EnableMultiViewports)
+                if (m_EditorProperties.EnableMultiViewports)
                 {
                     for (int i = 0; i < 4; ++i)
                         m_EditorCameras[i].OnUpdate(ts);
@@ -93,7 +93,7 @@ namespace Titan
                 m_ActiveScene->OnUpdateEditor(ts, m_EditorCameras[0]);
                 if (m_EnableRender)
                 {
-                    if (m_EnableMultiViewports)
+                    if (m_EditorProperties.EnableMultiViewports)
                     {
                         for (uint32_t i = 0; i < 4; ++i)
                             SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
@@ -108,7 +108,7 @@ namespace Titan
             }
             case SceneState::Simulate:
             {
-                if (m_EnableMultiViewports)
+                if (m_EditorProperties.EnableMultiViewports)
                 {
                     for (int i = 0; i < 4; ++i)
                         m_EditorCameras[i].OnUpdate(ts);
@@ -121,7 +121,7 @@ namespace Titan
                 m_ActiveScene->OnUpdateSimulation(ts, m_EditorCameras[0]);
                 if (m_EnableRender)
                 {
-                    if (m_EnableMultiViewports)
+                    if (m_EditorProperties.EnableMultiViewports)
                     {
                         for (uint32_t i = 0; i < 4; ++i)
                             SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
@@ -143,7 +143,7 @@ namespace Titan
             }
         }
 
-        if (m_EnableMultiViewports)
+        if (m_EditorProperties.EnableMultiViewports)
         {
             for (int i = 0; i < 4; ++i)
                 m_EditorCameras[i].SetBlockEvents(!m_SubViewportHovered[i]);
@@ -179,7 +179,7 @@ namespace Titan
 
     void EditorLayer::OnEvent(Event& event)
     {
-        if (m_EnableMultiViewports)
+        if (m_EditorProperties.EnableMultiViewports)
         {
             for (int i = 0; i < 4; ++i)
                 m_EditorCameras[i].OnEvent(event);
@@ -418,15 +418,15 @@ namespace Titan
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         glm::vec2 newSize = {viewportPanelSize.x, viewportPanelSize.y};
 
-        static bool s_PrevMultiViewportState = m_EnableMultiViewports;
-        bool viewportModeChanged = (s_PrevMultiViewportState != m_EnableMultiViewports);
-        s_PrevMultiViewportState = m_EnableMultiViewports;
+        static bool s_PrevMultiViewportState = m_EditorProperties.EnableMultiViewports;
+        bool viewportModeChanged = (s_PrevMultiViewportState != m_EditorProperties.EnableMultiViewports);
+        s_PrevMultiViewportState = m_EditorProperties.EnableMultiViewports;
 
         if (m_ViewportSize != newSize || viewportModeChanged)
         {
             m_ViewportSize = newSize;
 
-            if (m_EnableMultiViewports)
+            if (m_EditorProperties.EnableMultiViewports)
             {
                 // Split into 2x2 cells
                 uint32_t cellW = (uint32_t)(newSize.x * 0.5f);
@@ -481,7 +481,7 @@ namespace Titan
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
         ImGui::SameLine();
-        ImGui::Checkbox("Enable Multi Viewports", &m_EnableMultiViewports);
+        ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
 
         ImGui::PopStyleVar(2);
         ImGui::End();
@@ -493,7 +493,7 @@ namespace Titan
         m_ViewportImagePos = ImGui::GetCursorScreenPos();
         m_ViewportImageSize = ImGui::GetContentRegionAvail();
 
-        if (m_EnableMultiViewports)
+        if (m_EditorProperties.EnableMultiViewports)
         {
             // Split into 2x2 grid
             float cellW = m_ViewportImageSize.x * 0.5f;

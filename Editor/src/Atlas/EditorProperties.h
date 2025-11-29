@@ -17,6 +17,8 @@ namespace Titan
         bool ShowViewport = true;
         bool ShowProfiler = true;
         bool ShowLog = true;
+
+        bool EnableMultiViewports = false;
     };
 
     // Loads editor properties from a YAML configuration file.
