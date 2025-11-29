@@ -2,7 +2,7 @@
 
 #include "Titan/PCH.h"
 #include "Titan/Renderer/PostProcessing.h" // For PostFX base
-#include "TonemappingTypes.h" // TonemappingOperator enum
+#include "TonemappingTypes.h"              // TonemappingOperator enum
 
 namespace Titan
 {
@@ -11,7 +11,7 @@ namespace Titan
     class TonemappingEffect : public PostFX
     {
     public:
-        TonemappingEffect() : PostFX("Tonemapping"){};
+        TonemappingEffect() : PostFX("Tonemapping") {};
 
         virtual void OnAttach() override;
         virtual void OnDetach() override;

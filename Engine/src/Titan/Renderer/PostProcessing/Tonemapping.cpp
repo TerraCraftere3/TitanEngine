@@ -5,10 +5,10 @@ namespace Titan
 {
     struct TonemappingUniformData
     {
-        int Operator;         // Which tonemapping operator to use
-        float Exposure;       // Exposure adjustment
-        float Gamma;          // Gamma correction value
-        float WhitePoint;     // White point for certain operators
+        int Operator;     // Which tonemapping operator to use
+        float Exposure;   // Exposure adjustment
+        float Gamma;      // Gamma correction value
+        float WhitePoint; // White point for certain operators
     };
 
     void TonemappingEffect::OnAttach()

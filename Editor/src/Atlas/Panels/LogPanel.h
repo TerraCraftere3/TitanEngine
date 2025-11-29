@@ -1,6 +1,6 @@
 #pragma once
-#include <Titan/PCH.h>
 #include <Titan/Core/ImGuiLogSink.h>
+#include <Titan/PCH.h>
 
 namespace Titan
 {
@@ -8,7 +8,7 @@ namespace Titan
     {
     public:
         LogPanel();
-        
+
         void OnImGuiRender(bool* open = nullptr);
 
     private:

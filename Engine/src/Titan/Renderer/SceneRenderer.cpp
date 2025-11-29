@@ -54,6 +54,7 @@ namespace Titan
     void SceneRenderer::EnsureView(uint32_t viewIndex)
     {
         TI_ASSERT(viewIndex < kMaxViews);
+        TI_CORE_INFO("Setting up Scene Renderer View {}", viewIndex);
         auto& v = s_SRData->views[viewIndex];
 
         // Create final output framebuffer per view
@@ -384,6 +385,7 @@ namespace Titan
         {
             for (uint32_t i = 0; i < kMaxViews; ++i)
             {
+                TI_CORE_INFO("Shutting down Scene Renderer View {}", i);
                 auto& v = s_SRData->views[i];
                 if (v.postFXs)
                     v.postFXs->Shutdown();

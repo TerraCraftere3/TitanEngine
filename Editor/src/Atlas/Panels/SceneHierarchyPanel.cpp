@@ -2,8 +2,8 @@
 #include <vector>
 #include "../Components.h"
 #include "ImReflect.hpp"
-#include "Titan/ImReflect_glm.hpp"
 #include "Titan/FontAwesome7.h"
+#include "Titan/ImReflect_glm.hpp"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -427,37 +427,33 @@ namespace Titan
                 }
             });
 
-        DrawComponent<PostFXComponent>(ICON_FA_SLIDERS " Post Processing", entity,
-                                       [](auto& component)
-                                       {
-                                           // FXAA Section
-                                           if (ImGui::TreeNodeEx("FXAA"))
-                                           {
-                                               ImGui::Checkbox("Enabled", &component.FXAASettings.isEnabled);
-                                               ImGui::TreePop();
-                                           }
+        DrawComponent<PostFXComponent>(
+            ICON_FA_SLIDERS " Post Processing", entity,
+            [](auto& component)
+            {
+                // FXAA Section
+                if (ImGui::TreeNodeEx("FXAA"))
+                {
+                    ImGui::Checkbox("Enabled", &component.FXAASettings.isEnabled);
+                    ImGui::TreePop();
+                }
 
-                                           // Tonemapping Section
-                                           if (ImGui::TreeNodeEx("Tonemapping"))
-                                           {
-                                               ImGui::Checkbox("Enabled", &component.TonemappingSettings.isEnabled);
-                                               {
-                                                   auto config = ImSettings();
-                                                   config.push<TonemappingOperator>().as_dropdown().pop();
-                                                   ImReflect::Input("Mode", component.TonemappingSettings.Operator,
-                                                                    config);
-                                               }
+                // Tonemapping Section
+                if (ImGui::TreeNodeEx("Tonemapping"))
+                {
+                    ImGui::Checkbox("Enabled", &component.TonemappingSettings.isEnabled);
+                    {
+                        auto config = ImSettings();
+                        config.push<TonemappingOperator>().as_dropdown().pop();
+                        ImReflect::Input("Mode", component.TonemappingSettings.Operator, config);
+                    }
 
-                                               ImGui::DragFloat("Exposure", &component.TonemappingSettings.Exposure,
-                                                                0.01f, 0.0f, 10.0f);
-                                               ImGui::DragFloat("Gamma", &component.TonemappingSettings.Gamma, 0.01f,
-                                                                0.1f, 5.0f);
-                                               ImGui::DragFloat("White Point",
-                                                                &component.TonemappingSettings.WhitePoint, 0.1f, 0.0f,
-                                                                50.0f);
-                                               ImGui::TreePop();
-                                           }
-                                       });
+                    ImGui::DragFloat("Exposure", &component.TonemappingSettings.Exposure, 0.01f, 0.0f, 10.0f);
+                    ImGui::DragFloat("Gamma", &component.TonemappingSettings.Gamma, 0.01f, 0.1f, 5.0f);
+                    ImGui::DragFloat("White Point", &component.TonemappingSettings.WhitePoint, 0.1f, 0.0f, 50.0f);
+                    ImGui::TreePop();
+                }
+            });
 
         DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " Sprite Renderer", entity,
                                                [](auto& component)

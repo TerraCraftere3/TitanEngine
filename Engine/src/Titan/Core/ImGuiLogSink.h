@@ -1,8 +1,8 @@
 #pragma once
-#include "Titan/PCH.h"
-#include <spdlog/sinks/base_sink.h>
 #include <spdlog/details/log_msg.h>
+#include <spdlog/sinks/base_sink.h>
 #include <mutex>
+#include "Titan/PCH.h"
 
 namespace Titan
 {
@@ -20,7 +20,7 @@ namespace Titan
         static ImGuiLogSink& GetInstance();
 
         const std::vector<LogMessage>& GetMessages() const { return m_Messages; }
-        
+
         void Clear();
 
     protected:

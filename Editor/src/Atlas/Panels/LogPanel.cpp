@@ -4,9 +4,7 @@
 
 namespace Titan
 {
-    LogPanel::LogPanel()
-    {
-    }
+    LogPanel::LogPanel() {}
 
     void LogPanel::OnImGuiRender(bool* open)
     {
@@ -15,10 +13,10 @@ namespace Titan
         // Toolbar
         if (ImGui::Button("Clear"))
             ImGuiLogSink::GetInstance().Clear();
-        
+
         ImGui::SameLine();
         ImGui::Checkbox("Auto-scroll", &m_AutoScroll);
-        
+
         ImGui::SameLine();
         ImGui::Checkbox("Timestamp", &m_ShowTimestamp);
 
@@ -28,7 +26,7 @@ namespace Titan
         ImGui::BeginChild("LogScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
         const auto& messages = ImGuiLogSink::GetInstance().GetMessages();
-        
+
         for (const auto& msg : messages)
         {
             // Filter: Show only errors and warnings from CORE, but everything from APP
@@ -76,20 +74,20 @@ namespace Titan
             }
 
             ImGui::PushStyleColor(ImGuiCol_Text, color);
-            
+
             if (m_ShowTimestamp)
             {
                 auto time = std::chrono::system_clock::to_time_t(msg.Timestamp);
-                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(msg.Timestamp.time_since_epoch()) % 1000;
-                
+                auto ms =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(msg.Timestamp.time_since_epoch()) % 1000;
+
                 std::tm tm_buf;
                 localtime_s(&tm_buf, &time);
-                
-                ImGui::Text("[%02d:%02d:%02d.%03lld] ", 
-                    tm_buf.tm_hour, tm_buf.tm_min, tm_buf.tm_sec, ms.count());
+
+                ImGui::Text("[%02d:%02d:%02d.%03lld] ", tm_buf.tm_hour, tm_buf.tm_min, tm_buf.tm_sec, ms.count());
                 ImGui::SameLine();
             }
-            
+
             ImGui::TextUnformatted(msg.Message.c_str());
             ImGui::PopStyleColor();
         }

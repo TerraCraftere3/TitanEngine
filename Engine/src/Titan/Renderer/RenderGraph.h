@@ -187,20 +187,19 @@ namespace Titan
                                           uint32_t height);
 
         RenderGraphBuilder& CreatePersistentTexture(const std::string& name, FramebufferTextureFormat format,
-                                                                  uint32_t width, uint32_t height);
+                                                    uint32_t width, uint32_t height);
 
-          RenderGraphBuilder& CreateFramebuffer(const std::string& name,
-                                                const std::vector<FramebufferTextureFormat>& attachments,
-                                                uint32_t width, uint32_t height);
+        RenderGraphBuilder& CreateFramebuffer(const std::string& name,
+                                              const std::vector<FramebufferTextureFormat>& attachments, uint32_t width,
+                                              uint32_t height);
 
-          RenderGraphBuilder& AddRenderPass(const std::string& name, const std::vector<std::string>& inputs,
-                                            const std::vector<std::string>& outputs,
-                                            RenderPass::ExecuteFunc executeFunc);
+        RenderGraphBuilder& AddRenderPass(const std::string& name, const std::vector<std::string>& inputs,
+                                          const std::vector<std::string>& outputs, RenderPass::ExecuteFunc executeFunc);
 
-          void Build();
+        void Build();
 
-      private:
-          RenderGraph& m_Graph;
+    private:
+        RenderGraph& m_Graph;
     };
 
 } // namespace Titan

@@ -20,7 +20,7 @@ Titan::Application* Titan::CreateApplication(ApplicationCommandLineArgs args)
 {
     ApplicationSpecification spec;
     spec.Name = "AtlasEditor";
-    spec.WindowProperties = WindowProps(spec.Name);
+    spec.WindowProperties = WindowProps("Atlas Editor for Titan");
     spec.CommandLineArgs = args;
 
     return new Titan::AtlasApp(spec);
