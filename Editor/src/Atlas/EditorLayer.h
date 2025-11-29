@@ -80,6 +80,13 @@ namespace Titan
         ImVec2 m_ViewportImagePos;
         ImVec2 m_ViewportImageSize;
 
+        // Multi-view state
+        int m_ActiveViewportIndex = 0;
+        ImVec2 m_SubViewportImagePos[4] = {};
+        ImVec2 m_SubViewportImageSize[4] = {};
+        bool m_SubViewportHovered[4] = {false, false, false, false};
+        bool m_EnableMultiViewports = true;
+
         // Resources
         Ref<Texture2D> m_StartIcon;
         Ref<Texture2D> m_SimulateIcon;
@@ -91,7 +98,7 @@ namespace Titan
         Ref<Scene> m_ActiveScene;
         Ref<Scene> m_EditorScene;
         std::filesystem::path m_EditorScenePath;
-        EditorCamera m_EditorCamera;
+        EditorCamera m_EditorCameras[4];
 
         // Panels
         Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
@@ -100,6 +107,6 @@ namespace Titan
 
         // Editor properties
         EditorProperties m_EditorProperties;
-        OverlaySettings m_OverlaySettings;
+        OverlaySettings m_OverlaySettings[4];
     };
 } // namespace Titan

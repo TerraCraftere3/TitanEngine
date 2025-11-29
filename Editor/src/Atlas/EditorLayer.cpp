@@ -41,8 +41,15 @@ namespace Titan
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
-        m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-        m_EditorCamera.MouseRotate(glm::vec2(-0.5f, 0.5f)); // Rotate
+        for (int i = 0; i < 4; ++i)
+        {
+            m_EditorCameras[i] = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+        }
+        // Give each view a slight different starting angle
+        m_EditorCameras[0].MouseRotate(glm::vec2(-0.5f, 0.5f));
+        m_EditorCameras[1].MouseRotate(glm::vec2(0.3f, 0.2f));
+        m_EditorCameras[2].MouseRotate(glm::vec2(-0.2f, -0.3f));
+        m_EditorCameras[3].MouseRotate(glm::vec2(0.1f, -0.4f));
 
         m_StartIcon = Assets::Load<Texture2D>("resources/icons/play.svg");
         m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
@@ -73,20 +80,58 @@ namespace Titan
         {
             case SceneState::Edit:
             {
-                m_EditorCamera.OnUpdate(ts);
+                if (m_EnableMultiViewports)
+                {
+                    for (int i = 0; i < 4; ++i)
+                        m_EditorCameras[i].OnUpdate(ts);
+                }
+                else
+                {
+                    m_EditorCameras[0].OnUpdate(ts);
+                }
 
-                m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+                m_ActiveScene->OnUpdateEditor(ts, m_EditorCameras[0]);
                 if (m_EnableRender)
-                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera, m_OverlaySettings);
+                {
+                    if (m_EnableMultiViewports)
+                    {
+                        for (uint32_t i = 0; i < 4; ++i)
+                            SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
+                                                             m_OverlaySettings[i]);
+                    }
+                    else
+                    {
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_OverlaySettings[0]);
+                    }
+                }
                 break;
             }
             case SceneState::Simulate:
             {
-                m_EditorCamera.OnUpdate(ts);
+                if (m_EnableMultiViewports)
+                {
+                    for (int i = 0; i < 4; ++i)
+                        m_EditorCameras[i].OnUpdate(ts);
+                }
+                else
+                {
+                    m_EditorCameras[0].OnUpdate(ts);
+                }
 
-                m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+                m_ActiveScene->OnUpdateSimulation(ts, m_EditorCameras[0]);
                 if (m_EnableRender)
-                    SceneRenderer::RenderSceneEditor(m_ActiveScene, m_EditorCamera, m_OverlaySettings);
+                {
+                    if (m_EnableMultiViewports)
+                    {
+                        for (uint32_t i = 0; i < 4; ++i)
+                            SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
+                                                             m_OverlaySettings[i]);
+                    }
+                    else
+                    {
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_OverlaySettings[0]);
+                    }
+                }
                 break;
             }
             case SceneState::Play:
@@ -98,7 +143,15 @@ namespace Titan
             }
         }
 
-        m_EditorCamera.SetBlockEvents(!m_ViewportHovered);
+        if (m_EnableMultiViewports)
+        {
+            for (int i = 0; i < 4; ++i)
+                m_EditorCameras[i].SetBlockEvents(!m_SubViewportHovered[i]);
+        }
+        else
+        {
+            m_EditorCameras[0].SetBlockEvents(!m_SubViewportHovered[0]);
+        }
     }
 
     void EditorLayer::OnImGuiRender(ImGuiContext* ctx)
@@ -126,7 +179,15 @@ namespace Titan
 
     void EditorLayer::OnEvent(Event& event)
     {
-        m_EditorCamera.OnEvent(event);
+        if (m_EnableMultiViewports)
+        {
+            for (int i = 0; i < 4; ++i)
+                m_EditorCameras[i].OnEvent(event);
+        }
+        else
+        {
+            m_EditorCameras[0].OnEvent(event);
+        }
 
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<KeyPressedEvent>(TI_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -357,12 +418,35 @@ namespace Titan
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         glm::vec2 newSize = {viewportPanelSize.x, viewportPanelSize.y};
 
-        if (m_ViewportSize != newSize)
+        static bool s_PrevMultiViewportState = m_EnableMultiViewports;
+        bool viewportModeChanged = (s_PrevMultiViewportState != m_EnableMultiViewports);
+        s_PrevMultiViewportState = m_EnableMultiViewports;
+
+        if (m_ViewportSize != newSize || viewportModeChanged)
         {
-            SceneRenderer::Resize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
             m_ViewportSize = newSize;
+
+            if (m_EnableMultiViewports)
+            {
+                // Split into 2x2 cells
+                uint32_t cellW = (uint32_t)(newSize.x * 0.5f);
+                uint32_t cellH = (uint32_t)(newSize.y * 0.5f);
+
+                for (uint32_t i = 0; i < 4; ++i)
+                {
+                    SceneRenderer::Resize(i, cellW, cellH);
+                    m_EditorCameras[i].SetViewportSize((float)cellW, (float)cellH);
+                }
+            }
+            else
+            {
+                // Single viewport - use full size for view 0
+                SceneRenderer::Resize(0, (uint32_t)newSize.x, (uint32_t)newSize.y);
+                m_EditorCameras[0].SetViewportSize(newSize.x, newSize.y);
+            }
+
+            // Keep scene aware of the main viewport size (use full region)
             m_ActiveScene->OnViewportResize(static_cast<uint32_t>(newSize.x), static_cast<uint32_t>(newSize.y));
-            m_EditorCamera.SetViewportSize(newSize.x, newSize.y);
         }
     }
 
@@ -397,10 +481,7 @@ namespace Titan
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
         ImGui::SameLine();
-        ImGui::Checkbox("Enable AABB Rendering", &m_OverlaySettings.enableBoundingBoxRender);
-
-        ImGui::SameLine();
-        ImGui::Checkbox("Wireframe Mode", &m_OverlaySettings.enableWireframe);
+        ImGui::Checkbox("Enable Multi Viewports", &m_EnableMultiViewports);
 
         ImGui::PopStyleVar(2);
         ImGui::End();
@@ -408,12 +489,81 @@ namespace Titan
 
     void EditorLayer::RenderViewportImage()
     {
+        // Overall viewport rect
         m_ViewportImagePos = ImGui::GetCursorScreenPos();
         m_ViewportImageSize = ImGui::GetContentRegionAvail();
 
-        ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        ImGui::Image(SceneRenderer::GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(), viewportSize,
-                     ImVec2(0, 1), ImVec2(1, 0));
+        if (m_EnableMultiViewports)
+        {
+            // Split into 2x2 grid
+            float cellW = m_ViewportImageSize.x * 0.5f;
+            float cellH = m_ViewportImageSize.y * 0.5f;
+
+            for (int row = 0; row < 2; ++row)
+            {
+                for (int col = 0; col < 2; ++col)
+                {
+                    int idx = row * 2 + col;
+                    ImVec2 pos = {m_ViewportImagePos.x + col * cellW, m_ViewportImagePos.y + row * cellH};
+                    ImVec2 size = {cellW, cellH};
+
+                    m_SubViewportImagePos[idx] = pos;
+                    m_SubViewportImageSize[idx] = size;
+
+                    ImGui::SetCursorScreenPos(pos);
+                    auto fb = SceneRenderer::GetFramebuffer((uint32_t)idx);
+                    if (fb)
+                    {
+                        ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), size, ImVec2(0, 1),
+                                     ImVec2(1, 0));
+                    }
+                    else
+                    {
+                        ImGui::Dummy(size);
+                    }
+
+                    // Hover detection and active selection
+                    m_SubViewportHovered[idx] = ImGui::IsItemHovered();
+                    if (ImGui::IsItemClicked())
+                        m_ActiveViewportIndex = idx;
+
+                    // Draw a small overlay with flags on the active viewport
+                    if (idx == m_ActiveViewportIndex)
+                    {
+                        ImDrawList* dl = ImGui::GetWindowDrawList();
+                        ImVec2 boxPos = {pos.x + 8, pos.y + 8};
+                        ImGui::SetCursorScreenPos({boxPos.x + 6, boxPos.y + 3});
+                        ImGui::BeginGroup();
+                        ImGui::Checkbox("Overlay", &m_OverlaySettings[idx].enableOverlay);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("AABB", &m_OverlaySettings[idx].enableBoundingBoxRender);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Wireframe", &m_OverlaySettings[idx].enableWireframe);
+                        ImGui::EndGroup();
+                    }
+                }
+            }
+        }
+        else
+        {
+            // Single viewport mode - only render view 0
+            m_SubViewportImagePos[0] = m_ViewportImagePos;
+            m_SubViewportImageSize[0] = m_ViewportImageSize;
+
+            auto fb = SceneRenderer::GetFramebuffer(0);
+            if (fb)
+            {
+                ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), m_ViewportImageSize, ImVec2(0, 1),
+                             ImVec2(1, 0));
+            }
+
+            m_SubViewportHovered[0] = ImGui::IsItemHovered();
+            m_ActiveViewportIndex = 0;
+
+            // Reset hover for other viewports
+            for (int i = 1; i < 4; ++i)
+                m_SubViewportHovered[i] = false;
+        }
     }
 
     void EditorLayer::HandleSceneDragDrop()
@@ -439,10 +589,13 @@ namespace Titan
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::SetDrawlist();
 
-        ImGuizmo::SetRect(m_ViewportImagePos.x, m_ViewportImagePos.y, m_ViewportImageSize.x, m_ViewportImageSize.y);
+        int activeIdx = m_ActiveViewportIndex;
+        ImVec2 gizmoPos = m_SubViewportImagePos[activeIdx];
+        ImVec2 gizmoSize = m_SubViewportImageSize[activeIdx];
+        ImGuizmo::SetRect(gizmoPos.x, gizmoPos.y, gizmoSize.x, gizmoSize.y);
 
-        const glm::mat4& proj = m_EditorCamera.GetProjection();
-        glm::mat4 view = m_EditorCamera.GetViewMatrix();
+        const glm::mat4& proj = m_EditorCameras[activeIdx].GetProjection();
+        glm::mat4 view = m_EditorCameras[activeIdx].GetViewMatrix();
 
         bool snap = Input::IsKeyPressed(Key::LeftControl);
         float snapValue = (m_GizmoType == ImGuizmo::OPERATION::ROTATE) ? 45.0f : 0.5f;
@@ -555,18 +708,29 @@ namespace Titan
     {
         if (e.GetMouseButton() == static_cast<int>(MouseButton::ButtonLeft))
         {
-            if (m_ViewportHovered && m_ViewportImageSize.x > 0 && m_ViewportImageSize.y > 0 && !ImGuizmo::IsOver() &&
-                !Input::IsKeyPressed(Key::LeftAlt))
+            // Determine which viewport sub-panel was clicked
+            ImVec2 mouse = ImGui::GetMousePos();
+            int clickedViewIdx = -1;
+            for (int i = 0; i < 4; ++i)
             {
-                ImVec2 mouse = ImGui::GetMousePos();
-                float mx = mouse.x - m_ViewportImagePos.x;
-                float my = mouse.y - m_ViewportImagePos.y;
+                if (m_SubViewportHovered[i])
+                {
+                    clickedViewIdx = i;
+                    break;
+                }
+            }
+
+            if (clickedViewIdx >= 0 && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+            {
+                float mx = mouse.x - m_SubViewportImagePos[clickedViewIdx].x;
+                float my = mouse.y - m_SubViewportImagePos[clickedViewIdx].y;
                 int mouseX = static_cast<int>(mx);
                 int mouseY = static_cast<int>(my);
-                if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_ViewportImageSize.x) &&
-                    mouseY < static_cast<int>(m_ViewportImageSize.y))
+
+                if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_SubViewportImageSize[clickedViewIdx].x) &&
+                    mouseY < static_cast<int>(m_SubViewportImageSize[clickedViewIdx].y))
                 {
-                    int pixel = SceneRenderer::GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
+                    int pixel = SceneRenderer::GetFramebuffer(clickedViewIdx)->ReadPixel(1, mouseX, mouseY);
                     auto entity = Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
                     m_SceneHierarchyPanel->SetSelectedEntity(entity);
                 }

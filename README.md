@@ -84,7 +84,7 @@ For now there is no linux support
   - [x] Directional Light
 - [ ] Post Processing
   - [ ] Bloom
-  - [ ] Tone Mapping
+  - [x] Tone Mapping
   - [x] Anti Aliasing (FXAA)
   - [ ] SSAO (Screen Space Ambient Occlusion)
   - [ ] SSR (Screen Space Reflection)
@@ -100,6 +100,11 @@ For now there is no linux support
     - [ ] Mesh Collider
     - [x] Cube Collider
     - [x] Sphere Collider
+- [ ] Renderer Backends
+  - [x] OpenGL
+  - [ ] Vulkan
+  - [ ] Metal
+  - [ ] DirectX
 
 
 
