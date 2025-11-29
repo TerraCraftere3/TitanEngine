@@ -41,7 +41,7 @@ namespace Titan
         virtual void MakeHandleNonResident() override;
         virtual bool isValidBindlessHandle() override { return m_CreatedHandle; };
 
-        virtual bool operator==(const Texture& other) const override
+        virtual bool operator==(const Texture2D& other) const override
         {
             return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
         }

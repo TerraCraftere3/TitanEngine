@@ -7,28 +7,6 @@
 namespace Titan
 {
 
-    class TI_API Texture
-    {
-    public:
-        virtual ~Texture() = default;
-
-        virtual uint32_t GetWidth() const = 0;
-        virtual uint32_t GetHeight() const = 0;
-        virtual void* GetNativeTexture() const = 0;
-        virtual std::string GetPath() const = 0;
-
-        virtual void SetData(void* data, uint32_t size) = 0;
-
-        virtual void Bind(uint32_t slot = 0) const = 0;
-
-        virtual uint64_t GetBindlessHandle() = 0;
-        virtual void MakeHandleResident() = 0;
-        virtual void MakeHandleNonResident() = 0;
-        virtual bool isValidBindlessHandle() = 0;
-
-        virtual bool operator==(const Texture& other) const = 0;
-    };
-
     enum TextureFormat
     {
         RGBA8,
@@ -73,15 +51,33 @@ namespace Titan
         TextureSettings() = default;
     };
 
-    class TI_API Texture2D : public Texture
+    class TI_API Texture2D
     {
     public:
+        virtual ~Texture2D() = default;
+
+        virtual uint32_t GetWidth() const = 0;
+        virtual uint32_t GetHeight() const = 0;
+        virtual void* GetNativeTexture() const = 0;
+        virtual std::string GetPath() const = 0;
+
+        virtual void SetData(void* data, uint32_t size) = 0;
+
+        virtual void Bind(uint32_t slot = 0) const = 0;
+
+        virtual uint64_t GetBindlessHandle() = 0;
+        virtual void MakeHandleResident() = 0;
+        virtual void MakeHandleNonResident() = 0;
+        virtual bool isValidBindlessHandle() = 0;
+
+        virtual bool operator==(const Texture2D& other) const = 0;
+
         static Ref<Texture2D> Create(uint32_t width, uint32_t height, TextureFormat format = TextureFormat::RGBA8,
                                      TextureSettings settings = TextureSettings());
         static Ref<Texture2D> Create(const std::string& path, TextureSettings settings = TextureSettings());
         // ptr = gluint as void* or pointer to vulkan texture, etc.
         static Ref<Texture2D> Create(void* ptr, const std::string& path = "internal");
-        
+
         virtual void Reload(const std::string& path, TextureSettings settings) = 0;
     };
 
