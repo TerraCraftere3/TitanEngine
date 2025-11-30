@@ -51,3 +51,22 @@ Entities:
       Scale: [1, 1, 1]
     DirectionalLightComponent:
       Direction: [-1, 1, 1]
+  - Entity: 14937211091717920478
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: false
+  - Entity: 4146401718377097354
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, 1, 1]

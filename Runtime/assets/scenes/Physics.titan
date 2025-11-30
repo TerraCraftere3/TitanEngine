@@ -189,3 +189,22 @@ Entities:
       Offset: [0, 0, 0]
       Size: [0.5, 0.5, 0.5]
       Material: ""
+  - Entity: 9055050089013397004
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: false
+  - Entity: 17127470116962465040
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [1, 1, 1]

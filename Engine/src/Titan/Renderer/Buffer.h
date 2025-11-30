@@ -171,4 +171,17 @@ namespace Titan
         static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t size);
     };
 
+    // Unified Shader Storage Buffer interface moved from ShaderStorageBuffer.h
+    class ShaderStorageBuffer
+    {
+    public:
+        virtual ~ShaderStorageBuffer() = default;
+
+        virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+
+        static Ref<ShaderStorageBuffer> Create(uint32_t size, uint32_t binding);
+    };
+
 } // namespace Titan
