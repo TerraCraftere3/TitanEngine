@@ -121,6 +121,7 @@ endif()
 target_compile_definitions(engine PUBLIC
     $<$<CONFIG:Debug>:TI_BUILD_DEBUG>
     $<$<CONFIG:RelWithDebInfo>:TI_BUILD_DEBUG>
+    $<$<CONFIG:RelWithDebInfo>:TI_BUILD_DEBUG_OPTIMIZED>
     $<$<CONFIG:Release>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE>
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>

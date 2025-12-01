@@ -26,7 +26,11 @@
     #ifndef TI_ENABLE_LOGGING
         #define TI_ENABLE_LOGGING
     #endif
-    #define TI_VARIANT_STRING "Debug"
+    #ifdef TI_BUILD_DEBUG_OPTIMIZED
+        #define TI_VARIANT_STRING "Debug Optimized"
+    #else
+        #define TI_VARIANT_STRING "Debug"
+    #endif
 #elif defined(TI_BUILD_RELEASE)
     #define TI_VARIANT_STRING "Release"
 #else
