@@ -40,6 +40,20 @@ namespace Titan
         if (data["EnableMultiViewports"])
             props.EnableMultiViewports = data["EnableMultiViewports"].as<bool>();
 
+        auto overlays = data["Overlays"];
+        if (overlays && overlays.IsSequence())
+        {
+            for (size_t i = 0; i < overlays.size() && i < 4; ++i)
+            {
+                // clang-format off
+                auto overlay = overlays[i];
+                if (overlay["Enable"])           props.Overlays[i].enableOverlay = overlay["Enable"].as<bool>();
+                if (overlay["AABB"])             props.Overlays[i].enableBoundingBoxRender = overlay["AABB"].as<bool>();
+                if (overlay["Wireframe"])        props.Overlays[i].enableWireframe = overlay["Wireframe"].as<bool>();
+                // clang-format on
+            }
+        }
+
         TI_CORE_INFO("Loaded Editor Properties from '{}'", filepath.string());
         return true;
     }
@@ -70,6 +84,20 @@ namespace Titan
         // clang-format on
         out << YAML::EndMap;
         out << YAML::Key << "EnableMultiViewports" << YAML::Value << props.EnableMultiViewports;
+
+        out << YAML::Key << "Overlays" << YAML::Value << YAML::BeginSeq;
+        for (int i = 0; i < 4; ++i)
+        {
+            // clang-format off
+            out << YAML::BeginMap;
+            out << YAML::Key << "Enable" << YAML::Value <<            props.Overlays[i].enableOverlay;
+            out << YAML::Key << "AABB" << YAML::Value <<              props.Overlays[i].enableBoundingBoxRender;
+            out << YAML::Key << "Wireframe" << YAML::Value <<         props.Overlays[i].enableWireframe;
+            out << YAML::EndMap;
+            // clang-format on
+        }
+        out << YAML::EndSeq;
+
         out << YAML::EndMap;
 
         std::ofstream fout(filepath);

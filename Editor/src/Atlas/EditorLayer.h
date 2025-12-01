@@ -107,6 +107,5 @@ namespace Titan
 
         // Editor properties
         EditorProperties m_EditorProperties;
-        OverlaySettings m_OverlaySettings[4];
     };
 } // namespace Titan

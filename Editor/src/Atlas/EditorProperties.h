@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Titan/PCH.h>
+#include "Titan/PCH.h"
+#include "Titan/Renderer/SceneRenderer.h"
 
 namespace Titan
 {
@@ -19,13 +20,12 @@ namespace Titan
         bool ShowLog = true;
 
         bool EnableMultiViewports = false;
+
+        // Overlay settings for each viewport (4 viewports)
+        OverlaySettings Overlays[4];
     };
 
-    // Loads editor properties from a YAML configuration file.
-    // Returns true if load succeeded (file existed and parsed), false otherwise (defaults remain).
     bool LoadEditorProperties(EditorProperties& props, const std::filesystem::path& filepath);
-
-    // Saves editor properties to a YAML configuration file. Returns true on success.
     bool SaveEditorProperties(const EditorProperties& props, const std::filesystem::path& filepath);
 
 } // namespace Titan

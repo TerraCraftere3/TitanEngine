@@ -97,11 +97,11 @@ namespace Titan
                     {
                         for (uint32_t i = 0; i < 4; ++i)
                             SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
-                                                             m_OverlaySettings[i]);
+                                                             m_EditorProperties.Overlays[i]);
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_OverlaySettings[0]);
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;
@@ -125,11 +125,11 @@ namespace Titan
                     {
                         for (uint32_t i = 0; i < 4; ++i)
                             SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
-                                                             m_OverlaySettings[i]);
+                                                             m_EditorProperties.Overlays[i]);
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_OverlaySettings[0]);
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;
@@ -534,11 +534,11 @@ namespace Titan
                         ImVec2 boxPos = {pos.x + 8, pos.y + 8};
                         ImGui::SetCursorScreenPos({boxPos.x + 6, boxPos.y + 3});
                         ImGui::BeginGroup();
-                        ImGui::Checkbox("Overlay", &m_OverlaySettings[idx].enableOverlay);
+                        ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[idx].enableOverlay);
                         ImGui::SameLine();
-                        ImGui::Checkbox("AABB", &m_OverlaySettings[idx].enableBoundingBoxRender);
+                        ImGui::Checkbox("AABB", &m_EditorProperties.Overlays[idx].enableBoundingBoxRender);
                         ImGui::SameLine();
-                        ImGui::Checkbox("Wireframe", &m_OverlaySettings[idx].enableWireframe);
+                        ImGui::Checkbox("Wireframe", &m_EditorProperties.Overlays[idx].enableWireframe);
                         ImGui::EndGroup();
                     }
                 }
