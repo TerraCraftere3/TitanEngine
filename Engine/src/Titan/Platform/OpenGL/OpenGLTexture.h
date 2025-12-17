@@ -46,6 +46,11 @@ namespace Titan
             return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
         }
 
+        void ReplaceTextureFromPixels(unsigned char* data, int width, int height, TextureSettings settings,
+                                      int channels, bool isSVG);
+
+        static Ref<Texture2D> CreateAsync(const std::string& path, TextureSettings settings);
+
     private:
         std::string m_Path;
         uint32_t m_Width, m_Height;

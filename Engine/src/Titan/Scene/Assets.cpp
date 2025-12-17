@@ -46,7 +46,7 @@ namespace Titan
         std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
         if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga")
-            return Load<Texture2D>(std::filesystem::relative(filePath).string());
+            return LoadAsync<Texture2D>(std::filesystem::relative(filePath));
 
         if (ext == ".vert" || ext == ".frag" || ext == ".vs" || ext == ".fs" || ext == ".shader" || ext == ".glsl" ||
             ext == ".hlsl" || ext == ".slang")

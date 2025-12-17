@@ -1,4 +1,5 @@
 #pragma once
+#include "Titan/Core/Application.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Cubemap.h"
@@ -14,7 +15,6 @@
 
 namespace Titan
 {
-
     enum class AssetType
     {
         None = 0,
@@ -344,6 +344,43 @@ namespace Titan
             else
             {
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::Load<T>");
+            }
+
+            if (asset)
+                AssetLibrary::Add(path, asset, meta);
+
+            return asset;
+        }
+
+        // Async asset loading (currently only Texture2D).
+        template <typename T>
+        Ref<T> LoadAsync(const std::filesystem::path& path)
+        {
+            if (AssetLibrary::Exists(path))
+            {
+                return AssetLibrary::Get<T>(path);
+            }
+
+            AssetMeta meta = LoadMetaFromDisk<T>(path);
+            Ref<T> asset = nullptr;
+
+            if constexpr (std::is_same_v<T, Texture2D>)
+            {
+                TextureSettings settings;
+                if (meta.Properties.contains("WrapS"))
+                    settings.HorizontalWrap = Utils::StringToTextureWrap(meta.Properties["WrapS"]);
+                if (meta.Properties.contains("WrapT"))
+                    settings.VerticalWrap = Utils::StringToTextureWrap(meta.Properties["WrapT"]);
+                if (meta.Properties.contains("MinFilter"))
+                    settings.MinFilter = Utils::StringToTextureFiltering(meta.Properties["MinFilter"]);
+                if (meta.Properties.contains("MagFilter"))
+                    settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
+
+                asset = Texture2D::CreateAsync(path.string(), settings);
+            }
+            else
+            {
+                static_assert(always_false<T>::value, "LoadAsync not supported for this asset type");
             }
 
             if (asset)

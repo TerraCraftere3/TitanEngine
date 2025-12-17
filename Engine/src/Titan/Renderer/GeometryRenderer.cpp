@@ -28,7 +28,6 @@ namespace Titan
 
     static Textures s_Textures;
 
-    // Compact vertex format - only what we need
     struct Vertex
     {
         glm::vec3 Position;

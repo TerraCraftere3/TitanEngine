@@ -1,4 +1,6 @@
 #include "OpenGLTexture.h"
+#include <thread>
+#include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
 #include "Titan/Utils/PlatformUtils.h"
 #include "nanosvg.h"
@@ -336,5 +338,213 @@ namespace Titan
             glMakeTextureHandleNonResidentARB(m_BindlessHandle);
             m_HandleResident = false;
         }
+    }
+
+    void OpenGLTexture2D::ReplaceTextureFromPixels(unsigned char* data, int width, int height, TextureSettings settings,
+                                                   int channels, bool isSVG)
+    {
+        // Determine formats from channel count
+        GLenum internal = GL_RGBA8;
+        GLenum format = GL_RGBA;
+        if (channels == 3)
+        {
+            internal = GL_RGB8;
+            format = GL_RGB;
+        }
+        else if (channels == 1)
+        {
+            internal = GL_R8;
+            format = GL_RED;
+        }
+
+        // Create new texture and apply params
+        uint32_t newID = 0;
+        glCreateTextures(GL_TEXTURE_2D, 1, &newID);
+        glTextureStorage2D(newID, 1, internal, width, height);
+
+        auto wrapToGL = [](TextureWrap wrap) -> GLenum
+        {
+            switch (wrap)
+            {
+                case TextureWrap::Repeat:
+                    return GL_REPEAT;
+                case TextureWrap::MirroredRepeat:
+                    return GL_MIRRORED_REPEAT;
+                case TextureWrap::ClampToEdge:
+                    return GL_CLAMP_TO_EDGE;
+                case TextureWrap::ClampToBorder:
+                    return GL_CLAMP_TO_BORDER;
+                default:
+                    return GL_REPEAT;
+            }
+        };
+
+        auto filterToGL = [](TextureFiltering filter) -> GLenum
+        {
+            switch (filter)
+            {
+                case TextureFiltering::Nearest:
+                    return GL_NEAREST;
+                case TextureFiltering::MipmapNearest:
+                    return GL_NEAREST_MIPMAP_NEAREST;
+                case TextureFiltering::Linear:
+                    return GL_LINEAR;
+                case TextureFiltering::MipmapLinear:
+                    return GL_LINEAR_MIPMAP_LINEAR;
+                default:
+                    return GL_LINEAR;
+            }
+        };
+
+        glTextureParameteri(newID, GL_TEXTURE_MIN_FILTER, filterToGL(settings.MinFilter));
+        glTextureParameteri(newID, GL_TEXTURE_MAG_FILTER, filterToGL(settings.MagFilter));
+        glTextureParameteri(newID, GL_TEXTURE_WRAP_S, wrapToGL(settings.HorizontalWrap));
+        glTextureParameteri(newID, GL_TEXTURE_WRAP_T, wrapToGL(settings.VerticalWrap));
+
+        // Upload pixels
+        glTextureSubImage2D(newID, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE, data);
+
+        if (settings.MinFilter == TextureFiltering::MipmapNearest ||
+            settings.MinFilter == TextureFiltering::MipmapLinear)
+        {
+            glGenerateTextureMipmap(newID);
+        }
+
+        // Replace old state
+        glDeleteTextures(1, &m_RendererID);
+        m_RendererID = newID;
+        m_Width = (uint32_t)width;
+        m_Height = (uint32_t)height;
+        m_InternalFormat = internal;
+        m_DataFormat = format;
+        m_BindlessHandle = 0;
+        m_HandleResident = false;
+        m_CreatedHandle = false;
+
+        // Free pixel data
+        if (isSVG)
+            delete[] data;
+        else
+            stbi_image_free(data);
+    }
+
+    Ref<Texture2D> OpenGLTexture2D::CreateAsync(const std::string& path, TextureSettings settings)
+    {
+        // Create a small purple placeholder
+        auto placeholder = CreateRef<OpenGLTexture2D>(16u, 16u, TextureFormat::RGBA8, settings);
+
+        // Fill purple RGBA (255, 0, 255, 255)
+        std::vector<unsigned char> pixels(16u * 16u * 4u);
+        for (size_t i = 0; i < pixels.size(); i += 4)
+        {
+            pixels[i + 0] = 255;
+            pixels[i + 1] = 0;
+            pixels[i + 2] = 255;
+            pixels[i + 3] = 255;
+        }
+        placeholder->SetData(pixels.data(), (uint32_t)pixels.size());
+
+        // Background load
+        std::weak_ptr<OpenGLTexture2D> weak = std::static_pointer_cast<OpenGLTexture2D>(placeholder);
+        std::thread(
+            [weak, path, settings]()
+            {
+                int width = 0, height = 0, channels = 4;
+                unsigned char* data = nullptr;
+                bool isSVG = false;
+
+                // Determine extension
+                std::string ext;
+                if (!path.empty())
+                {
+                    auto dot = path.find_last_of('.');
+                    if (dot != std::string::npos)
+                        ext = path.substr(dot + 1);
+                }
+                for (auto& c : ext)
+                    c = (char)std::tolower(c);
+
+                if (ext == "svg")
+                {
+                    isSVG = true;
+                    width = height = 256; // fixed raster size for thumbnails
+                    data = new unsigned char[width * height * 4];
+
+                    NSVGimage* image = nsvgParseFromFile(path.c_str(), "px", 96);
+                    if (!image)
+                    {
+                        // Failed to parse, bail out
+                        if (auto strong = weak.lock())
+                        {
+                            Application::GetInstance()->SubmitToMainThread(
+                                [strong]()
+                                {
+                                    // keep placeholder; no-op
+                                });
+                        }
+                        return;
+                    }
+                    NSVGrasterizer* rast = nsvgCreateRasterizer();
+                    float scale = float(width) / image->width;
+                    nsvgRasterize(rast, image, 0, 0, scale, data, width, height, width * 4);
+
+                    // Flip vertically
+                    for (int y = 0; y < height / 2; y++)
+                    {
+                        int opp = height - 1 - y;
+                        for (int x = 0; x < width; x++)
+                        {
+                            int i0 = (y * width + x) * 4;
+                            int i1 = (opp * width + x) * 4;
+                            std::swap(data[i0 + 0], data[i1 + 0]);
+                            std::swap(data[i0 + 1], data[i1 + 1]);
+                            std::swap(data[i0 + 2], data[i1 + 2]);
+                            std::swap(data[i0 + 3], data[i1 + 3]);
+                        }
+                    }
+
+                    nsvgDeleteRasterizer(rast);
+                    nsvgDelete(image);
+                    channels = 4;
+                }
+                else
+                {
+                    // Load raster image
+                    data = stbi_load(path.c_str(), &width, &height, &channels, STBI_default);
+                    if (!data)
+                    {
+                        if (auto strong = weak.lock())
+                        {
+                            Application::GetInstance()->SubmitToMainThread(
+                                [strong]()
+                                {
+                                    // keep placeholder; no-op
+                                });
+                        }
+                        return;
+                    }
+                }
+
+                // Schedule upload on main thread
+                Application::GetInstance()->SubmitToMainThread(
+                    [weak, data, width, height, settings, channels, isSVG]()
+                    {
+                        if (auto strong = weak.lock())
+                        {
+                            strong->ReplaceTextureFromPixels(data, width, height, settings, channels, isSVG);
+                        }
+                        else
+                        {
+                            // Texture was destroyed; free data
+                            if (isSVG)
+                                delete[] data;
+                            else
+                                stbi_image_free(data);
+                        }
+                    });
+            })
+            .detach();
+
+        return placeholder;
     }
 } // namespace Titan
