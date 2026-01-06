@@ -42,7 +42,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts'
         },
-        blog: {
+        /*blog: {
           showReadingTime: true,
           feedOptions: {
             type: ['rss', 'atom'],
@@ -52,7 +52,8 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
-        },
+        },*/
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -75,13 +76,13 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
+          sidebarId: 'mainSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Documentation',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        //{to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/TerraCraftere3/TitanEngine',
           label: 'GitHub',
           position: 'right',
         },
@@ -103,34 +104,13 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-            {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
-            },
+              href: 'https://github.com/TerraCraftere3/TitanEngine',
+            }
           ],
-        },
+        }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Titan Engine.`,
     },
     prism: {
       theme: prismThemes.github,
