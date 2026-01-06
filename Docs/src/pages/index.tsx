@@ -21,7 +21,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/setup">
-            Engine Setup - 5min ⏱️
+            Lets Get Started 🚀
           </Link>
         </div>
       </div>

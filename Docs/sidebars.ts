@@ -6,7 +6,15 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Systems',
-      items: ['systems/renderer', 'systems/physics', 'systems/ecs'],
+      items: [
+        'systems/renderer',
+        'systems/physics',
+        'systems/ecs',
+        'systems/input',
+        'systems/asset-management',
+        'systems/scene',
+        'systems/scripting'
+      ],
     }
   ]
 };
