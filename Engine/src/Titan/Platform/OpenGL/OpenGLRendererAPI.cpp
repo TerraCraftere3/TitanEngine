@@ -130,4 +130,35 @@ namespace Titan
         glViewport(x, y, width, height);
     }
 
+    const RendererAPI::Backend& OpenGLRendererAPI::GetBackend() const
+    {
+        static Backend backend;
+
+        static bool initialized = false;
+        if (!initialized)
+        {
+            backend.Vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+            backend.Renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+            backend.Version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+
+            GLint maxTextureUnits = 0;
+            glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+            backend.MaxTextureUnits = static_cast<uint32_t>(maxTextureUnits);
+
+            GLint maxTextureSize = 0;
+            glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+            backend.MaxTextureSize = static_cast<uint32_t>(maxTextureSize);
+
+            backend.SupportsComputeShaders = GLAD_GL_ARB_compute_shader;
+            backend.SupportsTessellationShaders = GLAD_GL_ARB_tessellation_shader;
+            backend.SupportsGeometryShaders = GLAD_GL_ARB_geometry_shader4;
+
+            backend.SupportsRaytracing = false;
+
+            initialized = true;
+        }
+
+        return backend;
+    }
+
 } // namespace Titan

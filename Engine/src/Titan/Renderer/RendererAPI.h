@@ -22,6 +22,22 @@ namespace Titan
             OpenGL = 1
         };
 
+        struct Backend
+        {
+            std::string Vendor;
+            std::string Renderer;
+            std::string Version;
+
+            bool SupportsComputeShaders = false;
+            bool SupportsTessellationShaders = false;
+            bool SupportsGeometryShaders = false;
+
+            uint32_t MaxTextureUnits = 0;
+            uint32_t MaxTextureSize = 0;
+
+            bool SupportsRaytracing = false;
+        };
+
     public:
         virtual void Init() = 0;
 
@@ -42,6 +58,7 @@ namespace Titan
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
+        virtual const Backend& GetBackend() const = 0;
         inline static API GetAPI() { return s_API; }
 
     private:

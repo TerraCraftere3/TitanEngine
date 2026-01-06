@@ -309,6 +309,30 @@ namespace Titan
         ImGui::Text("Vertices Rendered: %s",
                     FormatNumber(stats2d.GetTotalVertexCount() + stats3d.GetTotalVertexCount()).c_str());
 
+        ImGui::SeparatorText("Backend");
+        auto& settings = RenderCommand::GetBackend();
+        ImGui::Text("API: %s", settings.Renderer.c_str());
+        ImGui::Text("Version: %s", settings.Version.c_str());
+        ImGui::Text("Vendor: %s", settings.Vendor.c_str());
+
+        ImGui::Separator();
+        ImGui::SeparatorText("Features");
+        ImGui::BeginDisabled();
+        ImGui::Checkbox("Compute Shaders", &const_cast<bool&>(settings.SupportsComputeShaders));
+        ImGui::Checkbox("Tessellation Shaders", &const_cast<bool&>(settings.SupportsTessellationShaders));
+        ImGui::Checkbox("Geometry Shaders", &const_cast<bool&>(settings.SupportsGeometryShaders));
+        ImGui::Checkbox("Raytracing", &const_cast<bool&>(settings.SupportsRaytracing));
+        ImGui::EndDisabled();
+
+        ImGui::Separator();
+        ImGui::SeparatorText("Limits");
+        ImGui::BeginDisabled();
+        ImGui::InputScalar("Max Texture Units", ImGuiDataType_U32, &const_cast<uint32_t&>(settings.MaxTextureUnits),
+                           nullptr, nullptr);
+        ImGui::InputScalar("Max Texture Size", ImGuiDataType_U32, &const_cast<uint32_t&>(settings.MaxTextureSize),
+                           nullptr, nullptr);
+        ImGui::EndDisabled();
+
         ImGui::End();
     }
 
