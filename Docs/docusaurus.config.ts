@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Titan Engine',
-  tagline: 'A custom Game Engine written in c++',
+  tagline: 'A Custom Game Engine written in c++',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -22,8 +22,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'TerraCraftere3', // Usually your GitHub org/user name.
+  projectName: 'TitanEngine', // Usually your repo name.
 
   onBrokenLinks: 'throw',
 
@@ -106,6 +106,10 @@ const config: Config = {
             {
               label: 'GitHub',
               href: 'https://github.com/TerraCraftere3/TitanEngine',
+            },
+            {
+              label: 'YouTube',
+              href: 'https://www.youtube.com/@terrastudiosdev',
             }
           ],
         }

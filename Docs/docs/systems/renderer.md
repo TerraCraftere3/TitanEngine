@@ -15,7 +15,9 @@ The Renderer has full PBR Support with features like Image Based Lighting. Here 
 - [ ] SSR
 - [ ] Bloom
 
-- You can easilly add new Post Processing in `Engine\src\Titan\Renderer\SceneRenderer.cpp` and `Engine\src\Titan\Renderer\PostProcessing\*.cpp`, you dont need any specific graphics api knowledge (e.g. OpenGL, etc.)
+:::info
+You can easilly add new Post Processing in `Engine\src\Titan\Renderer\SceneRenderer.cpp` and `Engine\src\Titan\Renderer\PostProcessing\*.cpp`, you dont need any specific graphics api knowledge (e.g. OpenGL, etc.)
+:::
 ---
 
 ## Backends
