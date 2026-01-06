@@ -10,7 +10,7 @@
 
 #include "Titan/Core/Window.h"
 #include "Titan/PCH.h"
-#include "Titan/Platform/OpenGL/OpenGLContext.h"
+#include "Titan/Platform/OpenGL/OpenGLGLFWContext.h"
 
 namespace Titan
 {

@@ -13,12 +13,13 @@
 namespace Titan
 {
 
-    class OpenGLContext : public GraphicsContext
+    class OpenGLGLFWContext : public GraphicsContext
     {
     public:
-        OpenGLContext(GLFWwindow* window);
+        OpenGLGLFWContext(GLFWwindow* window);
 
         virtual void Init() override;
+        virtual void Shutdown() override;
         virtual void Swapbuffers() override;
 
     private:

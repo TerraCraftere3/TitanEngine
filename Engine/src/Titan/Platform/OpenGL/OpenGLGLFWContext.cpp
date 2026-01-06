@@ -1,4 +1,4 @@
-#include "Titan/Platform/OpenGL/OpenGLContext.h"
+#include "OpenGLGLFWContext.h"
 
 void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
                                   const GLchar* message, const void* userParam)
@@ -97,13 +97,13 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
 namespace Titan
 {
 
-    OpenGLContext::OpenGLContext(GLFWwindow* window)
+    OpenGLGLFWContext::OpenGLGLFWContext(GLFWwindow* window)
     {
         TI_CORE_ASSERT(window, "Window doesnt exist! Graphics context cant be created!");
         m_Window = window;
     }
 
-    void OpenGLContext::Init()
+    void OpenGLGLFWContext::Init()
     {
         glfwMakeContextCurrent(m_Window);
         int success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -130,7 +130,11 @@ namespace Titan
         }
     }
 
-    void OpenGLContext::Swapbuffers()
+    void OpenGLGLFWContext::Shutdown()
+    {
+        TI_CORE_TRACE("Shutting down OpenGL context");
+    }
+    void OpenGLGLFWContext::Swapbuffers()
     {
         glfwSwapBuffers(m_Window);
     }
