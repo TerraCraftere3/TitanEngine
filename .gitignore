@@ -28,3 +28,6 @@ out
 !**/mono/**/*.pdb
 !**/mono/**/*.log
 **.blend1
+
+docs/node_modules
+docs/build
