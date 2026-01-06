@@ -79,8 +79,6 @@ For more advanced input handling with event callbacks, the engine uses an event 
 - `MouseButtonReleasedEvent` - Triggered when a mouse button is released
 - `MouseMovedEvent` - Triggered when the mouse moves
 
-See the [Events documentation](/docs/systems/events) for more details on event handling.
-
 :::info
 Input is located in `Engine\src\Titan\Core\Input.h` and the platform-specific implementations are in `Engine\src\Titan\Platform\[Platform]\*Input.cpp`
 :::
