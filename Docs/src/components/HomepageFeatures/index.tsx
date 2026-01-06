@@ -16,17 +16,17 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'PBR Rendering',
-    Image: 'img/screenshots/helmet.png',
+    Image: 'img/helmet.png',
     description: <>Get stunning visuals with Titan Engine's modern Physically Based Rendering (PBR) system</>,
   },
   {
     title: 'Prebuilt Editor',
-    Image: 'img/screenshots/editor.png',
+    Image: 'img/editor.png',
     description: <>An easy to use prebuilt editor to help you build your games faster. (although you can also use the engine without it!)</>,
   },
   {
     title: 'Physics',
-    Image: 'img/screenshots/physics.png',
+    Image: 'img/physics.png',
     description: <>Use PhysX and Box2D to simulate realtime physics in your games, from rigid bodies to complex collisions.</>,
   },
 ];
