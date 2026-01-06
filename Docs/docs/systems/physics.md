@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Physics
@@ -23,6 +23,3 @@ Also each Collider / Rigidbody has a physics material with options like Density,
 
 ## Backend
 The Physics Simulation uses [PhysX](https://github.com/NVIDIA-Omniverse/PhysX) for 3D and [Box2D](github.com/erincatto/box2d) for 2D Physics Simulation. PhysX provides Industry standard Physics Simulation.
-
----
-In The Future this is all going to change (new apis, features)

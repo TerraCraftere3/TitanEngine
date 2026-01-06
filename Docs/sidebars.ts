@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Systems',
-      items: ['systems/renderer', 'systems/physics'],
+      items: ['systems/renderer', 'systems/physics', 'systems/ecs'],
     }
   ]
 };
