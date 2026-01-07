@@ -17,5 +17,13 @@ namespace Titan
         Ref<Texture2D> NormalTexture;
         Ref<Texture2D> AOTexture;
         glm::vec2 UVRepeat = glm::vec2(1.0f);
+
+        std::string SourcePath = "";
+
+        Material3D() = default;
+        Material3D(const Material3D&) = default;
+
+        void TI_API Save();
+        static Ref<Material3D> TI_API Create(const std::string& path);
     };
 } // namespace Titan

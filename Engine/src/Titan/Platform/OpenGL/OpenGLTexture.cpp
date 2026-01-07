@@ -24,67 +24,79 @@ namespace Titan
     {
         int width = 0, height = 0, channels = 4;
         unsigned char* data = nullptr;
+        std::string ext = "";
 
-        // Check file extension
-        auto ext = path.substr(path.find_last_of(".") + 1);
-        for (auto& c : ext)
-            c = std::tolower(c);
-        if (ext == "svg")
+        // Handle special [internal] path - create white texture
+        if (path == "[internal]")
         {
-            width = height = 256;
-            data = new unsigned char[width * height * 4]; // RGBA
-
-            NSVGimage* image = nsvgParseFromFile(path.c_str(), "px", 96);
-            TI_CORE_ASSERT(image, "Failed to load SVG!");
-
-            NSVGrasterizer* rast = nsvgCreateRasterizer();
-
-            float scale = float(width) / image->width;
-            nsvgRasterize(rast, image, 0, 0, scale, data, width, height, width * 4);
-
-            // --- Flip vertically ---
-            for (int y = 0; y < height / 2; y++)
-            {
-                int opposite = height - y - 1;
-                for (int x = 0; x < width * 4; x++)
-                    std::swap(data[y * width * 4 + x], data[opposite * width * 4 + x]);
-            }
-
-            nsvgDeleteRasterizer(rast);
-            nsvgDelete(image);
-
+            width = height = 1;
+            data = new unsigned char[4]{255, 255, 255, 255}; // White RGBA
             m_InternalFormat = GL_RGBA8;
             m_DataFormat = GL_RGBA;
         }
-
+        // Check file extension
         else
         {
-            stbi_set_flip_vertically_on_load(1);
-            data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-            TI_CORE_ASSERT(data, "Failed to load image!");
+            ext = path.substr(path.find_last_of(".") + 1);
+            for (auto& c : ext)
+                c = std::tolower(c);
 
-            if (channels == 4)
+            if (ext == "svg")
             {
+                width = height = 256;
+                data = new unsigned char[width * height * 4]; // RGBA
+
+                NSVGimage* image = nsvgParseFromFile(path.c_str(), "px", 96);
+                TI_CORE_ASSERT(image, "Failed to load SVG!");
+
+                NSVGrasterizer* rast = nsvgCreateRasterizer();
+
+                float scale = float(width) / image->width;
+                nsvgRasterize(rast, image, 0, 0, scale, data, width, height, width * 4);
+
+                // --- Flip vertically ---
+                for (int y = 0; y < height / 2; y++)
+                {
+                    int opposite = height - y - 1;
+                    for (int x = 0; x < width * 4; x++)
+                        std::swap(data[y * width * 4 + x], data[opposite * width * 4 + x]);
+                }
+
+                nsvgDeleteRasterizer(rast);
+                nsvgDelete(image);
+
                 m_InternalFormat = GL_RGBA8;
                 m_DataFormat = GL_RGBA;
             }
-            else if (channels == 3)
+            else
             {
-                m_InternalFormat = GL_RGB8;
-                m_DataFormat = GL_RGB;
-            }
-            else if (channels == 2)
-            {
-                m_InternalFormat = GL_RG8;
-                m_DataFormat = GL_RG;
-            }
-            else if (channels == 1)
-            {
-                m_InternalFormat = GL_R8;
-                m_DataFormat = GL_RED;
-            }
+                stbi_set_flip_vertically_on_load(1);
+                data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+                TI_CORE_ASSERT(data, "Failed to load image!");
 
-            TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
+                if (channels == 4)
+                {
+                    m_InternalFormat = GL_RGBA8;
+                    m_DataFormat = GL_RGBA;
+                }
+                else if (channels == 3)
+                {
+                    m_InternalFormat = GL_RGB8;
+                    m_DataFormat = GL_RGB;
+                }
+                else if (channels == 2)
+                {
+                    m_InternalFormat = GL_RG8;
+                    m_DataFormat = GL_RG;
+                }
+                else if (channels == 1)
+                {
+                    m_InternalFormat = GL_R8;
+                    m_DataFormat = GL_RED;
+                }
+
+                TI_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
+            }
         }
 
         m_Width = width;
@@ -139,8 +151,7 @@ namespace Titan
         }
 
         glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
-
-        if (ext == "svg")
+        if (path == "[internal]" || ext == "svg")
             delete[] data;
         else
             stbi_image_free(data);
@@ -432,6 +443,7 @@ namespace Titan
     {
         // Create a small purple placeholder
         auto placeholder = CreateRef<OpenGLTexture2D>(16u, 16u, TextureFormat::RGBA8, settings);
+        placeholder->m_Path = path;
 
         // Fill purple RGBA (255, 0, 255, 255)
         std::vector<unsigned char> pixels(16u * 16u * 4u);

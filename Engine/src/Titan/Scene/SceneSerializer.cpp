@@ -307,34 +307,23 @@ namespace Titan
 
             out << YAML::Key << "Materials";
             out << YAML::BeginSeq; // Materials
+            int matIndex = 0;
             for (auto mat : meshRendererComponent.MeshRef->GetMaterials())
             {
-                out << YAML::BeginMap; // Material
-                out << YAML::Key << "AlbedoColor" << YAML::Value << mat->AlbedoColor;
-                if (mat->AlbedoTexture)
-                {
-                    out << YAML::Key << "AlbedoTexture" << YAML::Value << mat->AlbedoTexture->GetPath();
-                }
-                if (mat->EmissionTexture)
-                {
-                    out << YAML::Key << "EmissionTexture" << YAML::Value << mat->EmissionTexture->GetPath();
-                }
-                if (mat->MetallicTexture)
-                {
-                    out << YAML::Key << "MetallicTexture" << YAML::Value << mat->MetallicTexture->GetPath();
-                }
-                if (mat->RoughnessTexture)
-                    out << YAML::Key << "RoughnessTexture" << YAML::Value << mat->RoughnessTexture->GetPath();
-                if (mat->NormalTexture)
-                {
-                    out << YAML::Key << "NormalTexture" << YAML::Value << mat->NormalTexture->GetPath();
-                }
-                if (mat->AOTexture)
-                {
-                    out << YAML::Key << "AOTexture" << YAML::Value << mat->AOTexture->GetPath();
-                }
-                out << YAML::Key << "UVRepeat" << YAML::Value << mat->UVRepeat;
-                out << YAML::EndMap; // Material
+                // Generate a material file path based on mesh path and material index
+                auto meshPath = std::filesystem::path(meshRendererComponent.MeshRef->GetFilePath());
+                auto materialDir = meshPath.parent_path() / "Materials";
+                auto materialFileName = meshPath.stem().string() + "_Mat" + std::to_string(matIndex) + ".mat";
+                auto materialFilePath = materialDir / materialFileName;
+
+                // Save the material to disk
+                std::filesystem::create_directories(materialDir);
+                mat->SourcePath = materialFilePath.string();
+                mat->Save();
+
+                // Save just the path in the scene file
+                out << materialFilePath.string();
+                matIndex++;
             }
             out << YAML::EndSeq; // Materials
             out << YAML::EndMap; // MeshRendererComponent
@@ -650,38 +639,30 @@ namespace Titan
                     }
                     auto materials = meshRendererComponent["Materials"];
                     int matIndex = 0;
-                    for (auto material : materials)
+                    for (auto materialPath : materials)
                     {
                         auto mat = mrc.MeshRef->GetMaterial(matIndex);
                         if (mat)
                         {
-                            mat->AlbedoColor = material["AlbedoColor"].as<glm::vec4>();
-
-                            if (material["AlbedoTexture"])
-                                mat->AlbedoTexture =
-                                    Assets::Load<Texture2D>(material["AlbedoTexture"].as<std::string>());
-
-                            if (material["EmissionTexture"])
-                                mat->EmissionTexture =
-                                    Assets::Load<Texture2D>(material["EmissionTexture"].as<std::string>());
-
-                            if (material["MetallicTexture"])
-                                mat->MetallicTexture =
-                                    Assets::Load<Texture2D>(material["MetallicTexture"].as<std::string>());
-
-                            if (material["RoughnessTexture"])
-                                mat->RoughnessTexture =
-                                    Assets::Load<Texture2D>(material["RoughnessTexture"].as<std::string>());
-
-                            if (material["NormalTexture"])
-                                mat->NormalTexture =
-                                    Assets::Load<Texture2D>(material["NormalTexture"].as<std::string>());
-
-                            if (material["AOTexture"])
-                                mat->AOTexture = Assets::Load<Texture2D>(material["AOTexture"].as<std::string>());
-
-                            if (material["UVRepeat"])
-                                mat->UVRepeat = material["UVRepeat"].as<glm::vec2>();
+                            std::string matPathStr = materialPath.as<std::string>();
+                            if (!matPathStr.empty() && std::filesystem::exists(matPathStr))
+                            {
+                                // Load material from .mat file
+                                auto loadedMat = Material3D::Create(matPathStr);
+                                if (loadedMat)
+                                {
+                                    mat->Name = loadedMat->Name;
+                                    mat->AlbedoColor = loadedMat->AlbedoColor;
+                                    mat->AlbedoTexture = loadedMat->AlbedoTexture;
+                                    mat->EmissionTexture = loadedMat->EmissionTexture;
+                                    mat->MetallicTexture = loadedMat->MetallicTexture;
+                                    mat->RoughnessTexture = loadedMat->RoughnessTexture;
+                                    mat->NormalTexture = loadedMat->NormalTexture;
+                                    mat->AOTexture = loadedMat->AOTexture;
+                                    mat->UVRepeat = loadedMat->UVRepeat;
+                                    mat->SourcePath = matPathStr; // Set the source path for saving
+                                }
+                            }
                         }
                         matIndex++;
                     }

@@ -27,6 +27,9 @@ namespace Titan
         if (ext == ".titan")
             return AssetType::Scene;
 
+        if (ext == ".mat")
+            return AssetType::Material;
+
         return AssetType::None;
     }
 
@@ -48,6 +51,8 @@ namespace Titan
                 return "Physics Material";
             case AssetType::Mesh:
                 return "Mesh";
+            case AssetType::Material:
+                return "Material";
             case AssetType::None:
             default:
                 return "Unknown";

@@ -9,6 +9,7 @@
 #include "Titan/Scene/Assets.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scripting/ScriptEngine.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -502,6 +503,15 @@ namespace Titan
 
                     if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
                     {
+                        // Name input
+                        char nameBuffer[256];
+                        strcpy_s(nameBuffer, sizeof(nameBuffer), mat->Name.c_str());
+                        if (ImGui::InputText("Name", nameBuffer, sizeof(nameBuffer)))
+                        {
+                            mat->Name = nameBuffer;
+                            changed = true;
+                        }
+
                         auto config = ImSettings();
                         config.push<glm::vec4>().as_color().pop();
                         auto response = ImResponse();
@@ -518,6 +528,65 @@ namespace Titan
                         auto response2 = ImResponse();
                         ImReflect::Input("UV Repeat", mat->UVRepeat, config2, response2);
                         changed |= response2.get<glm::vec2>().is_changed();
+
+                        // Save material button
+                        ImGui::Spacing();
+                        ImGui::Separator();
+                        ImGui::Spacing();
+
+                        if (ImGui::Button("Save Material"))
+                        {
+                            if (mat->SourcePath.empty())
+                            {
+                                // Generate default path if not set
+                                auto meshPath = std::filesystem::path(component.MeshRef->GetFilePath());
+                                auto materialDir = meshPath.parent_path() / "Materials";
+                                auto materialFileName =
+                                    meshPath.stem().string() + "_Mat" + std::to_string(index) + ".mat";
+                                mat->SourcePath = (materialDir / materialFileName).string();
+                                std::filesystem::create_directories(materialDir);
+                            }
+                            mat->Save();
+                        }
+
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("Save As..."))
+                        {
+                            std::string filepath = FileDialogs::SaveFile("Material (*.mat)\0*.mat\0");
+                            if (!filepath.empty())
+                            {
+                                // Ensure .mat extension
+                                if (filepath.find(".mat") == std::string::npos)
+                                {
+                                    filepath += ".mat";
+                                }
+                                mat->SourcePath = filepath;
+                                mat->Save();
+                            }
+                        }
+
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("Load..."))
+                        {
+                            std::string filepath = FileDialogs::OpenFile("Material (*.mat)\0*.mat\0");
+                            if (!filepath.empty())
+                            {
+                                auto loadedMat = Material3D::Create(filepath);
+                                if (loadedMat)
+                                {
+                                    *mat = *loadedMat;
+                                    mat->SourcePath = filepath;
+                                    changed = true;
+                                }
+                            }
+                        }
+
+                        if (!mat->SourcePath.empty())
+                        {
+                            ImGui::TextDisabled("Path: %s", mat->SourcePath.c_str());
+                        }
 
                         ImGui::TreePop();
                     }

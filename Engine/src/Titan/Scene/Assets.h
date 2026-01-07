@@ -3,6 +3,7 @@
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Cubemap.h"
+#include "Titan/Renderer/Material.h"
 #include "Titan/Renderer/Mesh.h"
 #include "Titan/Renderer/Shader.h"
 #include "Titan/Renderer/Texture.h"
@@ -24,7 +25,8 @@ namespace Titan
         Shader,
         Physics2DMaterial,
         PhysicsMaterial,
-        Mesh
+        Mesh,
+        Material
     };
 
     struct AssetMeta
