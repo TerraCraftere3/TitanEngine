@@ -438,7 +438,6 @@ namespace Titan
             }
         }
 
-        Ref<Texture2D> GetThumbnailForFile(const std::filesystem::path& filePath);
         AssetType GetTypeForFile(const std::filesystem::path& filePath);
         std::string AssetTypeToString(AssetType type);
 

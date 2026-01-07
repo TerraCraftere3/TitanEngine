@@ -1,7 +1,9 @@
 #include "ContentBrowserPanel.h"
+#include "../Renderer/Thumbnails.h"
 #include "Titan/FontAwesome7.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Utils/String.h"
+
 namespace Titan
 {
     extern const std::filesystem::path g_AssetPath = "assets";
@@ -79,7 +81,7 @@ namespace Titan
                 std::string filenameString = relativePath.filename().string();
                 std::string filename = TruncateString(filenameString, 20);
 
-                Ref<Texture2D> icon = Assets::GetThumbnailForFile(path);
+                Ref<Texture2D> icon = Thumbnails::GetThumbnailForFile(path);
 
                 // --- Card layout ---
                 float cardWidth = thumbnailSize + 20.0f;

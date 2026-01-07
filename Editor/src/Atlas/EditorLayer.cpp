@@ -2,6 +2,7 @@
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/LogPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Renderer/Thumbnails.h"
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
@@ -54,6 +55,8 @@ namespace Titan
         m_StartIcon = Assets::Load<Texture2D>("resources/icons/play.svg");
         m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
         m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
+
+        Thumbnails::Init();
     }
 
     void EditorLayer::OnDetach()
@@ -67,6 +70,8 @@ namespace Titan
             m_ActiveScene->OnSimulationStop();
 
         m_ActiveScene = nullptr;
+
+        Thumbnails::Shutdown();
     }
 
     void EditorLayer::OnUpdate(Timestep ts)
@@ -101,7 +106,8 @@ namespace Titan
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_EditorProperties.Overlays[0]);
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0],
+                                                         m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;
@@ -129,7 +135,8 @@ namespace Titan
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0], m_EditorProperties.Overlays[0]);
+                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0],
+                                                         m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;

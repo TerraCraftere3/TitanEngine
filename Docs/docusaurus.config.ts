@@ -95,9 +95,13 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Introduction',
               to: '/docs/intro',
             },
+            {
+              label: 'Getting Started',
+              to: '/docs/setup',
+            }
           ],
         },
         {
@@ -114,7 +118,7 @@ const config: Config = {
           ],
         }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Titan Engine.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Titan Engine. All content, unless otherwise stated, is subject to the project's license.`,
     },
     prism: {
       theme: prismThemes.github,

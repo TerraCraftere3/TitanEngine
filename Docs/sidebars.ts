@@ -16,7 +16,8 @@ const sidebars: SidebarsConfig = {
         'systems/scene',
         'systems/scripting'
       ],
-    }
+    },
+    "filesystem"
   ]
 };
 
