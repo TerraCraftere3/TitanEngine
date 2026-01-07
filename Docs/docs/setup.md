@@ -5,7 +5,7 @@ sidebar_position: 1
 # Setup Guide
 ## Windows
 On Windows you need the following prequisits:
-- Vulkan SDK (you can find them [here](https://vulkan.lunarg.com/))
+- Vulkan SDK (you can find it [here](https://vulkan.lunarg.com/))
 - MSVC (easiest way to install is via the [Visual Studio Installer](https://visualstudio.microsoft.com/de/downloads/))
 
 If you just installed them, restart your PC. Now that you are ready to clone and build the engine (enter the following commands in powershell or any other terminal):

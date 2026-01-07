@@ -47,26 +47,6 @@ namespace GameScripts
             HandleInput();
             Move(deltaTime);
         }
-
-        public void OnPhysicsUpdate(float deltaTime)
-        {
-            // Called during physics simulation
-        }
-
-        public void OnDestroy()
-        {
-            // Called when the entity is destroyed
-        }
-
-        private void HandleInput()
-        {
-            // Handle input here
-        }
-
-        private void Move(float deltaTime)
-        {
-            // Movement logic here
-        }
     }
 }
 ```
@@ -79,10 +59,6 @@ namespace GameScripts
 |----------|-----------|
 | `OnCreate()` | When entity enters play mode |
 | `OnUpdate(float deltaTime)` | Every frame during play |
-| `OnPhysicsUpdate(float deltaTime)` | Every physics tick |
-| `OnDestroy()` | When entity is destroyed or leaves play mode |
-| `OnCollisionBegin(Entity other)` | When collision starts |
-| `OnCollisionEnd(Entity other)` | When collision ends |
 
 ---
 
@@ -111,54 +87,6 @@ public void OnCreate()
     // Add a component to this entity
     AddComponent<CameraComponent>();
     var camera = GetComponent<CameraComponent>();
-}
-```
-
----
-
-## Accessing Other Entities
-
-### Scene Queries
-```csharp
-public class MyScript : Entity
-{
-    public void OnUpdate(float deltaTime)
-    {
-        // Find entities by tag
-        Entity player = Scene.FindEntityByTag("Player");
-        
-        // Access entities directly if you have a reference
-        if (player)
-        {
-            var playerTransform = player.GetComponent<TransformComponent>();
-        }
-    }
-}
-```
-
----
-
-## Physics Interactions
-
-### Rigidbody Operations
-```csharp
-public class PhysicsScript : Entity
-{
-    public void OnCreate()
-    {
-        var rb = GetComponent<RigidbodyComponent>();
-        // Configure rigidbody if needed
-    }
-
-    public void OnCollisionBegin(Entity other)
-    {
-        // Handle collision start
-    }
-
-    public void OnCollisionEnd(Entity other)
-    {
-        // Handle collision end
-    }
 }
 ```
 
