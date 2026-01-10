@@ -7,6 +7,7 @@
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Scene/Assets.h"
 #include "Titan/Scripting/ScriptEngine.h"
+#include "Titan/Utils/Time.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY
@@ -54,7 +55,7 @@ namespace Titan
         while (m_Running)
         {
             TI_PROFILE_BEGIN_FRAME();
-            float time = (float)glfwGetTime(); // TODO: Platform Indepentend Time Query (Time::GetCurrent()???)
+            float time = static_cast<float>(GetCurrentTimeSeconds());
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
