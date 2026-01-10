@@ -10,8 +10,10 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include <ImGuizmo.h>
 #include <backends/imgui_impl_glfw.h>
 #include <imgui.h>
+#include <implot.h>
 #include "Renderer/ImGuiBackend.h"
 
 namespace Titan
@@ -25,6 +27,7 @@ namespace Titan
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
+        ImPlot::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
         (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -58,6 +61,7 @@ namespace Titan
     {
         ImGui_ImplTitan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
+        ImPlot::DestroyContext();
         ImGui::DestroyContext();
     }
 

@@ -50,6 +50,8 @@ target_include_directories(imgui PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/imgui/misc/cpp"
 )
 
+target_link_libraries(imgui PRIVATE glfw)
+
 # ---- ImGuizmo Directory ----
 file(GLOB IMGUIZMO_SRC CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo/*.cpp"
@@ -60,7 +62,15 @@ target_include_directories(imguizmo PUBLIC
 )
 target_link_libraries(imguizmo PRIVATE imgui)
 
-target_link_libraries(imgui PRIVATE glfw)
+# ---- ImPlot Directory ----
+file(GLOB IMPLOT_SRC CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/implot/*.cpp"
+)
+add_library(implot STATIC ${IMPLOT_SRC})
+target_include_directories(implot PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/implot"
+)
+target_link_libraries(implot PRIVATE imgui)
 
 set(FILEWATCH_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/filewatch" PARENT_SCOPE)
 set(STB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stb" PARENT_SCOPE)

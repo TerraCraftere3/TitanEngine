@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/LogPanel.h"
+#include "Panels/ProfilerPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Renderer/Thumbnails.h"
 
@@ -37,6 +38,7 @@ namespace Titan
         m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>();
         m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
         m_LogPanel = CreateScope<LogPanel>();
+        m_ProfilerPanel = CreateScope<ProfilerPanel>();
 
         m_ActiveScene = Assets::Load<Scene>("assets/scenes/Helmet.titan");
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
@@ -181,7 +183,7 @@ namespace Titan
             m_LogPanel->OnImGuiRender(&m_EditorProperties.ShowLog);
 
         if (m_EditorProperties.ShowProfiler)
-            Profiler::Get().DrawProfilerUI();
+            m_ProfilerPanel->OnImGuiRender(&m_EditorProperties.ShowProfiler);
     }
 
     void EditorLayer::OnEvent(Event& event)

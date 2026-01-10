@@ -118,7 +118,6 @@ namespace Titan
             "ClearPass", {}, {"SceneFramebuffer", "PreFX"},
             [v](RenderGraph& graph, const RenderPass& pass)
             {
-                TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
@@ -133,7 +132,6 @@ namespace Titan
             "GeometryPass", {}, {"GeometryBuffer", "PreFX"},
             [v](RenderGraph& graph, const RenderPass& pass)
             {
-                TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
@@ -161,7 +159,6 @@ namespace Titan
             "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "PreFX"}, {"SceneFramebuffer"},
             [v](RenderGraph& graph, const RenderPass& pass)
             {
-                TI_PROFILE_PASS();
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb || !gbuffer)
@@ -201,7 +198,6 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                TI_PROFILE_PASS();
                 fb->Bind();
                 Renderer2D::BeginScene(v->viewProjection);
                 auto spriteView = v->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
@@ -225,7 +221,6 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                TI_PROFILE_PASS();
                 fb->Bind();
                 Renderer2D::BeginScene(v->viewProjection);
                 auto circleView = v->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
@@ -246,7 +241,6 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                TI_PROFILE_PASS();
                 fb->Bind();
                 auto skyboxView = v->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
                 for (auto entity : skyboxView)
@@ -282,7 +276,6 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                TI_PROFILE_PASS();
                 fb->Bind();
                 Renderer2D::BeginScene(v->viewProjection);
                 auto boxColliderView =
@@ -367,7 +360,6 @@ namespace Titan
                                   auto fb = graph.GetFramebuffer("SceneFramebuffer");
                                   if (!fb)
                                       return;
-                                  TI_PROFILE_PASS();
                                   v->postFXs->Execute(graph, pass, fb, v->currentScene);
                               });
 

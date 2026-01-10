@@ -34,7 +34,7 @@ message(STATUS "PhysX Libraries: ${PHYSX_BIN_DIR}")
 message(STATUS "ImReflect Include: ${IMREFLECT_INCLUDE_DIR}")
 
 # ---- Dependencies ----
-target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo box2d OptickCore assimp)
+target_link_libraries(engine PUBLIC spdlog glfw imgui glm EnTT yaml-cpp imguizmo implot box2d OptickCore assimp)
 target_link_libraries(engine PRIVATE glad "${SLANG_LIB_DIR}/slang.lib" "${MONO_LIB_DIR}/libmono-static-sgen.lib")
 if(MSVC)
     target_link_libraries(engine PRIVATE

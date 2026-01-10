@@ -58,22 +58,32 @@ namespace Titan
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
-            ExecuteMainThreadQueue();
+            {
+                TI_PROFILE_SCOPE("Main Thread Queue");
+                ExecuteMainThreadQueue();
+            }
 
             if (!m_Minimized)
             {
+                TI_PROFILE_SCOPE("Layer Update");
                 for (Layer* layer : m_LayerStack)
                     layer->OnUpdate(timestep);
             }
 
-            m_ImGuiLayer->Begin();
-            for (Layer* layer : m_LayerStack)
             {
-                layer->OnImGuiRender(ImGui::GetCurrentContext());
+                TI_PROFILE_SCOPE("UI Update");
+                m_ImGuiLayer->Begin();
+                for (Layer* layer : m_LayerStack)
+                {
+                    layer->OnImGuiRender(ImGui::GetCurrentContext());
+                }
+                m_ImGuiLayer->End();
             }
-            m_ImGuiLayer->End();
 
-            m_Window->OnUpdate();
+            {
+                TI_PROFILE_SCOPE("Window Update");
+                m_Window->OnUpdate();
+            }
             TI_PROFILE_END_FRAME();
         }
     }
