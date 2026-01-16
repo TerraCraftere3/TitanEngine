@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/SceneRenderer.h"
 
@@ -23,6 +24,8 @@ namespace Titan
 
         // Overlay settings for each viewport (4 viewports)
         OverlaySettings Overlays[4];
+
+        UITheme Theme = UITheme::Dark;
     };
 
     bool LoadEditorProperties(EditorProperties& props, const std::filesystem::path& filepath);

@@ -40,6 +40,15 @@ namespace Titan
         if (data["EnableMultiViewports"])
             props.EnableMultiViewports = data["EnableMultiViewports"].as<bool>();
 
+        if (data["Theme"])
+        {
+            std::string themeStr = data["Theme"].as<std::string>();
+            if (themeStr == "Dark")
+                props.Theme = UITheme::Dark;
+            else if (themeStr == "OLED")
+                props.Theme = UITheme::OLED;
+        }
+
         auto overlays = data["Overlays"];
         if (overlays && overlays.IsSequence())
         {
@@ -84,6 +93,17 @@ namespace Titan
         // clang-format on
         out << YAML::EndMap;
         out << YAML::Key << "EnableMultiViewports" << YAML::Value << props.EnableMultiViewports;
+
+        out << YAML::Key << "Theme" << YAML::Value;
+        switch (props.Theme)
+        {
+            case UITheme::Dark:
+                out << "Dark";
+                break;
+            case UITheme::OLED:
+                out << "OLED";
+                break;
+        }
 
         out << YAML::Key << "Overlays" << YAML::Value << YAML::BeginSeq;
         for (int i = 0; i < 4; ++i)

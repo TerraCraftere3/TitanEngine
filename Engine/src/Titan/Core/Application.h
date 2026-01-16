@@ -2,14 +2,16 @@
 
 #include "Titan/Core.h"
 #include "Titan/Core/LayerStack.h"
-#include "Titan/Core/Timestep.h"
 #include "Titan/Core/Window.h"
+#include "Titan/Events/ApplicationEvent.h"
 #include "Titan/Events/Event.h"
 #include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
 
 namespace Titan
 {
+    // Forward declarations
+    class Layer;
 
     struct ApplicationCommandLineArgs
     {
@@ -27,6 +29,7 @@ namespace Titan
     {
         std::string Name = "Titan Application";
         WindowProps WindowProperties;
+        UITheme Theme = UITheme::Dark;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
@@ -54,6 +57,10 @@ namespace Titan
         /// @brief Pushes a layer to the back of the stack
         /// @param layer the layer
         void PushOverlay(Layer* layer);
+
+        /// @brief Updates the theme of the ImGui layer
+        /// @param theme the new theme
+        void UpdateTheme(UITheme theme);
 
         /// @brief Gets the window (not native)
         /// @return the window of this instance

@@ -2,6 +2,7 @@
 #include "Titan/Core/Input.h"
 #include "Titan/Core/KeyCodes.h"
 #include "Titan/Core/Log.h"
+#include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
 #include "Titan/Physics/Physics3D/Physics3D.h"
 #include "Titan/Renderer/Renderer.h"
@@ -14,6 +15,7 @@
 #endif
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Application.h"
 // clang-format on
 namespace Titan
 {
@@ -33,7 +35,7 @@ namespace Titan
         ScriptEngine::Init();
         Physics3D::Init();
 
-        m_ImGuiLayer = new ImGuiLayer();
+        m_ImGuiLayer = new ImGuiLayer(specification.Theme);
         PushOverlay(m_ImGuiLayer);
     }
 
@@ -111,6 +113,11 @@ namespace Titan
     void Application::PushOverlay(Layer* layer)
     {
         m_LayerStack.PushOverlay(layer);
+    }
+
+    void Application::UpdateTheme(UITheme theme)
+    {
+        m_ImGuiLayer->SetTheme(theme);
     }
 
     bool Application::OnWindowResize(WindowResizeEvent& e)

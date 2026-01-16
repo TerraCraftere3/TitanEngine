@@ -58,6 +58,8 @@ namespace Titan
         m_StopIcon = Assets::Load<Texture2D>("resources/icons/stop.svg");
         m_SimulateIcon = Assets::Load<Texture2D>("resources/icons/simulate.svg");
 
+        Application::GetInstance()->UpdateTheme(m_EditorProperties.Theme);
+
         Thumbnails::Init();
     }
 
@@ -296,6 +298,21 @@ namespace Titan
                 }
                 if (ImGui::MenuItem("Log", nullptr, &m_EditorProperties.ShowLog))
                 {
+                }
+
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Styles"))
+            {
+                if (ImGui::MenuItem("Dark", nullptr, m_EditorProperties.Theme == UITheme::Dark))
+                {
+                    m_EditorProperties.Theme = UITheme::Dark;
+                    Application::GetInstance()->UpdateTheme(m_EditorProperties.Theme);
+                }
+                if (ImGui::MenuItem("OLED", nullptr, m_EditorProperties.Theme == UITheme::OLED))
+                {
+                    m_EditorProperties.Theme = UITheme::OLED;
+                    Application::GetInstance()->UpdateTheme(m_EditorProperties.Theme);
                 }
 
                 ImGui::EndMenu();

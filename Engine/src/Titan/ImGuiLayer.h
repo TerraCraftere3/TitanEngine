@@ -10,11 +10,16 @@
 
 namespace Titan
 {
+    enum class UITheme
+    {
+        Dark,
+        OLED
+    };
 
     class ImGuiLayer : public Layer
     {
     public:
-        ImGuiLayer();
+        ImGuiLayer(UITheme theme = UITheme::Dark);
         ~ImGuiLayer();
 
         virtual void OnAttach() override;
@@ -23,10 +28,14 @@ namespace Titan
         void Begin();
         void End();
 
-    private:
-        void SetupStyles();
+        void SetTheme(UITheme theme);
 
     private:
+        void SetupOLEDStyles();
+        void SetupDarkStyles();
+
+    private:
+        UITheme m_Theme;
         float m_Time = 0.0f;
         std::string m_ImGuiConfigPath;
     };
