@@ -1,12 +1,36 @@
 Scene: Untitled
 Entities:
-  - Entity: 14774116428015968762
+  - Entity: 8758640056969562893
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 5779225809508732683
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      HDRI:
+        Texture: assets\cubemaps\autumn_hill_view_4k.hdr
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: HDRI
+  - Entity: 1229789391634107600
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [-2.940392, 2.0887804, 5.2927055]
-      Rotation: [-0.17792423, -0.5070985, -4.261579e-09]
-      Scale: [1, 0.9999981, 1]
+      Translation: [-3, 1.5, 3]
+      Rotation: [-0.3398369, -0.78539807, 0]
+      Scale: [0.99999994, 0.99999976, 0.9999999]
     CameraComponent:
       Camera:
         ProjectionType: 0
@@ -18,31 +42,24 @@ Entities:
         OrthographicFar: 1000
       Primary: true
       FixedAspectRatio: false
-  - Entity: 13656987057509532769
+  - Entity: 18224009490395026848
     TagComponent:
-      Tag: Dragon
+      Tag: Helmet
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [0, -1, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshRendererComponent:
-      Mesh: assets\models\dragon_highres.glb
+      Mesh: assets\models\dragon_middleres.glb
       Materials:
-        - AlbedoColor: [1, 1, 1, 1]
-          UVRepeat: [1, 1]
-  - Entity: 1241225522319248894
-    TagComponent:
-      Tag: Quad
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [-1.5707964, 0, 0]
-      Scale: [5, 5, 1]
-    MeshRendererComponent:
-      Mesh: quad
-      Materials:
-        - AlbedoColor: [1, 1, 1, 1]
-          UVRepeat: [1, 1]
-  - Entity: 5965136739810514573
+        - assets\models\Materials\dragon_middleres_Mat0.mat
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.2
+  - Entity: 6817584821935004973
     TagComponent:
       Tag: Directional Light
     TransformComponent:
@@ -50,23 +67,4 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     DirectionalLightComponent:
-      Direction: [-1, 1, 1]
-  - Entity: 14937211091717920478
-    TagComponent:
-      Tag: Post Processing
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    PostFXComponent:
-      FXAA:
-        Enabled: false
-  - Entity: 4146401718377097354
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    DirectionalLightComponent:
-      Direction: [1, 1, 1]
+      Direction: [-1, -1, -1]

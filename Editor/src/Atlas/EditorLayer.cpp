@@ -40,7 +40,7 @@ namespace Titan
         m_LogPanel = CreateScope<LogPanel>();
         m_ProfilerPanel = CreateScope<ProfilerPanel>();
 
-        m_ActiveScene = Assets::Load<Scene>("assets/scenes/Helmet.titan");
+        NewScene();
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
         m_EditorScene = m_ActiveScene;
 
@@ -381,7 +381,6 @@ namespace Titan
             RenderGizmoToolbar();
 
         RenderViewportImage();
-        HandleSceneDragDrop();
         HandleGizmoManipulation();
 
         ImGui::End();
@@ -572,6 +571,8 @@ namespace Titan
                         ImGui::Dummy(size);
                     }
 
+                    HandleSceneDragDrop();
+
                     // Hover detection and active selection
                     m_SubViewportHovered[idx] = ImGui::IsItemHovered();
                     if (ImGui::IsItemClicked())
@@ -605,6 +606,7 @@ namespace Titan
             {
                 ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), m_ViewportImageSize, ImVec2(0, 1),
                              ImVec2(1, 0));
+                HandleSceneDragDrop();
             }
 
             m_SubViewportHovered[0] = ImGui::IsItemHovered();
@@ -806,18 +808,29 @@ namespace Titan
         }
 
         {
-            auto skybox = m_ActiveScene->CreateEntity("Skybox");
-            auto& sbc = skybox.AddComponent<SkyboxComponent>();
-            sbc.mode = SkyboxComponent::Mode::Colorramp;
-        }
-
-        {
             auto camera = m_ActiveScene->CreateEntity("Camera");
             auto& t = camera.GetComponent<TransformComponent>();
             t.Translation = glm::vec3(-5.0f, 3.0f, 5.0f);
             auto& cc = camera.AddComponent<CameraComponent>();
             cc.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
             auto& lcc = camera.AddComponent<LookAtComponent>();
+        }
+
+        {
+            auto skybox = m_ActiveScene->CreateEntity("Skybox");
+            auto& sbc = skybox.AddComponent<SkyboxComponent>();
+            sbc.mode = SkyboxComponent::Mode::Colorramp;
+        }
+
+        {
+            auto pp = m_ActiveScene->CreateEntity("Post Processing");
+            auto ppc = pp.AddComponent<PostFXComponent>();
+        }
+
+        {
+            auto light = m_ActiveScene->CreateEntity("Directional Light");
+            auto& lc = light.AddComponent<DirectionalLightComponent>();
+            lc.Direction = glm::vec3(-0.5f, -1.0f, -0.5f);
         }
 
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
