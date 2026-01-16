@@ -1,0 +1,5 @@
+Name: details
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: assets\textures\Sponza\sponza_details_diff.tga
+NormalTexture: assets\textures\Sponza\sponza_details_ddn.tga
+UVRepeat: [1, 1]

@@ -1,0 +1,5 @@
+Name: chain
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: assets\textures\Sponza\chain_texture.tga
+NormalTexture: assets\textures\Sponza\chain_texture_ddn.tga
+UVRepeat: [1, 1]

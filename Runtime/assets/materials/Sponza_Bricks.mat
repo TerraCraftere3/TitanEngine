@@ -1,0 +1,5 @@
+Name: bricks
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: assets\textures\Sponza\spnza_bricks_a_diff.tga
+NormalTexture: assets\textures\Sponza\spnza_bricks_a_ddn.tga
+UVRepeat: [1, 1]

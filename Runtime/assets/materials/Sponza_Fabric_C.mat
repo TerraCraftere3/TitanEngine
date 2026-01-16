@@ -1,0 +1,5 @@
+Name: fabric_c
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: assets\textures\Sponza\sponza_curtain_diff.tga
+NormalTexture: assets\textures\Sponza\sponza_curtain_ddn.tga
+UVRepeat: [1, 1]

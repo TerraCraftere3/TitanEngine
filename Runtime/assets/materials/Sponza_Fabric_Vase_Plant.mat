@@ -1,0 +1,4 @@
+Name: Vase Plant
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: assets\textures\Sponza\vase_plant.tga
+UVRepeat: [1, 1]
