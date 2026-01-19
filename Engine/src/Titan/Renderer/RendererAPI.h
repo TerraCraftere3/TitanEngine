@@ -2,6 +2,7 @@
 
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Depth.h"
+#include "Titan/Renderer/Framebuffer.h"
 
 namespace Titan
 {
@@ -39,6 +40,9 @@ namespace Titan
 
     public:
         virtual void Init() = 0;
+
+        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer) = 0;
+        virtual void EndRenderPass() = 0;
 
         virtual void SetPolygonMode(PolygonMode mode) = 0;
         virtual void SetDepthFunc(DepthFunc function) = 0;

@@ -10,6 +10,9 @@ namespace Titan
     public:
         virtual void Init() override;
 
+        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer) override;
+        virtual void EndRenderPass() override;
+
         virtual void SetPolygonMode(PolygonMode mode) override;
         virtual void SetDepthFunc(DepthFunc function) override;
         virtual void SetClearColor(const glm::vec4& color) override;

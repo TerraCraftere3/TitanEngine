@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Titan/Core.h"
-#include "VertexArray.h"
-#include "UniformBuffer.h"
 #include "Buffer.h"
-#include "Texture.h"
-#include "Shader.h"
 #include "Cubemap.h"
+#include "Shader.h"
+#include "Texture.h"
+#include "Titan/Core.h"
+#include "UniformBuffer.h"
+#include "VertexArray.h"
 
 namespace Titan
 {

@@ -31,7 +31,7 @@ namespace Titan
         data.Gamma = fxc.TonemappingSettings.Gamma;
         data.WhitePoint = fxc.TonemappingSettings.WhitePoint;
 
-        framebuffer->Bind();
+        RenderCommand::BeginRenderPass(framebuffer);
         framebuffer->GetColorAttachmentTexture(0)->Bind(0); // HDR Color -> slot 0
         framebuffer->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
         m_Shader->Bind();
@@ -40,6 +40,6 @@ namespace Titan
         m_UniformBuffer->Bind();
         m_UniformBuffer->SetData(&data, sizeof(TonemappingUniformData));
         FullscreenRenderer::Render();
-        framebuffer->Unbind();
+        RenderCommand::EndRenderPass();
     }
 } // namespace Titan

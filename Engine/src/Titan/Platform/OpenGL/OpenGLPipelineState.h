@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 #include <utility>
-#include "Titan/Renderer/PipelineState.h"
+#include <vector>
 #include "Titan/Renderer/Buffer.h"
+#include "Titan/Renderer/PipelineState.h"
 
 namespace Titan
 {
@@ -19,7 +19,8 @@ namespace Titan
         virtual void SetShader(const Ref<Shader>& shader) override;
         virtual void SetVertexArray(const Ref<VertexArray>& vertexArray) override;
         virtual void BindUniformBuffer(const Ref<UniformBuffer>& uniformBuffer, uint32_t bindingPoint) override;
-        virtual void BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer, uint32_t bindingPoint) override;
+        virtual void BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer,
+                                             uint32_t bindingPoint) override;
         virtual void BindTexture(const Ref<Texture2D>& texture, uint32_t slot) override;
         virtual void BindCubemap(const Ref<Cubemap>& cubemap, uint32_t slot) override;
 

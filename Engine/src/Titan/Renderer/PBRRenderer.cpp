@@ -65,8 +65,10 @@ namespace Titan
             s_PBRData.Pipeline->BindCubemap(s_PBRData.DefaultIrradiance, 8);
 
         // Set uniforms on the shader directly
-        std::dynamic_pointer_cast<OpenGLShader>(s_PBRData.Shader)->Bind();
-        s_PBRData.Shader->SetInt("IrradianceMap", 8);
+        {
+            std::dynamic_pointer_cast<OpenGLShader>(s_PBRData.Shader)->Bind();
+            s_PBRData.Shader->SetInt("IrradianceMap", 8);
+        }
 
         s_PBRData.Pipeline->Bind();
 

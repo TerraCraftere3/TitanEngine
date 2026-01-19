@@ -3,10 +3,9 @@
 #include <Titan/Debug/Instrumentor.h>
 #include <implot.h>
 
-namespace Titan{
-    ProfilerPanel::ProfilerPanel()
-    {
-    }
+namespace Titan
+{
+    ProfilerPanel::ProfilerPanel() {}
 
     void ProfilerPanel::OnImGuiRender(bool* openProfiler)
     {
@@ -104,4 +103,4 @@ namespace Titan{
         }
         ImGui::End();
     }
-}
+} // namespace Titan

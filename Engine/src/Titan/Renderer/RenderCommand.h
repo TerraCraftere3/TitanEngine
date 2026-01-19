@@ -9,6 +9,13 @@ namespace Titan
     public:
         inline static void Init() { s_RendererAPI->Init(); }
 
+        inline static void BeginRenderPass(Ref<Framebuffer> framebuffer)
+        {
+            s_RendererAPI->BeginRenderPass(framebuffer);
+        }
+
+        inline static void EndRenderPass() { s_RendererAPI->EndRenderPass(); }
+
         inline static void SetPolygonMode(PolygonMode mode) { s_RendererAPI->SetPolygonMode(mode); }
 
         inline static void SetDepthFunc(DepthFunc function) { s_RendererAPI->SetDepthFunc(function); }

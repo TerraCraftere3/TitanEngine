@@ -19,8 +19,8 @@ namespace Titan
 
         void Invalidate();
 
-        virtual void Bind() override;
-        virtual void Unbind() override;
+        void Bind();
+        void Unbind();
         virtual void Resolve() override;
         virtual void Resize(uint32_t width, uint32_t height) override;
         virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
@@ -38,6 +38,8 @@ namespace Titan
         }
 
         virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
+
+        uint32_t GetRendererID() const { return m_RendererID; }
 
     private:
         uint32_t m_RendererID = 0;

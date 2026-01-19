@@ -1,9 +1,9 @@
 #include "Material.h"
-#include "Texture.h"
-#include "Titan/Scene/Assets.h"
-#include "Titan/PCH.h"
 #include <yaml-cpp/yaml.h>
 #include <fstream>
+#include "Texture.h"
+#include "Titan/PCH.h"
+#include "Titan/Scene/Assets.h"
 
 namespace YAML
 {
@@ -55,7 +55,7 @@ namespace YAML
             return true;
         }
     };
-}
+} // namespace YAML
 
 namespace Titan
 {

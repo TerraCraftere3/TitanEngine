@@ -1,6 +1,6 @@
 #include "PipelineState.h"
-#include "Titan/Platform/OpenGL/OpenGLPipelineState.h"
 #include "RendererAPI.h"
+#include "Titan/Platform/OpenGL/OpenGLPipelineState.h"
 
 namespace Titan
 {

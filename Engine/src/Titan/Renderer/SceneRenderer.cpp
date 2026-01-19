@@ -121,11 +121,11 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 fb->ClearAttachment(1, -1);
                 RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
                 RenderCommand::Clear();
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -135,7 +135,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 if (v->drawWireframe)
                     RenderCommand::SetPolygonMode(PolygonMode::Line);
                 else
@@ -152,7 +152,7 @@ namespace Titan
                 }
                 GeometryRenderer::EndScene();
                 RenderCommand::SetPolygonMode(PolygonMode::Fill);
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -163,7 +163,7 @@ namespace Titan
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb || !gbuffer)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 bool hasDirectionalLight = false;
                 glm::vec3 lightDirection;
                 auto dlView = v->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
@@ -188,7 +188,7 @@ namespace Titan
                     break;
                 }
                 PBRRenderer::Render(graph.GetFramebuffer("GeometryBuffer"), data, cubemap);
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -198,7 +198,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 Renderer2D::BeginScene(v->viewProjection);
                 auto spriteView = v->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
                 for (auto entity : spriteView)
@@ -211,7 +211,7 @@ namespace Titan
                         Renderer2D::DrawTransformedQuad(transform.GetTransform(), sprite.Color, (uint32_t)entity);
                 }
                 Renderer2D::EndScene();
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -221,7 +221,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 Renderer2D::BeginScene(v->viewProjection);
                 auto circleView = v->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
                 for (auto entity : circleView)
@@ -231,7 +231,7 @@ namespace Titan
                                            (uint32_t)entity);
                 }
                 Renderer2D::EndScene();
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -241,7 +241,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 auto skyboxView = v->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
                 for (auto entity : skyboxView)
                 {
@@ -264,7 +264,7 @@ namespace Titan
                     }
                     break;
                 }
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass(
@@ -276,7 +276,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                fb->Bind();
+                RenderCommand::BeginRenderPass(fb);
                 Renderer2D::BeginScene(v->viewProjection);
                 auto boxColliderView =
                     v->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
@@ -351,7 +351,7 @@ namespace Titan
                 }
                 Renderer2D::DrawGrid(20.0f);
                 Renderer2D::EndScene();
-                fb->Unbind();
+                RenderCommand::EndRenderPass();
             });
 
         builder.AddRenderPass("PostProcessing", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"FinalOutput"},

@@ -1,5 +1,7 @@
 #include "OpenGLRendererAPI.h"
+#include "OpenGLFramebuffer.h"
 #include "Titan/PCH.h"
+
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY
@@ -18,6 +20,17 @@ namespace Titan
         glDepthFunc(GL_LEQUAL);
 
         glEnable(GL_LINE_SMOOTH);
+    }
+
+    void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, std::dynamic_pointer_cast<OpenGLFramebuffer>(framebuffer)->GetRendererID());
+        glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
+    }
+
+    void OpenGLRendererAPI::EndRenderPass()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void OpenGLRendererAPI::SetPolygonMode(PolygonMode mode)

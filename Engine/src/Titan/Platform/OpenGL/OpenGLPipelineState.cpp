@@ -1,17 +1,14 @@
 #include "OpenGLPipelineState.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
-#include "Titan/Renderer/VertexArray.h"
-#include "Titan/Renderer/UniformBuffer.h"
 #include "Titan/Renderer/Buffer.h"
-#include "Titan/Renderer/Texture.h"
 #include "Titan/Renderer/Cubemap.h"
+#include "Titan/Renderer/Texture.h"
+#include "Titan/Renderer/UniformBuffer.h"
+#include "Titan/Renderer/VertexArray.h"
 
 namespace Titan
 {
-    OpenGLPipelineState::OpenGLPipelineState()
-        : m_Shader(nullptr), m_VertexArray(nullptr)
-    {
-    }
+    OpenGLPipelineState::OpenGLPipelineState() : m_Shader(nullptr), m_VertexArray(nullptr) {}
 
     void OpenGLPipelineState::Bind() const
     {
@@ -67,7 +64,8 @@ namespace Titan
         m_UniformBuffers.push_back({uniformBuffer, bindingPoint});
     }
 
-    void OpenGLPipelineState::BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer, uint32_t bindingPoint)
+    void OpenGLPipelineState::BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer,
+                                                      uint32_t bindingPoint)
     {
         m_StorageBuffers.push_back({storageBuffer, bindingPoint});
     }
