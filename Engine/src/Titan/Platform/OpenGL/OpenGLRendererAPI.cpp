@@ -85,38 +85,30 @@ namespace Titan
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGLRendererAPI::DrawArrays(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+    void OpenGLRendererAPI::DrawArrays(uint32_t vertexCount)
     {
-        vertexArray->Bind();
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     }
 
-    void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
+    void OpenGLRendererAPI::DrawIndexed(uint32_t indexCount)
     {
-        vertexArray->Bind();
-        uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
     }
 
-    void OpenGLRendererAPI::DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
-                                                 uint32_t instanceCount)
+    void OpenGLRendererAPI::DrawIndexedInstanced(uint32_t indexCount, uint32_t instanceCount)
     {
-        vertexArray->Bind();
-        uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-        glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr, instanceCount);
+        glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr, instanceCount);
     }
 
-    void OpenGLRendererAPI::DrawIndexedInstancedBaseIndex(const Ref<VertexArray>& vertexArray, uint32_t indexCount,
-                                                          uint32_t instanceCount, uint32_t baseIndex)
+    void OpenGLRendererAPI::DrawIndexedInstancedBaseIndex(uint32_t indexCount, uint32_t instanceCount,
+                                                          uint32_t baseIndex)
     {
-        vertexArray->Bind();
         glDrawElementsInstancedBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT,
                                           (void*)(baseIndex * sizeof(uint32_t)), instanceCount, 0);
     }
 
-    void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+    void OpenGLRendererAPI::DrawLines(uint32_t vertexCount)
     {
-        vertexArray->Bind();
         glDrawArrays(GL_LINES, 0, vertexCount);
     }
 

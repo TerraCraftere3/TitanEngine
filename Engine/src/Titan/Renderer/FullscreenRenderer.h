@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PipelineState.h"
 #include "RenderCommand.h"
 #include "VertexArray.h"
 
@@ -17,6 +18,7 @@ namespace Titan
         struct Data
         {
             Ref<VertexArray> FullscreenQuadVAO;
+            Ref<PipelineState> Pipeline;
         };
 
         static Data s_Data;

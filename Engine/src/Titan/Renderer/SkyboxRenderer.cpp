@@ -1,8 +1,10 @@
 #include "SkyboxRenderer.h"
 #include "Buffer.h"
+#include "PipelineState.h"
 #include "RenderCommand.h"
 #include "Shader.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
 #include "UniformBuffer.h"
 #include "VertexArray.h"
@@ -24,6 +26,8 @@ namespace Titan
     {
         Ref<Shader> CubemapShader;
         Ref<Shader> ColorShader;
+        Ref<PipelineState> CubemapPipeline;
+        Ref<PipelineState> ColorPipeline;
         Ref<UniformBuffer> SceneUniformBuffer;
         Ref<VertexArray> CubeVAO;
     };
@@ -64,10 +68,23 @@ namespace Titan
         Ref<VertexBuffer> vb = VertexBuffer::Create(s_CubeVertices, sizeof(s_CubeVertices));
         vb->SetLayout({{ShaderDataType::Float3, "a_Position"}});
         s_SBData.CubeVAO->AddVertexBuffer(vb);
+
+        // Create pipelines
+        s_SBData.CubemapPipeline = PipelineState::Create();
+        s_SBData.CubemapPipeline->SetShader(s_SBData.CubemapShader);
+        s_SBData.CubemapPipeline->SetVertexArray(s_SBData.CubeVAO);
+        s_SBData.CubemapPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+
+        s_SBData.ColorPipeline = PipelineState::Create();
+        s_SBData.ColorPipeline->SetShader(s_SBData.ColorShader);
+        s_SBData.ColorPipeline->SetVertexArray(s_SBData.CubeVAO);
+        s_SBData.ColorPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
     }
 
     void SkyboxRenderer::Shutdown()
     {
+        s_SBData.CubemapPipeline.reset();
+        s_SBData.ColorPipeline.reset();
         s_SBData = {};
     }
 
@@ -81,13 +98,13 @@ namespace Titan
 
         RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
 
-        s_SBData.CubemapShader->Bind();
+        s_SBData.CubemapPipeline->BindCubemap(cubemap, 0);
+        std::dynamic_pointer_cast<OpenGLShader>(s_SBData.CubemapShader)->Bind();
         s_SBData.CubemapShader->SetInt("cubeMap", 0);
-        s_SBData.SceneUniformBuffer->Bind();
 
-        cubemap->Bind(0);
+        s_SBData.CubemapPipeline->Bind();
 
-        RenderCommand::DrawArrays(s_SBData.CubeVAO, 36);
+        RenderCommand::DrawArrays(36);
 
         RenderCommand::SetDepthFunc(DepthFunc::Less);
     }
@@ -105,10 +122,9 @@ namespace Titan
 
         RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
 
-        s_SBData.ColorShader->Bind();
-        s_SBData.SceneUniformBuffer->Bind();
+        s_SBData.ColorPipeline->Bind();
 
-        RenderCommand::DrawArrays(s_SBData.CubeVAO, 36);
+        RenderCommand::DrawArrays(36);
 
         RenderCommand::SetDepthFunc(DepthFunc::Less);
     }

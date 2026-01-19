@@ -1,7 +1,9 @@
 #include "Renderer2D.h"
+#include "PipelineState.h"
 #include "RenderCommand.h"
 #include "Shader.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
 #include "UniformBuffer.h"
 #include "VertexArray.h"
@@ -51,14 +53,17 @@ namespace Titan
         Ref<VertexArray> QuadVertexArray;
         Ref<VertexBuffer> QuadVertexBuffer;
         Ref<Shader> QuadShader;
+        Ref<PipelineState> QuadPipeline;
 
         Ref<VertexArray> CircleVertexArray;
         Ref<VertexBuffer> CircleVertexBuffer;
         Ref<Shader> CircleShader;
+        Ref<PipelineState> CirclePipeline;
 
         Ref<VertexArray> LineVertexArray;
         Ref<VertexBuffer> LineVertexBuffer;
         Ref<Shader> LineShader;
+        Ref<PipelineState> LinePipeline;
 
         uint32_t QuadIndexCount = 0;
         QuadVertex* QuadVertexBufferBase = nullptr;
@@ -177,13 +182,33 @@ namespace Titan
         s_Data.QuadShader = Assets::Load<Shader>("resources/shader/RendererQuad.slang");
         s_Data.LineShader = Assets::Load<Shader>("resources/shader/RendererLine.slang");
 
-        s_Data.QuadShader->Bind();
-        // Sampler / Textures
-        int32_t samplers[s_Data.MaxTextureSlots];
-        for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-            samplers[i] = i;
-        s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+        // Note: SetIntArray needs to be called on the shader directly since uniforms are shader-specific
+        {
+            std::dynamic_pointer_cast<OpenGLShader>(s_Data.QuadShader)->Bind();
+            // Sampler / Textures
+            int32_t samplers[s_Data.MaxTextureSlots];
+            for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+                samplers[i] = i;
+            s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+        }
+
         s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+
+        // Create pipeline states
+        s_Data.QuadPipeline = PipelineState::Create();
+        s_Data.QuadPipeline->SetShader(s_Data.QuadShader);
+        s_Data.QuadPipeline->SetVertexArray(s_Data.QuadVertexArray);
+        s_Data.QuadPipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+
+        s_Data.CirclePipeline = PipelineState::Create();
+        s_Data.CirclePipeline->SetShader(s_Data.CircleShader);
+        s_Data.CirclePipeline->SetVertexArray(s_Data.CircleVertexArray);
+        s_Data.CirclePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+
+        s_Data.LinePipeline = PipelineState::Create();
+        s_Data.LinePipeline->SetShader(s_Data.LineShader);
+        s_Data.LinePipeline->SetVertexArray(s_Data.LineVertexArray);
+        s_Data.LinePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
     }
@@ -196,6 +221,15 @@ namespace Titan
         s_Data.QuadVertexArray.reset();
         s_Data.QuadVertexBuffer.reset();
         s_Data.QuadShader.reset();
+        s_Data.QuadPipeline.reset();
+        s_Data.CircleVertexArray.reset();
+        s_Data.CircleVertexBuffer.reset();
+        s_Data.CircleShader.reset();
+        s_Data.CirclePipeline.reset();
+        s_Data.LineVertexArray.reset();
+        s_Data.LineVertexBuffer.reset();
+        s_Data.LineShader.reset();
+        s_Data.LinePipeline.reset();
         s_Data.CamUniformBuffer.reset();
         s_Data.WhiteTexture.reset();
         for (auto& slot : s_Data.TextureSlots)
@@ -217,7 +251,6 @@ namespace Titan
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.CamBuffer.ViewProjection = viewTransform;
         s_Data.CamUniformBuffer->SetData(&s_Data.CamBuffer, sizeof(Renderer2DData::CameraData));
-        s_Data.CamUniformBuffer->Bind();
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -247,11 +280,15 @@ namespace Titan
                 (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
             s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
-            for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-                s_Data.TextureSlots[i]->Bind(i);
+            s_Data.QuadPipeline->ClearBindings();
+            s_Data.QuadPipeline->SetVertexArray(s_Data.QuadVertexArray);
+            s_Data.QuadPipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
 
-            s_Data.QuadShader->Bind();
-            RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+            for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+                s_Data.QuadPipeline->BindTexture(s_Data.TextureSlots[i], i);
+
+            s_Data.QuadPipeline->Bind();
+            RenderCommand::DrawIndexed(s_Data.QuadIndexCount);
             s_Data.Stats.DrawCalls++;
         }
 
@@ -261,8 +298,12 @@ namespace Titan
                 (uint32_t)((uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase);
             s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
 
-            s_Data.CircleShader->Bind();
-            RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+            s_Data.CirclePipeline->ClearBindings();
+            s_Data.CirclePipeline->SetVertexArray(s_Data.CircleVertexArray);
+            s_Data.CirclePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+
+            s_Data.CirclePipeline->Bind();
+            RenderCommand::DrawIndexed(s_Data.CircleIndexCount);
             s_Data.Stats.DrawCalls++;
         }
 
@@ -272,8 +313,12 @@ namespace Titan
                 (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
             s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
 
-            s_Data.LineShader->Bind();
-            RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+            s_Data.LinePipeline->ClearBindings();
+            s_Data.LinePipeline->SetVertexArray(s_Data.LineVertexArray);
+            s_Data.LinePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+
+            s_Data.LinePipeline->Bind();
+            RenderCommand::DrawLines(s_Data.LineVertexCount);
             s_Data.Stats.DrawCalls++;
         }
     }

@@ -1,9 +1,11 @@
 #include "PBRRenderer.h"
 #include "Buffer.h"
 #include "FullscreenRenderer.h"
+#include "PipelineState.h"
 #include "RenderCommand.h"
 #include "Shader.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
 #include "UniformBuffer.h"
 
@@ -13,6 +15,7 @@ namespace Titan
     struct PBRRendererData
     {
         Ref<Shader> Shader;
+        Ref<PipelineState> Pipeline;
         Ref<UniformBuffer> SceneUniformBuffer;
         Ref<Cubemap> DefaultIrradiance;
     };
@@ -30,10 +33,16 @@ namespace Titan
 
         // Shader
         s_PBRData.Shader = Shader::Create("resources/shader/RendererPBR.slang");
+
+        // Create pipeline
+        s_PBRData.Pipeline = PipelineState::Create();
+        s_PBRData.Pipeline->SetShader(s_PBRData.Shader);
+        s_PBRData.Pipeline->BindUniformBuffer(s_PBRData.SceneUniformBuffer, 0);
     }
 
     void PBRRenderer::Shutdown()
     {
+        s_PBRData.Pipeline.reset();
         s_PBRData = {};
     }
 
@@ -41,23 +50,25 @@ namespace Titan
     {
         s_PBRData.SceneUniformBuffer->SetData(&data, sizeof(PBRSceneData));
 
-        s_PBRData.Shader->Bind();
-        gbuffer->GetColorAttachmentTexture(0)->Bind(1); // Position
-        gbuffer->GetColorAttachmentTexture(1)->Bind(2); // Normal
-        gbuffer->GetColorAttachmentTexture(2)->Bind(3); // Albedo
-        gbuffer->GetColorAttachmentTexture(3)->Bind(4); // Metallic, Roughness, AO
-        gbuffer->GetColorAttachmentTexture(4)->Bind(5); // Emission
-        gbuffer->GetColorAttachmentTexture(5)->Bind(6); // Entity ID
-        gbuffer->GetDepthAttachmentTexture()->Bind(7);
+        // Bind textures and cubemap to the pipeline
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(0), 1); // Position
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(1), 2); // Normal
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(2), 3); // Albedo
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(3), 4); // Metallic, Roughness, AO
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(4), 5); // Emission
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(5), 6); // Entity ID
+        s_PBRData.Pipeline->BindTexture(gbuffer->GetDepthAttachmentTexture(), 7);
 
         if (irradiance)
-            irradiance->Bind(8);
+            s_PBRData.Pipeline->BindCubemap(irradiance, 8);
         else
-            s_PBRData.DefaultIrradiance->Bind(8);
+            s_PBRData.Pipeline->BindCubemap(s_PBRData.DefaultIrradiance, 8);
 
+        // Set uniforms on the shader directly
+        std::dynamic_pointer_cast<OpenGLShader>(s_PBRData.Shader)->Bind();
         s_PBRData.Shader->SetInt("IrradianceMap", 8);
 
-        s_PBRData.SceneUniformBuffer->Bind();
+        s_PBRData.Pipeline->Bind();
 
         FullscreenRenderer::Render();
     }

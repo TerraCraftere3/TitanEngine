@@ -1,8 +1,10 @@
 #include "GeometryRenderer.h"
+#include "PipelineState.h"
 #include "RenderCommand.h"
 #include "Renderer2D.h"
 #include "Shader.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
 #include "UniformBuffer.h"
 #include "VertexArray.h"
@@ -120,6 +122,7 @@ namespace Titan
         CameraData CamBuffer;
 
         Ref<Shader> Shader;
+        Ref<PipelineState> Pipeline;
         Ref<UniformBuffer> CameraUniformBuffer;
         Ref<ShaderStorageBuffer> MaterialStorageBuffer;
 
@@ -262,6 +265,14 @@ namespace Titan
         s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances, 2);
 
         s_3DData.Shader = Shader::Create("resources/shader/RendererGeometry.slang");
+
+        // Create pipeline state
+        s_3DData.Pipeline = PipelineState::Create();
+        s_3DData.Pipeline->SetShader(s_3DData.Shader);
+        s_3DData.Pipeline->BindUniformBuffer(s_3DData.CameraUniformBuffer, 0);
+        s_3DData.Pipeline->BindShaderStorageBuffer(s_3DData.MaterialStorageBuffer, 1);
+        s_3DData.Pipeline->BindShaderStorageBuffer(s_3DData.InstanceSSBO, 2);
+
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
 
         s_Textures.DefaultAlbedo = Texture2D::Create(1, 1);
@@ -292,6 +303,7 @@ namespace Titan
         s_3DData.InstanceBuffer.clear();
         s_3DData.GPUMaterials.clear();
         s_3DData.MaterialIndexMap.clear();
+        s_3DData.Pipeline.reset();
         s_Textures = {};
     }
 
@@ -319,7 +331,6 @@ namespace Titan
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
         s_3DData.CameraUniformBuffer->SetData(&s_3DData.CamBuffer, sizeof(GeometryRendererData::CameraData));
 
-        s_3DData.Shader->Bind();
         s_3DData.CurrentMesh = nullptr;
         s_3DData.CurrentMeshGPU = nullptr;
         s_3DData.CurrentInstanceCount = 0;
@@ -354,12 +365,9 @@ namespace Titan
         s_3DData.InstanceSSBO->SetData(s_3DData.InstanceBuffer.data(),
                                        s_3DData.CurrentInstanceCount * sizeof(InstanceData));
 
-        // Bind everything
-        s_3DData.Shader->Bind();
-        s_3DData.CameraUniformBuffer->Bind();
-        s_3DData.MaterialStorageBuffer->Bind();
-        s_3DData.InstanceSSBO->Bind();
-        s_3DData.CurrentMeshGPU->VAO->Bind();
+        // Set the VAO in the pipeline
+        s_3DData.Pipeline->SetVertexArray(s_3DData.CurrentMeshGPU->VAO);
+        s_3DData.Pipeline->Bind();
 
         // Draw each submesh with instancing
         for (const auto& submesh : s_3DData.CurrentMeshGPU->Submeshes)
@@ -372,8 +380,8 @@ namespace Titan
             s_3DData.InstanceSSBO->SetData(s_3DData.InstanceBuffer.data(),
                                            s_3DData.CurrentInstanceCount * sizeof(InstanceData));
 
-            RenderCommand::DrawIndexedInstancedBaseIndex(s_3DData.CurrentMeshGPU->VAO, submesh.IndexCount,
-                                                         s_3DData.CurrentInstanceCount, submesh.BaseIndex);
+            RenderCommand::DrawIndexedInstancedBaseIndex(submesh.IndexCount, s_3DData.CurrentInstanceCount,
+                                                         submesh.BaseIndex);
 
             s_3DData.Stats.DrawCalls++;
         }

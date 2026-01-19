@@ -2,6 +2,7 @@
 #include "FullscreenRenderer.h"
 #include "GeometryRenderer.h"
 #include "PBRRenderer.h"
+#include "PipelineState.h"
 #include "Renderer2D.h"
 #include "SceneRenderer.h"
 #include "SkyboxRenderer.h"
@@ -42,12 +43,18 @@ namespace Titan
 
     void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::mat4& transform)
     {
-        shader->Bind();
+        // Create a temporary pipeline state for this legacy submit call
+        Ref<PipelineState> pipeline = PipelineState::Create();
+        pipeline->SetShader(shader);
+        pipeline->SetVertexArray(vertexArray);
+        pipeline->Bind();
+
+        // Set uniforms on shader directly
         std::dynamic_pointer_cast<OpenGLShader>(shader)->SetMat4("u_ViewProjection",
                                                                  s_SceneData->ViewProjMatrix); // LEGACY METHODS
         std::dynamic_pointer_cast<OpenGLShader>(shader)->SetMat4("u_Model", transform);        // TODO: REMOVE!!!
-        vertexArray->Bind();
-        RenderCommand::DrawIndexed(vertexArray);
+
+        RenderCommand::DrawIndexed();
     }
 
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)
