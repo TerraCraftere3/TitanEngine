@@ -140,7 +140,7 @@ namespace Titan
     {
         struct FXAA
         {
-            bool isEnabled = false;
+            bool isEnabled = true;
         };
 
         struct Tonemapping

@@ -41,7 +41,7 @@ namespace Titan
     public:
         virtual void Init() = 0;
 
-        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer) = 0;
+        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) = 0;
         virtual void EndRenderPass() = 0;
 
         virtual void SetPolygonMode(PolygonMode mode) = 0;

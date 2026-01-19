@@ -121,7 +121,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Clear Pass");
                 fb->ClearAttachment(1, -1);
                 RenderCommand::SetClearColor({173.0f / 255.0f, 216.0f / 255.0f, 230.0f / 255.0f, 1.0f});
                 RenderCommand::Clear();
@@ -135,7 +135,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Geometry Pass");
                 if (v->drawWireframe)
                     RenderCommand::SetPolygonMode(PolygonMode::Line);
                 else
@@ -163,7 +163,7 @@ namespace Titan
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb || !gbuffer)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "PBR Pass");
                 bool hasDirectionalLight = false;
                 glm::vec3 lightDirection;
                 auto dlView = v->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
@@ -198,7 +198,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Sprite Pass (2D)");
                 Renderer2D::BeginScene(v->viewProjection);
                 auto spriteView = v->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
                 for (auto entity : spriteView)
@@ -221,7 +221,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Circle Pass (2D)");
                 Renderer2D::BeginScene(v->viewProjection);
                 auto circleView = v->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
                 for (auto entity : circleView)
@@ -241,7 +241,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Skybox Pass");
                 auto skyboxView = v->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
                 for (auto entity : skyboxView)
                 {
@@ -276,7 +276,7 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb);
+                RenderCommand::BeginRenderPass(fb, "Overlay Pass");
                 Renderer2D::BeginScene(v->viewProjection);
                 auto boxColliderView =
                     v->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();

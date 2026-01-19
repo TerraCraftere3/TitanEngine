@@ -22,8 +22,12 @@ namespace Titan
         glEnable(GL_LINE_SMOOTH);
     }
 
-    void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer)
+    void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
     {
+#ifdef TI_BUILD_DEBUG
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, debugName.c_str());
+#endif
+
         glBindFramebuffer(GL_FRAMEBUFFER, std::dynamic_pointer_cast<OpenGLFramebuffer>(framebuffer)->GetRendererID());
         glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
     }
@@ -31,6 +35,10 @@ namespace Titan
     void OpenGLRendererAPI::EndRenderPass()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#ifdef TI_BUILD_DEBUG
+        glPopDebugGroup();
+#endif
     }
 
     void OpenGLRendererAPI::SetPolygonMode(PolygonMode mode)

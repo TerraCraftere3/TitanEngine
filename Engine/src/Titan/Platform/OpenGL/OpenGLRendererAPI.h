@@ -2,6 +2,8 @@
 
 #include "Titan/Renderer/RendererAPI.h"
 
+#include <string>
+
 namespace Titan
 {
 
@@ -10,7 +12,7 @@ namespace Titan
     public:
         virtual void Init() override;
 
-        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer) override;
+        virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) override;
         virtual void EndRenderPass() override;
 
         virtual void SetPolygonMode(PolygonMode mode) override;

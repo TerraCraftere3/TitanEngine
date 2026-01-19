@@ -9,9 +9,9 @@ namespace Titan
     public:
         inline static void Init() { s_RendererAPI->Init(); }
 
-        inline static void BeginRenderPass(Ref<Framebuffer> framebuffer)
+        inline static void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
         {
-            s_RendererAPI->BeginRenderPass(framebuffer);
+            s_RendererAPI->BeginRenderPass(framebuffer, debugName);
         }
 
         inline static void EndRenderPass() { s_RendererAPI->EndRenderPass(); }
