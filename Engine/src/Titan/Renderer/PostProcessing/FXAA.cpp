@@ -11,7 +11,7 @@ namespace Titan
     void FXAAEffect::OnAttach()
     {
         m_Shader = Assets::Load<Shader>("resources/shader/PostFXAA.slang");
-        m_UniformBuffer = UniformBuffer::Create(sizeof(FXAAUniformData), 0);
+        m_UniformBuffer = UniformBuffer::Create(sizeof(FXAAUniformData));
     }
 
     void FXAAEffect::OnDetach() {}
@@ -31,7 +31,7 @@ namespace Titan
         m_Shader->Bind();
         m_Shader->SetInt("u_Input", 0);
         m_Shader->SetInt("u_Entity", 1);
-        m_UniformBuffer->Bind();
+        m_UniformBuffer->Bind(0);
         m_UniformBuffer->SetData(&data, sizeof(FXAAUniformData));
         FullscreenRenderer::Render();
         RenderCommand::EndRenderPass();

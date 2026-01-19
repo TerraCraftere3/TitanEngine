@@ -67,7 +67,7 @@ namespace Titan
         return nullptr;
     }
 
-    Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size, uint32_t binding)
+    Ref<ShaderStorageBuffer> ShaderStorageBuffer::Create(uint32_t size)
     {
         switch (Renderer::GetAPI())
         {
@@ -75,7 +75,7 @@ namespace Titan
                 TI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLShaderStorageBuffer>(size, binding);
+                return CreateRef<OpenGLShaderStorageBuffer>(size);
         }
 
         TI_CORE_ASSERT(false, "Unknown RendererAPI!");

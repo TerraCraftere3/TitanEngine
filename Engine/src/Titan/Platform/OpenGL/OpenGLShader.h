@@ -35,6 +35,8 @@ namespace Titan
         virtual const std::string& GetName() const override { return m_Name; }
         virtual void Reload(const std::string& path) override;
 
+        uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         std::unordered_map<GLenum, std::string> ParseShaderFile(const std::string& source);
         void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);

@@ -1,5 +1,6 @@
 #include "OpenGLRendererAPI.h"
 #include "OpenGLFramebuffer.h"
+#include "OpenGLPipelineState.h"
 #include "Titan/PCH.h"
 
 // clang-format off
@@ -27,6 +28,8 @@ namespace Titan
 #ifdef TI_BUILD_DEBUG
         glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, debugName.c_str());
 #endif
+
+        OpenGLPipelineState::ResetCachedState();
 
         glBindFramebuffer(GL_FRAMEBUFFER, std::dynamic_pointer_cast<OpenGLFramebuffer>(framebuffer)->GetRendererID());
         glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());

@@ -260,9 +260,9 @@ namespace Titan
     {
         s_3DData.InstanceBuffer.reserve(s_3DData.MaxInstances);
 
-        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(GeometryRendererData::CameraData), 0);
-        s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials, 1);
-        s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances, 2);
+        s_3DData.CameraUniformBuffer = UniformBuffer::Create(sizeof(GeometryRendererData::CameraData));
+        s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials);
+        s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances);
 
         s_3DData.Shader = Shader::Create("resources/shader/RendererGeometry.slang");
 

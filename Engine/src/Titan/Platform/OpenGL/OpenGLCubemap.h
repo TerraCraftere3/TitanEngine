@@ -35,6 +35,8 @@ namespace Titan
 
         virtual Ref<Cubemap> CreateIrradianceMap(uint32_t resolution = 32) override;
 
+        uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         uint32_t m_RendererID = 0; // GLuint texture ID
 

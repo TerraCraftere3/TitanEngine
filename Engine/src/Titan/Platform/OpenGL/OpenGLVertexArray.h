@@ -20,6 +20,8 @@ namespace Titan
         virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; }
         virtual const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
+        uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         uint32_t m_RendererID;
         uint32_t m_VertexBufferIndex = 0;

@@ -61,7 +61,7 @@ namespace Titan
         s_SBData.CubemapShader = Shader::Create("resources/shader/RendererSkyboxHDRI.slang");
         s_SBData.ColorShader = Shader::Create("resources/shader/RendererSkyboxColor.slang");
 
-        s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData), 0);
+        s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData));
 
         s_SBData.CubeVAO = VertexArray::Create();
 

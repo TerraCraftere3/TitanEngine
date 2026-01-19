@@ -10,7 +10,6 @@
 // clang-format on
 namespace Titan
 {
-
     class OpenGLTexture2D : public Texture2D
     {
     public:
@@ -50,6 +49,8 @@ namespace Titan
                                       int channels, bool isSVG);
 
         static Ref<Texture2D> CreateAsync(const std::string& path, TextureSettings settings);
+
+        uint32_t GetRendererID() const { return m_RendererID; }
 
     private:
         std::string m_Path;

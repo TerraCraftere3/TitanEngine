@@ -211,6 +211,8 @@ namespace Titan
         virtual const BufferLayout& GetLayout() const override { return m_Layout; }
         virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
 
+        uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         BufferLayout m_Layout;
     };
@@ -242,6 +244,8 @@ namespace Titan
 
         virtual uint32_t GetCount() const override { return m_Count; }
 
+        uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         uint32_t m_Count = 0;
     };
@@ -249,32 +253,25 @@ namespace Titan
     class OpenGLShaderStorageBuffer : public ShaderStorageBuffer, protected OpenGLBufferBase<GL_SHADER_STORAGE_BUFFER>
     {
     public:
-        OpenGLShaderStorageBuffer(uint32_t size, uint32_t binding)
-            : OpenGLBufferBase<GL_SHADER_STORAGE_BUFFER>(size, GL_DYNAMIC_COPY), m_Binding(binding)
-        {
-            Bind();
-        }
+        OpenGLShaderStorageBuffer(uint32_t size) : OpenGLBufferBase<GL_SHADER_STORAGE_BUFFER>(size, GL_DYNAMIC_COPY) {}
 
         virtual ~OpenGLShaderStorageBuffer() override = default;
 
         void SetData(const void* data, uint32_t size, uint32_t offset = 0) override { SetSubData(data, size, offset); }
 
-        void Bind() const override
+        void Bind(uint32_t slot) const override
         {
             BindRaw();
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_Binding, m_RendererID);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, m_RendererID);
         }
 
-        void Unbind() const override
+        void Unbind(uint32_t slot) const override
         {
             UnbindRaw();
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_Binding, 0);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, 0);
         }
 
-        uint32_t GetBinding() const { return m_Binding; }
-
-    private:
-        uint32_t m_Binding = 0;
+        uint32_t GetRendererID() const { return m_RendererID; }
     };
 
 } // namespace Titan

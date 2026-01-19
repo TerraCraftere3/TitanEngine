@@ -14,7 +14,7 @@ namespace Titan
     void TonemappingEffect::OnAttach()
     {
         m_Shader = Assets::Load<Shader>("resources/shader/PostTonemapping.slang");
-        m_UniformBuffer = UniformBuffer::Create(sizeof(TonemappingUniformData), 0);
+        m_UniformBuffer = UniformBuffer::Create(sizeof(TonemappingUniformData));
     }
 
     void TonemappingEffect::OnDetach() {}
@@ -37,7 +37,7 @@ namespace Titan
         m_Shader->Bind();
         m_Shader->SetInt("u_HDRInput", 0);
         m_Shader->SetInt("u_Entity", 1);
-        m_UniformBuffer->Bind();
+        m_UniformBuffer->Bind(0);
         m_UniformBuffer->SetData(&data, sizeof(TonemappingUniformData));
         FullscreenRenderer::Render();
         RenderCommand::EndRenderPass();

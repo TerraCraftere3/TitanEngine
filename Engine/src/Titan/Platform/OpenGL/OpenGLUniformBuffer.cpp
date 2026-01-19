@@ -10,12 +10,10 @@
 namespace Titan
 {
 
-    OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding)
+    OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size)
     {
         glCreateBuffers(1, &m_RendererID);
         glNamedBufferData(m_RendererID, size, nullptr, GL_DYNAMIC_DRAW);
-        glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
-        m_BindingPoint = binding;
     }
 
     OpenGLUniformBuffer::~OpenGLUniformBuffer()
@@ -28,9 +26,9 @@ namespace Titan
         glNamedBufferSubData(m_RendererID, offset, size, data);
     }
 
-    void OpenGLUniformBuffer::Bind()
+    void OpenGLUniformBuffer::Bind(uint32_t slot)
     {
-        glBindBufferBase(GL_UNIFORM_BUFFER, m_BindingPoint, m_RendererID);
+        glBindBufferBase(GL_UNIFORM_BUFFER, slot, m_RendererID);
     }
 
 } // namespace Titan

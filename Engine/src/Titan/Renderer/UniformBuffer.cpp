@@ -7,7 +7,7 @@
 namespace Titan
 {
 
-    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
+    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size)
     {
         switch (Renderer::GetAPI())
         {
@@ -15,7 +15,7 @@ namespace Titan
                 TI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLUniformBuffer>(size, binding);
+                return CreateRef<OpenGLUniformBuffer>(size);
         }
 
         TI_CORE_ASSERT(false, "Unknown RendererAPI!");

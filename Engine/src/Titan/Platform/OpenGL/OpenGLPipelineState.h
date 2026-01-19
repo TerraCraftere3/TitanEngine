@@ -28,6 +28,7 @@ namespace Titan
         virtual Ref<VertexArray> GetVertexArray() const override { return m_VertexArray; }
 
         void ClearBindings();
+        static void ResetCachedState();
 
     private:
         Ref<Shader> m_Shader = nullptr;

@@ -192,7 +192,7 @@ namespace Titan
             s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
         }
 
-        s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+        s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData));
 
         // Create pipeline states
         s_Data.QuadPipeline = PipelineState::Create();

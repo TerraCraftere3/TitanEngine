@@ -24,7 +24,7 @@ namespace Titan
 
     void PBRRenderer::Init()
     {
-        s_PBRData.SceneUniformBuffer = UniformBuffer::Create(sizeof(PBRSceneData), 0);
+        s_PBRData.SceneUniformBuffer = UniformBuffer::Create(sizeof(PBRSceneData));
 
         // Irradiance
         std::string defaultAmbientPath = "resources/cubemaps/default.hdr";
