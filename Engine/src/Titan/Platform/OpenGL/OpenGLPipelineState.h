@@ -24,6 +24,9 @@ namespace Titan
         virtual void BindTexture(const Ref<Texture2D>& texture, uint32_t slot) override;
         virtual void BindCubemap(const Ref<Cubemap>& cubemap, uint32_t slot) override;
 
+        virtual void SetDepthFunction(DepthFunc function) override;
+        virtual void SetPolygonMode(PolygonMode mode) override;
+
         virtual Ref<Shader> GetShader() const override { return m_Shader; }
         virtual Ref<VertexArray> GetVertexArray() const override { return m_VertexArray; }
 
@@ -37,5 +40,7 @@ namespace Titan
         std::vector<std::pair<Ref<ShaderStorageBuffer>, uint32_t>> m_StorageBuffers;
         std::vector<std::pair<Ref<Texture2D>, uint32_t>> m_Textures;
         std::vector<std::pair<Ref<Cubemap>, uint32_t>> m_Cubemaps;
+        PolygonMode m_PolygonMode = PolygonMode::Fill;
+        DepthFunc m_DepthFunction = DepthFunc::Less;
     };
 } // namespace Titan

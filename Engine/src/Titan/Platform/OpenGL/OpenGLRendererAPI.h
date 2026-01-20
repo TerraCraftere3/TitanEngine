@@ -15,8 +15,6 @@ namespace Titan
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) override;
         virtual void EndRenderPass() override;
 
-        virtual void SetPolygonMode(PolygonMode mode) override;
-        virtual void SetDepthFunc(DepthFunc function) override;
         virtual void SetClearColor(const glm::vec4& color) override;
         virtual void Clear() override;
 

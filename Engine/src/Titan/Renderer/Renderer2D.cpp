@@ -199,16 +199,19 @@ namespace Titan
         s_Data.QuadPipeline->SetShader(s_Data.QuadShader);
         s_Data.QuadPipeline->SetVertexArray(s_Data.QuadVertexArray);
         s_Data.QuadPipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.QuadPipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.CirclePipeline = PipelineState::Create();
         s_Data.CirclePipeline->SetShader(s_Data.CircleShader);
         s_Data.CirclePipeline->SetVertexArray(s_Data.CircleVertexArray);
         s_Data.CirclePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.CirclePipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.LinePipeline = PipelineState::Create();
         s_Data.LinePipeline->SetShader(s_Data.LineShader);
         s_Data.LinePipeline->SetVertexArray(s_Data.LineVertexArray);
         s_Data.LinePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.LinePipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
     }
@@ -260,15 +263,12 @@ namespace Titan
         s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
         s_Data.TextureSlotIndex = 1;
 
-        RenderCommand::SetDepthFunc(DepthFunc::Always);
-
         s_IsRendering = true;
     }
 
     void Renderer2D::EndScene()
     {
         Flush();
-        RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
         s_IsRendering = false;
     }
 

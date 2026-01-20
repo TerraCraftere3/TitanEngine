@@ -324,7 +324,7 @@ namespace Titan
         s_3DData.MeshCache.clear();
     }
 
-    void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix)
+    void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix, PolygonMode polygonMode)
     {
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");
 
@@ -337,6 +337,7 @@ namespace Titan
         s_3DData.InstanceBuffer.clear();
 
         s_IsRendering = true;
+        s_3DData.Pipeline->SetPolygonMode(polygonMode);
     }
 
     void GeometryRenderer::EndScene()

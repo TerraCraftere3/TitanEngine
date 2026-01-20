@@ -1,17 +1,10 @@
 #pragma once
 
 #include "Titan/PCH.h"
-#include "Titan/Renderer/Depth.h"
 #include "Titan/Renderer/Framebuffer.h"
 
 namespace Titan
 {
-    enum class PolygonMode
-    {
-        Fill = 0,
-        Line = 1,
-        Point = 2
-    };
 
     class TI_API RendererAPI
     {
@@ -44,8 +37,6 @@ namespace Titan
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) = 0;
         virtual void EndRenderPass() = 0;
 
-        virtual void SetPolygonMode(PolygonMode mode) = 0;
-        virtual void SetDepthFunc(DepthFunc function) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
 

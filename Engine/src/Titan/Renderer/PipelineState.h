@@ -10,6 +10,26 @@
 
 namespace Titan
 {
+
+    enum class DepthFunc
+    {
+        Never,
+        Less,
+        Equal,
+        LessEqual,
+        Greater,
+        NotEqual,
+        GreaterEqual,
+        Always
+    };
+
+    enum class PolygonMode
+    {
+        Fill = 0,
+        Line = 1,
+        Point = 2
+    };
+
     /**
      * @class PipelineState
      * @brief Encapsulates the entire rendering pipeline state for a single draw call.
@@ -73,6 +93,18 @@ namespace Titan
          * Must be called before binding new resources each frame
          */
         virtual void ClearBindings() = 0;
+
+        /**
+         * @brief Set the depth comparison function
+         * @param function The depth function to use
+         */
+        virtual void SetDepthFunction(DepthFunc function) = 0;
+
+        /**
+         * @brief Set the polygon rasterization mode
+         * @param mode The polygon mode (Fill, Line, Point)
+         */
+        virtual void SetPolygonMode(PolygonMode mode) = 0;
 
         // Getters
         virtual Ref<Shader> GetShader() const = 0;

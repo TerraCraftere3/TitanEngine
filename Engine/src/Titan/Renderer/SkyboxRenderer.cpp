@@ -74,11 +74,13 @@ namespace Titan
         s_SBData.CubemapPipeline->SetShader(s_SBData.CubemapShader);
         s_SBData.CubemapPipeline->SetVertexArray(s_SBData.CubeVAO);
         s_SBData.CubemapPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+        s_SBData.CubemapPipeline->SetDepthFunction(DepthFunc::LessEqual);
 
         s_SBData.ColorPipeline = PipelineState::Create();
         s_SBData.ColorPipeline->SetShader(s_SBData.ColorShader);
         s_SBData.ColorPipeline->SetVertexArray(s_SBData.CubeVAO);
         s_SBData.ColorPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+        s_SBData.ColorPipeline->SetDepthFunction(DepthFunc::LessEqual);
     }
 
     void SkyboxRenderer::Shutdown()
@@ -96,8 +98,6 @@ namespace Titan
 
         s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
 
-        RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
-
         s_SBData.CubemapPipeline->BindCubemap(cubemap, 0);
         std::dynamic_pointer_cast<OpenGLShader>(s_SBData.CubemapShader)->Bind();
         s_SBData.CubemapShader->SetInt("cubeMap", 0);
@@ -105,8 +105,6 @@ namespace Titan
         s_SBData.CubemapPipeline->Bind();
 
         RenderCommand::DrawArrays(36);
-
-        RenderCommand::SetDepthFunc(DepthFunc::Less);
     }
 
     void SkyboxRenderer::Render(const glm::vec3& topColor, const glm::vec3& bottomColor, glm::mat4 view,
@@ -120,13 +118,9 @@ namespace Titan
 
         s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
 
-        RenderCommand::SetDepthFunc(DepthFunc::LessEqual);
-
         s_SBData.ColorPipeline->Bind();
 
         RenderCommand::DrawArrays(36);
-
-        RenderCommand::SetDepthFunc(DepthFunc::Less);
     }
 
 } // namespace Titan

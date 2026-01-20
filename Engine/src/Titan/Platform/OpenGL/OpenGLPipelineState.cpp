@@ -135,6 +135,51 @@ namespace Titan
                 g_CurrentCubemaps[slot] = rendererID;
             }
         }
+
+        GLenum polygonMode = GL_FILL;
+        switch (m_PolygonMode)
+        {
+            case PolygonMode::Fill:
+                polygonMode = GL_FILL;
+                break;
+            case PolygonMode::Line:
+                polygonMode = GL_LINE;
+                break;
+            case PolygonMode::Point:
+                polygonMode = GL_POINT;
+                break;
+        }
+        glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+
+        GLenum depthFunc = GL_LESS;
+        switch (m_DepthFunction)
+        {
+            case DepthFunc::Never:
+                depthFunc = GL_NEVER;
+                break;
+            case DepthFunc::Less:
+                depthFunc = GL_LESS;
+                break;
+            case DepthFunc::Equal:
+                depthFunc = GL_EQUAL;
+                break;
+            case DepthFunc::LessEqual:
+                depthFunc = GL_LEQUAL;
+                break;
+            case DepthFunc::Greater:
+                depthFunc = GL_GREATER;
+                break;
+            case DepthFunc::NotEqual:
+                depthFunc = GL_NOTEQUAL;
+                break;
+            case DepthFunc::GreaterEqual:
+                depthFunc = GL_GEQUAL;
+                break;
+            case DepthFunc::Always:
+                depthFunc = GL_ALWAYS;
+                break;
+        }
+        glDepthFunc(depthFunc);
     }
 
     void OpenGLPipelineState::SetShader(const Ref<Shader>& shader)
@@ -166,6 +211,16 @@ namespace Titan
     void OpenGLPipelineState::BindCubemap(const Ref<Cubemap>& cubemap, uint32_t slot)
     {
         m_Cubemaps.push_back({cubemap, slot});
+    }
+
+    void OpenGLPipelineState::SetDepthFunction(DepthFunc function)
+    {
+        m_DepthFunction = function;
+    }
+
+    void OpenGLPipelineState::SetPolygonMode(PolygonMode mode)
+    {
+        m_PolygonMode = mode;
     }
 
     void OpenGLPipelineState::ClearBindings()

@@ -136,13 +136,10 @@ namespace Titan
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Geometry Pass (3D)");
-                if (v->drawWireframe)
-                    RenderCommand::SetPolygonMode(PolygonMode::Line);
-                else
-                    RenderCommand::SetPolygonMode(PolygonMode::Fill);
                 RenderCommand::SetClearColor(glm::vec4(0.0));
                 RenderCommand::Clear();
-                GeometryRenderer::BeginScene(v->viewProjection);
+                GeometryRenderer::BeginScene(v->viewProjection,
+                                             v->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
                 auto meshView = v->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                 for (auto entity : meshView)
                 {
@@ -151,7 +148,6 @@ namespace Titan
                         GeometryRenderer::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
                 }
                 GeometryRenderer::EndScene();
-                RenderCommand::SetPolygonMode(PolygonMode::Fill);
                 RenderCommand::EndRenderPass();
             });
 

@@ -16,10 +16,6 @@ namespace Titan
 
         inline static void EndRenderPass() { s_RendererAPI->EndRenderPass(); }
 
-        inline static void SetPolygonMode(PolygonMode mode) { s_RendererAPI->SetPolygonMode(mode); }
-
-        inline static void SetDepthFunc(DepthFunc function) { s_RendererAPI->SetDepthFunc(function); }
-
         inline static void SetClearColor(const glm::vec4& color) { s_RendererAPI->SetClearColor(color); }
 
         inline static void Clear() { s_RendererAPI->Clear(); }

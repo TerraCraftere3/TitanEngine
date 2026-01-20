@@ -4,6 +4,7 @@
 #include "EditorCamera.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "PipelineState.h"
 #include "Texture.h"
 #include "Titan/PCH.h"
 
@@ -15,7 +16,7 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void BeginScene(const glm::mat4& viewTransform);
+        static void BeginScene(const glm::mat4& viewTransform, PolygonMode polygonMode = PolygonMode::Fill);
         static void ClearCache();
         static void ClearTextureCache();
         static void ClearMeshCache();
