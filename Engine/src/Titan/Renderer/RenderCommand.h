@@ -48,6 +48,8 @@ namespace Titan
             s_RendererAPI->SetViewport(x, y, width, height);
         }
 
+        inline static Ref<Framebuffer> GetSwapchainTarget() { return s_RendererAPI->GetSwapchainTarget(); }
+
         inline static const RendererAPI::Backend& GetBackend() { return s_RendererAPI->GetBackend(); }
 
     private:

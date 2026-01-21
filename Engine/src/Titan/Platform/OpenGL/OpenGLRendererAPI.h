@@ -31,6 +31,8 @@ namespace Titan
         virtual void SetLineWidth(float width) override;
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
+        virtual Ref<Framebuffer> GetSwapchainTarget() override;
+
         virtual const RendererAPI::Backend& GetBackend() const override;
 
     private:

@@ -1,6 +1,7 @@
 #include "OpenGLRendererAPI.h"
 #include "OpenGLFramebuffer.h"
 #include "OpenGLPipelineState.h"
+#include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
 
 // clang-format off
@@ -41,14 +42,19 @@ namespace Titan
 
         OpenGLPipelineState::ResetCachedState();
 
+        if (framebuffer->IsSwapChainTarget())
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(0, 0, Application::GetInstance()->GetWindow().GetWidth(),
+                       Application::GetInstance()->GetWindow().GetHeight());
+            return;
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, std::dynamic_pointer_cast<OpenGLFramebuffer>(framebuffer)->GetRendererID());
         glViewport(0, 0, framebuffer->GetWidth(), framebuffer->GetHeight());
     }
 
     void OpenGLRendererAPI::EndRenderPass()
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 #ifdef TI_BUILD_DEBUG
         glPopDebugGroup();
 #endif
@@ -104,6 +110,20 @@ namespace Titan
     void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
     {
         glViewport(x, y, width, height);
+    }
+
+    Ref<Framebuffer> OpenGLRendererAPI::GetSwapchainTarget()
+    {
+        static Ref<Framebuffer> swapchainFramebuffer = nullptr;
+        if (!swapchainFramebuffer)
+        {
+            FramebufferSpecification spec;
+            spec.Width = 0;  // Will be resized by the application
+            spec.Height = 0; // Will be resized by the application
+            spec.SwapChainTarget = true;
+            swapchainFramebuffer = Framebuffer::Create(spec);
+        }
+        return swapchainFramebuffer;
     }
 
     const RendererAPI::Backend& OpenGLRendererAPI::GetBackend() const

@@ -326,6 +326,11 @@ namespace Titan
 
     OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpecification& spec) : m_Specification(spec)
     {
+        if (m_Specification.SwapChainTarget)
+        {
+            m_RendererID = 0;
+            return;
+        }
         for (auto spec : m_Specification.Attachments.Attachments)
         {
             if (!Utils::IsDepthFormat(spec.TextureFormat))
@@ -339,16 +344,19 @@ namespace Titan
 
     OpenGLFramebuffer::~OpenGLFramebuffer()
     {
-        glDeleteFramebuffers(1, &m_RendererID);
-        glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
-        glDeleteTextures(1, &m_DepthAttachment);
+        if (!m_Specification.SwapChainTarget)
+        {
+            glDeleteFramebuffers(1, &m_RendererID);
+            glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+            glDeleteTextures(1, &m_DepthAttachment);
+        }
         m_ColorAttachmentTex.clear();
         m_DepthAttachmentTex.reset();
     }
 
     void OpenGLFramebuffer::Invalidate()
     {
-        if (m_RendererID)
+        if (m_RendererID && !m_Specification.SwapChainTarget)
         {
             glDeleteFramebuffers(1, &m_RendererID);
             glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());

@@ -54,15 +54,17 @@ namespace Titan
     void ImGui_ImplTitan_RenderDrawData(ImDrawData* draw_data)
     {
         RendererAPI::API api = RendererAPI::GetAPI();
+        RenderCommand::BeginRenderPass(RenderCommand::GetSwapchainTarget(), "ImGui Render");
         switch (api)
         {
             case RendererAPI::API::OpenGL:
             {
                 ImGui_ImplOpenGL3_RenderDrawData(draw_data);
-                return;
             };
+            default:
+                TI_CORE_ASSERT("ImGui could not initialize with unknown Renderer API!");
         }
-        TI_CORE_ASSERT("ImGui could not initialize with unknown Renderer API!");
+        RenderCommand::EndRenderPass();
     }
 
 } // namespace Titan

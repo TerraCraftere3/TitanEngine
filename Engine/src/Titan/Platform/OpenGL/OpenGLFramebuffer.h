@@ -37,6 +37,7 @@ namespace Titan
             return m_ColorAttachmentTex[index];
         }
 
+        virtual bool IsSwapChainTarget() const override { return m_Specification.SwapChainTarget; }
         virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 
         uint32_t GetRendererID() const { return m_RendererID; }

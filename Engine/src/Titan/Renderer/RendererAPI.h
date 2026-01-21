@@ -58,6 +58,7 @@ namespace Titan
         virtual void SetLineWidth(float width) = 0;
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
+        virtual Ref<Framebuffer> GetSwapchainTarget() = 0;
 
         virtual const Backend& GetBackend() const = 0;
         inline static API GetAPI() { return s_API; }
