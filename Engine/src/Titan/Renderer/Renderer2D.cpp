@@ -196,19 +196,19 @@ namespace Titan
         s_Data.QuadPipeline = PipelineState::Create();
         s_Data.QuadPipeline->SetShader(s_Data.QuadShader);
         s_Data.QuadPipeline->SetVertexArray(s_Data.QuadVertexArray);
-        s_Data.QuadPipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.QuadPipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
         s_Data.QuadPipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.CirclePipeline = PipelineState::Create();
         s_Data.CirclePipeline->SetShader(s_Data.CircleShader);
         s_Data.CirclePipeline->SetVertexArray(s_Data.CircleVertexArray);
-        s_Data.CirclePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.CirclePipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
         s_Data.CirclePipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.LinePipeline = PipelineState::Create();
         s_Data.LinePipeline->SetShader(s_Data.LineShader);
         s_Data.LinePipeline->SetVertexArray(s_Data.LineVertexArray);
-        s_Data.LinePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+        s_Data.LinePipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
         s_Data.LinePipeline->SetDepthFunction(DepthFunc::Always);
 
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
@@ -280,10 +280,10 @@ namespace Titan
 
             s_Data.QuadPipeline->ClearBindings();
             s_Data.QuadPipeline->SetVertexArray(s_Data.QuadVertexArray);
-            s_Data.QuadPipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+            s_Data.QuadPipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
 
             for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-                s_Data.QuadPipeline->BindTexture(s_Data.TextureSlots[i], i);
+                s_Data.QuadPipeline->SetTexture(s_Data.TextureSlots[i], i);
 
             s_Data.QuadPipeline->Bind();
             RenderCommand::DrawIndexed(s_Data.QuadIndexCount);
@@ -297,7 +297,7 @@ namespace Titan
 
             s_Data.CirclePipeline->ClearBindings();
             s_Data.CirclePipeline->SetVertexArray(s_Data.CircleVertexArray);
-            s_Data.CirclePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+            s_Data.CirclePipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
 
             s_Data.CirclePipeline->Bind();
             RenderCommand::DrawIndexed(s_Data.CircleIndexCount);
@@ -311,7 +311,7 @@ namespace Titan
 
             s_Data.LinePipeline->ClearBindings();
             s_Data.LinePipeline->SetVertexArray(s_Data.LineVertexArray);
-            s_Data.LinePipeline->BindUniformBuffer(s_Data.CamUniformBuffer, 0);
+            s_Data.LinePipeline->SetUniformBuffer(s_Data.CamUniformBuffer, 0);
 
             s_Data.LinePipeline->Bind();
             RenderCommand::DrawLines(s_Data.LineVertexCount);

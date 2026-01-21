@@ -73,13 +73,13 @@ namespace Titan
         s_SBData.CubemapPipeline = PipelineState::Create();
         s_SBData.CubemapPipeline->SetShader(s_SBData.CubemapShader);
         s_SBData.CubemapPipeline->SetVertexArray(s_SBData.CubeVAO);
-        s_SBData.CubemapPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+        s_SBData.CubemapPipeline->SetUniformBuffer(s_SBData.SceneUniformBuffer, 0);
         s_SBData.CubemapPipeline->SetDepthFunction(DepthFunc::LessEqual);
 
         s_SBData.ColorPipeline = PipelineState::Create();
         s_SBData.ColorPipeline->SetShader(s_SBData.ColorShader);
         s_SBData.ColorPipeline->SetVertexArray(s_SBData.CubeVAO);
-        s_SBData.ColorPipeline->BindUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+        s_SBData.ColorPipeline->SetUniformBuffer(s_SBData.SceneUniformBuffer, 0);
         s_SBData.ColorPipeline->SetDepthFunction(DepthFunc::LessEqual);
     }
 
@@ -97,11 +97,7 @@ namespace Titan
         data.Projection = projection;
 
         s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
-
-        s_SBData.CubemapPipeline->BindCubemap(cubemap, 0);
-        std::dynamic_pointer_cast<OpenGLShader>(s_SBData.CubemapShader)->Bind();
-        s_SBData.CubemapShader->SetInt("cubeMap", 0);
-
+        s_SBData.CubemapPipeline->SetCubemap(cubemap, 0);
         s_SBData.CubemapPipeline->Bind();
 
         RenderCommand::DrawArrays(36);

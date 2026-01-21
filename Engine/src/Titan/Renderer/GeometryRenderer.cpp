@@ -267,9 +267,9 @@ namespace Titan
         // Create pipeline state
         s_3DData.Pipeline = PipelineState::Create();
         s_3DData.Pipeline->SetShader(s_3DData.Shader);
-        s_3DData.Pipeline->BindUniformBuffer(s_3DData.CameraUniformBuffer, 0);
-        s_3DData.Pipeline->BindShaderStorageBuffer(s_3DData.MaterialStorageBuffer, 1);
-        s_3DData.Pipeline->BindShaderStorageBuffer(s_3DData.InstanceSSBO, 2);
+        s_3DData.Pipeline->SetUniformBuffer(s_3DData.CameraUniformBuffer, 0);
+        s_3DData.Pipeline->SetShaderStorageBuffer(s_3DData.MaterialStorageBuffer, 1);
+        s_3DData.Pipeline->SetShaderStorageBuffer(s_3DData.InstanceSSBO, 2);
 
         s_3DData.GPUMaterials.reserve(s_3DData.MaxMaterials);
 

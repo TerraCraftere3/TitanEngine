@@ -192,23 +192,23 @@ namespace Titan
         m_VertexArray = vertexArray;
     }
 
-    void OpenGLPipelineState::BindUniformBuffer(const Ref<UniformBuffer>& uniformBuffer, uint32_t bindingPoint)
+    void OpenGLPipelineState::SetUniformBuffer(const Ref<UniformBuffer>& uniformBuffer, uint32_t bindingPoint)
     {
         m_UniformBuffers.push_back({uniformBuffer, bindingPoint});
     }
 
-    void OpenGLPipelineState::BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer,
-                                                      uint32_t bindingPoint)
+    void OpenGLPipelineState::SetShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer,
+                                                     uint32_t bindingPoint)
     {
         m_StorageBuffers.push_back({storageBuffer, bindingPoint});
     }
 
-    void OpenGLPipelineState::BindTexture(const Ref<Texture2D>& texture, uint32_t slot)
+    void OpenGLPipelineState::SetTexture(const Ref<Texture2D>& texture, uint32_t slot)
     {
         m_Textures.push_back({texture, slot});
     }
 
-    void OpenGLPipelineState::BindCubemap(const Ref<Cubemap>& cubemap, uint32_t slot)
+    void OpenGLPipelineState::SetCubemap(const Ref<Cubemap>& cubemap, uint32_t slot)
     {
         m_Cubemaps.push_back({cubemap, slot});
     }

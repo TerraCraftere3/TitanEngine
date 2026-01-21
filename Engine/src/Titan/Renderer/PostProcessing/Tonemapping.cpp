@@ -40,9 +40,9 @@ namespace Titan
 
         m_UniformBuffer->SetData(&uniformData, sizeof(TonemappingUniformData));
 
-        m_Pipeline->BindUniformBuffer(m_UniformBuffer, 0);
-        m_Pipeline->BindTexture(data.input->GetColorAttachmentTexture(0), 0); // HDR Color -> slot 0
-        m_Pipeline->BindTexture(data.input->GetColorAttachmentTexture(1), 1); // EntityID -> slot 1
+        m_Pipeline->SetUniformBuffer(m_UniformBuffer, 0);
+        m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(0), 0); // HDR Color -> slot 0
+        m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(1), 1); // EntityID -> slot 1
 
         m_Shader->Bind();
         m_Shader->SetInt("u_HDRInput", 0);

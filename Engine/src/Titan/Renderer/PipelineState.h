@@ -65,28 +65,28 @@ namespace Titan
          * @param uniformBuffer The uniform buffer to bind
          * @param bindingPoint The binding point (e.g., 0 for camera, 1 for materials, etc.)
          */
-        virtual void BindUniformBuffer(const Ref<UniformBuffer>& uniformBuffer, uint32_t bindingPoint) = 0;
+        virtual void SetUniformBuffer(const Ref<UniformBuffer>& uniformBuffer, uint32_t bindingPoint) = 0;
 
         /**
          * @brief Bind a shader storage buffer at a specific binding point
          * @param storageBuffer The shader storage buffer to bind
          * @param bindingPoint The binding point
          */
-        virtual void BindShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer, uint32_t bindingPoint) = 0;
+        virtual void SetShaderStorageBuffer(const Ref<ShaderStorageBuffer>& storageBuffer, uint32_t bindingPoint) = 0;
 
         /**
          * @brief Bind a texture to a texture unit
          * @param texture The texture to bind
          * @param slot The texture unit/slot (0-31 typically)
          */
-        virtual void BindTexture(const Ref<Texture2D>& texture, uint32_t slot) = 0;
+        virtual void SetTexture(const Ref<Texture2D>& texture, uint32_t slot) = 0;
 
         /**
          * @brief Bind a cubemap to a texture unit
          * @param cubemap The cubemap to bind
          * @param slot The texture unit/slot
          */
-        virtual void BindCubemap(const Ref<Cubemap>& cubemap, uint32_t slot) = 0;
+        virtual void SetCubemap(const Ref<Cubemap>& cubemap, uint32_t slot) = 0;
 
         /**
          * @brief Clear all bound resources from the previous frame

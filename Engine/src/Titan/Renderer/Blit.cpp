@@ -28,9 +28,9 @@ namespace Titan
 
         RenderCommand::BeginRenderPass(destination, "Blit");
 
-        s_Data.Pipeline->BindTexture(source->GetColorAttachmentTexture(0), 0);
+        s_Data.Pipeline->SetTexture(source->GetColorAttachmentTexture(0), 0);
         if (mode == BlitMode::ColorAndEntity)
-            s_Data.Pipeline->BindTexture(source->GetColorAttachmentTexture(1), 1);
+            s_Data.Pipeline->SetTexture(source->GetColorAttachmentTexture(1), 1);
 
         {
             std::dynamic_pointer_cast<OpenGLShader>(s_Data.Shader)->Bind();
