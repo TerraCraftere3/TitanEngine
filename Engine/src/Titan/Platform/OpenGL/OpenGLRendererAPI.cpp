@@ -112,6 +112,11 @@ namespace Titan
         glViewport(x, y, width, height);
     }
 
+    void* OpenGLRendererAPI::GetRawData()
+    {
+        return nullptr; // No Custom Data like Device, DeviceContext, Swapchain, etc. in OpenGL
+    }
+
     Ref<Framebuffer> OpenGLRendererAPI::GetSwapchainTarget()
     {
         static Ref<Framebuffer> swapchainFramebuffer = nullptr;
