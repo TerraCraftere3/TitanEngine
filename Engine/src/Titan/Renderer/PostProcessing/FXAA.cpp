@@ -39,10 +39,6 @@ namespace Titan
         m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(0), 0); // Color -> slot 0
         m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(1), 1); // EntityID -> slot 1
 
-        m_Shader->Bind();
-        m_Shader->SetInt("u_Input", 0);
-        m_Shader->SetInt("u_Entity", 1);
-
         RenderCommand::Clear();
         FullscreenRenderer::Render(m_Pipeline);
 

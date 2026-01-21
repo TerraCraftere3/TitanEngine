@@ -5,11 +5,20 @@
 
 namespace Titan
 {
+    struct BlitUniformData
+    {
+        int BlitMode;
+        int _pad0;
+        int _pad1;
+        int _pad2;
+    };
+
     Blit::BlitData Blit::s_Data;
 
     void Blit::Init()
     {
         s_Data.Shader = Shader::Create("resources/shader/Blit.slang");
+        s_Data.UniformBuffer = UniformBuffer::Create(sizeof(BlitUniformData));
         s_Data.Pipeline = PipelineState::Create();
         s_Data.Pipeline->SetShader(s_Data.Shader);
     }
@@ -18,6 +27,7 @@ namespace Titan
     {
         s_Data.Pipeline.reset();
         s_Data.Shader.reset();
+        s_Data.UniformBuffer.reset();
         s_Data = {};
     }
 
@@ -28,16 +38,15 @@ namespace Titan
 
         RenderCommand::BeginRenderPass(destination, "Blit");
 
+        BlitUniformData uniformData = {};
+        uniformData.BlitMode = static_cast<int>(mode);
+
+        s_Data.UniformBuffer->SetData(&uniformData, sizeof(BlitUniformData));
+
+        s_Data.Pipeline->SetUniformBuffer(s_Data.UniformBuffer, 0);
         s_Data.Pipeline->SetTexture(source->GetColorAttachmentTexture(0), 0);
         if (mode == BlitMode::ColorAndEntity)
             s_Data.Pipeline->SetTexture(source->GetColorAttachmentTexture(1), 1);
-
-        {
-            std::dynamic_pointer_cast<OpenGLShader>(s_Data.Shader)->Bind();
-            s_Data.Shader->SetInt("u_ColorInput", 0);
-            s_Data.Shader->SetInt("u_EntityInput", 1);
-            s_Data.Shader->SetInt("u_BlitMode", static_cast<int>(mode));
-        }
 
         RenderCommand::Clear();
         FullscreenRenderer::Render(s_Data.Pipeline);

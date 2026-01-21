@@ -180,16 +180,6 @@ namespace Titan
         s_Data.QuadShader = Assets::Load<Shader>("resources/shader/RendererQuad.slang");
         s_Data.LineShader = Assets::Load<Shader>("resources/shader/RendererLine.slang");
 
-        // Note: SetIntArray needs to be called on the shader directly since uniforms are shader-specific
-        {
-            std::dynamic_pointer_cast<OpenGLShader>(s_Data.QuadShader)->Bind();
-            // Sampler / Textures
-            int32_t samplers[s_Data.MaxTextureSlots];
-            for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-                samplers[i] = i;
-            s_Data.QuadShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-        }
-
         s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData));
 
         // Create pipeline states

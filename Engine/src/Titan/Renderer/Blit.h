@@ -27,6 +27,7 @@ namespace Titan
         {
             Ref<Shader> Shader;
             Ref<PipelineState> Pipeline;
+            Ref<UniformBuffer> UniformBuffer;
         };
 
         static BlitData s_Data;

@@ -8,7 +8,9 @@ cbuffer BlitParams : register(b0)
     int _pad2;
 };
 
+[[vk::binding(0)]]
 Sampler2D u_ColorInput : register(t0);
+[[vk::binding(1)]]
 ISampler2D u_EntityInput : register(t1);
 
 struct VertexInput

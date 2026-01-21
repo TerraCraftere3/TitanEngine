@@ -5,7 +5,9 @@ cbuffer FXAAParams : register(b0)
     float2 u_InvScreenSize;  // 1.0 / screen resolution (width, height)
 }
 
+[[vk::binding(0)]]
 Sampler2D u_Input : register(t0);
+[[vk::binding(1)]]
 ISampler2D u_Entity : register(t1);
 
 struct VertexInput

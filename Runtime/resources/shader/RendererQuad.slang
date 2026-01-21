@@ -4,8 +4,8 @@ cbuffer GlobalUBO : register(b0)
     column_major float4x4 u_ViewProjection;
 };
 
-// Use Sampler2D for combined image sampler (better GLSL compatibility)
-Sampler2D u_Textures[32];
+[[vk::binding(0)]]
+Sampler2D u_Textures[32] : register(t0);
 
 struct VertexInput
 {
