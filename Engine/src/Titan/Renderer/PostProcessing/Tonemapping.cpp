@@ -1,4 +1,5 @@
 #include "Tonemapping.h"
+#include "Titan/Renderer/Blit.h"
 #include "Titan/Renderer/FullscreenRenderer.h"
 
 namespace Titan
@@ -24,7 +25,10 @@ namespace Titan
     void TonemappingEffect::Render(const PostFXInput& data)
     {
         if (!data.fxc.TonemappingSettings.isEnabled)
+        {
+            Blit::Execute(data.input, data.output, BlitMode::ColorAndEntity);
             return;
+        }
 
         TonemappingUniformData uniformData = {};
         uniformData.Operator = static_cast<int>(data.fxc.TonemappingSettings.Operator);

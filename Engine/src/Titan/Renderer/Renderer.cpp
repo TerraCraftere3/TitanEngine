@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Blit.h"
 #include "FullscreenRenderer.h"
 #include "GeometryRenderer.h"
 #include "PBRRenderer.h"
@@ -22,10 +23,12 @@ namespace Titan
         FullscreenRenderer::Init();
         SkyboxRenderer::Init();
         SceneRenderer::Init();
+        Blit::Init();
     }
 
     void Renderer::Shutdown()
     {
+        Blit::Shutdown();
         SceneRenderer::Shutdown();
         SkyboxRenderer::Shutdown();
         PBRRenderer::Shutdown();

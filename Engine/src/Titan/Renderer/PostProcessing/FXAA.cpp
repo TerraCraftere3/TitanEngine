@@ -1,4 +1,5 @@
 #include "FXAA.h"
+#include "Titan/Renderer/Blit.h"
 #include "Titan/Renderer/FullscreenRenderer.h"
 
 namespace Titan
@@ -21,7 +22,10 @@ namespace Titan
     void FXAAEffect::Render(const PostFXInput& data)
     {
         if (!data.fxc.FXAASettings.isEnabled)
+        {
+            Blit::Execute(data.input, data.output, BlitMode::ColorAndEntity);
             return;
+        }
 
         RenderCommand::BeginRenderPass(data.output, "Post Effect (FXAA)");
 
