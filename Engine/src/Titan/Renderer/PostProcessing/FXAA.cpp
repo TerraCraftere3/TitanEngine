@@ -16,24 +16,30 @@ namespace Titan
 
     void FXAAEffect::OnDetach() {}
 
-    void FXAAEffect::Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene,
-                             PostFXComponent fxc)
+    void FXAAEffect::Render(const PostFXInput& data)
     {
-        if (!fxc.FXAASettings.isEnabled)
+        if (!data.fxc.FXAASettings.isEnabled)
             return;
 
-        FXAAUniformData data = {};
-        data.InvScreenSize = glm::vec2(1.0f / (float)framebuffer->GetWidth(), 1.0f / (float)framebuffer->GetHeight());
+        RenderCommand::BeginRenderPass(data.output, "Post Effect (FXAA)");
 
-        RenderCommand::BeginRenderPass(framebuffer, "Post Effect (FXAA)");
-        framebuffer->GetColorAttachmentTexture(0)->Bind(0); // Color -> slot 0
-        framebuffer->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
+        FXAAUniformData uniformData = {};
+        uniformData.InvScreenSize =
+            glm::vec2(1.0f / (float)data.output->GetWidth(), 1.0f / (float)data.output->GetHeight());
+
+        data.input->GetColorAttachmentTexture(0)->Bind(0); // Color -> slot 0
+        data.input->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
+
         m_Shader->Bind();
         m_Shader->SetInt("u_Input", 0);
         m_Shader->SetInt("u_Entity", 1);
+
         m_UniformBuffer->Bind(0);
-        m_UniformBuffer->SetData(&data, sizeof(FXAAUniformData));
+        m_UniformBuffer->SetData(&uniformData, sizeof(FXAAUniformData));
+
+        RenderCommand::Clear();
         FullscreenRenderer::Render();
+
         RenderCommand::EndRenderPass();
     }
 } // namespace Titan

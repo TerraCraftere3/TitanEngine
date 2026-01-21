@@ -15,8 +15,7 @@ namespace Titan
 
         virtual void OnAttach() override;
         virtual void OnDetach() override;
-        void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene,
-                     PostFXComponent fxc) override;
+        void Render(const PostFXInput& input) override;
 
     private:
         Ref<Shader> m_Shader;

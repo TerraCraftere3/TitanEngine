@@ -108,25 +108,38 @@ namespace Titan
                                    FramebufferTextureFormat::Depth        // Depth
                                },
                                view.viewWidth, view.viewHeight)
+            .CreateFramebuffer("PostTonemapping",
+                               {
+                                   FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
+                                   FramebufferTextureFormat::RED_INTEGER, // EntityID
+                                   FramebufferTextureFormat::Depth        // SceneDepth
+                               },
+                               view.viewWidth, view.viewHeight)
+            .CreateFramebuffer("PostFXAA",
+                               {
+                                   FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
+                                   FramebufferTextureFormat::RED_INTEGER, // EntityID
+                                   FramebufferTextureFormat::Depth        // SceneDepth
+                               },
+                               view.viewWidth, view.viewHeight)
             .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, view.viewWidth, view.viewHeight)
             .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGB16F, view.viewWidth, view.viewHeight);
 
         // Capture the view pointer so each pass uses its own camera/flags
         SceneViewData* v = &view;
 
-        builder.AddRenderPass(
-            "ClearPass", {}, {"SceneFramebuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
-            {
-                auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                if (!fb)
-                    return;
-                RenderCommand::BeginRenderPass(fb, "Clear Pass (-)");
-                fb->ClearAttachment(1, -1);
-                RenderCommand::SetClearColor({1.0f, 0.0f, 1.0f, 1.0f});
-                RenderCommand::Clear();
-                RenderCommand::EndRenderPass();
-            });
+        builder.AddRenderPass("ClearPass", {}, {"SceneFramebuffer", "PreFX"},
+                              [v](RenderGraph& graph, const RenderPass& pass)
+                              {
+                                  auto fb = graph.GetFramebuffer("SceneFramebuffer");
+                                  if (!fb)
+                                      return;
+                                  RenderCommand::BeginRenderPass(fb, "Clear Pass (-)");
+                                  fb->ClearAttachment(1, -1);
+                                  RenderCommand::SetClearColor({1.0f, 0.0f, 1.0f, 1.0f});
+                                  RenderCommand::Clear();
+                                  RenderCommand::EndRenderPass();
+                              });
 
         builder.AddRenderPass(
             "GeometryPass", {}, {"GeometryBuffer", "PreFX"},
@@ -350,13 +363,45 @@ namespace Titan
                 RenderCommand::EndRenderPass();
             });
 
-        builder.AddRenderPass("PostProcessing", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"FinalOutput"},
+        builder.AddRenderPass("Tonemapping", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"PostTonemapping"},
                               [v](RenderGraph& graph, const RenderPass& pass)
                               {
-                                  auto fb = graph.GetFramebuffer("SceneFramebuffer");
-                                  if (!fb)
+                                  auto inputFB = graph.GetFramebuffer("SceneFramebuffer");
+                                  auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
+                                  auto outputFB = graph.GetFramebuffer("PostTonemapping");
+                                  if (!inputFB || !outputFB || !gbuffer)
                                       return;
-                                  v->postFXs->Execute(graph, pass, fb, v->currentScene);
+
+                                  PostFXComponent tonemappingFX;
+                                  auto tonemappingView = v->currentScene->GetAllEntitiesWith<PostFXComponent>();
+                                  for (auto entity : tonemappingView)
+                                  {
+                                      tonemappingFX = tonemappingView.get<PostFXComponent>(entity);
+                                      break;
+                                  }
+                                  PostFXInput input{graph,           pass,         inputFB, outputFB, gbuffer,
+                                                    v->currentScene, tonemappingFX};
+                                  v->postFXs->GetEffect<TonemappingEffect>()->Render(input);
+                              });
+
+        builder.AddRenderPass("FXAA", {"SceneFramebuffer", "GeometryBuffer", "PostTonemapping"}, {"PostFXAA"},
+                              [v](RenderGraph& graph, const RenderPass& pass)
+                              {
+                                  auto inputFB = graph.GetFramebuffer("PostTonemapping");
+                                  auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
+                                  auto outputFB = graph.GetFramebuffer("PostFXAA");
+                                  if (!inputFB || !outputFB || !gbuffer)
+                                      return;
+
+                                  PostFXComponent fxaaFX;
+                                  auto fxaaView = v->currentScene->GetAllEntitiesWith<PostFXComponent>();
+                                  for (auto entity : fxaaView)
+                                  {
+                                      fxaaFX = fxaaView.get<PostFXComponent>(entity);
+                                      break;
+                                  }
+                                  PostFXInput input{graph, pass, inputFB, outputFB, gbuffer, v->currentScene, fxaaFX};
+                                  v->postFXs->GetEffect<FXAAEffect>()->Render(input);
                               });
 
         // Build the graph
@@ -486,7 +531,7 @@ namespace Titan
     {
         TI_ASSERT(viewIndex < kMaxViews);
         auto& v = s_SRData->views[viewIndex];
-        auto finalFB = v.renderGraph ? v.renderGraph->GetFramebuffer("SceneFramebuffer") : nullptr;
+        auto finalFB = v.renderGraph ? v.renderGraph->GetFramebuffer("PostFXAA") : nullptr;
         return finalFB ? finalFB : v.finalFramebuffer;
     }
 

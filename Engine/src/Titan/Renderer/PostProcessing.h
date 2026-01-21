@@ -17,6 +17,16 @@
 
 namespace Titan
 {
+    struct PostFXInput
+    {
+        RenderGraph& graph;
+        const RenderPass& pass;
+        Ref<Framebuffer> input;
+        Ref<Framebuffer> output;
+        Ref<Framebuffer> gbuffer;
+        Ref<Scene> scene;
+        PostFXComponent fxc;
+    };
 
     class PostFX
     {
@@ -28,8 +38,7 @@ namespace Titan
 
         virtual void OnAttach() = 0;
         virtual void OnDetach() = 0;
-        virtual void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene,
-                             PostFXComponent fxc) = 0;
+        virtual void Render(const PostFXInput& input) = 0;
 
     protected:
         std::string m_Name;
@@ -63,26 +72,23 @@ namespace Titan
                             m_Effects.end());
         }
 
-        void Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer, Ref<Scene> scene)
+        template <typename T>
+        void RemoveEffect()
         {
-            PostFXComponent fxc;
-            bool foundComponent = false;
-            auto postFXView = scene->GetAllEntitiesWith<TransformComponent, PostFXComponent>();
-            for (auto entity : postFXView)
-            {
-                auto [transform, postfxcomponent] = postFXView.get<TransformComponent, PostFXComponent>(entity);
-                fxc = postfxcomponent;
-                foundComponent = true;
-                break;
-            }
+            m_Effects.erase(std::remove_if(m_Effects.begin(), m_Effects.end(), [](const Ref<PostFX>& effect)
+                                           { return dynamic_cast<T*>(effect.get()) != nullptr; }),
+                            m_Effects.end());
+        }
 
-            if (!foundComponent)
-                return;
-
+        template <typename T>
+        Ref<T> GetEffect()
+        {
             for (auto& effect : m_Effects)
             {
-                effect->Execute(graph, pass, framebuffer, scene, fxc);
+                if (auto casted = std::dynamic_pointer_cast<T>(effect))
+                    return casted;
             }
+            return nullptr;
         }
 
         const std::vector<Ref<PostFX>>& GetEffects() const { return m_Effects; }

@@ -19,26 +19,30 @@ namespace Titan
 
     void TonemappingEffect::OnDetach() {}
 
-    void TonemappingEffect::Execute(RenderGraph& graph, const RenderPass& pass, Ref<Framebuffer> framebuffer,
-                                    Ref<Scene> scene, PostFXComponent fxc)
+    void TonemappingEffect::Render(const PostFXInput& data)
     {
-        if (!fxc.TonemappingSettings.isEnabled)
+        if (!data.fxc.TonemappingSettings.isEnabled)
             return;
 
-        TonemappingUniformData data = {};
-        data.Operator = static_cast<int>(fxc.TonemappingSettings.Operator);
-        data.Exposure = fxc.TonemappingSettings.Exposure;
-        data.Gamma = fxc.TonemappingSettings.Gamma;
-        data.WhitePoint = fxc.TonemappingSettings.WhitePoint;
+        TonemappingUniformData uniformData = {};
+        uniformData.Operator = static_cast<int>(data.fxc.TonemappingSettings.Operator);
+        uniformData.Exposure = data.fxc.TonemappingSettings.Exposure;
+        uniformData.Gamma = data.fxc.TonemappingSettings.Gamma;
+        uniformData.WhitePoint = data.fxc.TonemappingSettings.WhitePoint;
 
-        RenderCommand::BeginRenderPass(framebuffer, "Post Effect (Tonemapping)");
-        framebuffer->GetColorAttachmentTexture(0)->Bind(0); // HDR Color -> slot 0
-        framebuffer->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
+        RenderCommand::BeginRenderPass(data.output, "Post Effect (Tonemapping)");
+
+        data.input->GetColorAttachmentTexture(0)->Bind(0); // HDR Color -> slot 0
+        data.input->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
+
         m_Shader->Bind();
         m_Shader->SetInt("u_HDRInput", 0);
         m_Shader->SetInt("u_Entity", 1);
+
         m_UniformBuffer->Bind(0);
-        m_UniformBuffer->SetData(&data, sizeof(TonemappingUniformData));
+        m_UniformBuffer->SetData(&uniformData, sizeof(TonemappingUniformData));
+
+        RenderCommand::Clear();
         FullscreenRenderer::Render();
         RenderCommand::EndRenderPass();
     }
