@@ -12,13 +12,12 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void Render();
+        static void Render(const Ref<PipelineState>& pipeline);
 
     private:
         struct Data
         {
             Ref<VertexArray> FullscreenQuadVAO;
-            Ref<PipelineState> Pipeline;
         };
 
         static Data s_Data;

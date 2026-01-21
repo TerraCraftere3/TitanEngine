@@ -28,22 +28,18 @@ namespace Titan
         // Index Buffer
         Ref<IndexBuffer> ib = IndexBuffer::Create(quadIndices, 6);
         s_Data.FullscreenQuadVAO->SetIndexBuffer(ib);
-
-        // Create a basic pipeline for fullscreen rendering
-        // Note: Shader and actual pipeline setup is done by callers (PBRRenderer, etc.)
-        s_Data.Pipeline = PipelineState::Create();
-        s_Data.Pipeline->SetVertexArray(s_Data.FullscreenQuadVAO);
     }
 
     void FullscreenRenderer::Shutdown()
     {
-        s_Data.Pipeline.reset();
         s_Data = {};
     }
 
-    void FullscreenRenderer::Render()
+    void FullscreenRenderer::Render(const Ref<PipelineState>& pipeline)
     {
-        s_Data.Pipeline->Bind();
+        TI_CORE_ASSERT(pipeline, "PipelineState is null in FullscreenRenderer::Render()");
+        pipeline->SetVertexArray(s_Data.FullscreenQuadVAO);
+        pipeline->Bind();
         RenderCommand::DrawIndexed(6); // fullscreen quad has 6 indices
     }
 

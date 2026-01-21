@@ -15,6 +15,8 @@ namespace Titan
     {
         m_Shader = Assets::Load<Shader>("resources/shader/PostTonemapping.slang");
         m_UniformBuffer = UniformBuffer::Create(sizeof(TonemappingUniformData));
+        m_Pipeline = PipelineState::Create();
+        m_Pipeline->SetShader(m_Shader);
     }
 
     void TonemappingEffect::OnDetach() {}
@@ -32,18 +34,18 @@ namespace Titan
 
         RenderCommand::BeginRenderPass(data.output, "Post Effect (Tonemapping)");
 
-        data.input->GetColorAttachmentTexture(0)->Bind(0); // HDR Color -> slot 0
-        data.input->GetColorAttachmentTexture(1)->Bind(1); // EntityID -> slot 1
+        m_UniformBuffer->SetData(&uniformData, sizeof(TonemappingUniformData));
+
+        m_Pipeline->BindUniformBuffer(m_UniformBuffer, 0);
+        m_Pipeline->BindTexture(data.input->GetColorAttachmentTexture(0), 0); // HDR Color -> slot 0
+        m_Pipeline->BindTexture(data.input->GetColorAttachmentTexture(1), 1); // EntityID -> slot 1
 
         m_Shader->Bind();
         m_Shader->SetInt("u_HDRInput", 0);
         m_Shader->SetInt("u_Entity", 1);
 
-        m_UniformBuffer->Bind(0);
-        m_UniformBuffer->SetData(&uniformData, sizeof(TonemappingUniformData));
-
         RenderCommand::Clear();
-        FullscreenRenderer::Render();
+        FullscreenRenderer::Render(m_Pipeline);
         RenderCommand::EndRenderPass();
     }
 } // namespace Titan

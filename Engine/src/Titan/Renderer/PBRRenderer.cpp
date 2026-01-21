@@ -50,6 +50,8 @@ namespace Titan
     {
         s_PBRData.SceneUniformBuffer->SetData(&data, sizeof(PBRSceneData));
 
+        s_PBRData.Pipeline->BindUniformBuffer(s_PBRData.SceneUniformBuffer, 0);
+
         // Bind textures and cubemap to the pipeline
         s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(0), 1); // Position
         s_PBRData.Pipeline->BindTexture(gbuffer->GetColorAttachmentTexture(1), 2); // Normal
@@ -70,9 +72,7 @@ namespace Titan
             s_PBRData.Shader->SetInt("IrradianceMap", 8);
         }
 
-        s_PBRData.Pipeline->Bind();
-
-        FullscreenRenderer::Render();
+        FullscreenRenderer::Render(s_PBRData.Pipeline);
     }
 
 } // namespace Titan

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Titan/PCH.h"
+#include "Titan/Renderer/PipelineState.h"
 #include "Titan/Renderer/PostProcessing.h"
 
 namespace Titan
@@ -17,5 +18,6 @@ namespace Titan
     private:
         Ref<Shader> m_Shader;
         Ref<UniformBuffer> m_UniformBuffer;
+        Ref<PipelineState> m_Pipeline;
     };
 } // namespace Titan
