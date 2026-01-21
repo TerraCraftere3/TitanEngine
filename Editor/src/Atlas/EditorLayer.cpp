@@ -83,8 +83,7 @@ namespace Titan
         if (ts.GetSeconds() > 0.0f)
             m_FPS = 1.0f / ts.GetSeconds();
 
-        Renderer2D::ResetStats();
-        GeometryRenderer::ResetStats();
+        RenderCommand::ResetStats();
         switch (m_SceneState)
         {
             case SceneState::Edit:
@@ -326,14 +325,7 @@ namespace Titan
         ImGui::Begin("Statistics", open);
 
         ImGui::Text("FPS: %.1f", m_FPS);
-        ImGui::Separator();
-
-        auto stats2d = Renderer2D::GetStats();
-        auto stats3d = GeometryRenderer::GetStats();
-        ImGui::Text("Draw Calls: %d", stats2d.GetTotalDrawCalls() + stats3d.GetTotalDrawCalls());
-        ImGui::Text("Meshes Rendered: %d", stats3d.GetTotalMeshCount());
-        ImGui::Text("Vertices Rendered: %s",
-                    FormatNumber(stats2d.GetTotalVertexCount() + stats3d.GetTotalVertexCount()).c_str());
+        ImGui::Text("Draw Calls: %d", RenderCommand::GetStats().GetTotalDrawCalls());
 
         ImGui::SeparatorText("Backend");
         auto& settings = RenderCommand::GetBackend();

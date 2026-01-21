@@ -130,8 +130,6 @@ namespace Titan
         std::unordered_map<size_t, uint32_t> MaterialIndexMap;
 
         std::unordered_map<Mesh*, MeshGPUData> MeshCache;
-
-        GeometryRenderer::Statistics Stats;
     };
 
     static GeometryRendererData s_3DData;
@@ -383,11 +381,7 @@ namespace Titan
 
             RenderCommand::DrawIndexedInstancedBaseIndex(submesh.IndexCount, s_3DData.CurrentInstanceCount,
                                                          submesh.BaseIndex);
-
-            s_3DData.Stats.DrawCalls++;
         }
-
-        s_3DData.Stats.VertexCount += s_3DData.CurrentMeshGPU->TotalIndexCount * s_3DData.CurrentInstanceCount;
 
         s_3DData.CurrentInstanceCount = 0;
         s_3DData.InstanceBuffer.clear();
@@ -416,17 +410,6 @@ namespace Titan
 
         s_3DData.InstanceBuffer.push_back(instance);
         s_3DData.CurrentInstanceCount++;
-        s_3DData.Stats.MeshCount++;
-    }
-
-    GeometryRenderer::Statistics GeometryRenderer::GetStats()
-    {
-        return s_3DData.Stats;
-    }
-
-    void GeometryRenderer::ResetStats()
-    {
-        memset(&s_3DData.Stats, 0, sizeof(Statistics));
     }
 
 } // namespace Titan

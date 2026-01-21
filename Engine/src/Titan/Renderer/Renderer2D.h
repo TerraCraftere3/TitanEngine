@@ -43,21 +43,6 @@ namespace Titan
                              int entityID = -1);
         static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
-        // Statistics
-        struct Statistics
-        {
-            uint32_t DrawCalls = 0;
-            uint32_t QuadCount = 0;
-
-            uint32_t GetTotalDrawCalls() { return DrawCalls; }
-            uint32_t GetTotalQuadCount() { return QuadCount; }
-            uint32_t GetTotalVertexCount() { return QuadCount * 4; }
-            uint32_t GetTotalIndexCount() { return QuadCount * 6; }
-            uint32_t GetTotalTriangleCount() { return QuadCount * 2; }
-        };
-        static Statistics GetStats();
-        static void ResetStats();
-
     private:
         static void FlushAndReset();
     };

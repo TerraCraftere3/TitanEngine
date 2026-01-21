@@ -15,6 +15,12 @@ namespace Titan
             OpenGL = 1
         };
 
+        struct Statistics
+        {
+            uint32_t DrawCalls = 0;
+            uint32_t GetTotalDrawCalls() const { return DrawCalls; }
+        };
+
         struct Backend
         {
             std::string Vendor;
@@ -33,6 +39,9 @@ namespace Titan
 
     public:
         virtual void Init() = 0;
+
+        virtual void ResetStats() = 0;
+        virtual Statistics GetStats() = 0;
 
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) = 0;
         virtual void EndRenderPass() = 0;

@@ -23,6 +23,16 @@ namespace Titan
         glEnable(GL_LINE_SMOOTH);
     }
 
+    void OpenGLRendererAPI::ResetStats()
+    {
+        m_Stats = {};
+    }
+
+    RendererAPI::Statistics OpenGLRendererAPI::GetStats()
+    {
+        return m_Stats;
+    }
+
     void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
     {
 #ifdef TI_BUILD_DEBUG
@@ -57,16 +67,19 @@ namespace Titan
     void OpenGLRendererAPI::DrawArrays(uint32_t vertexCount)
     {
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        m_Stats.DrawCalls++;
     }
 
     void OpenGLRendererAPI::DrawIndexed(uint32_t indexCount)
     {
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+        m_Stats.DrawCalls++;
     }
 
     void OpenGLRendererAPI::DrawIndexedInstanced(uint32_t indexCount, uint32_t instanceCount)
     {
         glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr, instanceCount);
+        m_Stats.DrawCalls++;
     }
 
     void OpenGLRendererAPI::DrawIndexedInstancedBaseIndex(uint32_t indexCount, uint32_t instanceCount,
@@ -74,11 +87,13 @@ namespace Titan
     {
         glDrawElementsInstancedBaseVertex(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT,
                                           (void*)(baseIndex * sizeof(uint32_t)), instanceCount, 0);
+        m_Stats.DrawCalls++;
     }
 
     void OpenGLRendererAPI::DrawLines(uint32_t vertexCount)
     {
         glDrawArrays(GL_LINES, 0, vertexCount);
+        m_Stats.DrawCalls++;
     }
 
     void OpenGLRendererAPI::SetLineWidth(float width)

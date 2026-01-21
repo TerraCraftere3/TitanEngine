@@ -12,6 +12,9 @@ namespace Titan
     public:
         virtual void Init() override;
 
+        virtual void ResetStats() override;
+        virtual Statistics GetStats() override;
+
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) override;
         virtual void EndRenderPass() override;
 
@@ -29,6 +32,9 @@ namespace Titan
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
         virtual const RendererAPI::Backend& GetBackend() const override;
+
+    private:
+        Statistics m_Stats;
     };
 
 } // namespace Titan

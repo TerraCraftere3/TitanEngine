@@ -88,8 +88,6 @@ namespace Titan
         };
         CameraData CamBuffer;
         Ref<UniformBuffer> CamUniformBuffer;
-
-        Renderer2D::Statistics Stats;
     };
 
     static Renderer2DData s_Data;
@@ -289,7 +287,6 @@ namespace Titan
 
             s_Data.QuadPipeline->Bind();
             RenderCommand::DrawIndexed(s_Data.QuadIndexCount);
-            s_Data.Stats.DrawCalls++;
         }
 
         if (s_Data.CircleIndexCount)
@@ -304,7 +301,6 @@ namespace Titan
 
             s_Data.CirclePipeline->Bind();
             RenderCommand::DrawIndexed(s_Data.CircleIndexCount);
-            s_Data.Stats.DrawCalls++;
         }
 
         if (s_Data.LineVertexCount)
@@ -319,7 +315,6 @@ namespace Titan
 
             s_Data.LinePipeline->Bind();
             RenderCommand::DrawLines(s_Data.LineVertexCount);
-            s_Data.Stats.DrawCalls++;
         }
     }
 
@@ -391,8 +386,6 @@ namespace Titan
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
-
-        s_Data.Stats.QuadCount++;
     }
 
     void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor,
@@ -455,8 +448,6 @@ namespace Titan
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
-
-        s_Data.Stats.QuadCount++;
     }
 
     void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade,
@@ -478,8 +469,6 @@ namespace Titan
         }
 
         s_Data.CircleIndexCount += 6;
-
-        s_Data.Stats.QuadCount++;
     }
 
     void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID)
@@ -493,8 +482,6 @@ namespace Titan
         s_Data.LineVertexBufferPtr->Color = color;
         s_Data.LineVertexBufferPtr->EntityID = entityID;
         s_Data.LineVertexBufferPtr++;
-
-        s_Data.LineVertexCount += 2;
     }
 
     void Renderer2D::DrawCamera(const glm::mat4& transform, int entityID)
@@ -683,16 +670,6 @@ namespace Titan
         DrawLine(lineVertices[1], lineVertices[2], color);
         DrawLine(lineVertices[2], lineVertices[3], color);
         DrawLine(lineVertices[3], lineVertices[0], color);
-    }
-
-    Renderer2D::Statistics Renderer2D::GetStats()
-    {
-        return s_Data.Stats;
-    }
-
-    void Renderer2D::ResetStats()
-    {
-        memset(&s_Data.Stats, 0, sizeof(Statistics));
     }
 
 } // namespace Titan

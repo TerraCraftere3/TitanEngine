@@ -9,6 +9,10 @@ namespace Titan
     public:
         inline static void Init() { s_RendererAPI->Init(); }
 
+        inline static void ResetStats() { s_RendererAPI->ResetStats(); }
+
+        inline static RendererAPI::Statistics GetStats() { return s_RendererAPI->GetStats(); }
+
         inline static void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
         {
             s_RendererAPI->BeginRenderPass(framebuffer, debugName);
