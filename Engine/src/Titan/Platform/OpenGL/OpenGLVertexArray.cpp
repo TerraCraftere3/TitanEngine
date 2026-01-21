@@ -1,5 +1,6 @@
 #include "Titan/Platform/OpenGL/OpenGLVertexArray.h"
 #include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLBuffer.h"
 
 #include <glad/glad.h>
 // clang-format off
@@ -56,22 +57,12 @@ namespace Titan
         glDeleteVertexArrays(1, &m_RendererID);
     }
 
-    void OpenGLVertexArray::Bind() const
-    {
-        glBindVertexArray(m_RendererID);
-    }
-
-    void OpenGLVertexArray::Unbind() const
-    {
-        glBindVertexArray(0);
-    }
-
     void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
     {
         TI_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
         glBindVertexArray(m_RendererID);
-        vertexBuffer->Bind();
+        glBindBuffer(GL_ARRAY_BUFFER, std::dynamic_pointer_cast<OpenGLVertexBuffer>(vertexBuffer)->GetRendererID());
 
         const auto& layout = vertexBuffer->GetLayout();
         for (const auto& element : layout)
@@ -144,7 +135,8 @@ namespace Titan
     void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
     {
         glBindVertexArray(m_RendererID);
-        indexBuffer->Bind();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                     std::dynamic_pointer_cast<OpenGLIndexBuffer>(indexBuffer)->GetRendererID());
 
         m_IndexBuffer = indexBuffer;
     }

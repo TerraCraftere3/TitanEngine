@@ -26,9 +26,4 @@ namespace Titan
         glNamedBufferSubData(m_RendererID, offset, size, data);
     }
 
-    void OpenGLUniformBuffer::Bind(uint32_t slot)
-    {
-        glBindBufferBase(GL_UNIFORM_BUFFER, slot, m_RendererID);
-    }
-
 } // namespace Titan

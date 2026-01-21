@@ -203,9 +203,6 @@ namespace Titan
 
         virtual ~OpenGLVertexBuffer() override = default;
 
-        virtual void Bind() const override { BindRaw(); }
-        virtual void Unbind() const override { UnbindRaw(); }
-
         virtual void SetData(const void* data, uint32_t size) override { SetSubData(data, size, 0); }
 
         virtual const BufferLayout& GetLayout() const override { return m_Layout; }
@@ -239,9 +236,6 @@ namespace Titan
 
         virtual ~OpenGLIndexBuffer() override = default;
 
-        virtual void Bind() const override { BindRaw(); }
-        virtual void Unbind() const override { UnbindRaw(); }
-
         virtual uint32_t GetCount() const override { return m_Count; }
 
         uint32_t GetRendererID() const { return m_RendererID; }
@@ -258,18 +252,6 @@ namespace Titan
         virtual ~OpenGLShaderStorageBuffer() override = default;
 
         void SetData(const void* data, uint32_t size, uint32_t offset = 0) override { SetSubData(data, size, offset); }
-
-        void Bind(uint32_t slot) const override
-        {
-            BindRaw();
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, m_RendererID);
-        }
-
-        void Unbind(uint32_t slot) const override
-        {
-            UnbindRaw();
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, slot, 0);
-        }
 
         uint32_t GetRendererID() const { return m_RendererID; }
     };

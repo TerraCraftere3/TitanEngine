@@ -31,8 +31,6 @@ namespace Titan
             return reinterpret_cast<void*>(static_cast<uintptr_t>(m_RendererID));
         }
 
-        virtual void Bind(uint32_t slot = 0) const override;
-
         virtual void Reload(const std::string& path, TextureSettings settings) override;
 
         virtual uint64_t GetBindlessHandle() override;

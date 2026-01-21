@@ -311,12 +311,6 @@ void main()
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
 
-    void OpenGLCubemap::Bind(uint32_t slot) const
-    {
-        glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
-    }
-
     Ref<Cubemap> OpenGLCubemap::CreateIrradianceMap(uint32_t resolution)
     {
         auto irradianceMap = CreateRef<OpenGLCubemap>();

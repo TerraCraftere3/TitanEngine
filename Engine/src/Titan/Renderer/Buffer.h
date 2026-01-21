@@ -145,9 +145,6 @@ namespace Titan
     public:
         virtual ~VertexBuffer() {}
 
-        virtual void Bind() const = 0;
-        virtual void Unbind() const = 0;
-
         virtual void SetData(const void* data, uint32_t size) = 0;
 
         virtual const BufferLayout& GetLayout() const = 0;
@@ -163,9 +160,6 @@ namespace Titan
     public:
         virtual ~IndexBuffer() {}
 
-        virtual void Bind() const = 0;
-        virtual void Unbind() const = 0;
-
         virtual uint32_t GetCount() const = 0;
 
         static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t size);
@@ -178,8 +172,6 @@ namespace Titan
         virtual ~ShaderStorageBuffer() = default;
 
         virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
-        virtual void Bind(uint32_t slot) const = 0;
-        virtual void Unbind(uint32_t slot) const = 0;
 
         static Ref<ShaderStorageBuffer> Create(uint32_t size);
     };

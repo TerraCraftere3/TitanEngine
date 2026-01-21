@@ -30,7 +30,6 @@ namespace Titan
         virtual void SetData(void* data, uint32_t size) override;
         virtual void SetFaceData(uint32_t face, void* data, uint32_t size) override;
 
-        virtual void Bind(uint32_t slot = 0) const override;
         virtual void* GetNativeTexture() const override { return (void*)(uintptr_t)m_RendererID; }
 
         virtual Ref<Cubemap> CreateIrradianceMap(uint32_t resolution = 32) override;
