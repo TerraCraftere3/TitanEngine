@@ -20,9 +20,7 @@ namespace Titan
 
         inline static void EndRenderPass() { s_RendererAPI->EndRenderPass(); }
 
-        inline static void SetClearColor(const glm::vec4& color) { s_RendererAPI->SetClearColor(color); }
-
-        inline static void Clear() { s_RendererAPI->Clear(); }
+        inline static void Clear(const glm::vec4& color) { s_RendererAPI->Clear(color); }
 
         inline static void DrawArrays(uint32_t vertexCount = 0) { s_RendererAPI->DrawArrays(vertexCount); }
 
@@ -40,8 +38,6 @@ namespace Titan
         }
 
         inline static void DrawLines(uint32_t vertexCount) { s_RendererAPI->DrawLines(vertexCount); }
-
-        inline static void SetLineWidth(float width) { s_RendererAPI->SetLineWidth(width); }
 
         inline static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
         {

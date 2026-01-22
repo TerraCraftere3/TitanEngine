@@ -136,6 +136,7 @@ namespace Titan
             }
         }
 
+        // Set polygon mode
         GLenum polygonMode = GL_FILL;
         switch (m_PolygonMode)
         {
@@ -151,6 +152,65 @@ namespace Titan
         }
         glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
 
+        // Set cull mode
+        if (m_CullMode == CullMode::None)
+        {
+            glDisable(GL_CULL_FACE);
+        }
+        else
+        {
+            glEnable(GL_CULL_FACE);
+            GLenum cullMode = GL_BACK;
+            switch (m_CullMode)
+            {
+                case CullMode::Front:
+                    cullMode = GL_FRONT;
+                    break;
+                case CullMode::Back:
+                    cullMode = GL_BACK;
+                    break;
+                case CullMode::FrontAndBack:
+                    cullMode = GL_FRONT_AND_BACK;
+                    break;
+                case CullMode::None:
+                    break; // Already handled
+            }
+            glCullFace(cullMode);
+        }
+
+        // Set front face winding
+        GLenum frontFace = m_FrontFace == FrontFace::Clockwise ? GL_CW : GL_CCW;
+        glFrontFace(frontFace);
+
+        // Set depth bias
+        if (m_DepthBiasConstant != 0.0f || m_DepthBiasSlope != 0.0f)
+        {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glEnable(GL_POLYGON_OFFSET_LINE);
+            glEnable(GL_POLYGON_OFFSET_POINT);
+            glPolygonOffset(m_DepthBiasSlope, m_DepthBiasConstant);
+        }
+        else
+        {
+            glDisable(GL_POLYGON_OFFSET_FILL);
+            glDisable(GL_POLYGON_OFFSET_LINE);
+            glDisable(GL_POLYGON_OFFSET_POINT);
+        }
+
+        // Set line width
+        glLineWidth(m_LineWidth);
+
+        // Set depth testing
+        if (m_DepthTestEnabled)
+        {
+            glEnable(GL_DEPTH_TEST);
+        }
+        else
+        {
+            glDisable(GL_DEPTH_TEST);
+        }
+
+        // Set depth function
         GLenum depthFunc = GL_LESS;
         switch (m_DepthFunction)
         {
@@ -180,6 +240,9 @@ namespace Titan
                 break;
         }
         glDepthFunc(depthFunc);
+
+        // Set depth write
+        glDepthMask(m_DepthWriteEnabled ? GL_TRUE : GL_FALSE);
     }
 
     void OpenGLPipelineState::SetShader(const Ref<Shader>& shader)
@@ -221,6 +284,37 @@ namespace Titan
     void OpenGLPipelineState::SetPolygonMode(PolygonMode mode)
     {
         m_PolygonMode = mode;
+    }
+
+    void OpenGLPipelineState::SetCullMode(CullMode mode)
+    {
+        m_CullMode = mode;
+    }
+
+    void OpenGLPipelineState::SetFrontFace(FrontFace face)
+    {
+        m_FrontFace = face;
+    }
+
+    void OpenGLPipelineState::SetDepthBias(float constantFactor, float slopeFactor)
+    {
+        m_DepthBiasConstant = constantFactor;
+        m_DepthBiasSlope = slopeFactor;
+    }
+
+    void OpenGLPipelineState::SetLineWidth(float width)
+    {
+        m_LineWidth = width;
+    }
+
+    void OpenGLPipelineState::SetDepthTestEnabled(bool enabled)
+    {
+        m_DepthTestEnabled = enabled;
+    }
+
+    void OpenGLPipelineState::SetDepthWriteEnabled(bool enabled)
+    {
+        m_DepthWriteEnabled = enabled;
     }
 
     void OpenGLPipelineState::ClearBindings()

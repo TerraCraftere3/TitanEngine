@@ -46,16 +46,13 @@ namespace Titan
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) = 0;
         virtual void EndRenderPass() = 0;
 
-        virtual void SetClearColor(const glm::vec4& color) = 0;
-        virtual void Clear() = 0;
+        virtual void Clear(const glm::vec4& color) = 0;
 
         virtual void DrawArrays(uint32_t vertexCount) = 0;
         virtual void DrawIndexed(uint32_t indexCount = 0) = 0;
         virtual void DrawIndexedInstanced(uint32_t indexCount, uint32_t instanceCount) = 0;
         virtual void DrawIndexedInstancedBaseIndex(uint32_t indexCount, uint32_t instanceCount, uint32_t baseIndex) = 0;
         virtual void DrawLines(uint32_t vertexCount) = 0;
-
-        virtual void SetLineWidth(float width) = 0;
 
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual Ref<Framebuffer> GetSwapchainTarget() = 0;

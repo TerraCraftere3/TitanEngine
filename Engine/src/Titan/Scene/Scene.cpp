@@ -283,10 +283,6 @@ namespace Titan
 
     void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
     {
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-        RenderCommand::Clear();
-        RenderCommand::SetLineWidth(2.0f);
-
         UpdateTransforms();
 
         // PHYSICS 2D
@@ -348,11 +344,6 @@ namespace Titan
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
     {
-        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-        RenderCommand::Clear();
-        RenderCommand::SetLineWidth(2.0f);
-
-        // Update world transforms for editor preview
         UpdateTransforms();
 
         UpdateConstraints();

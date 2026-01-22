@@ -48,7 +48,7 @@ namespace Titan
         if (mode == BlitMode::ColorAndEntity)
             s_Data.Pipeline->SetTexture(source->GetColorAttachmentTexture(1), 1);
 
-        RenderCommand::Clear();
+        RenderCommand::Clear({0.0f, 0.0f, 0.0f, 1.0f});
         FullscreenRenderer::Render(s_Data.Pipeline);
         RenderCommand::EndRenderPass();
     }

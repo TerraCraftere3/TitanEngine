@@ -44,7 +44,7 @@ namespace Titan
         m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(0), 0); // HDR Color -> slot 0
         m_Pipeline->SetTexture(data.input->GetColorAttachmentTexture(1), 1); // EntityID -> slot 1
 
-        RenderCommand::Clear();
+        RenderCommand::Clear({1.0f, 0.0f, 1.0f, 1.0f});
         FullscreenRenderer::Render(m_Pipeline);
         RenderCommand::EndRenderPass();
     }

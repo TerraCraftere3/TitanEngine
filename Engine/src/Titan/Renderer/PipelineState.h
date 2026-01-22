@@ -30,6 +30,20 @@ namespace Titan
         Point = 2
     };
 
+    enum class CullMode
+    {
+        None = 0,
+        Front = 1,
+        Back = 2,
+        FrontAndBack = 3
+    };
+
+    enum class FrontFace
+    {
+        Clockwise = 0,
+        CounterClockwise = 1
+    };
+
     /**
      * @class PipelineState
      * @brief Encapsulates the entire rendering pipeline state for a single draw call.
@@ -105,6 +119,43 @@ namespace Titan
          * @param mode The polygon mode (Fill, Line, Point)
          */
         virtual void SetPolygonMode(PolygonMode mode) = 0;
+
+        /**
+         * @brief Set the face culling mode
+         * @param mode The cull mode (None, Front, Back, FrontAndBack)
+         */
+        virtual void SetCullMode(CullMode mode) = 0;
+
+        /**
+         * @brief Set the front face winding order
+         * @param face The front face winding (Clockwise or CounterClockwise)
+         */
+        virtual void SetFrontFace(FrontFace face) = 0;
+
+        /**
+         * @brief Set depth bias for depth offset (useful for shadow mapping)
+         * @param constantFactor Constant depth offset factor
+         * @param slopeFactor Slope-based depth offset factor
+         */
+        virtual void SetDepthBias(float constantFactor, float slopeFactor) = 0;
+
+        /**
+         * @brief Set the line width for line rendering
+         * @param width The line width (default 1.0)
+         */
+        virtual void SetLineWidth(float width) = 0;
+
+        /**
+         * @brief Enable or disable depth testing
+         * @param enabled True to enable depth testing
+         */
+        virtual void SetDepthTestEnabled(bool enabled) = 0;
+
+        /**
+         * @brief Enable or disable depth writes
+         * @param enabled True to enable depth writes
+         */
+        virtual void SetDepthWriteEnabled(bool enabled) = 0;
 
         // Getters
         virtual Ref<Shader> GetShader() const = 0;

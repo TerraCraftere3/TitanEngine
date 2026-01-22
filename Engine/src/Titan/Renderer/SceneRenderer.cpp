@@ -112,14 +112,12 @@ namespace Titan
                                {
                                    FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
-                                   FramebufferTextureFormat::Depth        // SceneDepth
                                },
                                view.viewWidth, view.viewHeight)
             .CreateFramebuffer("PostFXAA",
                                {
                                    FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
-                                   FramebufferTextureFormat::Depth        // SceneDepth
                                },
                                view.viewWidth, view.viewHeight)
             .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, view.viewWidth, view.viewHeight)
@@ -136,8 +134,7 @@ namespace Titan
                                       return;
                                   RenderCommand::BeginRenderPass(fb, "Clear Pass (-)");
                                   fb->ClearAttachment(1, -1);
-                                  RenderCommand::SetClearColor({1.0f, 0.0f, 1.0f, 1.0f});
-                                  RenderCommand::Clear();
+                                  RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
                                   RenderCommand::EndRenderPass();
                               });
 
@@ -149,8 +146,7 @@ namespace Titan
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Geometry Pass (3D)");
-                RenderCommand::SetClearColor(glm::vec4(0.0));
-                RenderCommand::Clear();
+                RenderCommand::Clear(glm::vec4(0.0));
                 GeometryRenderer::BeginScene(v->viewProjection,
                                              v->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
                 auto meshView = v->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();

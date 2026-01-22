@@ -26,6 +26,12 @@ namespace Titan
 
         virtual void SetDepthFunction(DepthFunc function) override;
         virtual void SetPolygonMode(PolygonMode mode) override;
+        virtual void SetCullMode(CullMode mode) override;
+        virtual void SetFrontFace(FrontFace face) override;
+        virtual void SetDepthBias(float constantFactor, float slopeFactor) override;
+        virtual void SetLineWidth(float width) override;
+        virtual void SetDepthTestEnabled(bool enabled) override;
+        virtual void SetDepthWriteEnabled(bool enabled) override;
 
         virtual Ref<Shader> GetShader() const override { return m_Shader; }
         virtual Ref<VertexArray> GetVertexArray() const override { return m_VertexArray; }
@@ -42,5 +48,12 @@ namespace Titan
         std::vector<std::pair<Ref<Cubemap>, uint32_t>> m_Cubemaps;
         PolygonMode m_PolygonMode = PolygonMode::Fill;
         DepthFunc m_DepthFunction = DepthFunc::Less;
+        CullMode m_CullMode = CullMode::None;
+        FrontFace m_FrontFace = FrontFace::CounterClockwise;
+        float m_DepthBiasConstant = 0.0f;
+        float m_DepthBiasSlope = 0.0f;
+        float m_LineWidth = 2.0f;
+        bool m_DepthTestEnabled = true;
+        bool m_DepthWriteEnabled = true;
     };
 } // namespace Titan

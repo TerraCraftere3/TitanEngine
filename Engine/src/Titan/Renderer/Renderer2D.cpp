@@ -472,6 +472,8 @@ namespace Titan
         s_Data.LineVertexBufferPtr->Color = color;
         s_Data.LineVertexBufferPtr->EntityID = entityID;
         s_Data.LineVertexBufferPtr++;
+
+        s_Data.LineVertexCount += 2;
     }
 
     void Renderer2D::DrawCamera(const glm::mat4& transform, int entityID)
