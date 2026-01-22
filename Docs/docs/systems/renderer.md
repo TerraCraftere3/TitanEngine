@@ -88,44 +88,39 @@ Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(indices, 3);
 Ref<VertexArray> vertexArray = VertexArray::Create();
 vertexArray->AddVertexBuffer(vertexBuffer);
 vertexArray->SetIndexBuffer(indexBuffer);
-
-// Render the vertex array
-RenderCommand::DrawIndexed(vertexArray);
 ```
 
-### Materials and Shaders
+### Shaders
 ```cpp
 #include <Titan/Renderer/Material.h>
 #include <Titan/Renderer/Shader.h>
 
-// Load a shader
 Ref<Shader> shader = Assets::Load<Shader>("assets/shaders/pbr.glsl");
-
-// Create a material
-Ref<Material> material = CreateRef<Material>(shader);
-
-// Set material properties
-material->SetFloat("Roughness", 0.5f);
-material->SetFloat("Metallic", 0.8f);
-material->SetVector3("Albedo", glm::vec3(1.0f, 0.0f, 0.0f));
-material->SetTexture("AlbedoMap", diffuseTexture);
-material->SetTexture("NormalMap", normalTexture);
 ```
 
-### Rendering
+### Pipeline State & Rendering
 ```cpp
-#include <Titan/Renderer/Renderer2D.h>
-#include <Titan/Renderer/SceneRenderer.h>
+#include <Titan/Renderer/PipelineState.h>
+#include <Titan/Renderer/RenderCommand.h>
 
-// 2D Rendering
-Renderer2D::BeginScene(camera);
-Renderer2D::DrawQuad(position, size, color);
-Renderer2D::DrawRotatedQuad(position, size, rotation, texture, color);
-Renderer2D::EndScene();
+Ref<PipelineState> state = PipelineState::Create();
+state->SetShader(shader);
+state->SetVertexArray(va);
+state->SetUniformBuffer(ubo, 0); // Binding = 0
 
-// 3D Scene Rendering (deferred)
-SceneRenderer::RenderSceneEditor(viewportIndex, scene, camera, overlaySettings);
-SceneRenderer::RenderSceneRuntime(scene);
+// Textures
+state->SetTexture(albedo, 0);    // Slot = 0
+state->SetTexture(roughness, 1); // Slot = 1
+state->SetTexture(metallic, 2);  // Slot = 2
+state->SetCubemap(cubemap, 0);   // Slot = 0
+
+// Rasterizer State
+state->SetDepthFunction(DepthFunc::LessEqual);
+state->SetPolygonMode(PolygonMode::Fill);
+
+// Rendering
+state->Bind();
+RenderCommand::DrawArrays(36); // Vertex Count
 ```
 
 ---
@@ -148,7 +143,7 @@ You can easilly add new Post Processing in `Engine\src\Titan\Renderer\SceneRende
 
 ## Backends
 ### OpenGL
-OpenGL has support for most features that are not hardware dependant, for example Tesselation Shaders, but no support for complex stuff like **Hardware** Raytracing
+OpenGL has support for most features that are not hardware dependant, for example Tesselation Shaders, but no support for complex stuff like **Hardware** Raytracing. OpenGL usually has 32 Texture Slots.
 | Version | Compute Shader | Tessellation Shader | Geometry Shader | Raytracing |
 | ------- | -------------- | ------------------- | --------------- | ---------- |
 | **4.6** | ✅              | ✅                   | ✅               | ❌          |
@@ -172,5 +167,5 @@ OpenGL has support for most features that are not hardware dependant, for exampl
 In The Future this is all going to change (new apis, features)
 
 :::info
-All Rendering Abstractions are in `Engine\src\Titan\Renderer` and all api specific code is in `Engine\src\Titan\Platform\[API]`
+All Rendering Abstractions are in `Engine\src\Titan\Renderer` and all api specific code is in `Engine\src\Titan\Platform\[API]`. For Example for Textures the Abstaction is in `Engine\src\Titan\Renderer\Texture.h` and the OpenGL Version in `Engine\src\Titan\Platform\OpenGL\OpenGLTexture.h`
 :::
