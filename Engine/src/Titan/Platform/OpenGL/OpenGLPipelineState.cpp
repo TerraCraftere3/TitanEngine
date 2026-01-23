@@ -25,7 +25,17 @@ namespace Titan
     static uint32_t g_CurrentCubemaps[s_MaxBindingSlots] = {0};
     static uint32_t g_CurrentUBOs[s_MaxBindingSlots] = {0};
     static uint32_t g_CurrentSSBOs[s_MaxBindingSlots] = {0};
-    static int32_t g_CurrentActiveTextureUnit = -1;
+    static GLenum g_CurrentPolygonMode = 0;
+    static bool g_CurrentCullEnabled = false;
+    static GLenum g_CurrentCullFace = 0;
+    static GLenum g_CurrentFrontFace = 0;
+    static bool g_CurrentDepthBiasEnabled = false;
+    static float g_CurrentDepthBiasConstant = 0.0f;
+    static float g_CurrentDepthBiasSlope = 0.0f;
+    static float g_CurrentLineWidth = -1.0f;
+    static bool g_CurrentDepthTestEnabled = false;
+    static GLenum g_CurrentDepthFunc = 0;
+    static GLboolean g_CurrentDepthMask = 0;
 
     void OpenGLPipelineState::ResetCachedState()
     {
@@ -35,7 +45,17 @@ namespace Titan
         std::fill(std::begin(g_CurrentCubemaps), std::end(g_CurrentCubemaps), 0);
         std::fill(std::begin(g_CurrentUBOs), std::end(g_CurrentUBOs), 0);
         std::fill(std::begin(g_CurrentSSBOs), std::end(g_CurrentSSBOs), 0);
-        g_CurrentActiveTextureUnit = -1;
+        g_CurrentPolygonMode = 0;
+        g_CurrentCullEnabled = false;
+        g_CurrentCullFace = 0;
+        g_CurrentFrontFace = 0;
+        g_CurrentDepthBiasEnabled = false;
+        g_CurrentDepthBiasConstant = 0.0f;
+        g_CurrentDepthBiasSlope = 0.0f;
+        g_CurrentLineWidth = -1.0f;
+        g_CurrentDepthTestEnabled = false;
+        g_CurrentDepthFunc = 0;
+        g_CurrentDepthMask = 0;
     }
 
     OpenGLPipelineState::OpenGLPipelineState() : m_Shader(nullptr), m_VertexArray(nullptr) {}
@@ -106,11 +126,7 @@ namespace Titan
             const uint32_t rendererID = texture->GetRendererID();
             if (g_CurrentTextures[slot] != rendererID)
             {
-                if (g_CurrentActiveTextureUnit != static_cast<int32_t>(slot))
-                {
-                    glActiveTexture(GL_TEXTURE0 + slot);
-                    g_CurrentActiveTextureUnit = static_cast<int32_t>(slot);
-                }
+                glActiveTexture(GL_TEXTURE0 + slot);
                 glBindTexture(GL_TEXTURE_2D, rendererID);
                 g_CurrentTextures[slot] = rendererID;
             }
@@ -126,11 +142,7 @@ namespace Titan
             const uint32_t rendererID = cubemap->GetRendererID();
             if (g_CurrentCubemaps[slot] != rendererID)
             {
-                if (g_CurrentActiveTextureUnit != static_cast<int32_t>(slot))
-                {
-                    glActiveTexture(GL_TEXTURE0 + slot);
-                    g_CurrentActiveTextureUnit = static_cast<int32_t>(slot);
-                }
+                glActiveTexture(GL_TEXTURE0 + slot);
                 glBindTexture(GL_TEXTURE_CUBE_MAP, rendererID);
                 g_CurrentCubemaps[slot] = rendererID;
             }
@@ -150,16 +162,25 @@ namespace Titan
                 polygonMode = GL_POINT;
                 break;
         }
-        glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+        if (g_CurrentPolygonMode != polygonMode)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+            g_CurrentPolygonMode = polygonMode;
+        }
 
         // Set cull mode
-        if (m_CullMode == CullMode::None)
+        const bool cullEnabled = m_CullMode != CullMode::None;
+        if (g_CurrentCullEnabled != cullEnabled)
         {
-            glDisable(GL_CULL_FACE);
+            if (cullEnabled)
+                glEnable(GL_CULL_FACE);
+            else
+                glDisable(GL_CULL_FACE);
+            g_CurrentCullEnabled = cullEnabled;
         }
-        else
+
+        if (cullEnabled)
         {
-            glEnable(GL_CULL_FACE);
             GLenum cullMode = GL_BACK;
             switch (m_CullMode)
             {
@@ -173,41 +194,66 @@ namespace Titan
                     cullMode = GL_FRONT_AND_BACK;
                     break;
                 case CullMode::None:
-                    break; // Already handled
+                    break;
             }
-            glCullFace(cullMode);
+
+            if (g_CurrentCullFace != cullMode)
+            {
+                glCullFace(cullMode);
+                g_CurrentCullFace = cullMode;
+            }
         }
 
         // Set front face winding
         GLenum frontFace = m_FrontFace == FrontFace::Clockwise ? GL_CW : GL_CCW;
-        glFrontFace(frontFace);
+        if (g_CurrentFrontFace != frontFace)
+        {
+            glFrontFace(frontFace);
+            g_CurrentFrontFace = frontFace;
+        }
 
         // Set depth bias
-        if (m_DepthBiasConstant != 0.0f || m_DepthBiasSlope != 0.0f)
+        const bool depthBiasEnabled = m_DepthBiasConstant != 0.0f || m_DepthBiasSlope != 0.0f;
+        if (g_CurrentDepthBiasEnabled != depthBiasEnabled)
         {
-            glEnable(GL_POLYGON_OFFSET_FILL);
-            glEnable(GL_POLYGON_OFFSET_LINE);
-            glEnable(GL_POLYGON_OFFSET_POINT);
-            glPolygonOffset(m_DepthBiasSlope, m_DepthBiasConstant);
+            if (depthBiasEnabled)
+            {
+                glEnable(GL_POLYGON_OFFSET_FILL);
+                glEnable(GL_POLYGON_OFFSET_LINE);
+                glEnable(GL_POLYGON_OFFSET_POINT);
+            }
+            else
+            {
+                glDisable(GL_POLYGON_OFFSET_FILL);
+                glDisable(GL_POLYGON_OFFSET_LINE);
+                glDisable(GL_POLYGON_OFFSET_POINT);
+            }
+            g_CurrentDepthBiasEnabled = depthBiasEnabled;
         }
-        else
+
+        if (depthBiasEnabled &&
+            (g_CurrentDepthBiasSlope != m_DepthBiasSlope || g_CurrentDepthBiasConstant != m_DepthBiasConstant))
         {
-            glDisable(GL_POLYGON_OFFSET_FILL);
-            glDisable(GL_POLYGON_OFFSET_LINE);
-            glDisable(GL_POLYGON_OFFSET_POINT);
+            glPolygonOffset(m_DepthBiasSlope, m_DepthBiasConstant);
+            g_CurrentDepthBiasSlope = m_DepthBiasSlope;
+            g_CurrentDepthBiasConstant = m_DepthBiasConstant;
         }
 
         // Set line width
-        glLineWidth(m_LineWidth);
+        if (g_CurrentLineWidth != m_LineWidth)
+        {
+            glLineWidth(m_LineWidth);
+            g_CurrentLineWidth = m_LineWidth;
+        }
 
         // Set depth testing
-        if (m_DepthTestEnabled)
+        if (g_CurrentDepthTestEnabled != m_DepthTestEnabled)
         {
-            glEnable(GL_DEPTH_TEST);
-        }
-        else
-        {
-            glDisable(GL_DEPTH_TEST);
+            if (m_DepthTestEnabled)
+                glEnable(GL_DEPTH_TEST);
+            else
+                glDisable(GL_DEPTH_TEST);
+            g_CurrentDepthTestEnabled = m_DepthTestEnabled;
         }
 
         // Set depth function
@@ -239,10 +285,19 @@ namespace Titan
                 depthFunc = GL_ALWAYS;
                 break;
         }
-        glDepthFunc(depthFunc);
+        if (g_CurrentDepthFunc != depthFunc)
+        {
+            glDepthFunc(depthFunc);
+            g_CurrentDepthFunc = depthFunc;
+        }
 
         // Set depth write
-        glDepthMask(m_DepthWriteEnabled ? GL_TRUE : GL_FALSE);
+        const GLboolean depthMask = m_DepthWriteEnabled ? GL_TRUE : GL_FALSE;
+        if (g_CurrentDepthMask != depthMask)
+        {
+            glDepthMask(depthMask);
+            g_CurrentDepthMask = depthMask;
+        }
     }
 
     void OpenGLPipelineState::SetShader(const Ref<Shader>& shader)

@@ -15,6 +15,9 @@ namespace Titan
         virtual void ResetStats() override;
         virtual Statistics GetStats() override;
 
+        virtual void BeginFrame() override;
+        virtual void EndFrame() override;
+
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) override;
         virtual void EndRenderPass() override;
 

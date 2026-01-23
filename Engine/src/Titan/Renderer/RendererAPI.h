@@ -43,6 +43,9 @@ namespace Titan
         virtual void ResetStats() = 0;
         virtual Statistics GetStats() = 0;
 
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
+
         virtual void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName) = 0;
         virtual void EndRenderPass() = 0;
 

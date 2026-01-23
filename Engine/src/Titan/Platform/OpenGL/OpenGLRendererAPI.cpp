@@ -34,13 +34,18 @@ namespace Titan
         return m_Stats;
     }
 
+    void OpenGLRendererAPI::BeginFrame()
+    {
+        OpenGLPipelineState::ResetCachedState();
+    }
+
+    void OpenGLRendererAPI::EndFrame() {}
+
     void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
     {
 #ifdef TI_BUILD_DEBUG
         glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, debugName.c_str());
 #endif
-
-        OpenGLPipelineState::ResetCachedState();
 
         if (framebuffer->IsSwapChainTarget())
         {

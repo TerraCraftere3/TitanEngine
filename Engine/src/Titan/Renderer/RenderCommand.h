@@ -13,6 +13,10 @@ namespace Titan
 
         inline static RendererAPI::Statistics GetStats() { return s_RendererAPI->GetStats(); }
 
+        inline static void BeginFrame() { s_RendererAPI->BeginFrame(); }
+
+        inline static void EndFrame() { s_RendererAPI->EndFrame(); }
+
         inline static void BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
         {
             s_RendererAPI->BeginRenderPass(framebuffer, debugName);

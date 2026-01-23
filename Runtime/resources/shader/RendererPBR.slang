@@ -25,13 +25,28 @@ struct FragmentOutput
     float depth : SV_Depth;
 };
 
+[[vk::binding(0)]]
 Sampler2D gPosition;
+
+[[vk::binding(1)]]
 Sampler2D gNormal;
+
+[[vk::binding(2)]]
 Sampler2D gAlbedo;
+
+[[vk::binding(3)]]
 Sampler2D gMetallicRoughness;
+
+[[vk::binding(4)]]
 Sampler2D gEmission;
+
+[[vk::binding(5)]]
 ISampler2D gEntityID;
+
+[[vk::binding(6)]]
 Sampler2D gDepth;
+
+[[vk::binding(7)]]
 SamplerCube IrradianceMap;
 
 

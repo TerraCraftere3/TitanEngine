@@ -5,6 +5,7 @@
 #include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
 #include "Titan/Physics/Physics3D/Physics3D.h"
+#include "Titan/Renderer/PipelineState.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Scene/Assets.h"
 #include "Titan/Scripting/ScriptEngine.h"
@@ -61,6 +62,8 @@ namespace Titan
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
+            RenderCommand::BeginFrame();
+
             {
                 TI_PROFILE_SCOPE("Main Thread Queue");
                 ExecuteMainThreadQueue();
@@ -87,6 +90,8 @@ namespace Titan
                 TI_PROFILE_SCOPE("Window Update");
                 m_Window->OnUpdate();
             }
+
+            RenderCommand::EndFrame();
             TI_PROFILE_END_FRAME();
         }
     }

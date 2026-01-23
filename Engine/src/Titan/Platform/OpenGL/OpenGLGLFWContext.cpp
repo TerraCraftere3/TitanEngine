@@ -83,9 +83,12 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
             severityStr = "Low";
             TI_CORE_TRACE("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
             break;
-        case GL_DEBUG_SEVERITY_NOTIFICATION:
+        /*case GL_DEBUG_SEVERITY_NOTIFICATION:
             severityStr = "Notification";
             TI_CORE_TRACE("[OpenGL][{}][{}][ID {}][{}] {}", sourceStr, typeStr, id, severityStr, message);
+            break;*/
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            // Ignore notifications
             break;
         default:
             severityStr = "Unknown";
