@@ -4,6 +4,7 @@
 #include "ImReflect.hpp"
 #include "Titan/FontAwesome7.h"
 #include "Titan/ImReflect_glm.hpp"
+#include "Titan/Project/Project.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -13,8 +14,6 @@
 
 namespace Titan
 {
-    extern const std::filesystem::path g_AssetPath;
-
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
     {
         SetContext(context);
@@ -319,7 +318,7 @@ namespace Titan
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
             {
                 const wchar_t* path = (const wchar_t*)payload->Data;
-                std::filesystem::path fullPath = std::filesystem::path(g_AssetPath) / path;
+                std::filesystem::path fullPath = Project::GetAssetDirectory() / path;
                 texture = Assets::Load<Texture2D>(fullPath.string());
                 changed = true;
             }
@@ -482,14 +481,14 @@ namespace Titan
 
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(
-                    std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetFilePath() : "None").c_str(),
+                    std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetInternalPath() : "None").c_str(),
                     ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path meshPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path meshPath = Project::GetAssetDirectory() / path;
                         component.MeshRef = Assets::Load<Mesh>(meshPath.string());
                         changed = true;
                     }
@@ -536,14 +535,14 @@ namespace Titan
 
                         if (ImGui::Button("Save Material"))
                         {
-                            if (mat->SourcePath.empty())
+                            if (mat->InternalPath.empty())
                             {
                                 // Generate default path if not set
-                                auto meshPath = std::filesystem::path(component.MeshRef->GetFilePath());
+                                auto meshPath = std::filesystem::path(component.MeshRef->GetInternalPath());
                                 auto materialDir = meshPath.parent_path() / "Materials";
                                 auto materialFileName =
                                     meshPath.stem().string() + "_Mat" + std::to_string(index) + ".mat";
-                                mat->SourcePath = (materialDir / materialFileName).string();
+                                mat->InternalPath = (materialDir / materialFileName).string();
                                 std::filesystem::create_directories(materialDir);
                             }
                             mat->Save();
@@ -561,7 +560,7 @@ namespace Titan
                                 {
                                     filepath += ".mat";
                                 }
-                                mat->SourcePath = filepath;
+                                mat->InternalPath = filepath;
                                 mat->Save();
                             }
                         }
@@ -577,15 +576,15 @@ namespace Titan
                                 if (loadedMat)
                                 {
                                     *mat = *loadedMat;
-                                    mat->SourcePath = filepath;
+                                    mat->SetInternalPath(filepath);
                                     changed = true;
                                 }
                             }
                         }
 
-                        if (!mat->SourcePath.empty())
+                        if (!mat->InternalPath.empty())
                         {
-                            ImGui::TextDisabled("Path: %s", mat->SourcePath.c_str());
+                            ImGui::TextDisabled("Path: %s", mat->InternalPath.c_str());
                         }
 
                         ImGui::TreePop();
@@ -614,7 +613,7 @@ namespace Titan
                     ImGui::TextUnformatted("Cubemap");
                     if (component.hdriSettings.Skybox)
                     {
-                        ImGui::Button(component.hdriSettings.Skybox->GetPath().c_str());
+                        ImGui::Button(component.hdriSettings.Skybox->GetInternalPath().c_str());
                     }
                     else
                     {
@@ -625,7 +624,7 @@ namespace Titan
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                         {
                             const wchar_t* path = (const wchar_t*)payload->Data;
-                            std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
+                            std::filesystem::path cubemapPath = Project::GetAssetDirectory() / path;
                             component.hdriSettings.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
                             component.hdriSettings.Irradiance = component.hdriSettings.Skybox->CreateIrradianceMap();
                         }
@@ -676,14 +675,14 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<PhysicsMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -699,14 +698,14 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<PhysicsMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -749,14 +748,14 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<Physics2DMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -772,14 +771,14 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<Physics2DMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();

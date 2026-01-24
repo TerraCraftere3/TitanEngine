@@ -39,8 +39,8 @@ namespace Titan
         m_Data.Height = props.Height;
 
         TI_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
-        TI_CORE_TRACE("Application Path: {0}", Filesystem::GetExecutablePath());
-        TI_CORE_TRACE("Data Directory: {0}", Filesystem::GetAppDataDirectory());
+        TI_CORE_TRACE("Application Path: {0}", Filesystem::GetExecutablePath().string());
+        TI_CORE_TRACE("Data Directory: {0}", Filesystem::GetAppDataDirectory().string());
 
         if (!s_GLFWInitialized)
         {

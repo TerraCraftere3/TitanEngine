@@ -1,5 +1,0 @@
-Name: roof
-AlbedoColor: [1, 1, 1, 1]
-AlbedoTexture: assets\textures\Sponza\sponza_roof_diff.tga
-NormalTexture: assets\textures\Sponza\sponza_roof_ddn.tga
-UVRepeat: [1, 1]

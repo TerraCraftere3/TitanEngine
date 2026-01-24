@@ -31,6 +31,6 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 # ---- Subdirectories ----
 add_subdirectory(Vendor)
 add_subdirectory(Script-Core)
-add_subdirectory(Runtime/assets/scripts)
+add_subdirectory(Example)
 add_subdirectory(Engine)
 add_subdirectory(Editor)

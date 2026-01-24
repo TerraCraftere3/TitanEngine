@@ -1,0 +1,9 @@
+Name: Material_MR
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: textures\Helmet\Default_albedo.jpg
+EmissionTexture: textures\Helmet\Default_emissive.jpg
+MetallicTexture: textures\Helmet\Default_metal.jpg
+RoughnessTexture: textures\Helmet\Default_roughness.jpg
+NormalTexture: textures\Helmet\Default_normal.jpg
+AOTexture: textures\Helmet\Default_AO.jpg
+UVRepeat: [1, 1]

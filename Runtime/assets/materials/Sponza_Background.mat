@@ -1,5 +1,0 @@
-Name: Background
-AlbedoColor: [1, 1, 1, 1]
-AlbedoTexture: assets\textures\Sponza\background.tga
-NormalTexture: assets\textures\Sponza\background_ddn.tga
-UVRepeat: [1, 1]

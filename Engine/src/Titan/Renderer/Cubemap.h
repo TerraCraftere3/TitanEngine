@@ -14,7 +14,8 @@ namespace Titan
 
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
-        virtual std::string GetPath() const = 0;
+        virtual std::string GetInternalPath() const { return m_InternalPath; }
+        virtual void SetInternalPath(std::string path) { m_InternalPath = path; }
 
         virtual void SetData(void* data, uint32_t size) = 0;
         virtual void SetFaceData(uint32_t face, void* data, uint32_t size) = 0;
@@ -24,6 +25,9 @@ namespace Titan
         virtual Ref<Cubemap> CreateIrradianceMap(uint32_t resolution = 32) = 0;
 
         static Ref<Cubemap> Create(const std::string& path);
+
+    protected:
+        std::string m_InternalPath;
     };
 
 } // namespace Titan

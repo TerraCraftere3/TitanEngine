@@ -177,7 +177,7 @@ namespace Titan
         auto& comp = entity.GetComponent<SpriteRendererComponent>();
         std::string p = "[internal]";
         if (comp.Tex)
-            p = comp.Tex->GetPath();
+            p = comp.Tex->GetInternalPath();
         return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
     }
 
@@ -207,7 +207,7 @@ namespace Titan
         auto& comp = entity.GetComponent<MeshRendererComponent>();
         std::string p = "[internal]";
         if (comp.MeshRef)
-            p = comp.MeshRef->GetFilePath();
+            p = comp.MeshRef->GetInternalPath();
         return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
     }
 
@@ -303,7 +303,7 @@ namespace Titan
         auto& comp = entity.GetComponent<SkyboxComponent>();
         std::string p = "[internal]";
         if (comp.hdriSettings.Skybox)
-            p = comp.hdriSettings.Skybox->GetPath();
+            p = comp.hdriSettings.Skybox->GetInternalPath();
         return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
     }
 
@@ -317,7 +317,7 @@ namespace Titan
         auto& comp = entity.GetComponent<SkyboxComponent>();
         std::string p = "[internal]";
         if (comp.hdriSettings.Irradiance)
-            p = comp.hdriSettings.Irradiance->GetPath();
+            p = comp.hdriSettings.Irradiance->GetInternalPath();
         return mono_string_new(ScriptEngine::GetMonoDomain(), p.c_str());
     }
 

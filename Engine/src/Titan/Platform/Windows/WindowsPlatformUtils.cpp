@@ -68,30 +68,31 @@ namespace Titan
         return GetModuleHandleA("renderdoc.dll") != NULL;
     }
 
-    std::string Filesystem::GetAppDataDirectory()
+    std::filesystem::path Filesystem::GetAppDataDirectory()
     {
         CHAR path[MAX_PATH];
         if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, path)))
         {
-            return std::string(path) + "\\" + SanitizeName(Application::GetInstance()->GetSpecification().Name);
+            return std::filesystem::path(std::string(path) + "\\" +
+                                         SanitizeName(Application::GetInstance()->GetSpecification().Name));
         }
         return "";
     }
 
-    std::string Filesystem::GetExecutablePath()
+    std::filesystem::path Filesystem::GetExecutablePath()
     {
         CHAR path[MAX_PATH];
         GetModuleFileNameA(NULL, path, MAX_PATH);
-        return std::string(path);
+        return std::filesystem::path(path);
     }
 
-    std::string Filesystem::GetExecutableDirectory()
+    std::filesystem::path Filesystem::GetExecutableDirectory()
     {
-        std::string exePath = GetExecutablePath();
-        size_t pos = exePath.find_last_of("\\/");
+        std::filesystem::path exePath = GetExecutablePath();
+        size_t pos = exePath.string().find_last_of("\\/");
         if (pos != std::string::npos)
         {
-            return exePath.substr(0, pos);
+            return std::filesystem::path(exePath.string().substr(0, pos));
         }
         return "";
     }

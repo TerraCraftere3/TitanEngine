@@ -59,7 +59,8 @@ namespace Titan
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual void* GetNativeTexture() const = 0;
-        virtual std::string GetPath() const = 0;
+        virtual void SetInternalPath(std::string path) { m_InternalPath = path; }
+        virtual std::string GetInternalPath() const { return m_InternalPath; }
 
         virtual void SetData(void* data, uint32_t size) = 0;
 
@@ -79,6 +80,9 @@ namespace Titan
         static Ref<Texture2D> CreateAsync(const std::string& path, TextureSettings settings = TextureSettings());
 
         virtual void Reload(const std::string& path, TextureSettings settings) = 0;
+
+    protected:
+        std::string m_InternalPath;
     };
 
     namespace Utils

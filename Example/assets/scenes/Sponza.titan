@@ -1,0 +1,60 @@
+Scene: Untitled
+Entities:
+  - Entity: 14549440708057752251
+    TagComponent:
+      Tag: Cube
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.01, 0.01, 0.01]
+  - Entity: 9145592106616404032
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-1.4503181, 6.4962654, 2.861353]
+      Rotation: [-0.4364313, -0.46912408, -8.353e-09]
+      Scale: [0.9999934, 0.9999944, 0.99999076]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 12631064135749585595
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      HDRI:
+        {}
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: Colorramp
+  - Entity: 15253948998495587324
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 6183083657017600762
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-0.5, -1, -0.5]

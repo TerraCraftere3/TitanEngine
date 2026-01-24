@@ -8,6 +8,7 @@
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
 #include <Titan/FontAwesome7.h>
+#include <Titan/Project/Project.h>
 #include <Titan/Renderer/GeometryRenderer.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Renderer2D.h>
@@ -19,11 +20,8 @@
 #include <Titan/Utils/Math.h>
 #include <Titan/Utils/PlatformUtils.h>
 #include <Titan/Utils/String.h>
-
 namespace Titan
 {
-    extern const std::filesystem::path g_AssetPath;
-
     EditorLayer::EditorLayer() : Layer("EditorLayer") {}
 
     void EditorLayer::OnAttach()
@@ -315,6 +313,11 @@ namespace Titan
                     Application::GetInstance()->UpdateTheme(m_EditorProperties.Theme);
                 }
 
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu("Project"))
+            {
+                ImGui::Text("Path: %s", std::filesystem::absolute(Project::GetProjectDirectory()).string().c_str());
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -624,7 +627,7 @@ namespace Titan
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
             {
                 const wchar_t* path = static_cast<const wchar_t*>(payload->Data);
-                OpenScene(std::filesystem::path(g_AssetPath) / path);
+                OpenScene(Project::GetAssetDirectory() / path);
             }
             ImGui::EndDragDropTarget();
         }

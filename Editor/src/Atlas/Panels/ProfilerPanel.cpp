@@ -19,7 +19,7 @@ namespace Titan
         static std::vector<double> values;
         static std::vector<double> ys;
         static std::vector<const char*> labels;
-        static int viewMode = 0; // 0: horizontal bars, 1: vertical bars, 2: line
+        static int viewMode = 2; // 0: horizontal bars, 1: vertical bars, 2: line
 
         values.clear();
         ys.clear();
