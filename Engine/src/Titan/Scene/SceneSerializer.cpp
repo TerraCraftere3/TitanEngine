@@ -279,7 +279,7 @@ namespace Titan
             auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
             out << YAML::Key << "Color" << YAML::Value << spriteRendererComponent.Color;
             if (spriteRendererComponent.Tex)
-                out << YAML::Key << "Texture" << YAML::Value << spriteRendererComponent.Tex->GetPath();
+                out << YAML::Key << "Texture" << YAML::Value << spriteRendererComponent.Tex->GetInternalPath();
 
             out << YAML::EndMap; // SpriteRendererComponent
         }
@@ -304,7 +304,7 @@ namespace Titan
 
             auto& meshRendererComponent = entity.GetComponent<MeshRendererComponent>();
             if (meshRendererComponent.MeshRef)
-                out << YAML::Key << "Mesh" << YAML::Value << meshRendererComponent.MeshRef->GetFilePath();
+                out << YAML::Key << "Mesh" << YAML::Value << meshRendererComponent.MeshRef->GetInternalPath();
 
             out << YAML::Key << "Materials";
             out << YAML::BeginSeq; // Materials
@@ -312,14 +312,13 @@ namespace Titan
             for (auto mat : meshRendererComponent.MeshRef->GetMaterials())
             {
                 // Generate a material file path based on mesh path and material index
-                auto meshPath = std::filesystem::path(meshRendererComponent.MeshRef->GetFilePath());
+                auto meshPath = std::filesystem::path(meshRendererComponent.MeshRef->GetInternalPath());
                 auto materialDir = meshPath.parent_path() / "Materials";
                 auto materialFileName = meshPath.stem().string() + "_Mat" + std::to_string(matIndex) + ".mat";
                 auto materialFilePath = materialDir / materialFileName;
 
                 // Save the material to disk
                 std::filesystem::create_directories(materialDir);
-                mat->SourcePath = materialFilePath.string();
                 mat->Save();
 
                 // Save just the path in the scene file
@@ -350,7 +349,7 @@ namespace Titan
             out << YAML::Key << "HDRI" << YAML::BeginMap;
             {
                 if (sc.hdriSettings.Skybox)
-                    out << YAML::Key << "Texture" << YAML::Value << sc.hdriSettings.Skybox->GetPath();
+                    out << YAML::Key << "Texture" << YAML::Value << sc.hdriSettings.Skybox->GetInternalPath();
             }
             out << YAML::EndMap;
             out << YAML::Key << "Colorramp" << YAML::BeginMap;
@@ -385,7 +384,7 @@ namespace Titan
             out << YAML::Key << "Offset" << YAML::Value << ccComponent.Offset;
             out << YAML::Key << "Size" << YAML::Value << ccComponent.Size;
             if (ccComponent.Material)
-                out << YAML::Key << "Material" << YAML::Value << ccComponent.Material->SourcePath;
+                out << YAML::Key << "Material" << YAML::Value << ccComponent.Material->GetInternalPath();
 
             out << YAML::EndMap; // CubeColliderComponent
         }
@@ -399,7 +398,7 @@ namespace Titan
             out << YAML::Key << "Offset" << YAML::Value << scComponent.Offset;
             out << YAML::Key << "Radius" << YAML::Value << scComponent.Radius;
             if (scComponent.Material)
-                out << YAML::Key << "Material" << YAML::Value << scComponent.Material->SourcePath;
+                out << YAML::Key << "Material" << YAML::Value << scComponent.Material->GetInternalPath();
 
             out << YAML::EndMap; // SphereColliderComponent
         }
@@ -424,7 +423,7 @@ namespace Titan
             auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
             out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
             out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
-            out << YAML::Key << "Material" << YAML::Value << bc2dComponent.Material->SourcePath;
+            out << YAML::Key << "Material" << YAML::Value << bc2dComponent.Material->GetInternalPath();
 
             out << YAML::EndMap; // BoxCollider2DComponent
         }
@@ -437,7 +436,7 @@ namespace Titan
             auto& cc2dComponent = entity.GetComponent<CircleCollider2DComponent>();
             out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.Offset;
             out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.Radius;
-            out << YAML::Key << "Material" << YAML::Value << cc2dComponent.Material->SourcePath;
+            out << YAML::Key << "Material" << YAML::Value << cc2dComponent.Material->GetInternalPath();
 
             out << YAML::EndMap; // CircleCollider2DComponent
         }
@@ -622,6 +621,7 @@ namespace Titan
                     {
                         src.Tex = Assets::Load<Texture2D>(Project::GetAssetDirectory() /
                                                           spriteRendererComponent["Texture"].as<std::string>());
+                        src.Tex->SetInternalPath(spriteRendererComponent["Texture"].as<std::string>());
                     }
                 }
 
@@ -638,6 +638,7 @@ namespace Titan
                             mrc.MeshRef = Mesh::CreateCube();
                         else
                             mrc.MeshRef = Assets::Load<Mesh>(Project::GetAssetDirectory() / path);
+                        mrc.MeshRef->SetInternalPath(path);
                     }
                     auto materials = meshRendererComponent["Materials"];
                     int matIndex = 0;
@@ -664,6 +665,7 @@ namespace Titan
                                     mat->AOTexture = loadedMat->AOTexture;
                                     mat->UVRepeat = loadedMat->UVRepeat;
                                     mat->SourcePath = matPathStr; // Set the source path for saving
+                                    mat->SetInternalPath(materialPath.as<std::string>());
                                 }
                             }
                         }
@@ -691,6 +693,7 @@ namespace Titan
                             std::string path =
                                 (Project::GetAssetDirectory() / hdriNode["Texture"].as<std::string>()).string();
                             sc.hdriSettings.Skybox = Assets::Load<Cubemap>(path);
+                            sc.hdriSettings.Skybox->SetInternalPath(hdriNode["Texture"].as<std::string>());
 
                             if (sc.hdriSettings.Skybox)
                                 sc.hdriSettings.Irradiance = sc.hdriSettings.Skybox->CreateIrradianceMap();
@@ -730,6 +733,7 @@ namespace Titan
                     if (cubeColliderComponent["Material"])
                         cube.Material = Assets::Load<PhysicsMaterial>(
                             Project::GetAssetDirectory() / cubeColliderComponent["Material"].as<std::string>());
+                    cube.Material->SetInternalPath(cubeColliderComponent["Material"].as<std::string>());
                 }
 
                 auto sphereColliderComponent = entity["SphereColliderComponent"];
@@ -741,6 +745,7 @@ namespace Titan
                     if (sphereColliderComponent["Material"])
                         sphere.Material = Assets::Load<PhysicsMaterial>(
                             Project::GetAssetDirectory() / sphereColliderComponent["Material"].as<std::string>());
+                    sphere.Material->SetInternalPath(sphereColliderComponent["Material"].as<std::string>());
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];
@@ -768,6 +773,7 @@ namespace Titan
                     bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
                     bc2d.Material = Assets::Load<Physics2DMaterial>(
                         Project::GetAssetDirectory() / boxCollider2DComponent["Material"].as<std::string>());
+                    bc2d.Material->SetInternalPath(boxCollider2DComponent["Material"].as<std::string>());
                 }
 
                 auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
@@ -778,6 +784,7 @@ namespace Titan
                     cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
                     cc2d.Material = Assets::Load<Physics2DMaterial>(
                         Project::GetAssetDirectory() / circleCollider2DComponent["Material"].as<std::string>());
+                    cc2d.Material->SetInternalPath(circleCollider2DComponent["Material"].as<std::string>());
                 }
 
                 auto scriptComponent = entity["ScriptComponent"];

@@ -315,6 +315,11 @@ namespace Titan
 
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Project"))
+            {
+                ImGui::Text("Path: %s", std::filesystem::absolute(Project::GetProjectDirectory()).string().c_str());
+                ImGui::EndMenu();
+            }
             ImGui::EndMenuBar();
         }
     }

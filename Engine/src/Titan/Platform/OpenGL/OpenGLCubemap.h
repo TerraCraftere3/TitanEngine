@@ -25,8 +25,6 @@ namespace Titan
         virtual uint32_t GetWidth() const override { return m_Width; }
         virtual uint32_t GetHeight() const override { return m_Height; }
 
-        virtual std::string GetPath() const override { return m_Path; }
-
         virtual void SetData(void* data, uint32_t size) override;
         virtual void SetFaceData(uint32_t face, void* data, uint32_t size) override;
 

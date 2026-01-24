@@ -481,7 +481,7 @@ namespace Titan
 
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
                 ImGui::Button(
-                    std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetFilePath() : "None").c_str(),
+                    std::format("Mesh: {}", component.MeshRef ? component.MeshRef->GetInternalPath() : "None").c_str(),
                     ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
@@ -535,14 +535,14 @@ namespace Titan
 
                         if (ImGui::Button("Save Material"))
                         {
-                            if (mat->SourcePath.empty())
+                            if (mat->InternalPath.empty())
                             {
                                 // Generate default path if not set
-                                auto meshPath = std::filesystem::path(component.MeshRef->GetFilePath());
+                                auto meshPath = std::filesystem::path(component.MeshRef->GetInternalPath());
                                 auto materialDir = meshPath.parent_path() / "Materials";
                                 auto materialFileName =
                                     meshPath.stem().string() + "_Mat" + std::to_string(index) + ".mat";
-                                mat->SourcePath = (materialDir / materialFileName).string();
+                                mat->InternalPath = (materialDir / materialFileName).string();
                                 std::filesystem::create_directories(materialDir);
                             }
                             mat->Save();
@@ -560,7 +560,7 @@ namespace Titan
                                 {
                                     filepath += ".mat";
                                 }
-                                mat->SourcePath = filepath;
+                                mat->InternalPath = filepath;
                                 mat->Save();
                             }
                         }
@@ -576,15 +576,15 @@ namespace Titan
                                 if (loadedMat)
                                 {
                                     *mat = *loadedMat;
-                                    mat->SourcePath = filepath;
+                                    mat->SetInternalPath(filepath);
                                     changed = true;
                                 }
                             }
                         }
 
-                        if (!mat->SourcePath.empty())
+                        if (!mat->InternalPath.empty())
                         {
-                            ImGui::TextDisabled("Path: %s", mat->SourcePath.c_str());
+                            ImGui::TextDisabled("Path: %s", mat->InternalPath.c_str());
                         }
 
                         ImGui::TreePop();
@@ -613,7 +613,7 @@ namespace Titan
                     ImGui::TextUnformatted("Cubemap");
                     if (component.hdriSettings.Skybox)
                     {
-                        ImGui::Button(component.hdriSettings.Skybox->GetPath().c_str());
+                        ImGui::Button(component.hdriSettings.Skybox->GetInternalPath().c_str());
                     }
                     else
                     {
@@ -675,7 +675,7 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
@@ -698,7 +698,7 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
@@ -748,7 +748,7 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImReflect::Input("Size", component.Size, config);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {
@@ -771,7 +771,7 @@ namespace Titan
                 ImReflect::Input("Offset", component.Offset, config);
                 ImGui::DragFloat("Radius", &component.Radius);
                 float buttonWidth = ImGui::GetContentRegionAvail().x;
-                ImGui::Button(std::format("Material: {}", component.Material->SourcePath).c_str(),
+                ImGui::Button(std::format("Material: {}", component.Material->InternalPath).c_str(),
                               ImVec2(buttonWidth, 0.0f));
                 if (ImGui::BeginDragDropTarget())
                 {

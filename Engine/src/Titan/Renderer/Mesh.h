@@ -23,6 +23,9 @@ namespace Titan
         const Ref<Material3D>& GetMaterial(int index) const { return m_Materials[index]; }
 
         const AABB& GetBounds() const { return m_Bounds; }
+
+        void SetInternalPath(const std::string& internalPath) { m_InternalPath = internalPath; }
+        const std::string& GetInternalPath() const { return m_InternalPath; }
         const std::string& GetFilePath() const { return m_FilePath; }
 
         static Ref<Mesh> CreateQuad();
@@ -42,6 +45,7 @@ namespace Titan
         std::vector<uint8_t> m_MaterialIndex;
         AABB m_Bounds;
         std::string m_FilePath;
+        std::string m_InternalPath;
 
         friend class Renderer3D;
     };

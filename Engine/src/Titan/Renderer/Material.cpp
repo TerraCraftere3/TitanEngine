@@ -78,22 +78,22 @@ namespace Titan
         out << YAML::Key << "AlbedoColor" << YAML::Value << AlbedoColor;
 
         if (AlbedoTexture)
-            out << YAML::Key << "AlbedoTexture" << YAML::Value << AlbedoTexture->GetPath();
+            out << YAML::Key << "AlbedoTexture" << YAML::Value << AlbedoTexture->GetInternalPath();
 
         if (EmissionTexture)
-            out << YAML::Key << "EmissionTexture" << YAML::Value << EmissionTexture->GetPath();
+            out << YAML::Key << "EmissionTexture" << YAML::Value << EmissionTexture->GetInternalPath();
 
         if (MetallicTexture)
-            out << YAML::Key << "MetallicTexture" << YAML::Value << MetallicTexture->GetPath();
+            out << YAML::Key << "MetallicTexture" << YAML::Value << MetallicTexture->GetInternalPath();
 
         if (RoughnessTexture)
-            out << YAML::Key << "RoughnessTexture" << YAML::Value << RoughnessTexture->GetPath();
+            out << YAML::Key << "RoughnessTexture" << YAML::Value << RoughnessTexture->GetInternalPath();
 
         if (NormalTexture)
-            out << YAML::Key << "NormalTexture" << YAML::Value << NormalTexture->GetPath();
+            out << YAML::Key << "NormalTexture" << YAML::Value << NormalTexture->GetInternalPath();
 
         if (AOTexture)
-            out << YAML::Key << "AOTexture" << YAML::Value << AOTexture->GetPath();
+            out << YAML::Key << "AOTexture" << YAML::Value << AOTexture->GetInternalPath();
 
         out << YAML::Key << "UVRepeat" << YAML::Value << UVRepeat;
         out << YAML::EndMap;
@@ -135,23 +135,42 @@ namespace Titan
             {
                 std::string texPath = data["AlbedoTexture"].as<std::string>();
                 material->AlbedoTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->AlbedoTexture->SetInternalPath(texPath);
             }
 
             if (data["EmissionTexture"])
-                material->EmissionTexture =
-                    Assets::Load<Texture2D>(assetDir / data["EmissionTexture"].as<std::string>());
+            {
+                std::string texPath = data["EmissionTexture"].as<std::string>();
+                material->EmissionTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->EmissionTexture->SetInternalPath(texPath);
+            }
             if (data["MetallicTexture"])
-                material->MetallicTexture =
-                    Assets::Load<Texture2D>(assetDir / data["MetallicTexture"].as<std::string>());
+            {
+                std::string texPath = data["MetallicTexture"].as<std::string>();
+                material->MetallicTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->MetallicTexture->SetInternalPath(texPath);
+            }
 
             if (data["RoughnessTexture"])
-                material->RoughnessTexture =
-                    Assets::Load<Texture2D>(assetDir / data["RoughnessTexture"].as<std::string>());
+            {
+                std::string texPath = data["RoughnessTexture"].as<std::string>();
+                material->RoughnessTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->RoughnessTexture->SetInternalPath(texPath);
+            }
             if (data["NormalTexture"])
-                material->NormalTexture = Assets::Load<Texture2D>(assetDir / data["NormalTexture"].as<std::string>());
+            {
+                std::string texPath = data["NormalTexture"].as<std::string>();
+                material->NormalTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->NormalTexture->SetInternalPath(texPath);
+            }
 
             if (data["AOTexture"])
-                material->AOTexture = Assets::Load<Texture2D>(assetDir / data["AOTexture"].as<std::string>());
+            {
+                std::string texPath = data["AOTexture"].as<std::string>();
+                material->AOTexture = Assets::Load<Texture2D>(assetDir / texPath);
+                material->AOTexture->SetInternalPath(texPath);
+            }
+
             if (data["UVRepeat"])
                 material->UVRepeat = data["UVRepeat"].as<glm::vec2>();
 
