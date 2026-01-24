@@ -1,19 +1,29 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+renderer:
+  label: Renderer
+  permalink: /renderer
+  description: Rendering, graphics, and visualization
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+backends:
+  label: Backends
+  permalink: /backends
+  description: Backend systems like windows or opengl specific code
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+opengl:
+  label: OpenGL
+  permalink: /opengl
+  description: OpenGL specific code
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+vulkan:
+  label: Vulkan
+  permalink: /vulkan
+  description: Vulkan specific code
+
+directx:
+  label: DirectX
+  permalink: /directx
+  description: DirectX 11 and 12 specific code
+
+tutorial:
+  label: Tutorial
+  permalink: /tutorial
+  description: Step-by-step guides and tutorials

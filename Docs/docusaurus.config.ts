@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -42,7 +42,7 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts'
         },
-        /*blog: {
+        blog: {
           showReadingTime: true,
           feedOptions: {
             type: ['rss', 'atom'],
@@ -52,8 +52,7 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
-        },*/
-        blog: false,
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -68,7 +67,7 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Ttitan Engine',
+      title: 'Titan Engine',
       logo: {
         alt: 'Titan Engine Logo',
         src: 'img/logo.svg',
@@ -80,7 +79,7 @@ const config: Config = {
           position: 'left',
           label: 'Documentation',
         },
-        //{to: '/blog', label: 'Blog', position: 'left'},
+        { to: '/blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/TerraCraftere3/TitanEngine',
           label: 'GitHub',
