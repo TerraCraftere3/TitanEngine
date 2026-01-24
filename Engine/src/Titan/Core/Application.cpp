@@ -44,6 +44,8 @@ namespace Titan
 
         m_ImGuiLayer = new ImGuiLayer(specification.Theme);
         PushOverlay(m_ImGuiLayer);
+
+        m_ImGuiEnabled = !specification.DisableImGui;
     }
 
     Application::~Application()
@@ -82,6 +84,7 @@ namespace Titan
                     layer->OnUpdate(timestep);
             }
 
+            if (m_ImGuiEnabled)
             {
                 TI_PROFILE_SCOPE("UI Update");
                 m_ImGuiLayer->Begin();

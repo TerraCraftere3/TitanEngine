@@ -23,6 +23,7 @@ Titan::Application* Titan::CreateApplication(ApplicationCommandLineArgs args)
     spec.WindowProperties = WindowProps("Sandbox");
     spec.CommandLineArgs = args;
     spec.Theme = UITheme::Dark;
+    spec.DisableImGui = true;
 
     return new Titan::SandboxApp(spec);
 }

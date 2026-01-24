@@ -24,6 +24,7 @@ Titan::Application* Titan::CreateApplication(ApplicationCommandLineArgs args)
         WindowProps("Atlas Editor for Titan | " TI_PLATFORM_STRING " " TI_ARCH_STRING " (" TI_VARIANT_STRING ")");
     spec.CommandLineArgs = args;
     spec.Theme = UITheme::Dark;
+    spec.DisableImGui = false;
 
     return new Titan::AtlasApp(spec);
 }
