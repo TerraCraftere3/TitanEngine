@@ -1,0 +1,5 @@
+Name: vase_hanging
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: textures\Sponza\vase_hanging.tga
+NormalTexture: textures\Sponza\vase_hanging_ddn.tga
+UVRepeat: [1, 1]

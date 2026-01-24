@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Texture.h"
 #include "Titan/PCH.h"
+#include "Titan/Project/Project.h"
 #include "Titan/Scene/Assets.h"
 
 namespace YAML
@@ -120,6 +121,7 @@ namespace Titan
         try
         {
             YAML::Node data = YAML::LoadFile(path);
+            auto assetDir = Project::GetAssetDirectory();
             auto material = CreateRef<Material3D>();
             material->SourcePath = path;
 
@@ -130,23 +132,26 @@ namespace Titan
                 material->AlbedoColor = data["AlbedoColor"].as<glm::vec4>();
 
             if (data["AlbedoTexture"])
-                material->AlbedoTexture = Assets::Load<Texture2D>(data["AlbedoTexture"].as<std::string>());
+            {
+                std::string texPath = data["AlbedoTexture"].as<std::string>();
+                material->AlbedoTexture = Assets::Load<Texture2D>(assetDir / texPath);
+            }
 
             if (data["EmissionTexture"])
-                material->EmissionTexture = Assets::Load<Texture2D>(data["EmissionTexture"].as<std::string>());
-
+                material->EmissionTexture =
+                    Assets::Load<Texture2D>(assetDir / data["EmissionTexture"].as<std::string>());
             if (data["MetallicTexture"])
-                material->MetallicTexture = Assets::Load<Texture2D>(data["MetallicTexture"].as<std::string>());
+                material->MetallicTexture =
+                    Assets::Load<Texture2D>(assetDir / data["MetallicTexture"].as<std::string>());
 
             if (data["RoughnessTexture"])
-                material->RoughnessTexture = Assets::Load<Texture2D>(data["RoughnessTexture"].as<std::string>());
-
+                material->RoughnessTexture =
+                    Assets::Load<Texture2D>(assetDir / data["RoughnessTexture"].as<std::string>());
             if (data["NormalTexture"])
-                material->NormalTexture = Assets::Load<Texture2D>(data["NormalTexture"].as<std::string>());
+                material->NormalTexture = Assets::Load<Texture2D>(assetDir / data["NormalTexture"].as<std::string>());
 
             if (data["AOTexture"])
-                material->AOTexture = Assets::Load<Texture2D>(data["AOTexture"].as<std::string>());
-
+                material->AOTexture = Assets::Load<Texture2D>(assetDir / data["AOTexture"].as<std::string>());
             if (data["UVRepeat"])
                 material->UVRepeat = data["UVRepeat"].as<glm::vec2>();
 

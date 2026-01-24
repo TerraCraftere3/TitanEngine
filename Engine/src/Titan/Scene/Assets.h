@@ -315,33 +315,33 @@ namespace Titan
                     settings.MinFilter = Utils::StringToTextureFiltering(meta.Properties["MinFilter"]);
                 if (meta.Properties.contains("MagFilter"))
                     settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
-                asset = Texture2D::Create(std::filesystem::relative(path).string(), settings);
+                asset = Texture2D::Create(path.string(), settings);
             }
             else if constexpr (std::is_same_v<T, Cubemap>)
             {
-                asset = Cubemap::Create(std::filesystem::relative(path).string());
+                asset = Cubemap::Create(path.string());
             }
             else if constexpr (std::is_same_v<T, Shader>)
             {
-                asset = Shader::Create(std::filesystem::relative(path).string());
+                asset = Shader::Create(path.string());
             }
             else if constexpr (std::is_same_v<T, Scene>)
             {
                 asset = CreateRef<Scene>();
                 SceneSerializer serializer(asset);
-                serializer.Deserialize(std::filesystem::relative(path).string());
+                serializer.Deserialize(path.string());
             }
             else if constexpr (std::is_same_v<T, Physics2DMaterial>)
             {
-                asset = Physics2DMaterial::Create(std::filesystem::relative(path).string());
+                asset = Physics2DMaterial::Create(path.string());
             }
             else if constexpr (std::is_same_v<T, PhysicsMaterial>)
             {
-                asset = PhysicsMaterial::Create(std::filesystem::relative(path).string());
+                asset = PhysicsMaterial::Create(path.string());
             }
             else if constexpr (std::is_same_v<T, Mesh>)
             {
-                asset = Mesh::Create(std::filesystem::relative(path).string());
+                asset = Mesh::Create(path.string());
             }
             else
             {
@@ -426,12 +426,12 @@ namespace Titan
                 if (meta.Properties.contains("MagFilter"))
                     settings.MagFilter = Utils::StringToTextureFiltering(meta.Properties["MagFilter"]);
 
-                asset->Reload(std::filesystem::relative(path).string(), settings);
+                asset->Reload(path.string(), settings);
                 AssetLibrary::UpdateMeta(path, meta);
             }
             else if constexpr (std::is_same_v<T, Shader>)
             {
-                asset->Reload(std::filesystem::relative(path).string());
+                asset->Reload(path.string());
                 AssetLibrary::UpdateMeta(path, meta);
             }
             else

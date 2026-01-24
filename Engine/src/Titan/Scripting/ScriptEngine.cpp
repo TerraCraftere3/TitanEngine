@@ -4,7 +4,9 @@
 #include "Titan/Core/Application.h"
 #include "Titan/Core/Timer.h"
 #include "Titan/PCH.h"
+#include "Titan/Project/Project.h"
 #include "Titan/Scene/Components.h"
+#include "Titan/Utils/PlatformUtils.h"
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
 #include "mono/metadata/object.h"
@@ -169,8 +171,15 @@ namespace Titan
         InitMono();
         ScriptGlue::RegisterFunctions();
 
-        LoadAssembly("resources/scripts/ScriptCore.dll");
-        LoadAppAssembly("resources/scripts/Sandbox.dll");
+        auto corepath = Filesystem::GetExecutableDirectory() / "resources" / "scripts" / "ScriptCore.dll";
+        TI_CORE_TRACE("Loading Script Core Assembly from: {0}", corepath.string());
+        LoadAssembly(corepath);
+
+        auto project = Project::GetActive();
+        TI_CORE_ASSERT(project, "No active project found!");
+        auto apppath = Project::GetAssetDirectory() / project->GetConfig().ScriptModulePath;
+        TI_CORE_TRACE("Loading App Script Assembly from: {0}", apppath.string());
+        LoadAppAssembly(apppath);
         LoadAssemblyClasses();
 
         ScriptGlue::RegisterComponents();

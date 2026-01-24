@@ -1,14 +1,13 @@
 #include "ContentBrowserPanel.h"
 #include "../Renderer/Thumbnails.h"
 #include "Titan/FontAwesome7.h"
+#include "Titan/Project/Project.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Utils/String.h"
 
 namespace Titan
 {
-    extern const std::filesystem::path g_AssetPath = "assets";
-
-    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(g_AssetPath), m_Selected("") {}
+    ContentBrowserPanel::ContentBrowserPanel() : m_CurrentDirectory(Project::GetAssetDirectory()), m_Selected("") {}
 
     void ContentBrowserPanel::OnImGuiRender(bool* openBrowser, bool* openFile)
     {
@@ -26,7 +25,8 @@ namespace Titan
         try
         {
             {
-                std::filesystem::path relativePath = std::filesystem::relative(m_CurrentDirectory, g_AssetPath);
+                std::filesystem::path relativePath =
+                    std::filesystem::relative(m_CurrentDirectory, Project::GetAssetDirectory());
 
                 if (ImGui::InvisibleButton("##root_btn", ImVec2(0, 0)))
                 {
@@ -36,9 +36,9 @@ namespace Titan
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.15f));
 
                 if (ImGui::Button("assets"))
-                    m_CurrentDirectory = g_AssetPath;
+                    m_CurrentDirectory = Project::GetAssetDirectory();
 
-                std::filesystem::path accumulatedPath = g_AssetPath;
+                std::filesystem::path accumulatedPath = Project::GetAssetDirectory();
                 for (const auto& part : relativePath)
                 {
                     if (part == ".")
@@ -77,7 +77,7 @@ namespace Titan
                 if (ext == ".meta")
                     continue;
 
-                auto relativePath = std::filesystem::relative(path, g_AssetPath);
+                auto relativePath = std::filesystem::relative(path, Project::GetAssetDirectory());
                 std::string filenameString = relativePath.filename().string();
                 std::string filename = TruncateString(filenameString, 20);
 

@@ -5,6 +5,7 @@
 #include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
 #include "Titan/Physics/Physics3D/Physics3D.h"
+#include "Titan/Project/Project.h"
 #include "Titan/Renderer/PipelineState.h"
 #include "Titan/Renderer/Renderer.h"
 #include "Titan/Scene/Assets.h"
@@ -30,6 +31,11 @@ namespace Titan
 
         m_Window = Scope<Window>(Window::Create(specification.WindowProperties));
         m_Window->SetEventCallback(TI_BIND_EVENT_FN(Application::OnEvent));
+
+        std::filesystem::path projectDir =
+            std::filesystem::path(specification.CommandLineArgs.Args[1]) / "project.tiproj";
+
+        Project::Load(projectDir);
 
         Assets::Init();
         Renderer::Init();

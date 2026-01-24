@@ -21,9 +21,9 @@ namespace Titan
     class TI_API Filesystem
     {
     public:
-        static std::string GetAppDataDirectory();
-        static std::string GetExecutablePath();
-        static std::string GetExecutableDirectory();
+        static std::filesystem::path GetAppDataDirectory();
+        static std::filesystem::path GetExecutablePath();
+        static std::filesystem::path GetExecutableDirectory();
     };
 
     class TI_API Platform

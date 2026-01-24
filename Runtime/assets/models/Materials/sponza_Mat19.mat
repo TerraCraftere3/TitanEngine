@@ -1,5 +1,0 @@
-Name: flagpole
-AlbedoColor: [1, 1, 1, 1]
-AlbedoTexture: assets\textures\Sponza\sponza_flagpole_diff.tga
-NormalTexture: assets\textures\Sponza\sponza_flagpole_ddn.tga
-UVRepeat: [1, 1]

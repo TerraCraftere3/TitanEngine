@@ -1,0 +1,5 @@
+Name: ceiling
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: textures\Sponza\sponza_ceiling_a_diff.tga
+NormalTexture: textures\Sponza\sponza_ceiling_a_ddn.tga
+UVRepeat: [1, 1]

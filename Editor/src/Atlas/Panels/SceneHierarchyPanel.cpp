@@ -4,6 +4,7 @@
 #include "ImReflect.hpp"
 #include "Titan/FontAwesome7.h"
 #include "Titan/ImReflect_glm.hpp"
+#include "Titan/Project/Project.h"
 #include "Titan/Renderer/GeometryRenderer.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
@@ -13,8 +14,6 @@
 
 namespace Titan
 {
-    extern const std::filesystem::path g_AssetPath;
-
     SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
     {
         SetContext(context);
@@ -319,7 +318,7 @@ namespace Titan
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
             {
                 const wchar_t* path = (const wchar_t*)payload->Data;
-                std::filesystem::path fullPath = std::filesystem::path(g_AssetPath) / path;
+                std::filesystem::path fullPath = Project::GetAssetDirectory() / path;
                 texture = Assets::Load<Texture2D>(fullPath.string());
                 changed = true;
             }
@@ -489,7 +488,7 @@ namespace Titan
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path meshPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path meshPath = Project::GetAssetDirectory() / path;
                         component.MeshRef = Assets::Load<Mesh>(meshPath.string());
                         changed = true;
                     }
@@ -625,7 +624,7 @@ namespace Titan
                         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                         {
                             const wchar_t* path = (const wchar_t*)payload->Data;
-                            std::filesystem::path cubemapPath = std::filesystem::path(g_AssetPath) / path;
+                            std::filesystem::path cubemapPath = Project::GetAssetDirectory() / path;
                             component.hdriSettings.Skybox = Assets::Load<Cubemap>(cubemapPath.string());
                             component.hdriSettings.Irradiance = component.hdriSettings.Skybox->CreateIrradianceMap();
                         }
@@ -683,7 +682,7 @@ namespace Titan
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<PhysicsMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -706,7 +705,7 @@ namespace Titan
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<PhysicsMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -756,7 +755,7 @@ namespace Titan
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<Physics2DMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();
@@ -779,7 +778,7 @@ namespace Titan
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
                     {
                         const wchar_t* path = (const wchar_t*)payload->Data;
-                        std::filesystem::path materialPath = std::filesystem::path(g_AssetPath) / path;
+                        std::filesystem::path materialPath = Project::GetAssetDirectory() / path;
                         component.Material = Assets::Load<Physics2DMaterial>(materialPath.string());
                     }
                     ImGui::EndDragDropTarget();

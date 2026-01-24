@@ -5,6 +5,7 @@
 #include "Entity.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
+#include "Titan/Project/Project.h"
 #include "Titan/Renderer/Renderer2D.h"
 #include "Titan/Scripting/ScriptEngine.h"
 
@@ -619,7 +620,8 @@ namespace Titan
                     src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
                     if (spriteRendererComponent["Texture"])
                     {
-                        src.Tex = Assets::Load<Texture2D>(spriteRendererComponent["Texture"].as<std::string>());
+                        src.Tex = Assets::Load<Texture2D>(Project::GetAssetDirectory() /
+                                                          spriteRendererComponent["Texture"].as<std::string>());
                     }
                 }
 
@@ -635,7 +637,7 @@ namespace Titan
                         else if (path == "cube")
                             mrc.MeshRef = Mesh::CreateCube();
                         else
-                            mrc.MeshRef = Assets::Load<Mesh>(path);
+                            mrc.MeshRef = Assets::Load<Mesh>(Project::GetAssetDirectory() / path);
                     }
                     auto materials = meshRendererComponent["Materials"];
                     int matIndex = 0;
@@ -644,7 +646,8 @@ namespace Titan
                         auto mat = mrc.MeshRef->GetMaterial(matIndex);
                         if (mat)
                         {
-                            std::string matPathStr = materialPath.as<std::string>();
+                            std::string matPathStr =
+                                (Project::GetAssetDirectory() / materialPath.as<std::string>()).string();
                             if (!matPathStr.empty() && std::filesystem::exists(matPathStr))
                             {
                                 // Load material from .mat file
@@ -685,7 +688,8 @@ namespace Titan
                     {
                         if (hdriNode["Texture"])
                         {
-                            std::string path = hdriNode["Texture"].as<std::string>();
+                            std::string path =
+                                (Project::GetAssetDirectory() / hdriNode["Texture"].as<std::string>()).string();
                             sc.hdriSettings.Skybox = Assets::Load<Cubemap>(path);
 
                             if (sc.hdriSettings.Skybox)
@@ -724,8 +728,8 @@ namespace Titan
                     cube.Offset = cubeColliderComponent["Offset"].as<glm::vec3>();
                     cube.Size = cubeColliderComponent["Size"].as<glm::vec3>();
                     if (cubeColliderComponent["Material"])
-                        cube.Material =
-                            Assets::Load<PhysicsMaterial>(cubeColliderComponent["Material"].as<std::string>());
+                        cube.Material = Assets::Load<PhysicsMaterial>(
+                            Project::GetAssetDirectory() / cubeColliderComponent["Material"].as<std::string>());
                 }
 
                 auto sphereColliderComponent = entity["SphereColliderComponent"];
@@ -735,8 +739,8 @@ namespace Titan
                     sphere.Offset = sphereColliderComponent["Offset"].as<glm::vec3>();
                     sphere.Radius = sphereColliderComponent["Radius"].as<float>();
                     if (sphereColliderComponent["Material"])
-                        sphere.Material =
-                            Assets::Load<PhysicsMaterial>(sphereColliderComponent["Material"].as<std::string>());
+                        sphere.Material = Assets::Load<PhysicsMaterial>(
+                            Project::GetAssetDirectory() / sphereColliderComponent["Material"].as<std::string>());
                 }
 
                 auto circleRendererComponent = entity["CircleRendererComponent"];
@@ -762,8 +766,8 @@ namespace Titan
                     auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
                     bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
                     bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
-                    bc2d.Material =
-                        Assets::Load<Physics2DMaterial>(boxCollider2DComponent["Material"].as<std::string>());
+                    bc2d.Material = Assets::Load<Physics2DMaterial>(
+                        Project::GetAssetDirectory() / boxCollider2DComponent["Material"].as<std::string>());
                 }
 
                 auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
@@ -772,8 +776,8 @@ namespace Titan
                     auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
                     cc2d.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
                     cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
-                    cc2d.Material =
-                        Assets::Load<Physics2DMaterial>(circleCollider2DComponent["Material"].as<std::string>());
+                    cc2d.Material = Assets::Load<Physics2DMaterial>(
+                        Project::GetAssetDirectory() / circleCollider2DComponent["Material"].as<std::string>());
                 }
 
                 auto scriptComponent = entity["ScriptComponent"];

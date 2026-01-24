@@ -1,0 +1,5 @@
+Name: Lion
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: textures\Sponza\lion.tga
+NormalTexture: textures\Sponza\lion2_ddn.tga
+UVRepeat: [1, 1]
