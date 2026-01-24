@@ -1,6 +1,5 @@
 #include <Titan/Core/Application.h>
 #include <Titan/Core/EntryPoint.h>
-
 #include "SandboxLayer.h"
 
 namespace Titan

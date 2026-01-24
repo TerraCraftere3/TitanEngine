@@ -1,5 +1,7 @@
+[[vk::binding(0)]]
 SamplerCube cubeMap;
 
+[[vk::binding(0)]]
 cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_View;
