@@ -9,6 +9,8 @@
 
 namespace Titan
 {
+    struct SceneRendererData;
+
     struct OverlaySettings
     {
         bool enableOverlay = true;
@@ -19,26 +21,19 @@ namespace Titan
     class TI_API SceneRenderer
     {
     public:
-        static constexpr uint32_t kMaxViews = 4;
+        static Ref<SceneRenderer> Create();
 
-        static void Init();
-        static void Shutdown();
+        SceneRenderer();
+        ~SceneRenderer();
 
-        // Single-view (backward compatible, maps to view 0)
-        static void RenderSceneRuntime(Ref<Scene> scene);
-        static void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay = {});
-        static void Resize(uint32_t width, uint32_t height);
-        static Ref<Framebuffer> GetFramebuffer();
-
-        // Multi-view variants
-        static void RenderSceneRuntime(uint32_t viewIndex, Ref<Scene> scene);
-        static void RenderSceneEditor(uint32_t viewIndex, Ref<Scene> scene, EditorCamera& camera,
-                                      OverlaySettings overlay = {});
-        static void Resize(uint32_t viewIndex, uint32_t width, uint32_t height);
-        static Ref<Framebuffer> GetFramebuffer(uint32_t viewIndex);
+        void RenderSceneRuntime(Ref<Scene> scene);
+        void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay = {});
+        void Resize(uint32_t width, uint32_t height);
+        Ref<Framebuffer> GetFramebuffer();
 
     private:
-        static void SetupRenderGraph(uint32_t viewIndex);
-        static void EnsureView(uint32_t viewIndex);
+        void SetupRenderGraph();
+        void EnsureResources();
+        Scope<SceneRendererData> m_Data;
     };
 } // namespace Titan

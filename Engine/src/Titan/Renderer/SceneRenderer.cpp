@@ -13,7 +13,7 @@
 
 namespace Titan
 {
-    struct SceneViewData
+    struct SceneRendererData
     {
         Ref<RenderGraph> renderGraph;
         Ref<Framebuffer> finalFramebuffer;
@@ -34,59 +34,58 @@ namespace Titan
         Ref<Scene> currentScene;
     };
 
-    struct SceneRendererData
+    Ref<SceneRenderer> SceneRenderer::Create()
     {
-        std::array<SceneViewData, SceneRenderer::kMaxViews> views;
-    };
-
-    SceneRendererData* s_SRData = nullptr;
-
-    void SceneRenderer::Init()
-    {
-        s_SRData = new SceneRendererData();
-        // Initialize all views
-        for (uint32_t i = 0; i < kMaxViews; ++i)
-        {
-            EnsureView(i);
-        }
+        return CreateRef<SceneRenderer>();
     }
 
-    void SceneRenderer::EnsureView(uint32_t viewIndex)
+    SceneRenderer::SceneRenderer()
     {
-        TI_ASSERT(viewIndex < kMaxViews);
-        TI_CORE_INFO("Setting up Scene Renderer View {}", viewIndex);
-        auto& v = s_SRData->views[viewIndex];
+        m_Data = CreateScope<SceneRendererData>();
+        EnsureResources();
+    }
 
-        // Create final output framebuffer per view
-        if (!v.finalFramebuffer)
+    SceneRenderer::~SceneRenderer()
+    {
+        if (m_Data && m_Data->postFXs)
+            m_Data->postFXs->Shutdown();
+    }
+
+    void SceneRenderer::EnsureResources()
+    {
+        TI_CORE_INFO("Setting up Scene Renderer Instance");
+        auto& d = *m_Data;
+
+        // Create final output framebuffer
+        if (!d.finalFramebuffer)
         {
             FramebufferSpecification fbSpec;
             fbSpec.Attachments = {FramebufferTextureFormat::RGB16F, FramebufferTextureFormat::RED_INTEGER,
                                   FramebufferTextureFormat::Depth};
-            fbSpec.Width = v.viewWidth;
-            fbSpec.Height = v.viewHeight;
-            v.finalFramebuffer = Framebuffer::Create(fbSpec);
+            fbSpec.Width = d.viewWidth;
+            fbSpec.Height = d.viewHeight;
+            d.finalFramebuffer = Framebuffer::Create(fbSpec);
         }
 
-        // Post FX stack per view
-        if (!v.postFXs)
+        // Post FX stack
+        if (!d.postFXs)
         {
-            v.postFXs = CreateRef<PostProcessingStack>();
-            v.postFXs->AddEffect(CreateRef<TonemappingEffect>());
-            v.postFXs->AddEffect(CreateRef<FXAAEffect>());
+            d.postFXs = CreateRef<PostProcessingStack>();
+            d.postFXs->AddEffect(CreateRef<TonemappingEffect>());
+            d.postFXs->AddEffect(CreateRef<FXAAEffect>());
         }
 
-        // Build/update the render graph for this view
-        SetupRenderGraph(viewIndex);
+        // Build/update the render graph
+        SetupRenderGraph();
     }
 
-    void SceneRenderer::SetupRenderGraph(uint32_t viewIndex)
+    void SceneRenderer::SetupRenderGraph()
     {
-        auto& view = s_SRData->views[viewIndex];
-        if (!view.renderGraph)
-            view.renderGraph = CreateRef<RenderGraph>();
+        auto& view = *m_Data;
+        if (!m_Data->renderGraph)
+            m_Data->renderGraph = CreateRef<RenderGraph>();
 
-        RenderGraphBuilder builder(*view.renderGraph);
+        RenderGraphBuilder builder(*m_Data->renderGraph);
 
         // Define resources
         builder
@@ -96,7 +95,7 @@ namespace Titan
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // SceneDepth
                                },
-                               view.viewWidth, view.viewHeight)
+                               m_Data->viewWidth, m_Data->viewHeight)
             .CreateFramebuffer("GeometryBuffer",
                                {
                                    FramebufferTextureFormat::RGBA16F,     // Position
@@ -107,27 +106,28 @@ namespace Titan
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                    FramebufferTextureFormat::Depth        // Depth
                                },
-                               view.viewWidth, view.viewHeight)
+                               m_Data->viewWidth, m_Data->viewHeight)
             .CreateFramebuffer("PostTonemapping",
                                {
                                    FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                },
-                               view.viewWidth, view.viewHeight)
+                               m_Data->viewWidth, m_Data->viewHeight)
             .CreateFramebuffer("PostFXAA",
                                {
                                    FramebufferTextureFormat::RGB16F,      // SceneColor (HDR)
                                    FramebufferTextureFormat::RED_INTEGER, // EntityID
                                },
-                               view.viewWidth, view.viewHeight)
-            .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, view.viewWidth, view.viewHeight)
-            .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGB16F, view.viewWidth, view.viewHeight);
+                               m_Data->viewWidth, m_Data->viewHeight)
+            .CreatePersistentTexture("PreFX", FramebufferTextureFormat::RGBA8, m_Data->viewWidth, m_Data->viewHeight)
+            .CreatePersistentTexture("FinalOutput", FramebufferTextureFormat::RGB16F, m_Data->viewWidth,
+                                     m_Data->viewHeight);
 
         // Capture the view pointer so each pass uses its own camera/flags
-        SceneViewData* v = &view;
+        SceneRendererData* d = m_Data.get();
 
         builder.AddRenderPass("ClearPass", {}, {"SceneFramebuffer", "PreFX"},
-                              [v](RenderGraph& graph, const RenderPass& pass)
+                              [d](RenderGraph& graph, const RenderPass& pass)
                               {
                                   auto fb = graph.GetFramebuffer("SceneFramebuffer");
                                   if (!fb)
@@ -140,16 +140,16 @@ namespace Titan
 
         builder.AddRenderPass(
             "GeometryPass", {}, {"GeometryBuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Geometry Pass (3D)");
                 RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-                GeometryRenderer::BeginScene(v->viewProjection,
-                                             v->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
-                auto meshView = v->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                GeometryRenderer::BeginScene(d->viewProjection,
+                                             d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
+                auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                 for (auto entity : meshView)
                 {
                     auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
@@ -162,7 +162,7 @@ namespace Titan
 
         builder.AddRenderPass(
             "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "PreFX"}, {"SceneFramebuffer"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
@@ -171,7 +171,7 @@ namespace Titan
                 RenderCommand::BeginRenderPass(fb, "PBR Pass (3D)");
                 bool hasDirectionalLight = false;
                 glm::vec3 lightDirection;
-                auto dlView = v->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
+                auto dlView = d->currentScene->GetAllEntitiesWith<TransformComponent, DirectionalLightComponent>();
                 for (auto entity : dlView)
                 {
                     auto [transform, dlComp] = dlView.get<TransformComponent, DirectionalLightComponent>(entity);
@@ -182,9 +182,9 @@ namespace Titan
                 PBRSceneData data;
                 data.HasDirectionalLight = hasDirectionalLight;
                 data.LightDirection = lightDirection;
-                data.ViewPosition = v->viewPosition;
+                data.ViewPosition = d->viewPosition;
                 Ref<Cubemap> cubemap = nullptr;
-                auto skyboxView = v->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+                auto skyboxView = d->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
                 for (auto entity : skyboxView)
                 {
                     auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
@@ -198,14 +198,14 @@ namespace Titan
 
         builder.AddRenderPass(
             "SpritePass", {}, {"SceneFramebuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Sprite Pass (2D)");
-                Renderer2D::BeginScene(v->viewProjection);
-                auto spriteView = v->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
+                Renderer2D::BeginScene(d->viewProjection);
+                auto spriteView = d->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
                 for (auto entity : spriteView)
                 {
                     auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
@@ -221,14 +221,14 @@ namespace Titan
 
         builder.AddRenderPass(
             "CirclePass", {}, {"SceneFramebuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Circle Pass (2D)");
-                Renderer2D::BeginScene(v->viewProjection);
-                auto circleView = v->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
+                Renderer2D::BeginScene(d->viewProjection);
+                auto circleView = d->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
                 for (auto entity : circleView)
                 {
                     auto [transform, circle] = circleView.get<TransformComponent, CircleRendererComponent>(entity);
@@ -241,13 +241,13 @@ namespace Titan
 
         builder.AddRenderPass(
             "SkyboxPass", {}, {"SceneFramebuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Skybox Pass (3D)");
-                auto skyboxView = v->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
+                auto skyboxView = d->currentScene->GetAllEntitiesWith<TransformComponent, SkyboxComponent>();
                 for (auto entity : skyboxView)
                 {
                     auto [transform, sb] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
@@ -257,13 +257,13 @@ namespace Titan
                         {
                             Ref<Cubemap> cubemap = sb.hdriSettings.Skybox;
                             if (cubemap)
-                                SkyboxRenderer::Render(cubemap, v->view, v->projection);
+                                SkyboxRenderer::Render(cubemap, d->view, d->projection);
                             break;
                         }
                         case SkyboxComponent::Mode::Colorramp:
                         {
                             SkyboxRenderer::Render(sb.colorrampSettings.TopColor, sb.colorrampSettings.BottomColor,
-                                                   v->view, v->projection);
+                                                   d->view, d->projection);
                             break;
                         }
                     }
@@ -274,17 +274,17 @@ namespace Titan
 
         builder.AddRenderPass(
             "OverlayPass", {}, {"SceneFramebuffer", "PreFX"},
-            [v](RenderGraph& graph, const RenderPass& pass)
+            [d](RenderGraph& graph, const RenderPass& pass)
             {
-                if (!v->drawOverlay)
+                if (!d->drawOverlay)
                     return;
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Overlay Pass (2D + 3D)");
-                Renderer2D::BeginScene(v->viewProjection);
+                Renderer2D::BeginScene(d->viewProjection);
                 auto boxColliderView =
-                    v->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+                    d->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
                 for (auto entity : boxColliderView)
                 {
                     auto [transform, collider] =
@@ -296,7 +296,7 @@ namespace Titan
                     Renderer2D::DrawRect(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0));
                 }
                 auto circleColliderView =
-                    v->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+                    d->currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
                 for (auto entity : circleColliderView)
                 {
                     auto [transform, collider] =
@@ -309,7 +309,7 @@ namespace Titan
                     Renderer2D::DrawCircle(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0f));
                 }
                 auto cubeColliderView =
-                    v->currentScene->GetAllEntitiesWith<TransformComponent, CubeColliderComponent>();
+                    d->currentScene->GetAllEntitiesWith<TransformComponent, CubeColliderComponent>();
                 for (auto entity : cubeColliderView)
                 {
                     auto [transform, collider] =
@@ -320,13 +320,13 @@ namespace Titan
                     glm::mat4 finalTransform = world * local;
                     Renderer2D::DrawCube(finalTransform, glm::vec4(0.0f, 0.9f, 0.0f, 1.0f));
                 }
-                auto cameraView = v->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
+                auto cameraView = d->currentScene->GetAllEntitiesWith<TransformComponent, CameraComponent>();
                 for (auto entity : cameraView)
                 {
                     auto [transform, cc] = cameraView.get<TransformComponent, CameraComponent>(entity);
                     Renderer2D::DrawCamera(transform.GetTransform(), (uint32_t)entity);
                 }
-                auto lookAtView = v->currentScene->GetAllEntitiesWith<TransformComponent, LookAtComponent>();
+                auto lookAtView = d->currentScene->GetAllEntitiesWith<TransformComponent, LookAtComponent>();
                 for (auto e : lookAtView)
                 {
                     auto& transform = lookAtView.get<TransformComponent>(e);
@@ -334,9 +334,9 @@ namespace Titan
                     glm::mat4 gizmoTransformation = glm::translate(glm::mat4(1.0f), lookAt.Position);
                     Renderer2D::DrawMarker(gizmoTransformation);
                 }
-                if (v->drawAABBOVerlay)
+                if (d->drawAABBOVerlay)
                 {
-                    auto meshView = v->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                    auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                     for (auto entity : meshView)
                     {
                         auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
@@ -360,7 +360,7 @@ namespace Titan
             });
 
         builder.AddRenderPass("Tonemapping", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"PostTonemapping"},
-                              [v](RenderGraph& graph, const RenderPass& pass)
+                              [d](RenderGraph& graph, const RenderPass& pass)
                               {
                                   auto inputFB = graph.GetFramebuffer("SceneFramebuffer");
                                   auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
@@ -369,19 +369,19 @@ namespace Titan
                                       return;
 
                                   PostFXComponent tonemappingFX;
-                                  auto tonemappingView = v->currentScene->GetAllEntitiesWith<PostFXComponent>();
+                                  auto tonemappingView = d->currentScene->GetAllEntitiesWith<PostFXComponent>();
                                   for (auto entity : tonemappingView)
                                   {
                                       tonemappingFX = tonemappingView.get<PostFXComponent>(entity);
                                       break;
                                   }
                                   PostFXInput input{graph,           pass,         inputFB, outputFB, gbuffer,
-                                                    v->currentScene, tonemappingFX};
-                                  v->postFXs->GetEffect<TonemappingEffect>()->Render(input);
+                                                    d->currentScene, tonemappingFX};
+                                  d->postFXs->GetEffect<TonemappingEffect>()->Render(input);
                               });
 
         builder.AddRenderPass("FXAA", {"SceneFramebuffer", "GeometryBuffer", "PostTonemapping"}, {"PostFXAA"},
-                              [v](RenderGraph& graph, const RenderPass& pass)
+                              [d](RenderGraph& graph, const RenderPass& pass)
                               {
                                   auto inputFB = graph.GetFramebuffer("PostTonemapping");
                                   auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
@@ -390,50 +390,26 @@ namespace Titan
                                       return;
 
                                   PostFXComponent fxaaFX;
-                                  auto fxaaView = v->currentScene->GetAllEntitiesWith<PostFXComponent>();
+                                  auto fxaaView = d->currentScene->GetAllEntitiesWith<PostFXComponent>();
                                   for (auto entity : fxaaView)
                                   {
                                       fxaaFX = fxaaView.get<PostFXComponent>(entity);
                                       break;
                                   }
-                                  PostFXInput input{graph, pass, inputFB, outputFB, gbuffer, v->currentScene, fxaaFX};
-                                  v->postFXs->GetEffect<FXAAEffect>()->Render(input);
+                                  PostFXInput input{graph, pass, inputFB, outputFB, gbuffer, d->currentScene, fxaaFX};
+                                  d->postFXs->GetEffect<FXAAEffect>()->Render(input);
                               });
 
         // Build the graph
         builder.Build();
 
 #if TI_BUILD_DEBUG
-        view.renderGraph->ExportToDOT("scene-graph.generated." + std::to_string(viewIndex) + ".dot");
+        m_Data->renderGraph->ExportToDOT("scene-graph.generated.dot");
 #endif
-    }
-
-    void SceneRenderer::Shutdown()
-    {
-        if (s_SRData)
-        {
-            for (uint32_t i = 0; i < kMaxViews; ++i)
-            {
-                TI_CORE_INFO("Shutting down Scene Renderer View {}", i);
-                auto& v = s_SRData->views[i];
-                if (v.postFXs)
-                    v.postFXs->Shutdown();
-            }
-            delete s_SRData;
-            s_SRData = nullptr;
-        }
     }
 
     void SceneRenderer::RenderSceneRuntime(Ref<Scene> scene)
     {
-        RenderSceneRuntime(0, scene);
-    }
-
-    void SceneRenderer::RenderSceneRuntime(uint32_t viewIndex, Ref<Scene> scene)
-    {
-        TI_ASSERT(viewIndex < kMaxViews);
-        auto& v = s_SRData->views[viewIndex];
-
         Camera* mainCamera = nullptr;
         glm::mat4 cameraTransform;
 
@@ -452,65 +428,50 @@ namespace Titan
 
         if (mainCamera)
         {
-            v.view = glm::inverse(cameraTransform);
-            v.projection = mainCamera->GetProjection();
-            v.viewProjection = mainCamera->GetProjection() * glm::inverse(cameraTransform);
-            v.viewPosition = glm::vec3(cameraTransform[3]);
-            v.drawOverlay = false;
-            v.currentScene = scene;
+            m_Data->view = glm::inverse(cameraTransform);
+            m_Data->projection = mainCamera->GetProjection();
+            m_Data->viewProjection = mainCamera->GetProjection() * glm::inverse(cameraTransform);
+            m_Data->viewPosition = glm::vec3(cameraTransform[3]);
+            m_Data->drawOverlay = false;
+            m_Data->currentScene = scene;
 
-            if (v.renderGraph)
-                v.renderGraph->Execute();
+            if (m_Data->renderGraph)
+                m_Data->renderGraph->Execute();
         }
     }
 
     void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay)
     {
-        RenderSceneEditor(0, scene, camera, overlay);
-    }
+        m_Data->view = camera.GetViewMatrix();
+        m_Data->projection = camera.GetProjectionMatrix();
+        m_Data->viewProjection = camera.GetViewProjection();
+        m_Data->viewPosition = camera.GetPosition();
+        m_Data->drawOverlay = overlay.enableOverlay;
+        m_Data->drawAABBOVerlay = overlay.enableBoundingBoxRender;
+        m_Data->drawWireframe = overlay.enableWireframe;
+        m_Data->currentScene = scene;
 
-    void SceneRenderer::RenderSceneEditor(uint32_t viewIndex, Ref<Scene> scene, EditorCamera& camera,
-                                          OverlaySettings overlay)
-    {
-        TI_ASSERT(viewIndex < kMaxViews);
-        auto& v = s_SRData->views[viewIndex];
-        v.view = camera.GetViewMatrix();
-        v.projection = camera.GetProjectionMatrix();
-        v.viewProjection = camera.GetViewProjection();
-        v.viewPosition = camera.GetPosition();
-        v.drawOverlay = overlay.enableOverlay;
-        v.drawAABBOVerlay = overlay.enableBoundingBoxRender;
-        v.drawWireframe = overlay.enableWireframe;
-        v.currentScene = scene;
-
-        if (v.renderGraph)
-            v.renderGraph->Execute();
+        if (m_Data->renderGraph)
+            m_Data->renderGraph->Execute();
     }
 
     void SceneRenderer::Resize(uint32_t width, uint32_t height)
     {
-        Resize(0, width, height);
-    }
-
-    void SceneRenderer::Resize(uint32_t viewIndex, uint32_t width, uint32_t height)
-    {
-        TI_ASSERT(viewIndex < kMaxViews);
         if (width == 0 || height == 0)
             return;
 
-        auto& v = s_SRData->views[viewIndex];
-        if (v.viewWidth == width && v.viewHeight == height)
+        if (m_Data->viewWidth == width && m_Data->viewHeight == height)
             return;
 
-        v.viewWidth = width;
-        v.viewHeight = height;
+        m_Data->viewWidth = width;
+        m_Data->viewHeight = height;
 
-        if (v.finalFramebuffer)
-            v.finalFramebuffer->Resize(width, height);
+        if (m_Data->finalFramebuffer)
+            m_Data->finalFramebuffer->Resize(width, height);
 
-        if (v.renderGraph)
+        if (m_Data->renderGraph)
         {
-            for (auto& [name, fb] : v.renderGraph->GetFramebuffers())
+            for (auto& [name, fb] : m_Data->renderGraph->GetFramebuffers())
             {
                 if (fb)
                     fb->Resize(width, height);
@@ -520,15 +481,9 @@ namespace Titan
 
     Ref<Framebuffer> SceneRenderer::GetFramebuffer()
     {
-        return GetFramebuffer(0);
-    }
-
-    Ref<Framebuffer> SceneRenderer::GetFramebuffer(uint32_t viewIndex)
-    {
-        TI_ASSERT(viewIndex < kMaxViews);
-        auto& v = s_SRData->views[viewIndex];
-        auto finalFB = v.renderGraph ? v.renderGraph->GetFramebuffer("PostFXAA") : nullptr;
-        return finalFB ? finalFB : v.finalFramebuffer;
+        auto& d = *m_Data;
+        auto finalFB = d.renderGraph ? d.renderGraph->GetFramebuffer("PostFXAA") : nullptr;
+        return finalFB ? finalFB : d.finalFramebuffer;
     }
 
 } // namespace Titan

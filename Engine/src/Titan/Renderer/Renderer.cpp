@@ -5,7 +5,6 @@
 #include "PBRRenderer.h"
 #include "PipelineState.h"
 #include "Renderer2D.h"
-#include "SceneRenderer.h"
 #include "SkyboxRenderer.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
@@ -22,14 +21,12 @@ namespace Titan
         PBRRenderer::Init();
         FullscreenRenderer::Init();
         SkyboxRenderer::Init();
-        SceneRenderer::Init();
         Blit::Init();
     }
 
     void Renderer::Shutdown()
     {
         Blit::Shutdown();
-        SceneRenderer::Shutdown();
         SkyboxRenderer::Shutdown();
         PBRRenderer::Shutdown();
         GeometryRenderer::Shutdown();

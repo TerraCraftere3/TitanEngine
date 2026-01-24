@@ -47,6 +47,7 @@ namespace Titan
         for (int i = 0; i < 4; ++i)
         {
             m_EditorCameras[i] = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+            m_SceneRenderers[i] = SceneRenderer::Create();
         }
         // Give each view a slight different starting angle
         m_EditorCameras[0].MouseRotate(glm::vec2(-0.5f, 0.5f));
@@ -104,13 +105,13 @@ namespace Titan
                     if (m_EditorProperties.EnableMultiViewports)
                     {
                         for (uint32_t i = 0; i < 4; ++i)
-                            SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
-                                                             m_EditorProperties.Overlays[i]);
+                            m_SceneRenderers[i]->RenderSceneEditor(m_ActiveScene, m_EditorCameras[i],
+                                                                   m_EditorProperties.Overlays[i]);
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0],
-                                                         m_EditorProperties.Overlays[0]);
+                        m_SceneRenderers[0]->RenderSceneEditor(m_ActiveScene, m_EditorCameras[0],
+                                                               m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;
@@ -133,13 +134,13 @@ namespace Titan
                     if (m_EditorProperties.EnableMultiViewports)
                     {
                         for (uint32_t i = 0; i < 4; ++i)
-                            SceneRenderer::RenderSceneEditor(i, m_ActiveScene, m_EditorCameras[i],
-                                                             m_EditorProperties.Overlays[i]);
+                            m_SceneRenderers[i]->RenderSceneEditor(m_ActiveScene, m_EditorCameras[i],
+                                                                   m_EditorProperties.Overlays[i]);
                     }
                     else
                     {
-                        SceneRenderer::RenderSceneEditor(0, m_ActiveScene, m_EditorCameras[0],
-                                                         m_EditorProperties.Overlays[0]);
+                        m_SceneRenderers[0]->RenderSceneEditor(m_ActiveScene, m_EditorCameras[0],
+                                                               m_EditorProperties.Overlays[0]);
                     }
                 }
                 break;
@@ -148,7 +149,7 @@ namespace Titan
             {
                 m_ActiveScene->OnUpdateRuntime(ts);
                 if (m_EnableRender)
-                    SceneRenderer::RenderSceneRuntime(m_ActiveScene);
+                    m_SceneRenderers[0]->RenderSceneRuntime(m_ActiveScene);
                 break;
             }
         }
@@ -475,14 +476,14 @@ namespace Titan
 
                 for (uint32_t i = 0; i < 4; ++i)
                 {
-                    SceneRenderer::Resize(i, cellW, cellH);
+                    m_SceneRenderers[i]->Resize(cellW, cellH);
                     m_EditorCameras[i].SetViewportSize((float)cellW, (float)cellH);
                 }
             }
             else
             {
                 // Single viewport - use full size for view 0
-                SceneRenderer::Resize(0, (uint32_t)newSize.x, (uint32_t)newSize.y);
+                m_SceneRenderers[0]->Resize((uint32_t)newSize.x, (uint32_t)newSize.y);
                 m_EditorCameras[0].SetViewportSize(newSize.x, newSize.y);
             }
 
@@ -523,6 +524,12 @@ namespace Titan
 
         ImGui::SameLine();
         ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
+        ImGui::SameLine();
+        ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[0].enableOverlay);
+        ImGui::SameLine();
+        ImGui::Checkbox("AABB", &m_EditorProperties.Overlays[0].enableBoundingBoxRender);
+        ImGui::SameLine();
+        ImGui::Checkbox("Wireframe", &m_EditorProperties.Overlays[0].enableWireframe);
 
         ImGui::PopStyleVar(2);
         ImGui::End();
@@ -552,7 +559,7 @@ namespace Titan
                     m_SubViewportImageSize[idx] = size;
 
                     ImGui::SetCursorScreenPos(pos);
-                    auto fb = SceneRenderer::GetFramebuffer((uint32_t)idx);
+                    auto fb = m_SceneRenderers[idx]->GetFramebuffer();
                     if (fb)
                     {
                         ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), size, ImVec2(0, 1),
@@ -593,7 +600,7 @@ namespace Titan
             m_SubViewportImagePos[0] = m_ViewportImagePos;
             m_SubViewportImageSize[0] = m_ViewportImageSize;
 
-            auto fb = SceneRenderer::GetFramebuffer(0);
+            auto fb = m_SceneRenderers[0]->GetFramebuffer();
             if (fb)
             {
                 ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), m_ViewportImageSize, ImVec2(0, 1),
@@ -774,7 +781,7 @@ namespace Titan
                 if (mouseX >= 0 && mouseY >= 0 && mouseX < static_cast<int>(m_SubViewportImageSize[clickedViewIdx].x) &&
                     mouseY < static_cast<int>(m_SubViewportImageSize[clickedViewIdx].y))
                 {
-                    int pixel = SceneRenderer::GetFramebuffer(clickedViewIdx)->ReadPixel(1, mouseX, mouseY);
+                    int pixel = m_SceneRenderers[clickedViewIdx]->GetFramebuffer()->ReadPixel(1, mouseX, mouseY);
                     auto entity = Entity(static_cast<entt::entity>(pixel), m_ActiveScene.get());
                     m_SceneHierarchyPanel->SetSelectedEntity(entity);
                 }

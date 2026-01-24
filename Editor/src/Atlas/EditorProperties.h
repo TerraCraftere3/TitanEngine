@@ -22,7 +22,7 @@ namespace Titan
 
         bool EnableMultiViewports = false;
 
-        // Overlay settings for each viewport (4 viewports)
+        // Overlay settings per viewport
         OverlaySettings Overlays[4];
 
         UITheme Theme = UITheme::Dark;

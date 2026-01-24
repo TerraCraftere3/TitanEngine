@@ -100,6 +100,7 @@ namespace Titan
         Ref<Scene> m_EditorScene;
         std::filesystem::path m_EditorScenePath;
         EditorCamera m_EditorCameras[4];
+        Ref<SceneRenderer> m_SceneRenderers[4];
 
         // Panels
         Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
