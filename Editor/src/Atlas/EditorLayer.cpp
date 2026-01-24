@@ -60,6 +60,8 @@ namespace Titan
         Application::GetInstance()->UpdateTheme(m_EditorProperties.Theme);
 
         Thumbnails::Init();
+
+        OpenScene(Project::GetAssetDirectory() / Project::GetActive()->GetConfig().StartScene);
     }
 
     void EditorLayer::OnDetach()

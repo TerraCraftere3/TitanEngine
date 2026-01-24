@@ -10,8 +10,8 @@ namespace Titan
 {
     enum class BlitMode
     {
-        ColorOnly = 0,         // Copy only the color attachment
-        ColorAndEntity = 1     // Copy color + entity ID attachments
+        ColorOnly = 0,     // Copy only the color attachment
+        ColorAndEntity = 1 // Copy color + entity ID attachments
     };
 
     class TI_API Blit
@@ -20,7 +20,8 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void Execute(const Ref<Framebuffer>& source, const Ref<Framebuffer>& destination, BlitMode mode = BlitMode::ColorOnly);
+        static void Execute(const Ref<Framebuffer>& source, const Ref<Framebuffer>& destination,
+                            BlitMode mode = BlitMode::ColorOnly);
 
     private:
         struct BlitData
