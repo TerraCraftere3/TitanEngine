@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkdocs=globalThis.webpackChunkdocs||[]).push([[472],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Converting the Renderer & Creating the Project System","permalink":"/TitanEngine/blog/converting-the-renderer","unlisted":false,"date":"2025-01-24T00:00:00.000Z"}]}')}}]);

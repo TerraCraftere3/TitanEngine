@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://terracraftere3.github.io/TitanEngine/blog</id>
+    <title>Titan Engine Blog</title>
+    <updated>2025-01-24T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://terracraftere3.github.io/TitanEngine/blog"/>
+    <subtitle>Titan Engine Blog</subtitle>
+    <icon>https://terracraftere3.github.io/TitanEngine/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Converting the Renderer & Creating the Project System]]></title>
+        <id>https://terracraftere3.github.io/TitanEngine/blog/converting-the-renderer</id>
+        <link href="https://terracraftere3.github.io/TitanEngine/blog/converting-the-renderer"/>
+        <updated>2025-01-24T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Yesterday, i finally finished converting the renderer to something i can use across multiple apis (e.g. vulkan, dx11, opengl). And started to work on the early Project System]]></summary>
+        <content type="html"><![CDATA[<p>Yesterday, i finally finished converting the renderer to something i can use across multiple apis <em>(e.g. vulkan, dx11, opengl)</em>. And started to work on the early Project System</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="renderer">Renderer<a href="https://terracraftere3.github.io/TitanEngine/blog/converting-the-renderer#renderer" class="hash-link" aria-label="Direct link to Renderer" title="Direct link to Renderer" translate="no">​</a></h2>
+<p>I started by creating a <code>PipelineState</code> class that contains data like Cull Mode, Depth Function, Vertex Array, Buffers, Textures, etc. and then created an OpenGL specific implementation. The First Class that i changed was Geometry Renderer, since it didnt use any other system (like the Fullscreen Renderer). That was the first test to see if the Pipeline State worked.</p>
+<p>After a few bugs, it "seemed" to work (with a few issues). Then came the Problems, i needed to convert every system at once. I did that by keeping a lot of legacy system (<em>Bind()</em> and <em>Unbind()</em> Methods, etc.) while converting stuff like the PBR Renderer and the Post Effects.</p>
+<p>While working, i stumbled upon some other stuff that needed fixing like the Scene Renderer that used the same buffer to write and read (which i didnt even know was bad). Anyways, after the refactor there were still a few issues like binding textures to the same unit as cubemaps.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="project">Project<a href="https://terracraftere3.github.io/TitanEngine/blog/converting-the-renderer#project" class="hash-link" aria-label="Direct link to Project" title="Direct link to Project" translate="no">​</a></h2>
+<p>The Next Thing i wanted to do, was create a Project System (for now a simple one, like in <a href="https://github.com/TheCherno/Haze" target="_blank" rel="noopener noreferrer" class="">Hazel</a>), because i didnt want to forever use the Workspace to modify and create projects and / or copy the binaries everywhere.</p>
+<p>The First Thing i did, was copy all of the Assets to <code>Example/assets</code> and create a Project File in <code>Example</code>. Afterwards i implemented <code>Project</code> and <code>ProjectSerializer</code>. Then i needed to implement the custom Asset Path in <code>SceneSerializer</code> and the Editor.</p>
+<p>That nearly worked, but it still needed fixing. I implemented Internal Paths <em>(e.g. <code>models/foliage/tree.fbx</code>)</em> to correctly save paths in Scenes and Materials. After that it was implemented to the point it is <a href="https://github.com/TerraCraftere3/TitanEngine/commit/09967acd5d4df4dd9ace77263e1c17b58743ffc3" target="_blank" rel="noopener noreferrer" class="">right now</a></p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="tldr">TL;DR<a href="https://terracraftere3.github.io/TitanEngine/blog/converting-the-renderer#tldr" class="hash-link" aria-label="Direct link to TL;DR" title="Direct link to TL;DR" translate="no">​</a></h2>
+<p>I was able to fully refactor the renderer to be cross platform expandable and created a project system</p>]]></content>
+        <author>
+            <name>Elias</name>
+            <uri>https://github.com/TerraCraftere3</uri>
+        </author>
+        <category label="Renderer" term="Renderer"/>
+        <category label="Backends" term="Backends"/>
+        <category label="OpenGL" term="OpenGL"/>
+    </entry>
+</feed>
