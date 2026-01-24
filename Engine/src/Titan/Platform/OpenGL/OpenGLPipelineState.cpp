@@ -21,8 +21,13 @@ namespace Titan
 
     static uint32_t g_CurrentShader = 0;
     static uint32_t g_CurrentVAO = 0;
-    static uint32_t g_CurrentTextures[s_MaxBindingSlots] = {0};
-    static uint32_t g_CurrentCubemaps[s_MaxBindingSlots] = {0};
+    struct BoundTextureUnit
+    {
+        GLenum Target = 0;
+        uint32_t ID = 0;
+    };
+
+    static BoundTextureUnit g_CurrentTextureUnits[s_MaxBindingSlots] = {};
     static uint32_t g_CurrentUBOs[s_MaxBindingSlots] = {0};
     static uint32_t g_CurrentSSBOs[s_MaxBindingSlots] = {0};
     static GLenum g_CurrentPolygonMode = 0;
@@ -41,8 +46,11 @@ namespace Titan
     {
         g_CurrentShader = 0;
         g_CurrentVAO = 0;
-        std::fill(std::begin(g_CurrentTextures), std::end(g_CurrentTextures), 0);
-        std::fill(std::begin(g_CurrentCubemaps), std::end(g_CurrentCubemaps), 0);
+        for (auto& unit : g_CurrentTextureUnits)
+        {
+            unit.Target = 0;
+            unit.ID = 0;
+        }
         std::fill(std::begin(g_CurrentUBOs), std::end(g_CurrentUBOs), 0);
         std::fill(std::begin(g_CurrentSSBOs), std::end(g_CurrentSSBOs), 0);
         g_CurrentPolygonMode = 0;
@@ -124,11 +132,13 @@ namespace Titan
 
             const auto texture = std::static_pointer_cast<OpenGLTexture2D>(m_Textures[i].first);
             const uint32_t rendererID = texture->GetRendererID();
-            if (g_CurrentTextures[slot] != rendererID)
+            auto& unit = g_CurrentTextureUnits[slot];
+            if (unit.ID != rendererID || unit.Target != GL_TEXTURE_2D)
             {
                 glActiveTexture(GL_TEXTURE0 + slot);
                 glBindTexture(GL_TEXTURE_2D, rendererID);
-                g_CurrentTextures[slot] = rendererID;
+                unit.Target = GL_TEXTURE_2D;
+                unit.ID = rendererID;
             }
         }
 
@@ -140,11 +150,13 @@ namespace Titan
 
             const auto cubemap = std::static_pointer_cast<OpenGLCubemap>(m_Cubemaps[i].first);
             const uint32_t rendererID = cubemap->GetRendererID();
-            if (g_CurrentCubemaps[slot] != rendererID)
+            auto& unit = g_CurrentTextureUnits[slot];
+            if (unit.ID != rendererID || unit.Target != GL_TEXTURE_CUBE_MAP)
             {
                 glActiveTexture(GL_TEXTURE0 + slot);
                 glBindTexture(GL_TEXTURE_CUBE_MAP, rendererID);
-                g_CurrentCubemaps[slot] = rendererID;
+                unit.Target = GL_TEXTURE_CUBE_MAP;
+                unit.ID = rendererID;
             }
         }
 

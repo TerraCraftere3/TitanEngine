@@ -1,15 +1,29 @@
-#include <Titan.h>
+#include <Titan/Core/Application.h>
 #include <Titan/Core/EntryPoint.h>
-#include "Sandbox2D.h"
+#include "SandboxLayer.h"
 
-class Sandbox : public Titan::Application
+namespace Titan
 {
-public:
-    Sandbox() : Application("Sandbox App") { PushLayer(new Sandbox2D()); }
-    ~Sandbox() {}
-};
+    class SandboxApp : public Titan::Application
+    {
+    public:
+        SandboxApp(const ApplicationSpecification& spec) : Application(spec)
+        {
+            PushLayer(new SandboxLayer());
+            Application::GetInstance()->GetWindow().Maximize();
+        }
+        ~SandboxApp() {}
+    };
+} // namespace Titan
 
-Titan::Application* Titan::CreateApplication()
+Titan::Application* Titan::CreateApplication(ApplicationCommandLineArgs args)
 {
-    return new Sandbox();
+    ApplicationSpecification spec;
+    spec.Name = "Sandbox";
+    spec.WindowProperties = WindowProps("Sandbox");
+    spec.CommandLineArgs = args;
+    spec.Theme = UITheme::Dark;
+    spec.DisableImGui = true;
+
+    return new Titan::SandboxApp(spec);
 }

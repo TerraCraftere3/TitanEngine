@@ -30,6 +30,7 @@ namespace Titan
         std::string Name = "Titan Application";
         WindowProps WindowProperties;
         UITheme Theme = UITheme::Dark;
+        bool DisableImGui = false;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
@@ -90,6 +91,7 @@ namespace Titan
         Scope<Window> m_Window;
         bool m_Running = true;
         bool m_Minimized = false;
+        bool m_ImGuiEnabled = true;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
         float m_LastFrameTime = 0.0f;
