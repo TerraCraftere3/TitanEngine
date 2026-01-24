@@ -52,8 +52,8 @@ Entities:
     MeshRendererComponent:
       Mesh: models\DamagedHelmet.gltf
       Materials:
-        - models\Materials\DamagedHelmet_Mat0.mat
-        - models\Materials\DamagedHelmet_Mat1.mat
+        - materials\Helmet_01.mat
+        - materials\Helmet_02.mat
     ScriptComponent:
       ClassName: Sandbox.Rotation
       ScriptFields:

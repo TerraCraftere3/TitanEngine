@@ -322,7 +322,7 @@ namespace Titan
                 mat->Save();
 
                 // Save just the path in the scene file
-                out << materialFilePath.string();
+                out << mat->GetInternalPath();
                 matIndex++;
             }
             out << YAML::EndSeq; // Materials
