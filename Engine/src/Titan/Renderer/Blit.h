@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Framebuffer.h"
-#include "PipelineState.h"
-#include "Shader.h"
+#include "RHI/Framebuffer.h"
+#include "RHI/PipelineState.h"
+#include "RHI/Shader.h"
+#include "RHI/UniformBuffer.h"
 #include "Titan/PCH.h"
-#include "UniformBuffer.h"
 
 namespace Titan
 {

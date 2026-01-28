@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
-#include "Titan/Renderer/Buffer.h"
-#include "Titan/Renderer/PipelineState.h"
+#include "Titan/Renderer/RHI/Buffer.h"
+#include "Titan/Renderer/RHI/PipelineState.h"
 
 namespace Titan
 {

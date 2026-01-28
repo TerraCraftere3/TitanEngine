@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Camera.h"
-#include "RenderCommand.h"
-#include "Shader.h"
+#include "RHI/RendererAPI.h"
 #include "Titan/PCH.h"
-#include "VertexArray.h"
 
 namespace Titan
 {
@@ -17,14 +14,6 @@ namespace Titan
         static void Shutdown();
 
         inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-
-    private:
-        struct SceneData
-        {
-            glm::mat4 ViewProjMatrix;
-        };
-
-        static Scope<SceneData> s_SceneData;
     };
 
 } // namespace Titan

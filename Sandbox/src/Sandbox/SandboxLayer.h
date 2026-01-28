@@ -1,6 +1,6 @@
 #pragma once
 #include <Titan/Core/Layer.h>
-#include <Titan/Renderer/PipelineState.h>
+#include <Titan/Renderer/RHI/PipelineState.h>
 #include <Titan/Renderer/SceneRenderer.h>
 
 namespace Titan

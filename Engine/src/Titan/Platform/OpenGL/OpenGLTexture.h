@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Titan/Renderer/Texture.h"
+#include "Titan/Renderer/RHI/Texture.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY

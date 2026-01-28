@@ -1,19 +1,19 @@
 #pragma once
 
 #include <vector>
-#include "Buffer.h"
-#include "Cubemap.h"
-#include "Framebuffer.h"
+#include "RHI/Buffer.h"
+#include "RHI/Cubemap.h"
+#include "RHI/Framebuffer.h"
+#include "RHI/Shader.h"
+#include "RHI/Texture.h"
+#include "RHI/UniformBuffer.h"
+#include "RHI/VertexArray.h"
 #include "RenderCommand.h"
 #include "RenderGraph.h"
-#include "Shader.h"
-#include "Texture.h"
 #include "Titan/PCH.h"
 #include "Titan/Scene/Assets.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
-#include "UniformBuffer.h"
-#include "VertexArray.h"
 
 namespace Titan
 {

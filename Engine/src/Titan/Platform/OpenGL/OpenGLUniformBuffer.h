@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Titan/Renderer/UniformBuffer.h"
+#include "Titan/Renderer/RHI/UniformBuffer.h"
 
 namespace Titan
 {

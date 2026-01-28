@@ -1,13 +1,13 @@
 #include "PBRRenderer.h"
-#include "Buffer.h"
 #include "FullscreenRenderer.h"
-#include "PipelineState.h"
+#include "RHI/Buffer.h"
+#include "RHI/PipelineState.h"
+#include "RHI/Shader.h"
+#include "RHI/UniformBuffer.h"
 #include "RenderCommand.h"
-#include "Shader.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
-#include "UniformBuffer.h"
 
 namespace Titan
 {

@@ -1,7 +1,7 @@
 #include "FullscreenRenderer.h"
-#include "Buffer.h"
-#include "PipelineState.h"
-#include "Shader.h"
+#include "RHI/Buffer.h"
+#include "RHI/PipelineState.h"
+#include "RHI/Shader.h"
 #include "Titan/PCH.h"
 
 namespace Titan

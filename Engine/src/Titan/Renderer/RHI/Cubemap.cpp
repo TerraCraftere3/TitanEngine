@@ -1,6 +1,6 @@
 #include "Cubemap.h"
-#include "Renderer.h"
 #include "Titan/Platform/OpenGL/OpenGLCubemap.h"
+#include "Titan/Renderer/Renderer.h"
 
 namespace Titan
 {

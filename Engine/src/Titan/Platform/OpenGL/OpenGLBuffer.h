@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <string>
-#include "Titan/Renderer/Buffer.h"
+#include "Titan/Renderer/RHI/Buffer.h"
 
 namespace Titan
 {

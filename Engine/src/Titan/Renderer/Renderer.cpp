@@ -1,17 +1,16 @@
 #include "Renderer.h"
-#include "Blit.h"
-#include "FullscreenRenderer.h"
-#include "GeometryRenderer.h"
-#include "PBRRenderer.h"
-#include "PipelineState.h"
-#include "Renderer2D.h"
-#include "SkyboxRenderer.h"
+#include "RHI/PipelineState.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
+#include "Titan/Renderer/Blit.h"
+#include "Titan/Renderer/FullscreenRenderer.h"
+#include "Titan/Renderer/GeometryRenderer.h"
+#include "Titan/Renderer/PBRRenderer.h"
+#include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/SkyboxRenderer.h"
 
 namespace Titan
 {
-    Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
 
     void Renderer::Init()
     {

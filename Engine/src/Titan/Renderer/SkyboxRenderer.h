@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cubemap.h"
+#include "RHI/Cubemap.h"
 #include "Titan/PCH.h"
 
 namespace Titan

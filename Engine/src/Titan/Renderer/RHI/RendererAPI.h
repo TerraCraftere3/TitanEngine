@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Framebuffer.h"
 #include "Titan/PCH.h"
-#include "Titan/Renderer/Framebuffer.h"
 
 namespace Titan
 {

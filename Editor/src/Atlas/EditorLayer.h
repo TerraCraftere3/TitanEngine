@@ -4,10 +4,10 @@
 #include <Titan/Events/Event.h>
 #include <Titan/Events/KeyEvent.h>
 #include <Titan/Events/MouseEvent.h>
-#include <Titan/Renderer/Framebuffer.h>
 #include <Titan/Renderer/Mesh.h>
+#include <Titan/Renderer/RHI/Framebuffer.h>
+#include <Titan/Renderer/RHI/Texture.h>
 #include <Titan/Renderer/SceneRenderer.h>
-#include <Titan/Renderer/Texture.h>
 #include <Titan/Scene/Scene.h>
 #include "EditorProperties.h"
 

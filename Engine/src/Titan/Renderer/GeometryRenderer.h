@@ -4,8 +4,8 @@
 #include "EditorCamera.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "PipelineState.h"
-#include "Texture.h"
+#include "RHI/PipelineState.h"
+#include "RHI/Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan

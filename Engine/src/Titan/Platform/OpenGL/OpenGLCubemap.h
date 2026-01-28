@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Titan/Renderer/Cubemap.h"
+#include "Titan/Renderer/RHI/Cubemap.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY

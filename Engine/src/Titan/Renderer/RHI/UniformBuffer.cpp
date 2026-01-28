@@ -1,6 +1,5 @@
 #include "UniformBuffer.h"
 #include "Titan/PCH.h"
-
 #include "Titan/Platform/OpenGL/OpenGLUniformBuffer.h"
 #include "Titan/Renderer/Renderer.h"
 

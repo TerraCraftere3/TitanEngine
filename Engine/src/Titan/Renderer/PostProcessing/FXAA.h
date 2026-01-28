@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Titan/PCH.h"
-#include "Titan/Renderer/PipelineState.h"
 #include "Titan/Renderer/PostProcessing.h"
+#include "Titan/Renderer/RHI/PipelineState.h"
 
 namespace Titan
 {

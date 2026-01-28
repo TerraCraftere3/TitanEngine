@@ -7,13 +7,12 @@
 #include "Titan/Platform/OpenGL/OpenGLUniformBuffer.h"
 #include "Titan/Platform/OpenGL/OpenGLVertexArray.h"
 
-#include "Titan/Renderer/Buffer.h"
-#include "Titan/Renderer/Cubemap.h"
-#include "Titan/Renderer/Texture.h"
-#include "Titan/Renderer/UniformBuffer.h"
-#include "Titan/Renderer/VertexArray.h"
-
 #include <algorithm>
+#include "Titan/Renderer/RHI/Buffer.h"
+#include "Titan/Renderer/RHI/Cubemap.h"
+#include "Titan/Renderer/RHI/Texture.h"
+#include "Titan/Renderer/RHI/UniformBuffer.h"
+#include "Titan/Renderer/RHI/VertexArray.h"
 
 namespace Titan
 {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Titan/PCH.h"
-#include "Titan/Renderer/PipelineState.h"
 #include "Titan/Renderer/PostProcessing.h" // For PostFX base
-#include "TonemappingTypes.h"              // TonemappingOperator enum
+#include "Titan/Renderer/RHI/PipelineState.h"
+#include "TonemappingTypes.h" // TonemappingOperator enum
 
 namespace Titan
 {

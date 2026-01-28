@@ -1,6 +1,5 @@
-#include "Titan/Renderer/VertexArray.h"
+#include "VertexArray.h"
 #include "Titan/PCH.h"
-
 #include "Titan/Platform/OpenGL/OpenGLVertexArray.h"
 #include "Titan/Renderer/Renderer.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Titan/Renderer/Framebuffer.h"
+#include "Titan/Renderer/RHI/Framebuffer.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY

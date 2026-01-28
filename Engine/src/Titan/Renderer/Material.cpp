@@ -1,7 +1,7 @@
 #include "Material.h"
 #include <yaml-cpp/yaml.h>
 #include <fstream>
-#include "Texture.h"
+#include "RHI/Texture.h"
 #include "Titan/PCH.h"
 #include "Titan/Project/Project.h"
 #include "Titan/Scene/Assets.h"

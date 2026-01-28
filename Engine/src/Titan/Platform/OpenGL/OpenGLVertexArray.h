@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Titan/Renderer/VertexArray.h"
+#include "Titan/Renderer/RHI/VertexArray.h"
 
 namespace Titan
 {

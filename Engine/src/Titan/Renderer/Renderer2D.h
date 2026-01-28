@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "EditorCamera.h"
-#include "Texture.h"
+#include "RHI/Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan

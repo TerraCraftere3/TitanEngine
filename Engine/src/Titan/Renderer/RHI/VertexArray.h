@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Buffer.h"
 #include "Titan/Core.h"
 #include "Titan/PCH.h"
-#include "Titan/Renderer/Buffer.h"
 
 namespace Titan
 {

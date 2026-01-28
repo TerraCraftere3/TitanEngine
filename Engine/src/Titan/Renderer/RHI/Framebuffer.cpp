@@ -1,7 +1,7 @@
 #include "Framebuffer.h"
-#include "Renderer.h"
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLFramebuffer.h"
+#include "Titan/Renderer/Renderer.h"
 
 namespace Titan
 {

@@ -2,7 +2,7 @@
 #include <slang-com-ptr.h>
 #include <slang.h>
 #include <glm/glm.hpp>
-#include "Titan/Renderer/Shader.h"
+#include "Titan/Renderer/RHI/Shader.h"
 
 typedef unsigned int GLenum;
 typedef int GLint;

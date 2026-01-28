@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture.h"
+#include "RHI/Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan
