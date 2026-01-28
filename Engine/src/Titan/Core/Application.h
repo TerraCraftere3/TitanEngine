@@ -7,6 +7,7 @@
 #include "Titan/Events/Event.h"
 #include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
+#include "Titan/Utils/Measurement.h"
 
 namespace Titan
 {
@@ -51,6 +52,14 @@ namespace Titan
         /// @brief Triggers on a event
         /// @param event the event
         void OnEvent(Event& event);
+
+        /// @brief Gets the CPU time measurement
+        /// @return the measurement
+        inline Ref<Measurement> GetCPUTimeMeasurement() { return m_CPUTimeMeasurement; }
+
+        /// @brief Gets the GPU time measurement
+        /// @return the measurement
+        inline Ref<Measurement> GetGPUTimeMeasurement() { return m_GPUTimeMeasurement; }
 
         /// @brief Pushes a layer to the stack
         /// @param layer the layer
@@ -97,6 +106,8 @@ namespace Titan
         float m_LastFrameTime = 0.0f;
         std::vector<std::function<void()>> m_MainThreadQueue;
         std::mutex m_MainThreadQueueMutex;
+        Ref<Measurement> m_CPUTimeMeasurement;
+        Ref<Measurement> m_GPUTimeMeasurement;
     };
 
     void TI_API DeleteApplication(Application* app);

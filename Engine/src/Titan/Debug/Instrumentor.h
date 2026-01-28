@@ -59,7 +59,14 @@ namespace Titan
    Macros
    ======================= */
 
+#if 1
 #define TI_PROFILE_BEGIN_FRAME() ::Titan::Profiler::BeginFrame()
 #define TI_PROFILE_END_FRAME() ::Titan::Profiler::EndFrame()
 #define TI_PROFILE_SCOPE(name) ::Titan::ScopeTimer TI_SCOPE_##__LINE__(name)
 #define TI_PROFILE_FUNCTION() TI_PROFILE_SCOPE(__FUNCTION__)
+#else
+#define TI_PROFILE_BEGIN_FRAME()
+#define TI_PROFILE_END_FRAME()
+#define TI_PROFILE_SCOPE(name)
+#define TI_PROFILE_FUNCTION()
+#endif

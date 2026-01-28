@@ -332,6 +332,8 @@ namespace Titan
 
         ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::Text("Draw Calls: %d", RenderCommand::GetStats().GetTotalDrawCalls());
+        ImGui::Text("CPU Time: %.2f ms", Application::GetInstance()->GetCPUTimeMeasurement()->GetElapsedMilliseconds());
+        ImGui::Text("GPU Time: %.2f ms", Application::GetInstance()->GetGPUTimeMeasurement()->GetElapsedMilliseconds());
 
         ImGui::SeparatorText("Backend");
         auto& settings = RenderCommand::GetBackend();

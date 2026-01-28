@@ -47,6 +47,9 @@ namespace Titan
         PushOverlay(m_ImGuiLayer);
 
         m_ImGuiEnabled = !specification.DisableImGui;
+
+        m_CPUTimeMeasurement = Measurement::CreateCPU();
+        m_GPUTimeMeasurement = Measurement::CreateGPU();
     }
 
     Application::~Application()
@@ -71,6 +74,8 @@ namespace Titan
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
+            m_CPUTimeMeasurement->Start();
+            m_GPUTimeMeasurement->Start();
             RenderCommand::BeginFrame();
 
             {
@@ -84,6 +89,9 @@ namespace Titan
                 for (Layer* layer : m_LayerStack)
                     layer->OnUpdate(timestep);
             }
+
+            m_GPUTimeMeasurement->Stop();
+            m_CPUTimeMeasurement->Stop();
 
             if (m_ImGuiEnabled)
             {
