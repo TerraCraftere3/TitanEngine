@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Titan/Audio/AudioContext.h"
 #include "Titan/Core.h"
 #include "Titan/Core/LayerStack.h"
 #include "Titan/Core/Window.h"
@@ -98,6 +99,7 @@ namespace Titan
         static Application* s_Instance;
         ApplicationSpecification m_Specification;
         Scope<Window> m_Window;
+        Ref<AudioContext> m_AudioContext;
         bool m_Running = true;
         bool m_Minimized = false;
         bool m_ImGuiEnabled = true;

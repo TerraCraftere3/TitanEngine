@@ -185,6 +185,17 @@ namespace Titan
                 ScriptEngine::OnCreateEntity(entity);
             }
         }
+
+        {
+            auto view = m_Registry.view<AudioSourceComponent>();
+            for (auto e : view)
+            {
+                Entity entity = {e, this};
+                auto& audioSource = view.get<AudioSourceComponent>(e);
+                if (audioSource.Sound)
+                    audioSource.Sound->Play();
+            }
+        }
     }
 
     void Scene::OnRuntimeStop()
@@ -195,6 +206,17 @@ namespace Titan
         OnPhysics3DStop();
 
         ScriptEngine::OnRuntimeStop();
+
+        {
+            auto view = m_Registry.view<AudioSourceComponent>();
+            for (auto e : view)
+            {
+                Entity entity = {e, this};
+                auto& audioSource = view.get<AudioSourceComponent>(e);
+                if (audioSource.Sound)
+                    audioSource.Sound->Stop();
+            }
+        }
     }
 
     void Scene::OnSimulationStart()
@@ -274,6 +296,39 @@ namespace Titan
                         transform.WorldTransform = trans * rot * scale;
                         transform.UseWorldTransform = true;
                     }
+                }
+            }
+        }
+
+        // AUDIO
+        {
+            auto sview = GetAllEntitiesWith<AudioSourceComponent>();
+            for (auto e : sview)
+            {
+                Entity entity = {e, this};
+                auto& audioSource = sview.get<AudioSourceComponent>(e);
+                glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform();
+                glm::vec3 position = transform[3]; // Extract translation from transform
+                if (audioSource.Sound)
+                    audioSource.Sound->SetPosition(position.x, position.y, position.z);
+            }
+
+            auto lview = GetAllEntitiesWith<AudioListenerComponent>();
+            for (auto e : lview)
+            {
+                Entity entity = {e, this};
+                auto& audioListener = lview.get<AudioListenerComponent>(e);
+                glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform();
+                glm::vec3 position = transform[3]; // Extract translation from transform
+
+                // Calculate forward and up vectors from transform
+                glm::vec3 forward = -glm::normalize(glm::vec3(transform[2])); // Negative Z is forward
+                glm::vec3 up = glm::normalize(glm::vec3(transform[1]));       // Y is up
+
+                if (audioListener.Listener)
+                {
+                    audioListener.Listener->SetPosition(position);
+                    audioListener.Listener->SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
                 }
             }
         }
@@ -638,4 +693,6 @@ namespace Titan
     template void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity, CircleCollider2DComponent&);
     template void Scene::OnComponentAdded<ScriptComponent>(Entity, ScriptComponent&);
     template void Scene::OnComponentAdded<LookAtComponent>(Entity, LookAtComponent&);
+    template void Scene::OnComponentAdded<AudioSourceComponent>(Entity, AudioSourceComponent&);
+    template void Scene::OnComponentAdded<AudioListenerComponent>(Entity, AudioListenerComponent&);
 } // namespace Titan

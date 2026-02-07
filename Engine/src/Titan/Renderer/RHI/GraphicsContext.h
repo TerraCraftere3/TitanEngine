@@ -9,6 +9,8 @@ namespace Titan
     class GraphicsContext
     {
     public:
+        virtual ~GraphicsContext() = default;
+
         virtual void Init() = 0;
         virtual void Shutdown() = 0;
         virtual void Swapbuffers() = 0;

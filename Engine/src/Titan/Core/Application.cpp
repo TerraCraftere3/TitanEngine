@@ -43,6 +43,8 @@ namespace Titan
         ScriptEngine::Init();
         Physics3D::Init();
 
+        m_AudioContext = AudioContext::Create();
+
         m_ImGuiLayer = new ImGuiLayer(specification.Theme);
         PushOverlay(m_ImGuiLayer);
 

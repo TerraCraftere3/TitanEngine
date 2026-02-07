@@ -529,14 +529,17 @@ namespace Titan
         if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
-        ImGui::SameLine();
-        ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
-        ImGui::SameLine();
-        ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[0].enableOverlay);
-        ImGui::SameLine();
-        ImGui::Checkbox("AABB", &m_EditorProperties.Overlays[0].enableBoundingBoxRender);
-        ImGui::SameLine();
-        ImGui::Checkbox("Wireframe", &m_EditorProperties.Overlays[0].enableWireframe);
+        if (m_EditorProperties.EnableMultiViewports)
+        {
+            ImGui::SameLine();
+            ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
+            ImGui::SameLine();
+            ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[0].enableOverlay);
+            ImGui::SameLine();
+            ImGui::Checkbox("AABB", &m_EditorProperties.Overlays[0].enableBoundingBoxRender);
+            ImGui::SameLine();
+            ImGui::Checkbox("Wireframe", &m_EditorProperties.Overlays[0].enableWireframe);
+        }
 
         ImGui::PopStyleVar(2);
         ImGui::End();

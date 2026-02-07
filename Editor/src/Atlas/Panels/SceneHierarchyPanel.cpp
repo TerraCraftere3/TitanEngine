@@ -130,6 +130,12 @@ namespace Titan
                 Entity quadEntity = m_Context->CreateEntity("Skybox");
                 auto& dlc = quadEntity.AddComponent<SkyboxComponent>();
             }
+            ImGui::SeparatorText("Audio");
+            if (ImGui::MenuItem("Create Audio Source"))
+            {
+                Entity audioEntity = m_Context->CreateEntity("Audio Source");
+                auto& component = audioEntity.AddComponent<AudioSourceComponent>();
+            }
 
             ImGui::EndPopup();
         }
@@ -168,6 +174,10 @@ namespace Titan
                 DrawAddComponent<Rigidbody2DComponent>(m_SelectionContext, "Rigidbody 2D");
                 DrawAddComponent<BoxCollider2DComponent>(m_SelectionContext, "Box Collider 2D");
                 DrawAddComponent<CircleCollider2DComponent>(m_SelectionContext, "Circle Collider 2D");
+
+                ImGui::SeparatorText("Audio");
+                DrawAddComponent<AudioSourceComponent>(m_SelectionContext, "Audio Source");
+                DrawAddComponent<AudioListenerComponent>(m_SelectionContext, "Audio Listener");
 
                 ImGui::SeparatorText("Constraints");
                 DrawAddComponent<LookAtComponent>(m_SelectionContext, "Look At");
@@ -320,6 +330,7 @@ namespace Titan
                 const wchar_t* path = (const wchar_t*)payload->Data;
                 std::filesystem::path fullPath = Project::GetAssetDirectory() / path;
                 texture = Assets::Load<Texture2D>(fullPath.string());
+                texture->SetInternalPath(std::filesystem::path(path).string());
                 changed = true;
             }
             ImGui::EndDragDropTarget();
@@ -455,6 +466,30 @@ namespace Titan
                 }
             });
 
+        DrawComponent<AudioSourceComponent>(
+            ICON_FA_VOLUME_HIGH " Audio Source", entity,
+            [](auto& component)
+            {
+                float buttonWidth = ImGui::GetContentRegionAvail().x;
+                ImGui::Button(std::format("Source: {}",
+                                          component.Sound ? component.Sound->GetBuffer()->GetInternalPath() : "None")
+                                  .c_str(),
+                              ImVec2(buttonWidth, 0.0f));
+                if (ImGui::BeginDragDropTarget())
+                {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                    {
+                        const wchar_t* path = (const wchar_t*)payload->Data;
+                        std::filesystem::path soundPath = Project::GetAssetDirectory() / path;
+                        component.Sound = Assets::Load<AudioSource>(soundPath.string());
+                        component.Sound->GetBuffer()->SetInternalPath(std::filesystem::path(path).string());
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            });
+
+        DrawComponent<AudioListenerComponent>(ICON_FA_HEADPHONES " Audio Listener", entity, [](auto& component) {});
+
         DrawComponent<SpriteRendererComponent>(ICON_FA_BRUSH " Sprite Renderer", entity,
                                                [](auto& component)
                                                {
@@ -490,6 +525,7 @@ namespace Titan
                         const wchar_t* path = (const wchar_t*)payload->Data;
                         std::filesystem::path meshPath = Project::GetAssetDirectory() / path;
                         component.MeshRef = Assets::Load<Mesh>(meshPath.string());
+                        component.MeshRef->SetInternalPath(std::filesystem::path(path).string());
                         changed = true;
                     }
                     ImGui::EndDragDropTarget();

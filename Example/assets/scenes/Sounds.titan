@@ -1,0 +1,82 @@
+Scene: Untitled
+Entities:
+  - Entity: 8758640056969562893
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 5779225809508732683
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      HDRI:
+        Texture: cubemaps\autumn_hill_view_4k.hdr
+      Colorramp:
+        TopColor: [0.1, 0.3, 0.7]
+        BottomColor: [0.9, 0.9, 1]
+      Mode: HDRI
+  - Entity: 1229789391634107600
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-3, 1.5, 3]
+      Rotation: [-0.3398369, -0.78539807, 0]
+      Scale: [0.99999994, 0.99999976, 0.9999999]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false
+    AudioListenerComponent:
+      {}
+  - Entity: 18224009490395026848
+    TagComponent:
+      Tag: Helmet
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshRendererComponent:
+      Mesh: models\DamagedHelmet.gltf
+      Materials:
+        - materials\Helmet_01.mat
+        - materials\Helmet_02.mat
+    ScriptComponent:
+      ClassName: Sandbox.Rotation
+      ScriptFields:
+        - Name: Speed
+          Type: Float
+          Data: 0.2
+  - Entity: 6817584821935004973
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -1, -1]
+  - Entity: 12989563616954954665
+    TagComponent:
+      Tag: Audio Source
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    AudioSourceComponent:
+      Sound: sounds\sonican-lo-fi-music-loop-sentimental-jazzy-love-473154.wav

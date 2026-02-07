@@ -49,3 +49,9 @@
 [submodule "Vendor/implot"]
 	path = Vendor/implot
 	url = https://github.com/epezent/implot
+[submodule "Vendor/openal"]
+	path = Vendor/openal
+	url = https://github.com/kcat/openal-soft
+[submodule "Vendor/libsndfile"]
+	path = Vendor/libsndfile
+	url = https://github.com/libsndfile/libsndfile

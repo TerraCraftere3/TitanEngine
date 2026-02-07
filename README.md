@@ -42,25 +42,26 @@ For now there is no linux support
 
 ## 📦 Dependencies
 
-| Name          | Usage / Purpose                                                 | Repository Link                                                           |
-| ------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **spdlog**    | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
-| **glfw**      | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
-| **ImGui**     | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
-| **ImGuizmo**  | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
-| **ImReflect** | Reflection for ImGui                                            | [Sven-vh/ImReflect](https://github.com/Sven-vh/ImReflect)                 |
-| **glm**       | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
-| **stb**       | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
-| **entt**      | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
-| **yaml-cpp**  | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
-| **nanosvg**   | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
-| **codicons**  | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
-| **Box2D**     | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
-| **PhysX**     | 3D Physics Simulations                                          | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX)       |
-| **Slang**     | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
-| **Optick**    | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
-| **Filewatch** | Watching Files (for e.g. Hot Code Reloading)                    | [ThomasMonkman/filewatch](https://github.com/ThomasMonkman/filewatch)     |
-| **assimp**    | Model loading                                                   | [assimp/assimp](https://github.com/assimp/assimp)                         |
+| Name            | Usage / Purpose                                                 | Repository Link                                                           |
+| --------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **spdlog**      | Fast C++ logging library with support for formatting and sinks  | [gabime/spdlog](https://github.com/gabime/spdlog)                         |
+| **glfw**        | Window, input, and context management for OpenGL/Vulkan         | [glfw/glfw](https://github.com/glfw/glfw)                                 |
+| **ImGui**       | Immediate-mode GUI library for tools and editors                | [ocornut/imgui](https://github.com/ocornut/imgui)                         |
+| **ImGuizmo**    | Gizmo controls for ImGui (translation, rotation, scaling)       | [CedricGuillemet/ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)   |
+| **ImReflect**   | Reflection for ImGui                                            | [Sven-vh/ImReflect](https://github.com/Sven-vh/ImReflect)                 |
+| **glm**         | Mathematics library for graphics software (GLSL-style)          | [g-truc/glm](https://github.com/g-truc/glm)                               |
+| **stb**         | Single-file public domain libraries for image and asset loading | [nothings/stb](https://github.com/nothings/stb)                           |
+| **entt**        | Fast and flexible ECS (Entity-Component-System) framework       | [skypjack/entt](https://github.com/skypjack/entt)                         |
+| **yaml-cpp**    | YAML parser and emitter in C++                                  | [jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)                     |
+| **nanosvg**     | SVG Software Rendering                                          | [memononen/nanosvg](https://github.com/memononen/nanosvg)                 |
+| **codicons**    | Icons for the Editor                                            | [microsoft/vscode-codicons](https://github.com/microsoft/vscode-codicons) |
+| **Box2D**       | 2D Physics Simulations                                          | [erincatto/box2d](https://github.com/erincatto/box2d)                     |
+| **PhysX**       | 3D Physics Simulations                                          | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX)       |
+| **Slang**       | Shader Compilation for multi APIs                               | [shader-slang/slang](https://github.com/shader-slang/slang)               |
+| **Optick**      | Profiling                                                       | [bombomby/optick](https://github.com/bombomby/optick)                     |
+| **Filewatch**   | Watching Files (for e.g. Hot Code Reloading)                    | [ThomasMonkman/filewatch](https://github.com/ThomasMonkman/filewatch)     |
+| **assimp**      | Model loading                                                   | [assimp/assimp](https://github.com/assimp/assimp)                         |
+| **openal-soft** | Audio                                                           | [kcat/openal-soft](https://github.com/kcat/openal-soft)                   |
 
 ## 💡 Features
 - [x] C# Scripting Support

@@ -1,4 +1,5 @@
 #pragma once
+#include "Titan/Audio/Source.h"
 #include "Titan/Core/Application.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
@@ -26,7 +27,8 @@ namespace Titan
         Physics2DMaterial,
         PhysicsMaterial,
         Mesh,
-        Material
+        Material,
+        AudioSource
     };
 
     struct AssetMeta
@@ -189,6 +191,14 @@ namespace Titan
             {
                 meta.Type = AssetType::Mesh;
             }
+            else if constexpr (std::is_same_v<T, Material3D>)
+            {
+                meta.Type = AssetType::Material;
+            }
+            else if constexpr (std::is_same_v<T, AudioSource>)
+            {
+                meta.Type = AssetType::AudioSource;
+            }
             else
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::GenerateDefaultMeta");
             return meta;
@@ -281,6 +291,14 @@ namespace Titan
                     meta = LoadMetaFromDisk<Mesh>(assetPath);
                     break;
 
+                case AssetType::Material:
+                    meta = LoadMetaFromDisk<Material3D>(assetPath);
+                    break;
+
+                case AssetType::AudioSource:
+                    meta = LoadMetaFromDisk<AudioSource>(assetPath);
+                    break;
+
                 case AssetType::None:
                 default:
                     meta.ID = UUID();
@@ -342,6 +360,15 @@ namespace Titan
             else if constexpr (std::is_same_v<T, Mesh>)
             {
                 asset = Mesh::Create(path.string());
+            }
+            else if constexpr (std::is_same_v<T, Material3D>)
+            {
+                asset = Material3D::Create(path.string());
+            }
+            else if constexpr (std::is_same_v<T, AudioSource>)
+            {
+                asset = AudioSource::Create();
+                asset->SetBuffer(AudioBuffer::Create(path));
             }
             else
             {

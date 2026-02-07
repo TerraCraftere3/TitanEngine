@@ -4,6 +4,9 @@
 #include <vector>
 #include "PhysicsMaterial.h"
 #include "SceneCamera.h"
+#include "Titan/Audio/AudioContext.h"
+#include "Titan/Audio/Listener.h"
+#include "Titan/Audio/Source.h"
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Renderer/Material.h"
@@ -240,6 +243,22 @@ namespace Titan
         CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
     };
 
+    struct AudioSourceComponent
+    {
+        Ref<AudioSource> Sound;
+
+        AudioSourceComponent() = default;
+        AudioSourceComponent(const AudioSourceComponent&) = default;
+    };
+
+    struct AudioListenerComponent
+    {
+        Ref<AudioListener> Listener;
+
+        AudioListenerComponent() = default;
+        AudioListenerComponent(const AudioListenerComponent&) = default;
+    };
+
     struct ScriptComponent
     {
         std::string ClassName;
@@ -265,7 +284,8 @@ namespace Titan
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
                        DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
                        RigidbodyComponent, CubeColliderComponent, SphereColliderComponent, Rigidbody2DComponent,
-                       BoxCollider2DComponent, CircleCollider2DComponent, LookAtComponent, RelationshipComponent>;
+                       BoxCollider2DComponent, CircleCollider2DComponent, AudioSourceComponent, AudioListenerComponent,
+                       LookAtComponent, RelationshipComponent>;
     namespace Utils
     {
         inline const char* SkyboxModeToString(SkyboxComponent::Mode mode)

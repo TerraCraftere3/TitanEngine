@@ -30,6 +30,8 @@ add_subdirectory(Box2D)
 add_subdirectory(optick)
 add_subdirectory(filewatch)
 add_subdirectory(assimp)
+add_subdirectory(openal)
+add_subdirectory(libsndfile)
 
 # ---- Glad Directory ----
 file(GLOB_RECURSE GLAD_SRC CONFIGURE_DEPENDS

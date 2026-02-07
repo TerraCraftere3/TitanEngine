@@ -441,6 +441,27 @@ namespace Titan
             out << YAML::EndMap; // CircleCollider2DComponent
         }
 
+        if (entity.HasComponent<AudioSourceComponent>())
+        {
+            out << YAML::Key << "AudioSourceComponent";
+            out << YAML::BeginMap; // AudioSourceComponent
+
+            auto& audioSourceComponent = entity.GetComponent<AudioSourceComponent>();
+            if (audioSourceComponent.Sound)
+                out << YAML::Key << "Sound" << YAML::Value
+                    << audioSourceComponent.Sound->GetBuffer()->GetInternalPath();
+
+            out << YAML::EndMap; // AudioSourceComponent
+        }
+
+        if (entity.HasComponent<AudioListenerComponent>())
+        {
+            out << YAML::Key << "AudioListenerComponent";
+            out << YAML::BeginMap; // AudioListenerComponent
+
+            out << YAML::EndMap; // AudioListenerComponent
+        }
+
         if (entity.HasComponent<ScriptComponent>())
         {
             auto& scriptComponent = entity.GetComponent<ScriptComponent>();
@@ -785,6 +806,24 @@ namespace Titan
                     cc2d.Material = Assets::Load<Physics2DMaterial>(
                         Project::GetAssetDirectory() / circleCollider2DComponent["Material"].as<std::string>());
                     cc2d.Material->SetInternalPath(circleCollider2DComponent["Material"].as<std::string>());
+                }
+
+                auto audioSourceComponent = entity["AudioSourceComponent"];
+                if (audioSourceComponent)
+                {
+                    auto& asc = deserializedEntity.AddComponent<AudioSourceComponent>();
+                    if (audioSourceComponent["Sound"])
+                    {
+                        asc.Sound = Assets::Load<AudioSource>(Project::GetAssetDirectory() /
+                                                              audioSourceComponent["Sound"].as<std::string>());
+                        asc.Sound->GetBuffer()->SetInternalPath(audioSourceComponent["Sound"].as<std::string>());
+                    }
+                }
+
+                auto audioListenerComponent = entity["AudioListenerComponent"];
+                if (audioListenerComponent)
+                {
+                    deserializedEntity.AddComponent<AudioListenerComponent>();
                 }
 
                 auto scriptComponent = entity["ScriptComponent"];
