@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Camera.h"
-#include "EditorCamera.h"
-#include "RHI/Texture.h"
 #include "Titan/PCH.h"
+#include "Titan/Renderer/Camera.h"
+#include "Titan/Renderer/EditorCamera.h"
+#include "Titan/Renderer/RHI/Texture.h"
 
 namespace Titan
 {

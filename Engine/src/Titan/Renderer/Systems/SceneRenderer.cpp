@@ -1,13 +1,13 @@
 #include "SceneRenderer.h"
-#include "PostProcessing.h"
-#include "PostProcessing/FXAA.h"
-#include "PostProcessing/Tonemapping.h"
-#include "RenderGraph.h"
-#include "Titan/Renderer/GeometryRenderer.h"
-#include "Titan/Renderer/PBRRenderer.h"
+#include "Titan/Renderer/PostProcessing.h"
+#include "Titan/Renderer/PostProcessing/FXAA.h"
+#include "Titan/Renderer/PostProcessing/Tonemapping.h"
+#include "Titan/Renderer/Systems/RenderGraph.h"
+#include "Titan/Renderer/Systems/GeometryRenderer.h"
+#include "Titan/Renderer/Systems/PBRRenderer.h"
 #include "Titan/Renderer/RenderCommand.h"
-#include "Titan/Renderer/Renderer2D.h"
-#include "Titan/Renderer/SkyboxRenderer.h"
+#include "Titan/Renderer/Systems/Renderer2D.h"
+#include "Titan/Renderer/Systems/SkyboxRenderer.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
 
@@ -28,7 +28,7 @@ namespace Titan
         uint32_t viewHeight = 720;
 
         bool drawOverlay = false;
-        bool drawAABBOVerlay = false;
+        bool drawAABBOverlay = false;
         bool drawWireframe = false;
 
         Ref<Scene> currentScene;
@@ -334,7 +334,7 @@ namespace Titan
                     glm::mat4 gizmoTransformation = glm::translate(glm::mat4(1.0f), lookAt.Position);
                     Renderer2D::DrawMarker(gizmoTransformation);
                 }
-                if (d->drawAABBOVerlay)
+                if (d->drawAABBOverlay)
                 {
                     auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
                     for (auto entity : meshView)
@@ -447,7 +447,7 @@ namespace Titan
         m_Data->viewProjection = camera.GetViewProjection();
         m_Data->viewPosition = camera.GetPosition();
         m_Data->drawOverlay = overlay.enableOverlay;
-        m_Data->drawAABBOVerlay = overlay.enableBoundingBoxRender;
+        m_Data->drawAABBOverlay = overlay.enableBoundingBoxRender;
         m_Data->drawWireframe = overlay.enableWireframe;
         m_Data->currentScene = scene;
 

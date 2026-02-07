@@ -1,7 +1,7 @@
 #pragma once
 
-#include "RHI/Cubemap.h"
-#include "RHI/Framebuffer.h"
+#include "Titan/Renderer/RHI/Cubemap.h"
+#include "Titan/Renderer/RHI/Framebuffer.h"
 #include "Titan/PCH.h"
 
 namespace Titan

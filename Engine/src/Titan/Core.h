@@ -106,3 +106,10 @@ namespace Titan
 
 #undef min
 #undef max
+
+#define TI_COMPILE_LINE __LINE__
+#define TI_COMPILE_FILE __FILE__
+#define TI_COMPILE_DATE __DATE__
+#define TI_COMPILE_TIME __TIME__
+
+#define TI_COMPILE_INFO "" TI_COMPILE_FILE "(" TI_STRINGIFY(TI_COMPILE_LINE) "): " TI_COMPILE_DATE " " TI_COMPILE_TIME

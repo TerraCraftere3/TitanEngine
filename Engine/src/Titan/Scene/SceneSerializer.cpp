@@ -6,7 +6,7 @@
 #include "Titan/Core/UUID.h"
 #include "Titan/PCH.h"
 #include "Titan/Project/Project.h"
-#include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/Systems/Renderer2D.h"
 #include "Titan/Scripting/ScriptEngine.h"
 
 namespace YAML

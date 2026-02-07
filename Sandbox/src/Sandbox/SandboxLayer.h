@@ -1,7 +1,7 @@
 #pragma once
 #include <Titan/Core/Layer.h>
 #include <Titan/Renderer/RHI/PipelineState.h>
-#include <Titan/Renderer/SceneRenderer.h>
+#include <Titan/Renderer/Systems/SceneRenderer.h>
 
 namespace Titan
 {

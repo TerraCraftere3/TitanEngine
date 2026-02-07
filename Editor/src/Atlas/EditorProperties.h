@@ -2,7 +2,7 @@
 
 #include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
-#include "Titan/Renderer/SceneRenderer.h"
+#include "Titan/Renderer/Systems/SceneRenderer.h"
 
 namespace Titan
 {

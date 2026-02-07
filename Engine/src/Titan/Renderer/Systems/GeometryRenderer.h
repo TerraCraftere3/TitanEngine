@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Camera.h"
-#include "EditorCamera.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "RHI/PipelineState.h"
-#include "RHI/Texture.h"
+#include "Titan/Renderer/Camera.h"
+#include "Titan/Renderer/EditorCamera.h"
+#include "Titan/Renderer/Material.h"
+#include "Titan/Renderer/Mesh.h"
+#include "Titan/Renderer/RHI/PipelineState.h"
+#include "Titan/Renderer/RHI/Texture.h"
 #include "Titan/PCH.h"
 
 namespace Titan

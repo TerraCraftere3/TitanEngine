@@ -2,9 +2,9 @@
 
 #include "Titan/PCH.h"
 #include "Titan/Renderer/EditorCamera.h"
-#include "Titan/Renderer/GeometryRenderer.h"
+#include "Titan/Renderer/Systems/GeometryRenderer.h"
 #include "Titan/Renderer/RHI/Framebuffer.h"
-#include "Titan/Renderer/Renderer2D.h"
+#include "Titan/Renderer/Systems/Renderer2D.h"
 #include "Titan/Scene/Scene.h"
 
 namespace Titan

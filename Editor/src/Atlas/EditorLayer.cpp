@@ -9,10 +9,10 @@
 #include <Titan/Core/Input.h>
 #include <Titan/FontAwesome7.h>
 #include <Titan/Project/Project.h>
-#include <Titan/Renderer/GeometryRenderer.h>
 #include <Titan/Renderer/RenderCommand.h>
-#include <Titan/Renderer/Renderer2D.h>
-#include <Titan/Renderer/SceneRenderer.h>
+#include <Titan/Renderer/Systems/GeometryRenderer.h>
+#include <Titan/Renderer/Systems/Renderer2D.h>
+#include <Titan/Renderer/Systems/SceneRenderer.h>
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/Components.h>
 #include <Titan/Scene/SceneSerializer.h>

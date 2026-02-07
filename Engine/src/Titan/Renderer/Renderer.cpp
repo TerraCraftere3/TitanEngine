@@ -3,11 +3,11 @@
 #include "Titan/PCH.h"
 #include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Renderer/Blit.h"
-#include "Titan/Renderer/FullscreenRenderer.h"
-#include "Titan/Renderer/GeometryRenderer.h"
-#include "Titan/Renderer/PBRRenderer.h"
-#include "Titan/Renderer/Renderer2D.h"
-#include "Titan/Renderer/SkyboxRenderer.h"
+#include "Titan/Renderer/Systems/FullscreenRenderer.h"
+#include "Titan/Renderer/Systems/GeometryRenderer.h"
+#include "Titan/Renderer/Systems/PBRRenderer.h"
+#include "Titan/Renderer/Systems/Renderer2D.h"
+#include "Titan/Renderer/Systems/SkyboxRenderer.h"
 
 namespace Titan
 {

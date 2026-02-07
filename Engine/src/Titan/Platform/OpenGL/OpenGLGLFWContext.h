@@ -2,7 +2,7 @@
 
 #include "Titan/Core.h"
 #include "Titan/PCH.h"
-#include "Titan/Renderer/GraphicsContext.h"
+#include "Titan/Renderer/RHI/GraphicsContext.h"
 // clang-format off
 #ifdef APIENTRY
     #undef APIENTRY

@@ -2,8 +2,8 @@
 #include <Titan/Core/Application.h>
 #include <Titan/Project/Project.h>
 #include <Titan/Renderer/Blit.h>
-#include <Titan/Renderer/GeometryRenderer.h>
 #include <Titan/Renderer/RenderCommand.h>
+#include <Titan/Renderer/Systems/GeometryRenderer.h>
 #include <Titan/Scene/Assets.h>
 #include <Titan/Scene/SceneSerializer.h>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RHI/PipelineState.h"
-#include "RHI/VertexArray.h"
-#include "RenderCommand.h"
+#include "Titan/Renderer/RHI/PipelineState.h"
+#include "Titan/Renderer/RHI/VertexArray.h"
+#include "Titan/Renderer/RenderCommand.h"
 
 namespace Titan
 {

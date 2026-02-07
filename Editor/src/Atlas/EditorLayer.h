@@ -7,7 +7,7 @@
 #include <Titan/Renderer/Mesh.h>
 #include <Titan/Renderer/RHI/Framebuffer.h>
 #include <Titan/Renderer/RHI/Texture.h>
-#include <Titan/Renderer/SceneRenderer.h>
+#include <Titan/Renderer/Systems/SceneRenderer.h>
 #include <Titan/Scene/Scene.h>
 #include "EditorProperties.h"
 

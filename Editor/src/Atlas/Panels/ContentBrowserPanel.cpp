@@ -2,7 +2,7 @@
 #include "../Renderer/Thumbnails.h"
 #include "Titan/FontAwesome7.h"
 #include "Titan/Project/Project.h"
-#include "Titan/Renderer/GeometryRenderer.h"
+#include "Titan/Renderer/Systems/GeometryRenderer.h"
 #include "Titan/Utils/String.h"
 
 namespace Titan

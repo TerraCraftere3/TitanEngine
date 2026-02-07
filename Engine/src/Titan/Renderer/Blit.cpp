@@ -1,7 +1,6 @@
 #include "Blit.h"
-#include "FullscreenRenderer.h"
-#include "RenderCommand.h"
-#include "Titan/Platform/OpenGL/OpenGLShader.h"
+#include "Titan/Renderer/RenderCommand.h"
+#include "Titan/Renderer/Systems/FullscreenRenderer.h"
 
 namespace Titan
 {
