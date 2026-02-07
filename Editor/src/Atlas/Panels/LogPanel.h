@@ -1,5 +1,4 @@
 #pragma once
-#include <Titan/Core/ImGuiLogSink.h>
 #include <Titan/PCH.h>
 
 namespace Titan
@@ -14,6 +13,8 @@ namespace Titan
     private:
         bool m_AutoScroll = true;
         bool m_ShowTimestamp = true;
+        bool m_ShowOnlyErrors = false;
+        int m_SelectedIndex = -1;
     };
 
 } // namespace Titan

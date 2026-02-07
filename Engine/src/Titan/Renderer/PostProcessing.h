@@ -52,7 +52,6 @@ namespace Titan
         void AddEffect(Ref<PostFX> effect)
         {
             effect->OnAttach();
-            TI_CORE_INFO("Attached Post Effect \"{}\"", effect->GetName());
             m_Effects.push_back(effect);
         }
 
@@ -61,7 +60,6 @@ namespace Titan
             for (auto& effect : m_Effects)
             {
                 effect->OnDetach();
-                TI_CORE_INFO("Detached Post Effect \"{}\"", effect->GetName());
             }
         }
 

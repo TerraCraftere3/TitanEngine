@@ -2,8 +2,10 @@
 
 #include "Titan/Core.h"
 
-namespace Titan{
-    class Measurement{
+namespace Titan
+{
+    class Measurement
+    {
     public:
         virtual void Start() = 0;
         virtual void Stop() = 0;
@@ -14,4 +16,4 @@ namespace Titan{
         static Ref<Measurement> CreateCPU();
         static Ref<Measurement> CreateGPU();
     };
-};
+}; // namespace Titan

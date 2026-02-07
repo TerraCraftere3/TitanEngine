@@ -1,8 +1,8 @@
 #include "OpenGLMeasurement.h"
 
-namespace Titan{
-    OpenGLMeasurement::OpenGLMeasurement()
-        : isRunning(false)
+namespace Titan
+{
+    OpenGLMeasurement::OpenGLMeasurement() : isRunning(false)
     {
         glGenQueries(2, queryID);
     }
@@ -45,4 +45,4 @@ namespace Titan{
         glGetQueryObjectui64v(queryID[0], GL_QUERY_RESULT, &timeElapsed);
         return static_cast<double>(timeElapsed) / 1e9; // Convert nanoseconds to seconds
     }
-}
+} // namespace Titan

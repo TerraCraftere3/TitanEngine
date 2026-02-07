@@ -196,8 +196,6 @@ namespace Titan
         }
 
         out << "}\n";
-
-        TI_CORE_INFO("RenderGraph DOT exported to: {0}", filepath);
     }
 
     RenderPass& RenderGraph::AddPass(const RenderPassDescriptor& desc, RenderPass::ExecuteFunc executeFunc)
@@ -276,9 +274,6 @@ namespace Titan
         CreatePhysicalResources();
 
         m_Compiled = true;
-
-        TI_CORE_INFO("RenderGraph compiled successfully: {0} passes, {1} resources", m_ExecutionOrder.size(),
-                     m_Resources.size());
     }
 
     void RenderGraph::Execute()

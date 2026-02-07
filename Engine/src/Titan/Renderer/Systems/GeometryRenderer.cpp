@@ -1,12 +1,12 @@
 #include "GeometryRenderer.h"
+#include "Titan/PCH.h"
+#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Renderer/RHI/PipelineState.h"
 #include "Titan/Renderer/RHI/Shader.h"
 #include "Titan/Renderer/RHI/UniformBuffer.h"
 #include "Titan/Renderer/RHI/VertexArray.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Systems/Renderer2D.h"
-#include "Titan/PCH.h"
-#include "Titan/Platform/OpenGL/OpenGLShader.h"
 #include "Titan/Scene/Assets.h"
 
 namespace Titan

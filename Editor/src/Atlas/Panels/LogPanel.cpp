@@ -10,37 +10,39 @@ namespace Titan
     {
         ImGui::Begin(ICON_FA_TERMINAL " Log###Log", open);
 
-        // Toolbar
-        if (ImGui::Button("Clear"))
-            ImGuiLogSink::GetInstance().Clear();
-
         ImGui::SameLine();
         ImGui::Checkbox("Auto-scroll", &m_AutoScroll);
 
         ImGui::SameLine();
         ImGui::Checkbox("Timestamp", &m_ShowTimestamp);
 
+        ImGui::SameLine();
+        ImGui::Checkbox("Only Important", &m_ShowOnlyErrors);
+
         ImGui::Separator();
 
         // Log display
         ImGui::BeginChild("LogScrollRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        const auto& messages = ImGuiLogSink::GetInstance().GetMessages();
+        const auto& messages = Log::GetMessages();
 
+        int visibleIndex = 0;
         for (const auto& msg : messages)
         {
-            // Filter: Show only errors and warnings from CORE, but everything from APP
             bool shouldShow = false;
             if (msg.LoggerName == "CORE")
             {
-                // Only show errors and warnings from core
-                if (msg.Level >= spdlog::level::warn)
-                    shouldShow = true;
+                if (m_ShowOnlyErrors)
+                    shouldShow = (msg.Level >= spdlog::level::warn);
+                else
+                    shouldShow = (msg.Level > spdlog::level::trace);
             }
             else if (msg.LoggerName == "APP")
             {
-                // Show everything from App
-                shouldShow = true;
+                if (m_ShowOnlyErrors)
+                    shouldShow = (msg.Level >= spdlog::level::warn);
+                else
+                    shouldShow = (msg.Level > spdlog::level::trace);
             }
 
             if (!shouldShow)
@@ -73,8 +75,7 @@ namespace Titan
                     break;
             }
 
-            ImGui::PushStyleColor(ImGuiCol_Text, color);
-
+            std::string displayText;
             if (m_ShowTimestamp)
             {
                 auto time = std::chrono::system_clock::to_time_t(msg.Timestamp);
@@ -84,12 +85,25 @@ namespace Titan
                 std::tm tm_buf;
                 localtime_s(&tm_buf, &time);
 
-                ImGui::Text("[%02d:%02d:%02d.%03lld] ", tm_buf.tm_hour, tm_buf.tm_min, tm_buf.tm_sec, ms.count());
-                ImGui::SameLine();
+                char timeBuffer[32];
+                snprintf(timeBuffer, sizeof(timeBuffer), "[%02d:%02d:%02d.%03lld] ", tm_buf.tm_hour, tm_buf.tm_min,
+                         tm_buf.tm_sec, static_cast<long long>(ms.count()));
+
+                displayText = timeBuffer;
             }
 
-            ImGui::TextUnformatted(msg.Message.c_str());
+            displayText += msg.Message;
+
+            ImGui::PushID(visibleIndex);
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+
+            const bool isSelected = (m_SelectedIndex == visibleIndex);
+            if (ImGui::Selectable(displayText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns))
+                m_SelectedIndex = visibleIndex;
+
             ImGui::PopStyleColor();
+            ImGui::PopID();
+            ++visibleIndex;
         }
 
         if (m_AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())

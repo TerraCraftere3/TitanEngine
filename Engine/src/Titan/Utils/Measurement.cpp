@@ -1,7 +1,7 @@
 #include "Measurement.h"
+#include <chrono>
 #include "Titan/Platform/OpenGL/OpenGLMeasurement.h"
 #include "Titan/Renderer/Renderer.h"
-#include <chrono>
 
 namespace Titan
 {
@@ -35,7 +35,7 @@ namespace Titan
 
     Ref<Measurement> Measurement::CreateGPU()
     {
-        switch(Renderer::GetAPI())
+        switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None:
                 TI_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");

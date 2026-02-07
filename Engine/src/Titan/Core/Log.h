@@ -14,6 +14,14 @@ namespace Titan
         Critical
     };
 
+    struct LogMessage
+    {
+        std::string Message;
+        std::string LoggerName;
+        spdlog::level::level_enum Level;
+        std::chrono::system_clock::time_point Timestamp;
+    };
+
     class TI_API Logger
     {
     public:
@@ -66,6 +74,8 @@ namespace Titan
         static void Init();
         inline static Ref<Logger> GetCoreLogger() { return s_CoreLogger; }
         inline static Ref<Logger> GetClientLogger() { return s_ClientLogger; }
+
+        static std::vector<LogMessage> GetMessages();
 
     private:
         static Ref<Logger> s_CoreLogger;
