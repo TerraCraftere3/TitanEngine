@@ -24,7 +24,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CORE_TRACE(str);
+        TI_CORE_TRACE("{}", str);
     }
 
     static void InternalLogInfo(MonoString* string)
@@ -32,7 +32,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CORE_INFO(str);
+        TI_CORE_INFO("{}", str);
     }
 
     static void InternalLogWarn(MonoString* string)
@@ -40,7 +40,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CORE_WARN(str);
+        TI_CORE_WARN("{}", str);
     }
 
     static void InternalLogError(MonoString* string)
@@ -48,7 +48,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CORE_ERROR(str);
+        TI_CORE_ERROR("{}", str);
     }
 
     static void InternalLogCritical(MonoString* string)
@@ -56,7 +56,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CORE_CRITICAL(str);
+        TI_CORE_CRITICAL("{}", str);
     }
 
     static void InternalClientLogTrace(MonoString* string)
@@ -64,7 +64,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_TRACE(str);
+        TI_TRACE("{}", str);
     }
 
     static void InternalClientLogInfo(MonoString* string)
@@ -72,7 +72,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_INFO(str);
+        TI_INFO("{}", str);
     }
 
     static void InternalClientLogWarn(MonoString* string)
@@ -80,7 +80,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_WARN(str);
+        TI_WARN("{}", str);
     }
 
     static void InternalClientLogError(MonoString* string)
@@ -88,7 +88,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_ERROR(str);
+        TI_ERROR("{}", str);
     }
 
     static void InternalClientLogCritical(MonoString* string)
@@ -96,7 +96,7 @@ namespace Titan
         char* cStr = mono_string_to_utf8(string);
         std::string str(cStr);
         mono_free(cStr);
-        TI_CRITICAL(str);
+        TI_CRITICAL("{}", str);
     }
 
     static MonoObject* GetScriptInstance(UUID entityID)
