@@ -451,6 +451,10 @@ namespace Titan
                 out << YAML::Key << "Sound" << YAML::Value
                     << audioSourceComponent.Sound->GetBuffer()->GetInternalPath();
 
+            out << YAML::Key << "Volume" << YAML::Value << audioSourceComponent.Volume;
+            out << YAML::Key << "Pitch" << YAML::Value << audioSourceComponent.Pitch;
+            out << YAML::Key << "Looping" << YAML::Value << audioSourceComponent.Looping;
+
             out << YAML::EndMap; // AudioSourceComponent
         }
 
@@ -818,6 +822,14 @@ namespace Titan
                                                               audioSourceComponent["Sound"].as<std::string>());
                         asc.Sound->GetBuffer()->SetInternalPath(audioSourceComponent["Sound"].as<std::string>());
                     }
+                    if(audioSourceComponent["Volume"])
+                        asc.Volume = audioSourceComponent["Volume"].as<float>();
+
+                    if(audioSourceComponent["Pitch"])
+                        asc.Pitch = audioSourceComponent["Pitch"].as<float>();
+
+                    if(audioSourceComponent["Looping"])
+                        asc.Looping = audioSourceComponent["Looping"].as<bool>();
                 }
 
                 auto audioListenerComponent = entity["AudioListenerComponent"];

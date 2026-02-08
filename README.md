@@ -19,10 +19,11 @@ For now there is no linux support
 ## 📝 Folder Structure
 - `Engine` contains the code for Titan Engine that is used by the Game and the Editor
   - `src/Titan` contains the engine code
+    - `Audio` contains code for audio playing and processing
     - `Core` contains the core code used by all Systems
     - `Debug` contains profiling and debugging code
     - `Events` contains all code for the Event System
-    - `Platform` contains platform specific code (os and graphics api specific)
+    - `Platform` contains platform specific code (os, audio and graphics api specific)
     - `Renderer` contains platform independent code for the Renderer
     - `Scene` contains code used by the ecs and scene renderer
     - `Scripting` contains the code for the C# API of the Engine
@@ -74,7 +75,7 @@ For now there is no linux support
   - [x] Children
   - [ ] Multiple Components of same Type
 - [x] Scene Renderer
-- [ ] Audio
+- [x] Audio
 - [x] 3D PBR Renderer
   - [ ] Shadows
     - [ ] Point Lights

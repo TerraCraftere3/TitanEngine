@@ -14,7 +14,8 @@ const sidebars: SidebarsConfig = {
         'systems/input',
         'systems/asset-management',
         'systems/scene',
-        'systems/scripting'
+        'systems/scripting',
+        'systems/audio',
       ],
     },
     "filesystem"

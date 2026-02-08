@@ -18,6 +18,9 @@ namespace Titan
 
         virtual void SetPosition(float x, float y, float z) = 0;
         virtual void SetVelocity(float x, float y, float z) = 0;
+        virtual void SetPitch(float pitch) = 0;
+        virtual void SetGain(float gain) = 0;
+        virtual void SetLooping(bool loop) = 0;
 
         static Ref<AudioSource> Create();
     };

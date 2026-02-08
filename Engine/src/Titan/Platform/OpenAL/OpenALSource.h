@@ -16,6 +16,9 @@ namespace Titan
 
         void SetPosition(float x, float y, float z) override;
         void SetVelocity(float x, float y, float z) override;
+        void SetPitch(float pitch) override;
+        void SetGain(float gain) override;
+        void SetLooping(bool loop) override;
 
     private:
         Ref<AudioBuffer> m_Buffer;

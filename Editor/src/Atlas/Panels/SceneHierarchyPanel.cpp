@@ -486,6 +486,10 @@ namespace Titan
                     }
                     ImGui::EndDragDropTarget();
                 }
+
+                ImGui::DragFloat("Volume", &component.Volume, 0.01f, 0.0f, 2.0f);
+                ImGui::DragFloat("Pitch", &component.Pitch, 0.01f, 0.1f, 5.0f);
+                ImGui::Checkbox("Looping", &component.Looping);
             });
 
         DrawComponent<AudioListenerComponent>(ICON_FA_HEADPHONES " Audio Listener", entity, [](auto& component) {});

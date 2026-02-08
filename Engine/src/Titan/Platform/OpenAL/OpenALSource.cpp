@@ -34,7 +34,7 @@ namespace Titan
         {
             ALenum error = alGetError();
             if (error != AL_NO_ERROR)
-                TI_CORE_ERROR("OpenAL error {} in {}", GetALErrorString(error), context);
+                TI_CORE_ERROR("[OpenAL][{}] {}", GetALErrorString(error), context);
         }
     } // namespace
 
@@ -125,5 +125,32 @@ namespace Titan
 
         alSource3f(m_SourceID, AL_VELOCITY, x, y, z);
         LogALError("alSource3f(AL_VELOCITY)");
+    }
+
+    void OpenALSource::SetPitch(float pitch)
+    {
+        if (m_SourceID == 0)
+            return;
+
+        alSourcef(m_SourceID, AL_PITCH, pitch);
+        LogALError("alSourcef(AL_PITCH)");
+    }
+
+    void OpenALSource::SetGain(float gain)
+    {
+        if (m_SourceID == 0)
+            return;
+
+        alSourcef(m_SourceID, AL_GAIN, gain);
+        LogALError("alSourcef(AL_GAIN)");
+    }
+
+    void OpenALSource::SetLooping(bool loop)
+    {
+        if (m_SourceID == 0)
+            return;
+
+        alSourcei(m_SourceID, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+        LogALError("alSourcei(AL_LOOPING)");
     }
 } // namespace Titan

@@ -17,6 +17,7 @@ Titan Engine is a feature-rich game engine designed to provide developers with p
 - **Scripting System** - Flexible game logic implementation
 - **Scene Management** - Organize and manage game scenes
 - **Input System** - Comprehensive input handling
+- **Audio System** - OpenAL based audio system
 
 ## Getting Started
 

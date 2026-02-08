@@ -246,6 +246,9 @@ namespace Titan
     struct AudioSourceComponent
     {
         Ref<AudioSource> Sound;
+        float Volume = 1.0f;
+        float Pitch = 1.0f;
+        bool Looping = false;
 
         AudioSourceComponent() = default;
         AudioSourceComponent(const AudioSourceComponent&) = default;
