@@ -25,3 +25,14 @@ auto sourceComponent = source.AddComponent<AudioSourceComponent>();
 sourceComponent.Sound = Assets::Load<AudioSource>("sounds/example_sound.wav");
 ```
 This will also manage the spatial audio when using the `Scene::OnUpdateRuntime` method.
+
+### Modifying the Source
+```cpp
+Entity source = scene->CreateEntity("Source");
+auto sourceComponent = source.AddComponent<AudioSourceComponent>();
+sourceComponent.Sound = Assets::Load<AudioSource>("sounds/example_sound.wav");
+sourceComponent.Volume = 1.0f; // AL_GAIN
+sourceComponent.Pitch = 1.0f; // AL_PITCH
+sourceComponent.Looping = false; // AL_LOOPING
+```
+All of the properties can be directly mapped to their OpenAL equivilant
