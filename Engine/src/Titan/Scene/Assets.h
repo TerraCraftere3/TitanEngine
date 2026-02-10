@@ -10,6 +10,7 @@
 #include "Titan/Renderer/RHI/Texture.h"
 #include "Titan/Scene/PhysicsMaterial.h"
 #include "Titan/Scene/Scene.h"
+#include "FileWatch.hpp"
 
 #include <yaml-cpp/yaml.h>
 #include <filesystem>
@@ -110,6 +111,8 @@ namespace Titan
 
     namespace Assets
     {
+
+        inline static std::unordered_map<std::string, Scope<filewatch::FileWatch<std::string>>> s_Hotreloaders;
 
         void Init();
         void Shutdown();
@@ -465,6 +468,25 @@ namespace Titan
             {
                 static_assert(always_false<T>::value, "Unsupported asset type in Assets::Reload<T>");
             }
+        }
+
+        template <typename T>
+        void AttachHotreloader(const std::filesystem::path& path)
+        {
+            auto absPath = std::filesystem::absolute(path).string();
+            if (s_Hotreloaders.contains(absPath))
+                return;
+
+            s_Hotreloaders[absPath] = CreateScope<filewatch::FileWatch<std::string>>(
+                absPath,
+                [path](const std::string& /*changedPath*/, const filewatch::Event changeType)
+                {
+                    if (changeType != filewatch::Event::modified && changeType != filewatch::Event::renamed_new &&
+                        changeType != filewatch::Event::added)
+                        return;
+
+                    Application::GetInstance()->SubmitToMainThread([path]() { Reload<T>(path); });
+                });
         }
 
         AssetType GetTypeForFile(const std::filesystem::path& filePath);

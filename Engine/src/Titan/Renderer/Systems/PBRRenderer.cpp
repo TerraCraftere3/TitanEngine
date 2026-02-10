@@ -32,7 +32,10 @@ namespace Titan
         s_PBRData.DefaultIrradiance = defaultAmbient->CreateIrradianceMap();
 
         // Shader
-        s_PBRData.Shader = Shader::Create("resources/shader/RendererPBR.slang");
+        s_PBRData.Shader = Assets::Load<Shader>("resources/shader/RendererPBR.slang");
+        #ifdef TI_BUILD_DEBUG
+        Assets::AttachHotreloader<Shader>("resources/shader/RendererPBR.slang");
+        #endif
 
         // Create pipeline
         s_PBRData.Pipeline = PipelineState::Create();

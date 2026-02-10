@@ -58,8 +58,13 @@ namespace Titan
 
     void SkyboxRenderer::Init()
     {
-        s_SBData.CubemapShader = Shader::Create("resources/shader/RendererSkyboxHDRI.slang");
-        s_SBData.ColorShader = Shader::Create("resources/shader/RendererSkyboxColor.slang");
+        s_SBData.CubemapShader = Assets::Load<Shader>("resources/shader/RendererSkyboxHDRI.slang");
+        s_SBData.ColorShader = Assets::Load<Shader>("resources/shader/RendererSkyboxColor.slang");
+
+        #ifdef TI_BUILD_DEBUG
+        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxHDRI.slang");
+        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxColor.slang");
+        #endif
 
         s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData));
 
