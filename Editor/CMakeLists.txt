@@ -18,6 +18,10 @@ target_include_directories(editor PRIVATE
 # ---- C++ Standard ----
 target_compile_features(editor PUBLIC cxx_std_23)
 
+target_compile_options(editor PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/wd4068>
+)
+
 # ---- Libraries ----
 target_link_libraries(editor PRIVATE engine)
 

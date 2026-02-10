@@ -64,7 +64,6 @@ static const float PI = 3.14159265359;
 
 float4 GET_ALBEDO_COLOR(Material mat, float2 texCoord)
 {
-    return float4(1.0, 0.0, 1.0, 1.0);
     float3 color = mat.AlbedoColor.rgb;
     color *= GetBindlessTexture(mat.AlbedoTextureIndex).Sample(texCoord).rgb;
     return float4(color, 1.0);

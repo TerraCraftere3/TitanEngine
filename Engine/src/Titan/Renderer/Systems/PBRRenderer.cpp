@@ -33,9 +33,9 @@ namespace Titan
 
         // Shader
         s_PBRData.Shader = Assets::Load<Shader>("resources/shader/RendererPBR.slang");
-        #ifdef TI_BUILD_DEBUG
+#ifdef TI_BUILD_DEBUG
         Assets::AttachHotreloader<Shader>("resources/shader/RendererPBR.slang");
-        #endif
+#endif
 
         // Create pipeline
         s_PBRData.Pipeline = PipelineState::Create();

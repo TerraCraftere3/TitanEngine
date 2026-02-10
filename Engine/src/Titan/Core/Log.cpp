@@ -59,7 +59,11 @@ namespace Titan
 
             // Create sinks
             auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+#ifdef TI_ENABLE_LOGGING
             console_sink->set_level(level);
+#else
+            console_sink->set_level(spdlog::level::err);
+#endif
             console_sink->set_pattern(format);
 
             // Use shared_ptr wrapper around the singleton instance
@@ -69,7 +73,6 @@ namespace Titan
 
             std::vector<spdlog::sink_ptr> sinks = {console_sink, custom_sink};
             m_Logger = CreateRef<spdlog::logger>(name, sinks.begin(), sinks.end());
-            m_Logger->set_level(level);
             spdlog::register_logger(m_Logger);
         }
 

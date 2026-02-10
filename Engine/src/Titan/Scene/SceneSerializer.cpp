@@ -822,13 +822,13 @@ namespace Titan
                                                               audioSourceComponent["Sound"].as<std::string>());
                         asc.Sound->GetBuffer()->SetInternalPath(audioSourceComponent["Sound"].as<std::string>());
                     }
-                    if(audioSourceComponent["Volume"])
+                    if (audioSourceComponent["Volume"])
                         asc.Volume = audioSourceComponent["Volume"].as<float>();
 
-                    if(audioSourceComponent["Pitch"])
+                    if (audioSourceComponent["Pitch"])
                         asc.Pitch = audioSourceComponent["Pitch"].as<float>();
 
-                    if(audioSourceComponent["Looping"])
+                    if (audioSourceComponent["Looping"])
                         asc.Looping = audioSourceComponent["Looping"].as<bool>();
                 }
 

@@ -83,7 +83,6 @@ namespace Titan
     };
 } // namespace Titan
 
-#ifdef TI_ENABLE_LOGGING
 // ---- Core Logging ----
 #define TI_CORE_TRACE(...) ::Titan::Log::GetCoreLogger()->Trace(__VA_ARGS__)
 #define TI_CORE_INFO(...) ::Titan::Log::GetCoreLogger()->Info(__VA_ARGS__)
@@ -97,18 +96,3 @@ namespace Titan
 #define TI_WARN(...) ::Titan::Log::GetClientLogger()->Warn(__VA_ARGS__)
 #define TI_ERROR(...) ::Titan::Log::GetClientLogger()->Error(__VA_ARGS__)
 #define TI_CRITICAL(...) ::Titan::Log::GetClientLogger()->Critical(__VA_ARGS__)
-#else
-// ---- Core Logging ----
-#define TI_CORE_TRACE(...)
-#define TI_CORE_INFO(...)
-#define TI_CORE_WARN(...)
-#define TI_CORE_ERROR(...) ::Titan::Log::GetCoreLogger()->Error(__VA_ARGS__)
-#define TI_CORE_CRITICAL(...) ::Titan::Log::GetCoreLogger()->Critical(__VA_ARGS__)
-
-// ---- Client Logging ----
-#define TI_TRACE(...)
-#define TI_INFO(...)
-#define TI_WARN(...)
-#define TI_ERROR(...) ::Titan::Log::GetClientLogger()->Error(__VA_ARGS__)
-#define TI_CRITICAL(...) ::Titan::Log::GetClientLogger()->Critical(__VA_ARGS__)
-#endif

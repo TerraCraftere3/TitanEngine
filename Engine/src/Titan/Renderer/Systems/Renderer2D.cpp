@@ -180,12 +180,11 @@ namespace Titan
         s_Data.QuadShader = Assets::Load<Shader>("resources/shader/RendererQuad.slang");
         s_Data.LineShader = Assets::Load<Shader>("resources/shader/RendererLine.slang");
 
-        
-        #ifdef TI_BUILD_DEBUG
+#ifdef TI_BUILD_DEBUG
         Assets::AttachHotreloader<Shader>("resources/shader/RendererCircle.slang");
         Assets::AttachHotreloader<Shader>("resources/shader/RendererQuad.slang");
         Assets::AttachHotreloader<Shader>("resources/shader/RendererLine.slang");
-        #endif
+#endif
 
         s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData));
 

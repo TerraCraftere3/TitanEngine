@@ -18,6 +18,9 @@ target_include_directories(sandbox PRIVATE
 # ---- C++ Standard ----
 target_compile_features(sandbox PUBLIC cxx_std_23)
 
+target_compile_options(sandbox PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/wd4068>
+)
 
 # ---- Libraries ----
 target_link_libraries(sandbox PRIVATE engine glad)

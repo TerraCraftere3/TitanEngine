@@ -309,7 +309,8 @@ namespace Titan
                 auto& audioSource = sview.get<AudioSourceComponent>(e);
                 glm::mat4 transform = entity.GetComponent<TransformComponent>().GetTransform();
                 glm::vec3 position = transform[3]; // Extract translation from transform
-                if (audioSource.Sound){
+                if (audioSource.Sound)
+                {
                     audioSource.Sound->SetPosition(position.x, position.y, position.z);
                     audioSource.Sound->SetGain(audioSource.Volume);
                     audioSource.Sound->SetPitch(audioSource.Pitch);

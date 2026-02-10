@@ -1,4 +1,5 @@
 #pragma once
+#include "FileWatch.hpp"
 #include "Titan/Audio/Source.h"
 #include "Titan/Core/Application.h"
 #include "Titan/Core/UUID.h"
@@ -10,7 +11,6 @@
 #include "Titan/Renderer/RHI/Texture.h"
 #include "Titan/Scene/PhysicsMaterial.h"
 #include "Titan/Scene/Scene.h"
-#include "FileWatch.hpp"
 
 #include <yaml-cpp/yaml.h>
 #include <filesystem>

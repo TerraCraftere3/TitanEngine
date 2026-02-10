@@ -263,9 +263,9 @@ namespace Titan
         s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances);
 
         s_3DData.Shader = Assets::Load<Shader>("resources/shader/RendererGeometry.slang");
-        #ifdef TI_BUILD_DEBUG
+#ifdef TI_BUILD_DEBUG
         Assets::AttachHotreloader<Shader>("resources/shader/RendererGeometry.slang");
-        #endif
+#endif
 
         // Create pipeline state
         s_3DData.Pipeline = PipelineState::Create();

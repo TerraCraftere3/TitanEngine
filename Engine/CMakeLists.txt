@@ -127,6 +127,7 @@ target_compile_definitions(engine PUBLIC
     $<$<CONFIG:MinSizeRel>:TI_BUILD_RELEASE_MINIMAL_SIZE>
     NOMINMAX
 )
+
 target_compile_options(engine PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/wd4068>
 )
