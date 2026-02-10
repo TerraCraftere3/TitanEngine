@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - 'feature/git-actions'
   pull_request:
 
 jobs:
@@ -24,16 +25,16 @@ jobs:
         run: git config --global core.longpaths true
 
       - name: Install Vulkan SDK
-        shell: pwsh
-        run: choco install vulkan-sdk -y
+        uses: humbletim/setup-vulkan-sdk@v1.2.1
+        with:
+          vulkan-query-version: 1.4.304.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Cross, SPIRV-Tools, SPIRV-Reflect, SPIRV-Headers
+          vulkan-use-cache: true
 
-      - name: Configure Vulkan SDK environment
-        shell: pwsh
-        run: |
-          $vkRoot = Get-ChildItem -Path "C:\VulkanSDK" -Directory | Sort-Object Name -Descending | Select-Object -First 1
-          if (-not $vkRoot) { throw "Vulkan SDK not found in C:\VulkanSDK" }
-          "VULKAN_SDK=$($vkRoot.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
-          "PATH=$($vkRoot.FullName)\Bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Install CMake 4.x
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 4.0.0
 
       - name: Configure CMake
         shell: pwsh
