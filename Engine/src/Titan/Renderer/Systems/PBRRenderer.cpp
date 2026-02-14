@@ -51,6 +51,7 @@ namespace Titan
 
     void PBRRenderer::Render(Ref<Framebuffer> gbuffer, PBRSceneData data, Ref<Cubemap> irradiance)
     {
+        TI_PROFILE_FUNCTION();
         s_PBRData.SceneUniformBuffer->SetData(&data, sizeof(PBRSceneData));
 
         s_PBRData.Pipeline->SetUniformBuffer(s_PBRData.SceneUniformBuffer, 0);

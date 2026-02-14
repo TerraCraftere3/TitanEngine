@@ -40,6 +40,7 @@ namespace Titan
 
     void SceneHierarchyPanel::OnImGuiRender(bool* openHierarchy, bool* openProperties)
     {
+        TI_PROFILE_FUNCTION();
         if (openHierarchy && !*openHierarchy)
             return;
 

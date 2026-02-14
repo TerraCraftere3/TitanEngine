@@ -11,6 +11,7 @@ namespace Titan
 
     void ContentBrowserPanel::OnImGuiRender(bool* openBrowser, bool* openFile)
     {
+        TI_PROFILE_FUNCTION();
         RenderBrowser(openBrowser);
         RenderProperties(openFile);
     }

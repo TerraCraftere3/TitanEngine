@@ -34,8 +34,9 @@ namespace Titan
         static std::string GetVariant();
     };
 
-    class TI_API Process{
-        public:
+    class TI_API Process
+    {
+    public:
         static size_t GetCurrentProcessMemoryUsage();
         static size_t GetCurrentProcessVirtualMemoryUsage();
     };

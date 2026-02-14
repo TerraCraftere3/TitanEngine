@@ -129,6 +129,7 @@ namespace Titan
         builder.AddRenderPass("ClearPass", {}, {"SceneFramebuffer", "PreFX"},
                               [d](RenderGraph& graph, const RenderPass& pass)
                               {
+                                  TI_PROFILE_SCOPE("Clear Pass");
                                   auto fb = graph.GetFramebuffer("SceneFramebuffer");
                                   if (!fb)
                                       return;
@@ -142,6 +143,7 @@ namespace Titan
             "GeometryPass", {}, {"GeometryBuffer", "PreFX"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("Geometry Pass");
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
@@ -164,6 +166,7 @@ namespace Titan
             "PBRPass", {"GeometryBuffer", "SceneFramebuffer", "PreFX"}, {"SceneFramebuffer"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("PBR Pass");
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb || !gbuffer)
@@ -200,6 +203,7 @@ namespace Titan
             "SpritePass", {}, {"SceneFramebuffer", "PreFX"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("Sprite Pass");
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
@@ -223,6 +227,7 @@ namespace Titan
             "CirclePass", {}, {"SceneFramebuffer", "PreFX"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("Circle Pass");
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
@@ -243,6 +248,7 @@ namespace Titan
             "SkyboxPass", {}, {"SceneFramebuffer", "PreFX"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("Skybox Pass");
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
                 if (!fb)
                     return;
@@ -276,6 +282,7 @@ namespace Titan
             "OverlayPass", {}, {"SceneFramebuffer", "PreFX"},
             [d](RenderGraph& graph, const RenderPass& pass)
             {
+                TI_PROFILE_SCOPE("Overlay Pass");
                 if (!d->drawOverlay)
                     return;
                 auto fb = graph.GetFramebuffer("SceneFramebuffer");
@@ -362,6 +369,7 @@ namespace Titan
         builder.AddRenderPass("Tonemapping", {"SceneFramebuffer", "GeometryBuffer", "PreFX"}, {"PostTonemapping"},
                               [d](RenderGraph& graph, const RenderPass& pass)
                               {
+                                  TI_PROFILE_SCOPE("PostProcessing: Tonemapping Pass");
                                   auto inputFB = graph.GetFramebuffer("SceneFramebuffer");
                                   auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                                   auto outputFB = graph.GetFramebuffer("PostTonemapping");
@@ -383,6 +391,7 @@ namespace Titan
         builder.AddRenderPass("FXAA", {"SceneFramebuffer", "GeometryBuffer", "PostTonemapping"}, {"PostFXAA"},
                               [d](RenderGraph& graph, const RenderPass& pass)
                               {
+                                  TI_PROFILE_SCOPE("PostProcessing: FXAA Pass");
                                   auto inputFB = graph.GetFramebuffer("PostTonemapping");
                                   auto gbuffer = graph.GetFramebuffer("GeometryBuffer");
                                   auto outputFB = graph.GetFramebuffer("PostFXAA");
@@ -410,6 +419,7 @@ namespace Titan
 
     void SceneRenderer::RenderSceneRuntime(Ref<Scene> scene)
     {
+        TI_PROFILE_FUNCTION();
         Camera* mainCamera = nullptr;
         glm::mat4 cameraTransform;
 
@@ -442,6 +452,7 @@ namespace Titan
 
     void SceneRenderer::RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay)
     {
+        TI_PROFILE_FUNCTION();
         m_Data->view = camera.GetViewMatrix();
         m_Data->projection = camera.GetProjectionMatrix();
         m_Data->viewProjection = camera.GetViewProjection();

@@ -68,6 +68,7 @@ namespace Titan
 
     void ImGuiLayer::Begin()
     {
+        TI_PROFILE_FUNCTION();
         ImGui_ImplTitan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -76,6 +77,7 @@ namespace Titan
 
     void ImGuiLayer::End()
     {
+        TI_PROFILE_FUNCTION();
         ImGuiIO& io = ImGui::GetIO();
         Application* app = Application::GetInstance();
         io.DisplaySize = ImVec2(app->GetWindow().GetWidth(), app->GetWindow().GetHeight());
@@ -85,6 +87,7 @@ namespace Titan
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
+            TI_PROFILE_SCOPE("ImGui Viewport Windows");
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();

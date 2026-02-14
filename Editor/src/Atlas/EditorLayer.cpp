@@ -1,7 +1,6 @@
 #include "EditorLayer.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/LogPanel.h"
-#include "Panels/ProfilerPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Renderer/Thumbnails.h"
 
@@ -36,7 +35,6 @@ namespace Titan
         m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>();
         m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
         m_LogPanel = CreateScope<LogPanel>();
-        m_ProfilerPanel = CreateScope<ProfilerPanel>();
 
         NewScene();
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
@@ -183,9 +181,6 @@ namespace Titan
 
         if (m_EditorProperties.ShowLog)
             m_LogPanel->OnImGuiRender(&m_EditorProperties.ShowLog);
-
-        if (m_EditorProperties.ShowProfiler)
-            m_ProfilerPanel->OnImGuiRender(&m_EditorProperties.ShowProfiler);
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -293,9 +288,6 @@ namespace Titan
                 if (ImGui::MenuItem("Viewport", nullptr, &m_EditorProperties.ShowViewport))
                 {
                 }
-                if (ImGui::MenuItem("Profiler", nullptr, &m_EditorProperties.ShowProfiler))
-                {
-                }
                 if (ImGui::MenuItem("Log", nullptr, &m_EditorProperties.ShowLog))
                 {
                 }
@@ -332,7 +324,8 @@ namespace Titan
 
         ImGui::Text("FPS: %.1f", m_FPS);
         ImGui::Text("Ram Usage: %.2f MB", (float)Process::GetCurrentProcessMemoryUsage() / (1024.0f * 1024.0f));
-        ImGui::Text("Page File Usage: %.2f MB", (float)Process::GetCurrentProcessVirtualMemoryUsage() / (1024.0f * 1024.0f));
+        ImGui::Text("Page File Usage: %.2f MB",
+                    (float)Process::GetCurrentProcessVirtualMemoryUsage() / (1024.0f * 1024.0f));
         ImGui::Text("Draw Calls: %d", RenderCommand::GetStats().GetTotalDrawCalls());
         ImGui::Text("CPU Time: %.2f ms", Application::GetInstance()->GetCPUTimeMeasurement()->GetElapsedMilliseconds());
         ImGui::Text("GPU Time: %.2f ms", Application::GetInstance()->GetGPUTimeMeasurement()->GetElapsedMilliseconds());

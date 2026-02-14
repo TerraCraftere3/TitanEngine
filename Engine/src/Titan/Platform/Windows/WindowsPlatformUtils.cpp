@@ -12,9 +12,9 @@
 // clang-format on
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#include <psapi.h>
 #include <shlobj.h>
 #include <windows.h>
-#include <psapi.h>
 #include <string>
 
 namespace Titan

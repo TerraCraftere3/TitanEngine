@@ -17,7 +17,6 @@ namespace Titan
 
         bool ShowStatistics = true;
         bool ShowViewport = true;
-        bool ShowProfiler = true;
         bool ShowLog = true;
 
         bool EnableMultiViewports = false;

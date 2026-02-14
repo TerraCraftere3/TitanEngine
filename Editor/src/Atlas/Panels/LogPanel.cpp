@@ -8,6 +8,7 @@ namespace Titan
 
     void LogPanel::OnImGuiRender(bool* open)
     {
+        TI_PROFILE_FUNCTION();
         ImGui::Begin(ICON_FA_TERMINAL " Log###Log", open);
 
         ImGui::SameLine();

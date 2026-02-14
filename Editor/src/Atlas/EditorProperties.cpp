@@ -32,7 +32,6 @@ namespace Titan
             if (panels["ShowContentBrowserFile"])       props.ShowContentBrowserFile = panels["ShowContentBrowserFile"].as<bool>();
             if (panels["ShowStatistics"])               props.ShowStatistics = panels["ShowStatistics"].as<bool>();
             if (panels["ShowViewport"])                 props.ShowViewport = panels["ShowViewport"].as<bool>();
-            if (panels["ShowProfiler"])                 props.ShowProfiler = panels["ShowProfiler"].as<bool>();
             if (panels["ShowLog"])                      props.ShowLog = panels["ShowLog"].as<bool>();
             // clang-format on
         }
@@ -88,7 +87,6 @@ namespace Titan
         out << YAML::Key << "ShowContentBrowserFile" << YAML::Value <<       props.ShowContentBrowserFile;
         out << YAML::Key << "ShowStatistics" << YAML::Value <<               props.ShowStatistics;
         out << YAML::Key << "ShowViewport" << YAML::Value <<                 props.ShowViewport;
-        out << YAML::Key << "ShowProfiler" << YAML::Value <<                 props.ShowProfiler;
         out << YAML::Key << "ShowLog" << YAML::Value <<                      props.ShowLog;
         // clang-format on
         out << YAML::EndMap;
