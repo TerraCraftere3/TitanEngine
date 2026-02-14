@@ -10,6 +10,7 @@
 #include "Titan/Renderer/Systems/SkyboxRenderer.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -18,6 +19,8 @@ namespace Titan
         Ref<RenderGraph> renderGraph;
         Ref<Framebuffer> finalFramebuffer;
         Ref<PostProcessingStack> postFXs;
+        Ref<Texture2D> iconLightbulb;
+        Ref<Texture2D> iconAudio;
 
         // Camera data (shared across passes)
         glm::mat4 view{1.0f};
@@ -73,6 +76,18 @@ namespace Titan
             d.postFXs = CreateRef<PostProcessingStack>();
             d.postFXs->AddEffect(CreateRef<TonemappingEffect>());
             d.postFXs->AddEffect(CreateRef<FXAAEffect>());
+        }
+
+        if (!d.iconLightbulb)
+        {
+            auto path = Filesystem::GetExecutableDirectory() / "resources" / "icons" / "lightbulb.svg";
+            d.iconLightbulb = Texture2D::Create(path.string());
+        }
+
+        if (!d.iconAudio)
+        {
+            auto path = Filesystem::GetExecutableDirectory() / "resources" / "icons" / "sound.svg";
+            d.iconAudio = Texture2D::Create(path.string());
         }
 
         // Build/update the render graph
@@ -208,7 +223,7 @@ namespace Titan
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Sprite Pass (2D)");
-                Renderer2D::BeginScene(d->viewProjection);
+                Renderer2D::BeginScene(d->view, d->projection);
                 auto spriteView = d->currentScene->GetAllEntitiesWith<TransformComponent, SpriteRendererComponent>();
                 for (auto entity : spriteView)
                 {
@@ -232,7 +247,7 @@ namespace Titan
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Circle Pass (2D)");
-                Renderer2D::BeginScene(d->viewProjection);
+                Renderer2D::BeginScene(d->view, d->projection);
                 auto circleView = d->currentScene->GetAllEntitiesWith<TransformComponent, CircleRendererComponent>();
                 for (auto entity : circleView)
                 {
@@ -289,7 +304,7 @@ namespace Titan
                 if (!fb)
                     return;
                 RenderCommand::BeginRenderPass(fb, "Overlay Pass (2D + 3D)");
-                Renderer2D::BeginScene(d->viewProjection);
+                Renderer2D::BeginScene(d->view, d->projection);
                 auto boxColliderView =
                     d->currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
                 for (auto entity : boxColliderView)
@@ -339,7 +354,7 @@ namespace Titan
                     auto& transform = lookAtView.get<TransformComponent>(e);
                     auto& lookAt = lookAtView.get<LookAtComponent>(e);
                     glm::mat4 gizmoTransformation = glm::translate(glm::mat4(1.0f), lookAt.Position);
-                    Renderer2D::DrawMarker(gizmoTransformation);
+                    Renderer2D::DrawMarker(gizmoTransformation, (uint32_t)e);
                 }
                 if (d->drawAABBOverlay)
                 {
@@ -360,6 +375,13 @@ namespace Titan
                             Renderer2D::DrawCube(finalTransform, color);
                         }
                     }
+                }
+                auto audioView = d->currentScene->GetAllEntitiesWith<TransformComponent, AudioSourceComponent>();
+                for (auto entity : audioView)
+                {
+                    auto [transform, audio] = audioView.get<TransformComponent, AudioSourceComponent>(entity);
+                    Renderer2D::DrawBillboard(glm::vec3(transform.GetTransform()[3]), glm::vec2(0.5f), d->iconAudio,
+                                              1.0f, glm::vec4(1.0f), (uint32_t)entity);
                 }
                 Renderer2D::DrawGrid(20.0f);
                 Renderer2D::EndScene();

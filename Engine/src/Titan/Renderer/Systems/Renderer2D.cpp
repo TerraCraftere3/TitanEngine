@@ -88,6 +88,9 @@ namespace Titan
         };
         CameraData CamBuffer;
         Ref<UniformBuffer> CamUniformBuffer;
+
+        glm::mat4 ViewMatrix{1.0f};
+        bool HasViewMatrix = false;
     };
 
     static Renderer2DData s_Data;
@@ -236,11 +239,15 @@ namespace Titan
     void Renderer2D::BeginScene(const EditorCamera& camera)
     {
         BeginScene(camera.GetViewProjection());
+        s_Data.ViewMatrix = camera.GetViewMatrix();
+        s_Data.HasViewMatrix = true;
     }
 
     void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
     {
         BeginScene(camera.GetProjection() * glm::inverse(transform));
+        s_Data.ViewMatrix = glm::inverse(transform);
+        s_Data.HasViewMatrix = true;
     }
 
     void Renderer2D::BeginScene(const glm::mat4& viewTransform)
@@ -248,6 +255,9 @@ namespace Titan
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call Renderer2D::EndScene()?")
         s_Data.CamBuffer.ViewProjection = viewTransform;
         s_Data.CamUniformBuffer->SetData(&s_Data.CamBuffer, sizeof(Renderer2DData::CameraData));
+
+        s_Data.ViewMatrix = glm::mat4(1.0f);
+        s_Data.HasViewMatrix = false;
 
         s_Data.QuadIndexCount = 0;
         s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -258,6 +268,13 @@ namespace Titan
         s_Data.TextureSlotIndex = 1;
 
         s_IsRendering = true;
+    }
+
+    void Renderer2D::BeginScene(const glm::mat4& view, const glm::mat4& projection)
+    {
+        BeginScene(projection * view);
+        s_Data.ViewMatrix = view;
+        s_Data.HasViewMatrix = true;
     }
 
     void Renderer2D::EndScene()
@@ -382,6 +399,171 @@ namespace Titan
         s_Data.QuadVertexBufferPtr++;
 
         s_Data.QuadIndexCount += 6;
+    }
+
+    namespace
+    {
+        void GetBillboardAxes(glm::vec3& right, glm::vec3& up)
+        {
+            if (s_Data.HasViewMatrix)
+            {
+                glm::mat4 cameraTransform = glm::inverse(s_Data.ViewMatrix);
+                right = glm::normalize(glm::vec3(cameraTransform[0]));
+                up = glm::normalize(glm::vec3(cameraTransform[1]));
+            }
+            else
+            {
+                right = glm::vec3(1.0f, 0.0f, 0.0f);
+                up = glm::vec3(0.0f, 1.0f, 0.0f);
+            }
+        }
+    }
+
+    void Renderer2D::DrawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color,
+                                   int entityID)
+    {
+        if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
+            FlushAndReset();
+
+        const int texIndex = 0.0f;
+        const float tilingFactor = 1.0f;
+
+        glm::vec3 right;
+        glm::vec3 up;
+        GetBillboardAxes(right, up);
+
+        glm::vec3 transformedPositions[4];
+        for (int i = 0; i < 4; i++)
+        {
+            glm::vec2 local = glm::vec2(s_Data.QuadVertexPositions[i]);
+            transformedPositions[i] = position + right * (local.x * size.x) + up * (local.y * size.y);
+        }
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[0];
+        s_Data.QuadVertexBufferPtr->Color = color;
+        s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[1];
+        s_Data.QuadVertexBufferPtr->Color = color;
+        s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[2];
+        s_Data.QuadVertexBufferPtr->Color = color;
+        s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[3];
+        s_Data.QuadVertexBufferPtr->Color = color;
+        s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadIndexCount += 6;
+    }
+
+    void Renderer2D::DrawBillboard(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture,
+                                   float tilingFactor, const glm::vec4& tintColor, int entityID)
+    {
+        if (s_Data.QuadIndexCount >= s_Data.MaxIndices)
+            FlushAndReset();
+
+        int textureIndex = 0.0f;
+        for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+        {
+            if (*s_Data.TextureSlots[i].get() == *texture.get())
+            {
+                textureIndex = i;
+                break;
+            }
+        }
+
+        if (textureIndex == 0.0f)
+        {
+            textureIndex = (float)s_Data.TextureSlotIndex;
+            s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+            s_Data.TextureSlotIndex++;
+        }
+
+        glm::vec3 right;
+        glm::vec3 up;
+        GetBillboardAxes(right, up);
+
+        glm::vec3 transformedPositions[4];
+        for (int i = 0; i < 4; i++)
+        {
+            glm::vec2 local = glm::vec2(s_Data.QuadVertexPositions[i]);
+            transformedPositions[i] = position + right * (local.x * size.x) + up * (local.y * size.y);
+        }
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[0];
+        s_Data.QuadVertexBufferPtr->Color = tintColor;
+        s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[1];
+        s_Data.QuadVertexBufferPtr->Color = tintColor;
+        s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[2];
+        s_Data.QuadVertexBufferPtr->Color = tintColor;
+        s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadVertexBufferPtr->Position = transformedPositions[3];
+        s_Data.QuadVertexBufferPtr->Color = tintColor;
+        s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
+        s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+        s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+        s_Data.QuadVertexBufferPtr->EntityID = entityID;
+        s_Data.QuadVertexBufferPtr++;
+
+        s_Data.QuadIndexCount += 6;
+    }
+
+    void Renderer2D::DrawBillboard(const glm::mat4& transform, const glm::vec4& color, int entityID)
+    {
+        glm::vec3 position = glm::vec3(transform[3]);
+        glm::vec2 size = {
+            glm::length(glm::vec3(transform[0])),
+            glm::length(glm::vec3(transform[1]))
+        };
+
+        DrawBillboard(position, size, color, entityID);
+    }
+
+    void Renderer2D::DrawBillboard(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor,
+                                   const glm::vec4& tintColor, int entityID)
+    {
+        glm::vec3 position = glm::vec3(transform[3]);
+        glm::vec2 size = {
+            glm::length(glm::vec3(transform[0])),
+            glm::length(glm::vec3(transform[1]))
+        };
+
+        DrawBillboard(position, size, texture, tilingFactor, tintColor, entityID);
     }
 
     void Renderer2D::DrawTransformedQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor,

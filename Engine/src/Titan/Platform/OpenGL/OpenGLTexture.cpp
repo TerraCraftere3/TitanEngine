@@ -72,7 +72,7 @@ namespace Titan
             {
                 stbi_set_flip_vertically_on_load(1);
                 data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-                TI_CORE_ASSERT(data, "Failed to load image!");
+                TI_CORE_ASSERT(data, "Failed to load image {}", path);
 
                 if (channels == 4)
                 {

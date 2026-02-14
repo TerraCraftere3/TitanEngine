@@ -3,10 +3,10 @@
 **A Remake of my old Engine**
 
 ## Actions
-| Name            | Badge                                                                                                                                                                                                |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Building | [![Build (Windows)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml) |
-| Documentation | [![Deploy Docs](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml) |
+| Name          | Status                                                                                                                                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Building      | [![Build (Windows)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml) |
+| Documentation | [![Deploy Docs](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml)                       |
 
 ## 📡 Documentation
 You can take a look at the Documentation: [here](https://terracraftere3.github.io/TitanEngine/)
