@@ -331,6 +331,8 @@ namespace Titan
         ImGui::Begin("Statistics", open);
 
         ImGui::Text("FPS: %.1f", m_FPS);
+        ImGui::Text("Ram Usage: %.2f MB", (float)Process::GetCurrentProcessMemoryUsage() / (1024.0f * 1024.0f));
+        ImGui::Text("Page File Usage: %.2f MB", (float)Process::GetCurrentProcessVirtualMemoryUsage() / (1024.0f * 1024.0f));
         ImGui::Text("Draw Calls: %d", RenderCommand::GetStats().GetTotalDrawCalls());
         ImGui::Text("CPU Time: %.2f ms", Application::GetInstance()->GetCPUTimeMeasurement()->GetElapsedMilliseconds());
         ImGui::Text("GPU Time: %.2f ms", Application::GetInstance()->GetGPUTimeMeasurement()->GetElapsedMilliseconds());
