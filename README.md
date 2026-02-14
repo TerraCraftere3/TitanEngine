@@ -1,6 +1,12 @@
-# Titan Engine
+# Titan Engine 
 
 **A Remake of my old Engine**
+
+## Actions
+| Name            | Badge                                                                                                                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Building | [![Build (Windows)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/build-windows.yml) |
+| Documentation | [![Deploy Docs](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml/badge.svg)](https://github.com/TerraCraftere3/TitanEngine/actions/workflows/docs.yml) |
 
 ## 📡 Documentation
 You can take a look at the Documentation: [here](https://terracraftere3.github.io/TitanEngine/)
@@ -86,21 +92,23 @@ For now there is no linux support
   - [ ] Particle Systems
   - [x] Model Loading
   - [x] Directional Light
-- [ ] Post Processing
+- [x] Post Processing
   - [ ] Bloom
   - [x] Tone Mapping
   - [x] Anti Aliasing (FXAA)
   - [ ] SSAO (Screen Space Ambient Occlusion)
   - [ ] SSR (Screen Space Reflection)
-- [ ] Project Files
+  - [ ] Custom Shader
+- [x] Project Files
   - [ ] Exporting Projects
+  - [x] Engine Runtime (`Sandbox`)
 - [ ] Custom C# UIs
 - [ ] Asset Refactor
 - [x] Physics
   - [x] 2D
     - [x] Circle Collider
     - [x] Quad Collider
-  - [ ] 3D
+  - [x] 3D
     - [ ] Mesh Collider
     - [x] Cube Collider
     - [x] Sphere Collider
