@@ -18,6 +18,8 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SkyboxComponent:
+      Normal:
+        Time: 0
       Mode: Normal
   - Entity: 1229789391634107600
     TagComponent:

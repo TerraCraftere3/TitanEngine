@@ -119,6 +119,10 @@ namespace Titan
             glm::vec3 TopColor = glm::vec3(0.1f, 0.3f, 0.7f);
             glm::vec3 BottomColor = glm::vec3(0.9f, 0.9f, 1.0f);
         } colorrampSettings;
+        struct NormalSettings
+        {
+            float Time = 0.0f;
+        } normalSettings;
         enum Mode
         {
             HDRI = 0,

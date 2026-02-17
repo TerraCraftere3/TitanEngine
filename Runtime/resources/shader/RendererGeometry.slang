@@ -1,4 +1,5 @@
-#include "Library/Common.slang"
+#include "Library/Types.slang"
+#include "Library/Functions.slang"
 
 cbuffer GlobalUBO : register(b0)
 {

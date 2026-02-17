@@ -679,6 +679,9 @@ namespace Titan
                     ImReflect::Input("Top Color", component.colorrampSettings.TopColor, config);
                     ImReflect::Input("Bottom Color", component.colorrampSettings.BottomColor, config);
                 }
+                else if(component.mode == SkyboxComponent::Mode::Normal){
+                    ImGui::DragFloat("Time", &component.normalSettings.Time, 0.05f);
+                }
             });
 
         DrawComponent<RigidbodyComponent>(ICON_FA_GEAR " Rigidbody", entity,

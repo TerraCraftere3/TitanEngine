@@ -6,9 +6,13 @@ cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_View;
     column_major float4x4 u_Projection;
-    
+
     float3 u_TopColor;
+    float _pad0;
     float3 u_BottomColor;
+    float _pad1;
+    float u_Time;
+    float3 _pad2;
 };
 
 struct VertexInput {

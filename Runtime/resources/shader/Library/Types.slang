@@ -30,6 +30,3 @@ typealias FSampler2D<
     let sampleCount : int = 0,
     let format : int = 0
 > = _Texture<T, __Shape2D, 0, 0, sampleCount, 0, 0, 1, format>;
-
-
-Sampler2D GetBindlessTexture(uint2 handle);

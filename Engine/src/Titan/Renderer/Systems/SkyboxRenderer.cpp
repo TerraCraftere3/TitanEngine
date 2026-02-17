@@ -20,6 +20,8 @@ namespace Titan
         float _pad0;
         glm::vec3 BottomColor;
         float _pad1;
+        float Time;
+        float _pad2[3];
     };
 
     struct SkyboxRendererData
@@ -135,11 +137,12 @@ namespace Titan
         RenderCommand::DrawArrays(36);
     }
 
-    void SkyboxRenderer::Render(glm::mat4 view, glm::mat4 projection)
+    void SkyboxRenderer::Render(float time, glm::mat4 view, glm::mat4 projection)
     {
         SkyboxSceneData data;
         data.View = view;
         data.Projection = projection;
+        data.Time = time;
 
         s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
 

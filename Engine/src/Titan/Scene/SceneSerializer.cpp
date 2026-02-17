@@ -364,6 +364,14 @@ namespace Titan
                 }
                 out << YAML::EndMap;
             }
+            if (sc.mode == SkyboxComponent::Mode::Normal)
+            {
+                out << YAML::Key << "Normal" << YAML::BeginMap;
+                {
+                    out << YAML::Key << "Time" << YAML::Value << sc.normalSettings.Time;
+                }
+                out << YAML::EndMap;
+            }
             out << YAML::Key << "Mode" << YAML::Value << Utils::SkyboxModeToString(sc.mode);
 
             out << YAML::EndMap; // SkyboxComponent
@@ -738,6 +746,13 @@ namespace Titan
 
                         if (crNode["BottomColor"])
                             sc.colorrampSettings.BottomColor = crNode["BottomColor"].as<glm::vec3>();
+                    }
+
+                    auto normalNode = skyboxComponent["Normal"];
+                    if (normalNode)
+                    {
+                        if (normalNode["Time"])
+                            sc.normalSettings.Time = normalNode["Time"].as<float>();
                     }
 
                     if (skyboxComponent["Mode"])
