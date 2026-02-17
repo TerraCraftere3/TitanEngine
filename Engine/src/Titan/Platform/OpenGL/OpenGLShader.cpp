@@ -82,21 +82,6 @@ namespace Titan
         return result;
     }
 
-    static std::string ReadLibrarySlang()
-    {
-        static std::string libraryCode;
-        if (libraryCode.empty())
-        {
-            std::filesystem::path libPath = "resources/shader/Library.slang";
-            if (!std::filesystem::exists(libPath))
-            {
-                libPath = std::filesystem::path("Runtime") / "resources" / "shader" / "Library.slang";
-            }
-            libraryCode = ReadFile(libPath.string());
-        }
-        return libraryCode;
-    }
-
     std::string GetPathWithoutExtension(const std::string& pathStr)
     {
         std::filesystem::path path(pathStr);
@@ -191,38 +176,9 @@ namespace Titan
         return shaderSources;
     }
 
-    std::filesystem::path CreateTempSlangFile(const std::string& contents)
-    {
-        auto tempDir = std::filesystem::temp_directory_path();
-
-        // Generate a random filename
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<uint64_t> dis;
-        std::string filename = "slang_tmp_" + std::to_string(dis(gen)) + ".slang";
-
-        auto tmpPath = tempDir / filename;
-
-        // Write contents to the file
-        std::ofstream out(tmpPath, std::ios::binary);
-        if (!out.is_open())
-            throw std::runtime_error("Failed to create temp file for Slang shader");
-
-        out << contents;
-        out.close(); // explicitly flush
-
-        return tmpPath;
-    }
-
     void OpenGLShader::CompileSlangShader(const std::string& filepath)
     {
         std::string shaderSource = ReadFile(filepath);
-
-        std::string combinedSource =
-            "// Library Headers\n" + ReadLibrarySlang() + "\n\n// Source Headers\n" + shaderSource;
-
-        std::filesystem::path tmpPath = CreateTempSlangFile(combinedSource);
-
         // Create Slang global session
         Slang::ComPtr<slang::IGlobalSession> globalSession;
         if (SLANG_FAILED(slang::createGlobalSession(globalSession.writeRef())))
@@ -251,7 +207,7 @@ namespace Titan
 
         // Load the Slang module
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        slang::IModule* module = session->loadModule(tmpPath.string().c_str(), diagnosticsBlob.writeRef());
+        slang::IModule* module = session->loadModule(filepath.c_str(), diagnosticsBlob.writeRef());
 
         if (diagnosticsBlob)
         {
@@ -308,7 +264,6 @@ namespace Titan
 
         // Compile the generated GLSL code
         Compile(compiledShaders);
-        std::filesystem::remove(tmpPath);
     }
 
     std::string OpenGLShader::CompileSlangEntryPoint(Slang::ComPtr<slang::ISession> session, slang::IModule* module,

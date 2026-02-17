@@ -1,4 +1,4 @@
-// Blit Shader - Simple framebuffer copy with optional entity passthrough
+#include "Common.slang"
 
 cbuffer BlitParams : register(b0)
 {

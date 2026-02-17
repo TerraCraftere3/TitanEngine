@@ -300,6 +300,8 @@ namespace Titan
                     return "HDRI";
                 case SkyboxComponent::Mode::Colorramp:
                     return "Colorramp";
+                case SkyboxComponent::Mode::Normal:
+                    return "Normal";
             }
             return "Colorramp";
         }
@@ -314,6 +316,9 @@ namespace Titan
 
             if (s == "colorramp")
                 return SkyboxComponent::Mode::Colorramp;
+
+            if (s == "normal")
+                return SkyboxComponent::Mode::Normal;
 
             return SkyboxComponent::Mode::Colorramp;
         }

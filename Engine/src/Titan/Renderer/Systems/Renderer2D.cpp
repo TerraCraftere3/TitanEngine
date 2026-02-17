@@ -417,7 +417,7 @@ namespace Titan
                 up = glm::vec3(0.0f, 1.0f, 0.0f);
             }
         }
-    }
+    } // namespace
 
     void Renderer2D::DrawBillboard(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color,
                                    int entityID)
@@ -546,10 +546,7 @@ namespace Titan
     void Renderer2D::DrawBillboard(const glm::mat4& transform, const glm::vec4& color, int entityID)
     {
         glm::vec3 position = glm::vec3(transform[3]);
-        glm::vec2 size = {
-            glm::length(glm::vec3(transform[0])),
-            glm::length(glm::vec3(transform[1]))
-        };
+        glm::vec2 size = {glm::length(glm::vec3(transform[0])), glm::length(glm::vec3(transform[1]))};
 
         DrawBillboard(position, size, color, entityID);
     }
@@ -558,10 +555,7 @@ namespace Titan
                                    const glm::vec4& tintColor, int entityID)
     {
         glm::vec3 position = glm::vec3(transform[3]);
-        glm::vec2 size = {
-            glm::length(glm::vec3(transform[0])),
-            glm::length(glm::vec3(transform[1]))
-        };
+        glm::vec2 size = {glm::length(glm::vec3(transform[0])), glm::length(glm::vec3(transform[1]))};
 
         DrawBillboard(position, size, texture, tilingFactor, tintColor, entityID);
     }

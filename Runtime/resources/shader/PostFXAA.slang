@@ -1,4 +1,4 @@
-// FXAA Shader - HLSL / Slang
+#include "Common.slang"
 
 cbuffer FXAAParams : register(b0)
 {

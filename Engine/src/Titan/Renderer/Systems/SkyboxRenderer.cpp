@@ -91,7 +91,6 @@ namespace Titan
         s_SBData.ColorPipeline->SetUniformBuffer(s_SBData.SceneUniformBuffer, 0);
         s_SBData.ColorPipeline->SetDepthFunction(DepthFunc::LessEqual);
 
-        
         s_SBData.NormalPipeline = PipelineState::Create();
         s_SBData.NormalPipeline->SetShader(s_SBData.NormalShader);
         s_SBData.NormalPipeline->SetVertexArray(s_SBData.CubeVAO);

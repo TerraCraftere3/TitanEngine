@@ -1,3 +1,5 @@
+#include "Common.slang"
+
 cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_ViewProjection; // 64 bytes

@@ -1,3 +1,5 @@
+#include "Common.slang"
+
 cbuffer GlobalUBO : register(b0)
 {
     float3 u_ViewPosition;                  // 12 bytes

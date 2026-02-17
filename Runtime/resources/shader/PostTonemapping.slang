@@ -1,3 +1,5 @@
+#include "Common.slang"
+
 cbuffer TonemappingParams : register(b0)
 {
     int u_Operator;
