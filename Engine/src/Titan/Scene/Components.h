@@ -122,7 +122,8 @@ namespace Titan
         enum Mode
         {
             HDRI = 0,
-            Colorramp = 1
+            Colorramp = 1,
+            Normal = 2,
         } mode = HDRI;
 
         SkyboxComponent() = default;

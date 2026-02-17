@@ -26,8 +26,10 @@ namespace Titan
     {
         Ref<Shader> CubemapShader;
         Ref<Shader> ColorShader;
+        Ref<Shader> NormalShader;
         Ref<PipelineState> CubemapPipeline;
         Ref<PipelineState> ColorPipeline;
+        Ref<PipelineState> NormalPipeline;
         Ref<UniformBuffer> SceneUniformBuffer;
         Ref<VertexArray> CubeVAO;
     };
@@ -60,10 +62,12 @@ namespace Titan
     {
         s_SBData.CubemapShader = Assets::Load<Shader>("resources/shader/RendererSkyboxHDRI.slang");
         s_SBData.ColorShader = Assets::Load<Shader>("resources/shader/RendererSkyboxColor.slang");
+        s_SBData.NormalShader = Assets::Load<Shader>("resources/shader/RendererSkybox.slang");
 
 #ifdef TI_BUILD_DEBUG
         Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxHDRI.slang");
         Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxColor.slang");
+        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkybox.slang");
 #endif
 
         s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData));
@@ -86,12 +90,20 @@ namespace Titan
         s_SBData.ColorPipeline->SetVertexArray(s_SBData.CubeVAO);
         s_SBData.ColorPipeline->SetUniformBuffer(s_SBData.SceneUniformBuffer, 0);
         s_SBData.ColorPipeline->SetDepthFunction(DepthFunc::LessEqual);
+
+        
+        s_SBData.NormalPipeline = PipelineState::Create();
+        s_SBData.NormalPipeline->SetShader(s_SBData.NormalShader);
+        s_SBData.NormalPipeline->SetVertexArray(s_SBData.CubeVAO);
+        s_SBData.NormalPipeline->SetUniformBuffer(s_SBData.SceneUniformBuffer, 0);
+        s_SBData.NormalPipeline->SetDepthFunction(DepthFunc::LessEqual);
     }
 
     void SkyboxRenderer::Shutdown()
     {
         s_SBData.CubemapPipeline.reset();
         s_SBData.ColorPipeline.reset();
+        s_SBData.NormalPipeline.reset();
         s_SBData = {};
     }
 
@@ -120,6 +132,19 @@ namespace Titan
         s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
 
         s_SBData.ColorPipeline->Bind();
+
+        RenderCommand::DrawArrays(36);
+    }
+
+    void SkyboxRenderer::Render(glm::mat4 view, glm::mat4 projection)
+    {
+        SkyboxSceneData data;
+        data.View = view;
+        data.Projection = projection;
+
+        s_SBData.SceneUniformBuffer->SetData(&data, sizeof(data));
+
+        s_SBData.NormalPipeline->Bind();
 
         RenderCommand::DrawArrays(36);
     }

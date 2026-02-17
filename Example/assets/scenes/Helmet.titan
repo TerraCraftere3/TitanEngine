@@ -23,7 +23,7 @@ Entities:
       Colorramp:
         TopColor: [0.1, 0.3, 0.7]
         BottomColor: [0.9, 0.9, 1]
-      Mode: HDRI
+      Mode: Colorramp
   - Entity: 1229789391634107600
     TagComponent:
       Tag: Camera
