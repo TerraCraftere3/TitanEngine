@@ -1,4 +1,4 @@
-#include "Common.slang"
+#include "Library/Common.slang"
 
 cbuffer TonemappingParams : register(b0)
 {

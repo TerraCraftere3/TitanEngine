@@ -1,4 +1,4 @@
-#include "Common.slang"
+#include "Library/Common.slang"
 
 cbuffer FXAAParams : register(b0)
 {
