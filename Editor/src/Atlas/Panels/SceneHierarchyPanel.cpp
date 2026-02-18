@@ -40,6 +40,7 @@ namespace Titan
 
     void SceneHierarchyPanel::OnImGuiRender(bool* openHierarchy, bool* openProperties)
     {
+        TI_PROFILE_FUNCTION();
         if (openHierarchy && !*openHierarchy)
             return;
 
@@ -677,6 +678,10 @@ namespace Titan
                     config.push<glm::vec3>().as_color().pop();
                     ImReflect::Input("Top Color", component.colorrampSettings.TopColor, config);
                     ImReflect::Input("Bottom Color", component.colorrampSettings.BottomColor, config);
+                }
+                else if (component.mode == SkyboxComponent::Mode::Normal)
+                {
+                    ImGui::DragFloat("Time", &component.normalSettings.Time, 0.05f);
                 }
             });
 

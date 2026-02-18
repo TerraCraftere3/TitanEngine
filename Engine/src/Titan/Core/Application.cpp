@@ -89,7 +89,10 @@ namespace Titan
             {
                 TI_PROFILE_SCOPE("Layer Update");
                 for (Layer* layer : m_LayerStack)
+                {
+                    TI_PROFILE_SCOPE(layer->GetName().c_str());
                     layer->OnUpdate(timestep);
+                }
             }
 
             m_GPUTimeMeasurement->Stop();
@@ -101,6 +104,7 @@ namespace Titan
                 m_ImGuiLayer->Begin();
                 for (Layer* layer : m_LayerStack)
                 {
+                    TI_PROFILE_SCOPE(layer->GetName().c_str());
                     layer->OnImGuiRender(ImGui::GetCurrentContext());
                 }
                 m_ImGuiLayer->End();

@@ -327,6 +327,7 @@ namespace Titan
 
     void GeometryRenderer::BeginScene(const glm::mat4& viewProjectionMatrix, PolygonMode polygonMode)
     {
+        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(!s_IsRendering, "Forgot to call GeometryRenderer::EndScene()?");
 
         s_3DData.CamBuffer.ViewProjection = viewProjectionMatrix;
@@ -343,6 +344,7 @@ namespace Titan
 
     void GeometryRenderer::EndScene()
     {
+        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(s_IsRendering, "Called EndScene() without BeginScene()");
 
         Flush(); // Flush remaining instances
@@ -360,6 +362,7 @@ namespace Titan
 
     void GeometryRenderer::Flush()
     {
+        TI_PROFILE_FUNCTION();
         if (s_3DData.CurrentInstanceCount == 0 || !s_3DData.CurrentMeshGPU)
             return;
 

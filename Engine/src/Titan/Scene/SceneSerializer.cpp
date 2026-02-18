@@ -346,18 +346,32 @@ namespace Titan
             out << YAML::BeginMap; // SkyboxComponent
 
             auto& sc = entity.GetComponent<SkyboxComponent>();
-            out << YAML::Key << "HDRI" << YAML::BeginMap;
+            if (sc.mode == SkyboxComponent::Mode::HDRI)
             {
-                if (sc.hdriSettings.Skybox)
-                    out << YAML::Key << "Texture" << YAML::Value << sc.hdriSettings.Skybox->GetInternalPath();
+                out << YAML::Key << "HDRI" << YAML::BeginMap;
+                {
+                    if (sc.hdriSettings.Skybox)
+                        out << YAML::Key << "Texture" << YAML::Value << sc.hdriSettings.Skybox->GetInternalPath();
+                }
+                out << YAML::EndMap;
             }
-            out << YAML::EndMap;
-            out << YAML::Key << "Colorramp" << YAML::BeginMap;
+            if (sc.mode == SkyboxComponent::Mode::Colorramp)
             {
-                out << YAML::Key << "TopColor" << YAML::Value << sc.colorrampSettings.TopColor;
-                out << YAML::Key << "BottomColor" << YAML::Value << sc.colorrampSettings.BottomColor;
+                out << YAML::Key << "Colorramp" << YAML::BeginMap;
+                {
+                    out << YAML::Key << "TopColor" << YAML::Value << sc.colorrampSettings.TopColor;
+                    out << YAML::Key << "BottomColor" << YAML::Value << sc.colorrampSettings.BottomColor;
+                }
+                out << YAML::EndMap;
             }
-            out << YAML::EndMap;
+            if (sc.mode == SkyboxComponent::Mode::Normal)
+            {
+                out << YAML::Key << "Normal" << YAML::BeginMap;
+                {
+                    out << YAML::Key << "Time" << YAML::Value << sc.normalSettings.Time;
+                }
+                out << YAML::EndMap;
+            }
             out << YAML::Key << "Mode" << YAML::Value << Utils::SkyboxModeToString(sc.mode);
 
             out << YAML::EndMap; // SkyboxComponent
@@ -732,6 +746,13 @@ namespace Titan
 
                         if (crNode["BottomColor"])
                             sc.colorrampSettings.BottomColor = crNode["BottomColor"].as<glm::vec3>();
+                    }
+
+                    auto normalNode = skyboxComponent["Normal"];
+                    if (normalNode)
+                    {
+                        if (normalNode["Time"])
+                            sc.normalSettings.Time = normalNode["Time"].as<float>();
                     }
 
                     if (skyboxComponent["Mode"])

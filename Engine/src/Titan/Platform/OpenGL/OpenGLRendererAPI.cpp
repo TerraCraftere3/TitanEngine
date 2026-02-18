@@ -36,13 +36,20 @@ namespace Titan
 
     void OpenGLRendererAPI::BeginFrame()
     {
+        TI_PROFILE_FUNCTION();
         OpenGLPipelineState::ResetCachedState();
     }
 
-    void OpenGLRendererAPI::EndFrame() {}
+    void OpenGLRendererAPI::EndFrame()
+    {
+        TI_PROFILE_FUNCTION();
+        TI_PROFILE_ADD_VARIABLE("Draw Calls", m_Stats.DrawCalls);
+    }
 
     void OpenGLRendererAPI::BeginRenderPass(Ref<Framebuffer> framebuffer, std::string debugName)
     {
+        TI_PROFILE_FUNCTION();
+
 #ifdef TI_BUILD_DEBUG
         glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, debugName.c_str());
 #endif
@@ -60,6 +67,7 @@ namespace Titan
 
     void OpenGLRendererAPI::EndRenderPass()
     {
+        TI_PROFILE_FUNCTION();
 #ifdef TI_BUILD_DEBUG
         glPopDebugGroup();
 #endif

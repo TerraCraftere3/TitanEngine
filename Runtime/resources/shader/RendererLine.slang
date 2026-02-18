@@ -1,4 +1,5 @@
-// simple_color_shader.slang
+#include "Library/Types.slang"
+
 cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_ViewProjection;
@@ -21,8 +22,7 @@ struct VertexOutput
 };
 
 // Vertex Shader
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
 
@@ -40,8 +40,7 @@ struct FragmentOutput
     int o_EntityID : SV_Target1;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 

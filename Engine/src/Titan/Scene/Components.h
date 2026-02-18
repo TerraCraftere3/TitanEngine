@@ -119,10 +119,15 @@ namespace Titan
             glm::vec3 TopColor = glm::vec3(0.1f, 0.3f, 0.7f);
             glm::vec3 BottomColor = glm::vec3(0.9f, 0.9f, 1.0f);
         } colorrampSettings;
+        struct NormalSettings
+        {
+            float Time = 0.0f;
+        } normalSettings;
         enum Mode
         {
             HDRI = 0,
-            Colorramp = 1
+            Colorramp = 1,
+            Normal = 2,
         } mode = HDRI;
 
         SkyboxComponent() = default;
@@ -299,6 +304,8 @@ namespace Titan
                     return "HDRI";
                 case SkyboxComponent::Mode::Colorramp:
                     return "Colorramp";
+                case SkyboxComponent::Mode::Normal:
+                    return "Normal";
             }
             return "Colorramp";
         }
@@ -313,6 +320,9 @@ namespace Titan
 
             if (s == "colorramp")
                 return SkyboxComponent::Mode::Colorramp;
+
+            if (s == "normal")
+                return SkyboxComponent::Mode::Normal;
 
             return SkyboxComponent::Mode::Colorramp;
         }

@@ -233,10 +233,12 @@ namespace Titan
 
     void Scene::OnUpdateRuntime(Timestep ts)
     {
+        TI_PROFILE_FUNCTION();
         UpdateTransforms();
 
         // C# SCRIPTS
         {
+            TI_PROFILE_SCOPE("Script Update");
             auto view = GetAllEntitiesWith<ScriptComponent>();
             for (auto e : view)
             {
@@ -247,6 +249,7 @@ namespace Titan
 
         // PHYSICS 2D
         {
+            TI_PROFILE_SCOPE("Physics 2D Update");
             const int32_t velocityIterations = 6;
             const int32_t positionIterations = 2;
             if (m_PhysicsWorld)
@@ -272,6 +275,7 @@ namespace Titan
 
         // PHYSICS 3D
         {
+            TI_PROFILE_SCOPE("Physics 3D Update");
             if (m_Physics3D)
                 m_Physics3D->Step(ts);
 
@@ -302,6 +306,7 @@ namespace Titan
 
         // AUDIO
         {
+            TI_PROFILE_SCOPE("Audio Update");
             auto sview = GetAllEntitiesWith<AudioSourceComponent>();
             for (auto e : sview)
             {
@@ -343,10 +348,12 @@ namespace Titan
 
     void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
     {
+        TI_PROFILE_FUNCTION();
         UpdateTransforms();
 
         // PHYSICS 2D
         {
+            TI_PROFILE_SCOPE("Physics 2D Update");
             const int32_t velocityIterations = 6;
             const int32_t positionIterations = 2;
             if (m_PhysicsWorld)
@@ -372,6 +379,7 @@ namespace Titan
 
         // PHYSICS 3D
         {
+            TI_PROFILE_SCOPE("Physics 3D Update");
             if (m_Physics3D)
                 m_Physics3D->Step(ts);
 
@@ -404,6 +412,7 @@ namespace Titan
 
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
     {
+        TI_PROFILE_FUNCTION();
         UpdateTransforms();
 
         UpdateConstraints();
@@ -461,6 +470,7 @@ namespace Titan
 
     void Scene::OnPhysics2DStart()
     {
+        TI_PROFILE_FUNCTION();
         m_PhysicsWorld = new Physics2D::PhysicsWorld({0.0f, -9.8f});
 
         auto view = m_Registry.view<Rigidbody2DComponent>();
@@ -484,12 +494,14 @@ namespace Titan
 
     void Scene::OnPhysics2DStop()
     {
+        TI_PROFILE_FUNCTION();
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
     }
 
     void Scene::OnPhysics3DStart()
     {
+        TI_PROFILE_FUNCTION();
         m_Physics3D = new Physics3D::PhysicsWorld({0.0f, -9.8f, 0.0f});
 
         auto view = m_Registry.view<RigidbodyComponent>();
@@ -514,6 +526,7 @@ namespace Titan
 
     void Scene::OnPhysics3DStop()
     {
+        TI_PROFILE_FUNCTION();
         if (m_Physics3D)
         {
             auto view = m_Registry.view<RigidbodyComponent>();
@@ -535,6 +548,7 @@ namespace Titan
 
     void Scene::UpdateConstraints()
     {
+        TI_PROFILE_FUNCTION();
         auto view = m_Registry.view<TransformComponent, LookAtComponent>();
         for (auto e : view)
         {
@@ -547,6 +561,7 @@ namespace Titan
 
     void Scene::UpdateTransforms()
     {
+        TI_PROFILE_FUNCTION();
         // Reset UseWorldTransform for all transforms by default
         auto allTransforms = m_Registry.view<TransformComponent>();
         for (auto e : allTransforms)

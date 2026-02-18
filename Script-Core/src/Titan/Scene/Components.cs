@@ -366,7 +366,8 @@ namespace Titan
         public enum Mode
         {
             HDRI = 0,
-            Colorramp = 1
+            Colorramp = 1,
+            Normal = 2
         }
 
         public Mode CurrentMode
@@ -424,6 +425,16 @@ namespace Titan
             set {
                 var bot = value;
                 InternalCalls.SkyboxComponent_SetBottomColor(Entity.ID, bot);
+            }
+        }
+
+        public float TimeOfDay
+        {
+            get {
+                return InternalCalls.SkyboxComponent_GetTimeOfDay(Entity.ID);
+            }
+            set {
+                InternalCalls.SkyboxComponent_SetTimeOfDay(Entity.ID, value);
             }
         }
     }

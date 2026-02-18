@@ -12,6 +12,7 @@
 // clang-format on
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
+#include <psapi.h>
 #include <shlobj.h>
 #include <windows.h>
 #include <string>
@@ -95,6 +96,26 @@ namespace Titan
             return std::filesystem::path(exePath.string().substr(0, pos));
         }
         return "";
+    }
+
+    size_t Process::GetCurrentProcessMemoryUsage()
+    {
+        PROCESS_MEMORY_COUNTERS pmc;
+        if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
+        {
+            return pmc.WorkingSetSize;
+        }
+        return 0;
+    }
+
+    size_t Process::GetCurrentProcessVirtualMemoryUsage()
+    {
+        PROCESS_MEMORY_COUNTERS pmc;
+        if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
+        {
+            return pmc.PagefileUsage;
+        }
+        return 0;
     }
 
 } // namespace Titan

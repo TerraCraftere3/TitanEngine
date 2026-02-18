@@ -37,6 +37,7 @@ namespace Titan
 
     void FullscreenRenderer::Render(const Ref<PipelineState>& pipeline)
     {
+        TI_PROFILE_FUNCTION();
         TI_CORE_ASSERT(pipeline, "PipelineState is null in FullscreenRenderer::Render()");
         pipeline->SetVertexArray(s_Data.FullscreenQuadVAO);
         pipeline->Bind();

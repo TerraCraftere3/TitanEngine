@@ -19,6 +19,8 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
 set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE) # May change in the future for Mesh Sources (.assimp?)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
 
 # ---- Subdirectories ----
 add_subdirectory(spdlog)
