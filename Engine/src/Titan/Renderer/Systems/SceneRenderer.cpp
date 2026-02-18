@@ -287,6 +287,11 @@ namespace Titan
                                                    d->view, d->projection);
                             break;
                         }
+                        case SkyboxComponent::Mode::Normal:
+                        {
+                            SkyboxRenderer::Render(sb.normalSettings.Time, d->view, d->projection);
+                            break;
+                        }
                     }
                     break;
                 }

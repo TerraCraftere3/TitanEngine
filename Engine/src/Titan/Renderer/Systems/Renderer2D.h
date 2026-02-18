@@ -16,7 +16,7 @@ namespace Titan
 
         static void BeginScene(const EditorCamera& camera);
         static void BeginScene(const Camera& camera, const glm::mat4& transform); // LEGACY API
-        static void BeginScene(const glm::mat4& viewTransform); // LEGACY API
+        static void BeginScene(const glm::mat4& viewTransform);                   // LEGACY API
         static void BeginScene(const glm::mat4& view, const glm::mat4& projection);
         static void EndScene();
         static void Flush();
@@ -36,9 +36,8 @@ namespace Titan
                                   float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f),
                                   int entityID = -1);
         static void DrawBillboard(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
-        static void DrawBillboard(const glm::mat4& transform, const Ref<Texture2D>& texture,
-                                  float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f),
-                                  int entityID = -1);
+        static void DrawBillboard(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f,
+                                  const glm::vec4& tintColor = glm::vec4(1.0f), int entityID = -1);
 
         // Circles
         static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f,

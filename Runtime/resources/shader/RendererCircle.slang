@@ -27,8 +27,7 @@ struct VertexOutput
 };
 
 // Vertex Shader
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
 
@@ -49,8 +48,7 @@ struct FragmentOutput
     int o_EntityID : SV_Target1;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 

@@ -393,6 +393,16 @@ namespace Titan
         entity.GetComponent<SkyboxComponent>().colorrampSettings.BottomColor = bottom;
     }
 
+    static float SkyboxComponent_GetTimeOfDay(UUID entityID)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        return entity.GetComponent<SkyboxComponent>().normalSettings.Time;
+    }
+
     // ----------------------- Camera -----------------------
     static bool CameraComponent_GetPrimary(UUID entityID)
     {

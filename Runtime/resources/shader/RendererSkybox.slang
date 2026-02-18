@@ -1,3 +1,5 @@
+#include "Skybox/Functions.slang"
+
 [[vk::binding(0)]]
 cbuffer GlobalUBO : register(b0)
 {
@@ -48,15 +50,8 @@ struct FragmentOutput
 {
     FragmentOutput output;
 
-    // Normalize direction of this skybox fragment
-    float3 dir = normalize(input.localPosition);
-
-    // Blend factor based on vertical direction (y)
-    float t = saturate(dir.y * 0.5 + 0.5);
-
-    float3 envColor = lerp(u_BottomColor, u_TopColor, t);
-
-    output.color = float4(envColor, 1.0);
+    float3 rayDir = normalize(input.localPosition);
+    output.color = float4(skyColor(rayDir, u_Time), 1.0);
     output.entityID = -1;
 
     return output;

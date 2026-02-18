@@ -1,9 +1,11 @@
+#include "Library/Types.slang"
+
 cbuffer GlobalUBO : register(b0)
 {
-    float3 u_ViewPosition;                  // 12 bytes
-    bool u_HasDirectionLight;               // 4 bytes (bool is 4 bytes in HLSL)
-    float3 u_LightDirection;                // 12 bytes
-    float padding1;                         // 4 bytes -> total = 96 bytes (aligned)
+    float3 u_ViewPosition;    // 12 bytes
+    bool u_HasDirectionLight; // 4 bytes (bool is 4 bytes in HLSL)
+    float3 u_LightDirection;  // 12 bytes
+    float padding1;           // 4 bytes -> total = 96 bytes (aligned)
 };
 
 struct VertexInput
@@ -49,9 +51,7 @@ Sampler2D gDepth;
 [[vk::binding(7)]]
 SamplerCube IrradianceMap;
 
-
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
     output.position = float4(input.a_Position, 0.0, 1.0);
@@ -61,8 +61,7 @@ VertexOutput vertexMain(VertexInput input)
 
 static const float PI = 3.14159265359;
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 
@@ -77,7 +76,8 @@ FragmentOutput fragmentMain(VertexOutput input)
     float roughness = mr.g;
     float ao = mr.b;
 
-    if (albedoColor.a == 0) discard;
+    if (albedoColor.a == 0)
+        discard;
 
     float3 N = normalize(normal);
     float3 V = normalize(u_ViewPosition - position);
