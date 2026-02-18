@@ -2,7 +2,7 @@
 
 cbuffer FXAAParams : register(b0)
 {
-    float2 u_InvScreenSize;  // 1.0 / screen resolution (width, height)
+    float2 u_InvScreenSize; // 1.0 / screen resolution (width, height)
 }
 
 [[vk::binding(0)]]
@@ -19,11 +19,10 @@ struct VertexInput
 struct VertexOutput
 {
     float4 Position : SV_POSITION;
-    float2 TexCoord       : TEXCOORD0;
+    float2 TexCoord : TEXCOORD0;
 };
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
     output.Position = float4(input.a_Position, 0.0, 1.0);
@@ -37,8 +36,7 @@ struct FragmentOutput
     int entityID : SV_Target1;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput out;
 
@@ -49,29 +47,23 @@ FragmentOutput fragmentMain(VertexOutput input)
 
     float lumaM = LUMA(uv);
     float lumaN = LUMA(uv + float2(0.0, -u_InvScreenSize.y));
-    float lumaS = LUMA(uv + float2(0.0,  u_InvScreenSize.y));
-    float lumaE = LUMA(uv + float2( u_InvScreenSize.x, 0.0));
+    float lumaS = LUMA(uv + float2(0.0, u_InvScreenSize.y));
+    float lumaE = LUMA(uv + float2(u_InvScreenSize.x, 0.0));
     float lumaW = LUMA(uv + float2(-u_InvScreenSize.x, 0.0));
 
     // Compute edge direction
     float2 dir;
     dir.x = -((lumaN + lumaS) - 2.0 * lumaM);
-    dir.y =  ((lumaE + lumaW) - 2.0 * lumaM);
+    dir.y = ((lumaE + lumaW) - 2.0 * lumaM);
 
     // Reduce small variations
-    float dirReduce = max((lumaN + lumaS + lumaE + lumaW) * 0.25 * 0.5, 1.0/128.0);
+    float dirReduce = max((lumaN + lumaS + lumaE + lumaW) * 0.25 * 0.5, 1.0 / 128.0);
     dir = clamp(dir / dirReduce, -8.0, 8.0) * u_InvScreenSize;
 
     // Sample along the edge
-    float4 rgbA = 0.5 * (
-        u_Input.Sample(uv + dir * (1.0 / 3.0 - 0.5)) +
-                         u_Input.Sample(uv + dir * (2.0/3.0 - 0.5))
-    );
+    float4 rgbA = 0.5 * (u_Input.Sample(uv + dir * (1.0 / 3.0 - 0.5)) + u_Input.Sample(uv + dir * (2.0 / 3.0 - 0.5)));
 
-    float4 rgbB = rgbA * 0.5 + 0.25 * (
-        u_Input.Sample(uv + dir * -0.5) +
-        u_Input.Sample(uv + dir * 0.5)
-    );
+    float4 rgbB = rgbA * 0.5 + 0.25 * (u_Input.Sample(uv + dir * -0.5) + u_Input.Sample(uv + dir * 0.5));
 
     // Optional: choose between rgbA and rgbB based on luminance contrast
     float lumaMin = min(lumaM, min(min(lumaN, lumaS), min(lumaE, lumaW)));

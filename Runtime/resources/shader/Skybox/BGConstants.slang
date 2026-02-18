@@ -1,7 +1,7 @@
 // Planet Constants
-static float EARTHRADIUS = 6360e3; // 6360e3
-static float ATMOSPHERERADIUS = 6420e3; //6420e3
-static float SUNINTENSITY = 20.0; //20.0
+static float EARTHRADIUS = 6360e3;      // 6360e3
+static float ATMOSPHERERADIUS = 6420e3; // 6420e3
+static float SUNINTENSITY = 20.0;       // 20.0
 
 // Rayleigh Scattering
 static float RAYLEIGHSCALEHEIGHT = 7994.0; // 7994.0

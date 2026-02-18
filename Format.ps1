@@ -5,7 +5,7 @@ function Format-FilesInDirectory {
 
     $extensions = "*.cpp", "*.c", "*.cc", "*.cxx", "*.h", "*.hpp", "*.hxx", "*.inl",
                   "*.glsl", "*.vert", "*.frag", "*.comp", "*.geom", "*.tesc", "*.tese",
-                  "*.proto", "*.cs"
+                  "*.proto", "*.cs", "*slang"
 
     Get-ChildItem -Path $Path -Recurse -Include $extensions |
         Where-Object { $_.Name -notmatch "generated" } | 
@@ -30,6 +30,7 @@ Format-FilesInDirectory -Path ".\Engine"
 Format-FilesInDirectory -Path ".\Script-Core"
 Format-FilesInDirectory -Path ".\Editor"
 Format-FilesInDirectory -Path ".\Sandbox"
+Format-FilesInDirectory -Path ".\Example"
 Format-FilesInDirectory -Path ".\Runtime"
 
 Write-Host "Finished Formatting!" -ForegroundColor Cyan

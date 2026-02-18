@@ -25,8 +25,7 @@ struct VertexOutput
     float2 TexCoord : TEXCOORD0;
 };
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
     output.Position = float4(input.a_Position, 0.0, 1.0);
@@ -40,16 +39,15 @@ struct FragmentOutput
     int entityID : SV_Target1;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput out;
-    
+
     float2 uv = input.TexCoord;
-    
+
     // Copy color from input
     out.color = u_ColorInput.Sample(uv);
-    
+
     // Copy entity ID if in ColorAndEntity mode
     if (u_BlitMode == 1)
     {
@@ -59,6 +57,6 @@ FragmentOutput fragmentMain(VertexOutput input)
     {
         out.entityID = -1; // No entity
     }
-    
+
     return out;
 }

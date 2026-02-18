@@ -1,5 +1,5 @@
-#include "Library/Types.slang"
 #include "Library/Functions.slang"
+#include "Library/Types.slang"
 
 cbuffer GlobalUBO : register(b0)
 {
@@ -101,8 +101,7 @@ float3 GET_NORMAL(Material mat, VertexOutput input)
     return normalize(mul(sampledNormal, TBN));
 }
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input, uint instanceID : SV_InstanceID)
 {
     VertexOutput output;
 
@@ -127,8 +126,7 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
     return output;
 }
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+    [shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 

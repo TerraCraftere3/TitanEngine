@@ -4,7 +4,7 @@ cbuffer TonemappingParams : register(b0)
 {
     int u_Operator;
     float u_Exposure;
-    float u_Gamma;      
+    float u_Gamma;
     float u_WhitePoint;
 }
 
@@ -25,15 +25,13 @@ struct VertexOutput
     float2 TexCoord : TEXCOORD0;
 };
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input)
 {
     VertexOutput output;
     output.Position = float4(input.a_Position, 0.0, 1.0);
     output.TexCoord = input.a_TexCoord;
     return output;
 }
-
 
 // ============================================================================
 // Tonemapping Operators
@@ -47,10 +45,8 @@ float3 TonemapNone(float3 color)
 float3 TonemapFilmic(float3 color)
 {
     float3 x = max(color - 0.004, 0.0);
-    return (x * (6.2 * x + 0.5)) /
-           (x * (6.2 * x + 1.7) + 0.06);
+    return (x * (6.2 * x + 0.5)) / (x * (6.2 * x + 1.7) + 0.06);
 }
-
 
 // ============================================================================
 // Fragment Shader
@@ -62,8 +58,7 @@ struct FragmentOutput
     int entityID : SV_Target1;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput out;
 
@@ -75,9 +70,15 @@ FragmentOutput fragmentMain(VertexOutput input)
 
     switch (u_Operator)
     {
-        case 0: ldrColor = TonemapNone(hdrColor); break;
-        case 1: ldrColor = TonemapFilmic(hdrColor); break;
-        default: ldrColor = TonemapNone(hdrColor); break;
+        case 0:
+            ldrColor = TonemapNone(hdrColor);
+            break;
+        case 1:
+            ldrColor = TonemapFilmic(hdrColor);
+            break;
+        default:
+            ldrColor = TonemapNone(hdrColor);
+            break;
     }
 
     out.color = float4(saturate(ldrColor), 1.0);
