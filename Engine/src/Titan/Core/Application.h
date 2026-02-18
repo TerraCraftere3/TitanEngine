@@ -2,11 +2,11 @@
 
 #include "Titan/Audio/AudioContext.h"
 #include "Titan/Core.h"
+#include "Titan/Core/ImGuiLayer.h"
 #include "Titan/Core/LayerStack.h"
 #include "Titan/Core/Window.h"
 #include "Titan/Events/ApplicationEvent.h"
 #include "Titan/Events/Event.h"
-#include "Titan/ImGuiLayer.h"
 #include "Titan/PCH.h"
 #include "Titan/Utils/Measurement.h"
 

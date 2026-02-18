@@ -1,9 +1,9 @@
 #include "ContentBrowserPanel.h"
 #include "../Renderer/Thumbnails.h"
-#include "Titan/FontAwesome7.h"
 #include "Titan/Project/Project.h"
 #include "Titan/Renderer/Systems/GeometryRenderer.h"
 #include "Titan/Utils/String.h"
+#include "Titan/Vendor/FontAwesome7.h"
 
 namespace Titan
 {
@@ -27,8 +27,7 @@ namespace Titan
         {
             {
                 auto assetPath = Project::GetAssetDirectory();
-                std::filesystem::path relativePath =
-                    std::filesystem::relative(m_CurrentDirectory, assetPath);
+                std::filesystem::path relativePath = std::filesystem::relative(m_CurrentDirectory, assetPath);
 
                 if (ImGui::InvisibleButton("##root_btn", ImVec2(0, 0)))
                 {

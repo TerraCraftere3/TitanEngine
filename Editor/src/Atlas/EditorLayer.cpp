@@ -7,7 +7,6 @@
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
-#include <Titan/FontAwesome7.h>
 #include <Titan/Project/Project.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Systems/GeometryRenderer.h>
@@ -20,6 +19,7 @@
 #include <Titan/Utils/Math.h>
 #include <Titan/Utils/PlatformUtils.h>
 #include <Titan/Utils/String.h>
+#include <Titan/Vendor/FontAwesome7.h>
 namespace Titan
 {
     EditorLayer::EditorLayer() : Layer("EditorLayer") {}

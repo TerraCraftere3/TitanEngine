@@ -1,12 +1,12 @@
 #pragma once
 
 #include <imgui.h>
-#include <filesystem>
 #include <cstring>
+#include <filesystem>
 
 #include "ImReflect_entry.hpp"
 #include "ImReflect_helper.hpp"
-#include "Utils/PlatformUtils.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace ImReflect
 {
@@ -50,8 +50,8 @@ namespace ImReflect
 } // namespace ImReflect
 
 // Tag invoke implementation for std::filesystem::path
-inline void tag_invoke(ImReflect::ImInput_t, const char* label, std::filesystem::path& value,
-                       ImSettings& settings, ImResponse& response)
+inline void tag_invoke(ImReflect::ImInput_t, const char* label, std::filesystem::path& value, ImSettings& settings,
+                       ImResponse& response)
 {
     auto& path_settings = settings.get<std::filesystem::path>();
     auto& path_response = response.get<std::filesystem::path>();
@@ -62,7 +62,7 @@ inline void tag_invoke(ImReflect::ImInput_t, const char* label, std::filesystem:
 
     // Static buffer for path input
     static char buffer[512] = "";
-    
+
     // Convert path for display (to absolute if stored as relative)
     std::string display_path = value.string();
     if (path_settings.is_relative() && !value.empty())
@@ -77,7 +77,7 @@ inline void tag_invoke(ImReflect::ImInput_t, const char* label, std::filesystem:
             // If absolute conversion fails, show as-is
         }
     }
-    
+
     // Copy current path to buffer if different
     if (display_path != buffer)
     {
@@ -86,7 +86,8 @@ inline void tag_invoke(ImReflect::ImInput_t, const char* label, std::filesystem:
     }
 
     // Layout: text input + browse button
-    ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() - ImGui::GetStyle().ItemInnerSpacing.x - 50.0f); // Leave room for button
+    ImGui::SetNextItemWidth(-ImGui::GetFrameHeight() - ImGui::GetStyle().ItemInnerSpacing.x -
+                            50.0f); // Leave room for button
     if (ImGui::InputText("##path_input", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue))
     {
         // Convert absolute path back to relative if needed

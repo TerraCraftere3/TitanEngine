@@ -1,4 +1,4 @@
-#include "Titan/ImGuiLayer.h"
+#include "ImGuiLayer.h"
 #include "Titan/Core/Application.h"
 #include "Titan/PCH.h"
 #include "Titan/Utils/PlatformUtils.h"
@@ -15,7 +15,7 @@
 #include <imgui.h>
 #include <implot.h>
 #include "ImGuiLayer.h"
-#include "Renderer/ImGuiBackend.h"
+#include "Titan/Renderer/ImGuiBackend.h"
 
 namespace Titan
 {

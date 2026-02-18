@@ -1,5 +1,5 @@
 #include "LogPanel.h"
-#include <Titan/FontAwesome7.h>
+#include <Titan/Vendor/FontAwesome7.h>
 #include <imgui.h>
 
 namespace Titan

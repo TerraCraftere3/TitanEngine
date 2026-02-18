@@ -2,8 +2,6 @@
 #include <vector>
 #include "../Components.h"
 #include "ImReflect.hpp"
-#include "Titan/FontAwesome7.h"
-#include "Titan/ImReflect_glm.hpp"
 #include "Titan/Project/Project.h"
 #include "Titan/Renderer/Systems/GeometryRenderer.h"
 #include "Titan/Renderer/Systems/Renderer2D.h"
@@ -11,6 +9,8 @@
 #include "Titan/Scene/Components.h"
 #include "Titan/Scripting/ScriptEngine.h"
 #include "Titan/Utils/PlatformUtils.h"
+#include "Titan/Vendor/FontAwesome7.h"
+#include "Titan/Vendor/ImReflect_glm.hpp"
 
 namespace Titan
 {
