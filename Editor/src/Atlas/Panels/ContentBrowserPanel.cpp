@@ -26,8 +26,9 @@ namespace Titan
         try
         {
             {
+                auto assetPath = Project::GetAssetDirectory();
                 std::filesystem::path relativePath =
-                    std::filesystem::relative(m_CurrentDirectory, Project::GetAssetDirectory());
+                    std::filesystem::relative(m_CurrentDirectory, assetPath);
 
                 if (ImGui::InvisibleButton("##root_btn", ImVec2(0, 0)))
                 {
@@ -36,7 +37,7 @@ namespace Titan
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.1f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1, 1, 1, 0.15f));
 
-                if (ImGui::Button("assets"))
+                if (ImGui::Button(assetPath.filename().string().c_str()))
                     m_CurrentDirectory = Project::GetAssetDirectory();
 
                 std::filesystem::path accumulatedPath = Project::GetAssetDirectory();

@@ -39,6 +39,7 @@ namespace Titan
     public:
         static size_t GetCurrentProcessMemoryUsage();
         static size_t GetCurrentProcessVirtualMemoryUsage();
+        static void RestartWithSameArgs();
     };
 
 } // namespace Titan
