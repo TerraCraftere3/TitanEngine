@@ -25,7 +25,7 @@ Entities:
     TagComponent:
       Tag: Terrain
     TransformComponent:
-      Translation: [0, 0, 0]
+      Translation: [0, -21.1, 0]
       Rotation: [0, 0, 0]
       Scale: [100, 100, 100]
     TerrainRendererComponent:
@@ -43,13 +43,13 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [-50, 30, -50]
-      Rotation: [2.7403455, -0.7853981, 3.1415927]
+      Translation: [-100, 30, -100]
+      Rotation: [3.0359218, -0.7853981, 3.1415927]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
-        ProjectionType: 1
-        PerspectiveFOV: 0.7853982
+        ProjectionType: 0
+        PerspectiveFOV: 0.27925268
         PerspectiveNear: 0.01
         PerspectiveFar: 1000
         OrthographicSize: 10

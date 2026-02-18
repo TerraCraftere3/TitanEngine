@@ -8,6 +8,7 @@
 #include "Titan/Renderer/Systems/PBRRenderer.h"
 #include "Titan/Renderer/Systems/Renderer2D.h"
 #include "Titan/Renderer/Systems/SkyboxRenderer.h"
+#include "Titan/Renderer/Systems/TerrainRenderer.h"
 
 namespace Titan
 {
@@ -17,6 +18,7 @@ namespace Titan
         RenderCommand::Init();
         Renderer2D::Init();
         GeometryRenderer::Init();
+        TerrainRenderer::Init();
         PBRRenderer::Init();
         FullscreenRenderer::Init();
         SkyboxRenderer::Init();
@@ -28,6 +30,7 @@ namespace Titan
         Blit::Shutdown();
         SkyboxRenderer::Shutdown();
         PBRRenderer::Shutdown();
+        TerrainRenderer::Shutdown();
         GeometryRenderer::Shutdown();
         Renderer2D::Shutdown();
         FullscreenRenderer::Shutdown();

@@ -8,6 +8,7 @@
 #include "Titan/Renderer/Systems/RenderGraph.h"
 #include "Titan/Renderer/Systems/Renderer2D.h"
 #include "Titan/Renderer/Systems/SkyboxRenderer.h"
+#include "Titan/Renderer/Systems/TerrainRenderer.h"
 #include "Titan/Scene/Components.h"
 #include "Titan/Scene/Scene.h"
 #include "Titan/Utils/PlatformUtils.h"
@@ -162,19 +163,39 @@ namespace Titan
                 auto fb = graph.GetFramebuffer("GeometryBuffer");
                 if (!fb)
                     return;
-                RenderCommand::BeginRenderPass(fb, "Geometry Pass (3D)");
-                RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-                GeometryRenderer::BeginScene(d->viewProjection,
-                                             d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
-                auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
-                for (auto entity : meshView)
                 {
-                    auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
-                    if (meshComp.MeshRef)
-                        GeometryRenderer::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
+                    TI_PROFILE_SCOPE("Meshes");
+                    RenderCommand::BeginRenderPass(fb, "Geometry Pass - Meshes (3D)");
+                    RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+                    GeometryRenderer::BeginScene(d->viewProjection,
+                                                 d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
+                    auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
+                    for (auto entity : meshView)
+                    {
+                        auto [transform, meshComp] = meshView.get<TransformComponent, MeshRendererComponent>(entity);
+                        if (meshComp.MeshRef)
+                            GeometryRenderer::DrawMesh(meshComp.MeshRef, transform.GetTransform(), (uint32_t)entity);
+                    }
+                    GeometryRenderer::EndScene();
+                    RenderCommand::EndRenderPass();
                 }
-                GeometryRenderer::EndScene();
-                RenderCommand::EndRenderPass();
+
+                {
+                    TI_PROFILE_SCOPE("Terrain");
+                    RenderCommand::BeginRenderPass(fb, "Geometry Pass - Terrain (3D)");
+                    TerrainRenderer::BeginScene(d->viewProjection,
+                                                d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
+                    auto terrainView = d->currentScene->GetAllEntitiesWith<TransformComponent, TerrainRendererComponent>();
+                    for (auto entity : terrainView)
+                    {
+                        auto [transform, terrainComp] = terrainView.get<TransformComponent, TerrainRendererComponent>(entity);
+                        if (terrainComp.texture)
+                            TerrainRenderer::DrawTerrain(terrainComp.texture, transform.GetTransform(),
+                                                         (uint32_t)entity);
+                    }
+                    TerrainRenderer::EndScene();
+                    RenderCommand::EndRenderPass();
+                }
             });
 
         builder.AddRenderPass(

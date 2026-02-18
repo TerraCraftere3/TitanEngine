@@ -10,20 +10,16 @@
 
 namespace Titan
 {
-    class TI_API GeometryRenderer
+    class TI_API TerrainRenderer
     {
     public:
         static void Init();
         static void Shutdown();
 
         static void BeginScene(const glm::mat4& viewTransform, PolygonMode polygonMode = PolygonMode::Fill);
-        static void ClearCache();
-        static void ClearTextureCache();
-        static void ClearMeshCache();
         static void EndScene();
-        static void Flush();
 
-        static void DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID = -1);
+        static void DrawTerrain(const Ref<Texture2D>& heightMap, const glm::mat4& transform, int entityID = -1);
     };
 
 } // namespace Titan
