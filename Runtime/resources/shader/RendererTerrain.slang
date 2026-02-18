@@ -6,7 +6,7 @@ cbuffer GlobalUBO : register(b0)
 {
     column_major float4x4 u_ViewProjection; // 64 bytes
     column_major float4x4 u_Transform;      // 64 bytes
-    uint32_t u_EntityID;                       // 4 bytes
+    uint32_t u_EntityID;                    // 4 bytes
 };
 
 struct VertexInput
@@ -41,8 +41,7 @@ struct FragmentOutput
 [[vk::binding(0)]]
 Sampler2D heightMap : register(s0);
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
+[shader("vertex")] VertexOutput vertexMain(VertexInput input, uint instanceID : SV_InstanceID)
 {
     VertexOutput output;
 
@@ -53,16 +52,16 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
     float height = heightMap.Sample(input.a_TexCoord).r;
     float heightRight = heightMap.Sample(input.a_TexCoord + float2(0.01, 0.0)).r;
     float heightUp = heightMap.Sample(input.a_TexCoord + float2(0.0, 0.01)).r;
-    
+
     float3 displacedPosition = input.a_Position + normal * height;
 
     // Calculate normal from height map using finite differences
     float3 tangentDir = normalize(tangent);
     float3 bitangentDir = normalize(cross(normal, tangentDir));
-    
+
     float3 posRight = input.a_Position + tangentDir * 0.01 + normal * heightRight;
     float3 posUp = input.a_Position + bitangentDir * 0.01 + normal * heightUp;
-    
+
     float3 computedTangent = normalize(posRight - displacedPosition);
     float3 computedBitangent = normalize(posUp - displacedPosition);
     float3 computedNormal = normalize(cross(computedBitangent, computedTangent));
@@ -82,8 +81,7 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
     return output;
 }
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+    [shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 

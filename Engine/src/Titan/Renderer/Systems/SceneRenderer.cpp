@@ -185,10 +185,12 @@ namespace Titan
                     RenderCommand::BeginRenderPass(fb, "Geometry Pass - Terrain (3D)");
                     TerrainRenderer::BeginScene(d->viewProjection,
                                                 d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
-                    auto terrainView = d->currentScene->GetAllEntitiesWith<TransformComponent, TerrainRendererComponent>();
+                    auto terrainView =
+                        d->currentScene->GetAllEntitiesWith<TransformComponent, TerrainRendererComponent>();
                     for (auto entity : terrainView)
                     {
-                        auto [transform, terrainComp] = terrainView.get<TransformComponent, TerrainRendererComponent>(entity);
+                        auto [transform, terrainComp] =
+                            terrainView.get<TransformComponent, TerrainRendererComponent>(entity);
                         if (terrainComp.texture)
                             TerrainRenderer::DrawTerrain(terrainComp.texture, transform.GetTransform(),
                                                          (uint32_t)entity);

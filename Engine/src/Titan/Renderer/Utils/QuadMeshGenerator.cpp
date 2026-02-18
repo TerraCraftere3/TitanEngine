@@ -19,11 +19,7 @@ namespace Titan
                 float v = (verticesZ > 1) ? static_cast<float>(z) / (verticesZ - 1) : 0.0f;
 
                 // Position
-                vertex.Position = glm::vec3(
-                    u * width - width * 0.5f,
-                    0.0f,
-                    v * height - height * 0.5f
-                );
+                vertex.Position = glm::vec3(u * width - width * 0.5f, 0.0f, v * height - height * 0.5f);
 
                 // Normal (pointing up for a flat plane)
                 vertex.Normal = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -63,4 +59,4 @@ namespace Titan
 
         return meshData;
     }
-}
+} // namespace Titan

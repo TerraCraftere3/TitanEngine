@@ -8,6 +8,7 @@
 #include "Titan/Renderer/RHI/VertexArray.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Scene/Assets.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -62,14 +63,15 @@ namespace Titan
 
     void SkyboxRenderer::Init()
     {
-        s_SBData.CubemapShader = Assets::Load<Shader>("resources/shader/RendererSkyboxHDRI.slang");
-        s_SBData.ColorShader = Assets::Load<Shader>("resources/shader/RendererSkyboxColor.slang");
-        s_SBData.NormalShader = Assets::Load<Shader>("resources/shader/RendererSkybox.slang");
+        auto shaderDir = Filesystem::GetExecutableDirectory() / "resources" / "shader";
+        s_SBData.CubemapShader = Assets::Load<Shader>((shaderDir / "RendererSkyboxHDRI.slang").string());
+        s_SBData.ColorShader = Assets::Load<Shader>((shaderDir / "RendererSkyboxColor.slang").string());
+        s_SBData.NormalShader = Assets::Load<Shader>((shaderDir / "RendererSkybox.slang").string());
 
 #ifdef TI_BUILD_DEBUG
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxHDRI.slang");
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkyboxColor.slang");
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererSkybox.slang");
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererSkyboxHDRI.slang").string());
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererSkyboxColor.slang").string());
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererSkybox.slang").string());
 #endif
 
         s_SBData.SceneUniformBuffer = UniformBuffer::Create(sizeof(SkyboxSceneData));

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Titan/Core.h"
 #include <glm/glm.hpp>
 #include <vector>
+#include "Titan/Core.h"
 
 namespace Titan
 {
@@ -31,6 +31,7 @@ namespace Titan
          * @param height Height of the quad (in Z direction)
          * @return QuadMeshData containing vertices and indices
          */
-        static QuadMeshData GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width = 1.0f, float height = 1.0f);
+        static QuadMeshData GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width = 1.0f,
+                                         float height = 1.0f);
     };
-}
+} // namespace Titan

@@ -4,9 +4,9 @@
 #include "Titan/Renderer/RHI/UniformBuffer.h"
 #include "Titan/Renderer/RHI/VertexArray.h"
 #include "Titan/Renderer/RenderCommand.h"
+#include "Titan/Renderer/Utils/QuadMeshGenerator.h"
 #include "Titan/Scene/Assets.h"
 #include "Titan/Utils/PlatformUtils.h"
-#include "Titan/Renderer/Utils/QuadMeshGenerator.h"
 
 namespace Titan
 {
@@ -55,10 +55,13 @@ namespace Titan
         constexpr uint32_t quadVertices = 128;
         auto quadMesh = QuadMeshGenerator::GenerateQuad(quadVertices, quadVertices, 1.0f, 1.0f);
         s_TerrainData.QuadVertexBuffer = VertexBuffer::Create(quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
-        s_TerrainData.QuadVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float3, "a_Normal"}, {ShaderDataType::Float3, "a_Tangent"},
-                       {ShaderDataType::Float2, "a_TexCoord"}});
+        s_TerrainData.QuadVertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
+                                                   {ShaderDataType::Float3, "a_Normal"},
+                                                   {ShaderDataType::Float3, "a_Tangent"},
+                                                   {ShaderDataType::Float2, "a_TexCoord"}});
 
-        s_TerrainData.QuadVertexBuffer->SetData(quadMesh.Vertices.data(), quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
+        s_TerrainData.QuadVertexBuffer->SetData(quadMesh.Vertices.data(),
+                                                quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
         s_TerrainData.QuadVAO->AddVertexBuffer(s_TerrainData.QuadVertexBuffer);
 
         s_TerrainData.QuadIndexBuffer = IndexBuffer::Create(quadMesh.Indices.data(), quadMesh.Indices.size());
@@ -67,7 +70,6 @@ namespace Titan
         s_TerrainData.Pipeline = PipelineState::Create();
         s_TerrainData.Pipeline->SetShader(s_TerrainData.Shader);
         s_TerrainData.Pipeline->SetUniformBuffer(s_TerrainData.UniformBuffer, 0);
-
     }
 
     void TerrainRenderer::Shutdown()
@@ -81,9 +83,7 @@ namespace Titan
         s_TerrainData.UBO.ViewProjection = viewTransform;
     }
 
-    void TerrainRenderer::EndScene()
-    {
-    }
+    void TerrainRenderer::EndScene() {}
 
     void TerrainRenderer::DrawTerrain(const Ref<Texture2D>& heightMap, const glm::mat4& transform, int entityID)
     {
