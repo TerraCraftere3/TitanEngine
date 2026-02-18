@@ -101,10 +101,12 @@ namespace Titan
     struct TerrainRendererComponent
     {
         Ref<Texture2D> texture;
+        Ref<Material3D> material;
 
         TerrainRendererComponent() = default;
         TerrainRendererComponent(const TerrainRendererComponent&) = default;
         TerrainRendererComponent(const Ref<Texture2D>& tex) : texture(tex) {}
+        TerrainRendererComponent(const Ref<Texture2D>& tex, const Ref<Material3D>& mat) : texture(tex), material(mat) {}
     };
 
     struct DirectionalLightComponent

@@ -30,6 +30,7 @@ Entities:
       Scale: [100, 100, 100]
     TerrainRendererComponent:
       Texture: textures\Terrain\Mountain Range Height Map PNG.png
+      Material: materials\Terrain.mat
   - Entity: 6817584821935004973
     TagComponent:
       Tag: Directional Light

@@ -648,7 +648,171 @@ namespace Titan
             });
 
         DrawComponent<TerrainRendererComponent>(ICON_FA_MOUNTAIN " Terrain Renderer", entity,
-                                                [](auto& component) { DrawTextureSlot("Texture", component.texture); });
+                                                [](auto& component)
+                                                {
+                                                    DrawTextureSlot("Texture", component.texture);
+
+                                                    ImGui::SeparatorText("Material");
+
+                                                    Ref<Material3D>& material = component.material;
+                                                    if (!material)
+                                                    {
+                                                        if (ImGui::Button("Create Material"))
+                                                            material = CreateRef<Material3D>();
+
+                                                        ImGui::SameLine();
+                                                        if (ImGui::Button("Load..."))
+                                                        {
+                                                            std::string filepath =
+                                                                FileDialogs::OpenFile("Material (*.mat)\0*.mat\0");
+                                                            if (!filepath.empty())
+                                                            {
+                                                                auto loadedMat = Material3D::Create(filepath);
+                                                                if (loadedMat)
+                                                                {
+                                                                    auto assetDir = Project::GetAssetDirectory();
+                                                                    std::filesystem::path filePath = filepath;
+                                                                    std::error_code ec;
+                                                                    auto relPath =
+                                                                        std::filesystem::relative(filePath, assetDir, ec);
+                                                                    loadedMat->SetInternalPath(
+                                                                        ec ? filePath.string() : relPath.string());
+                                                                    material = loadedMat;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        return;
+                                                    }
+
+                                                    float buttonWidth = ImGui::GetContentRegionAvail().x;
+                                                    std::string matLabel =
+                                                        std::format("Material: {}",
+                                                                    material->GetInternalPath().empty()
+                                                                        ? "Unsaved"
+                                                                        : material->GetInternalPath());
+                                                    ImGui::Button(matLabel.c_str(), ImVec2(buttonWidth, 0.0f));
+                                                    if (ImGui::BeginDragDropTarget())
+                                                    {
+                                                        if (const ImGuiPayload* payload =
+                                                                ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+                                                        {
+                                                            const wchar_t* path = (const wchar_t*)payload->Data;
+                                                            std::filesystem::path materialPath =
+                                                                Project::GetAssetDirectory() / path;
+                                                            auto loadedMat = Material3D::Create(materialPath.string());
+                                                            if (loadedMat)
+                                                            {
+                                                                loadedMat->SetInternalPath(std::filesystem::path(path).string());
+                                                                material = loadedMat;
+                                                            }
+                                                        }
+                                                        ImGui::EndDragDropTarget();
+                                                    }
+
+                                                    char nameBuffer[256];
+                                                    strcpy_s(nameBuffer, sizeof(nameBuffer), material->Name.c_str());
+                                                    if (ImGui::InputText("Name", nameBuffer, sizeof(nameBuffer)))
+                                                        material->Name = nameBuffer;
+
+                                                    auto config = ImSettings();
+                                                    config.push<glm::vec4>().as_color().pop();
+                                                    ImReflect::Input("Diffuse", material->AlbedoColor, config);
+                                                    DrawTextureSlot("Diffuse Texture", material->AlbedoTexture);
+                                                    DrawTextureSlot("Emission Texture", material->EmissionTexture);
+                                                    DrawTextureSlot("Metallic Texture", material->MetallicTexture);
+                                                    DrawTextureSlot("Roughness Texture", material->RoughnessTexture);
+                                                    DrawTextureSlot("Normal Texture", material->NormalTexture);
+                                                    DrawTextureSlot("Ambient Occlusion Texture", material->AOTexture);
+                                                    auto config2 = ImSettings();
+                                                    config2.push<glm::vec2>().as_position().pop();
+                                                    ImReflect::Input("UV Repeat", material->UVRepeat, config2);
+
+                                                    ImGui::Spacing();
+                                                    ImGui::Separator();
+                                                    ImGui::Spacing();
+
+                                                    if (ImGui::Button("Save Material"))
+                                                    {
+                                                        if (material->GetInternalPath().empty())
+                                                        {
+                                                            std::filesystem::path materialDir = "Materials";
+                                                            std::string materialFileName = "Terrain.mat";
+                                                            if (component.texture &&
+                                                                !component.texture->GetInternalPath().empty())
+                                                            {
+                                                                auto texturePath =
+                                                                    std::filesystem::path(component.texture->GetInternalPath());
+                                                                materialDir = texturePath.parent_path() / "Materials";
+                                                                materialFileName = texturePath.stem().string() + "_Terrain.mat";
+                                                            }
+
+                                                            auto internalPath = (materialDir / materialFileName).string();
+                                                            material->SetInternalPath(internalPath);
+                                                            material->SourcePath =
+                                                                (Project::GetAssetDirectory() / internalPath).string();
+                                                            std::filesystem::create_directories(
+                                                                Project::GetAssetDirectory() / materialDir);
+                                                        }
+                                                        else if (material->SourcePath.empty())
+                                                        {
+                                                            material->SourcePath =
+                                                                (Project::GetAssetDirectory() / material->GetInternalPath())
+                                                                    .string();
+                                                        }
+
+                                                        material->Save();
+                                                    }
+
+                                                    ImGui::SameLine();
+
+                                                    if (ImGui::Button("Save As..."))
+                                                    {
+                                                        std::string filepath =
+                                                            FileDialogs::SaveFile("Material (*.mat)\0*.mat\0");
+                                                        if (!filepath.empty())
+                                                        {
+                                                            if (filepath.find(".mat") == std::string::npos)
+                                                                filepath += ".mat";
+
+                                                            std::filesystem::path filePath = filepath;
+                                                            material->SourcePath = filePath.string();
+
+                                                            auto assetDir = Project::GetAssetDirectory();
+                                                            std::error_code ec;
+                                                            auto relPath =
+                                                                std::filesystem::relative(filePath, assetDir, ec);
+                                                            material->SetInternalPath(ec ? filePath.string() : relPath.string());
+                                                            material->Save();
+                                                        }
+                                                    }
+
+                                                    ImGui::SameLine();
+
+                                                    if (ImGui::Button("Load..."))
+                                                    {
+                                                        std::string filepath =
+                                                            FileDialogs::OpenFile("Material (*.mat)\0*.mat\0");
+                                                        if (!filepath.empty())
+                                                        {
+                                                            auto loadedMat = Material3D::Create(filepath);
+                                                            if (loadedMat)
+                                                            {
+                                                                auto assetDir = Project::GetAssetDirectory();
+                                                                std::filesystem::path filePath = filepath;
+                                                                std::error_code ec;
+                                                                auto relPath =
+                                                                    std::filesystem::relative(filePath, assetDir, ec);
+                                                                loadedMat->SetInternalPath(
+                                                                    ec ? filePath.string() : relPath.string());
+                                                                material = loadedMat;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (!material->GetInternalPath().empty())
+                                                        ImGui::TextDisabled("Path: %s", material->GetInternalPath().c_str());
+                                                });
 
         DrawComponent<DirectionalLightComponent>(ICON_FA_SUN " Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });

@@ -7,6 +7,8 @@ cbuffer GlobalUBO : register(b0)
     column_major float4x4 u_ViewProjection; // 64 bytes
     column_major float4x4 u_Transform;      // 64 bytes
     uint32_t u_EntityID;                    // 4 bytes
+    float4 AlbedoColor;                     // 16 bytes
+    float2 UVRepeat;                        // 8 bytes
 };
 
 struct VertexInput
@@ -41,7 +43,26 @@ struct FragmentOutput
 [[vk::binding(0)]]
 Sampler2D heightMap : register(s0);
 
-[shader("vertex")] VertexOutput vertexMain(VertexInput input, uint instanceID : SV_InstanceID)
+[[vk::binding(1)]]
+Sampler2D albedoMap : register(s1);
+
+[[vk::binding(2)]]
+Sampler2D emissionMap : register(s2);
+
+[[vk::binding(3)]]
+Sampler2D normalMap : register(s3);
+
+[[vk::binding(4)]]
+Sampler2D metallicMap : register(s4);
+
+[[vk::binding(5)]]
+Sampler2D roughnessMap : register(s5);
+
+[[vk::binding(6)]]
+Sampler2D aoMap : register(s6);
+
+[shader("vertex")]
+VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 {
     VertexOutput output;
 
@@ -79,18 +100,36 @@ Sampler2D heightMap : register(s0);
     output.entityID = u_EntityID;
 
     return output;
-}
+};
 
-    [shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")]
+FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
 
-    // Output raw values
+    // Sample texture maps
+    float2 uv = input.texCoord * UVRepeat;
+    float3 albedoSample = albedoMap.Sample(uv).rgb * AlbedoColor.rgb;
+    float3 normalSample = normalMap.Sample(uv).rgb;
+    float metallic = metallicMap.Sample(uv).r;
+    float roughness = roughnessMap.Sample(uv).r;
+    float ao = aoMap.Sample(uv).r;
+    float3 emission = emissionMap.Sample(uv).rgb;
+
+    // Reconstruct normal from tangent space
+    float3 normal = normalize(normalSample * 2.0 - 1.0);
+    float3 worldNormal = normalize(
+        normal.x * input.tangent +
+        normal.y * input.bitangent +
+        normal.z * input.normal
+    );
+
+    // Output values from textures
     output.position = float4(input.worldPosition, 1.0);
-    output.normal = float4(input.normal, 1.0);
-    output.albedo = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    output.metallic_roughness_ao_ = float4(0.0f, 0.5f, 1.0f, 1.0f);
-    output.emission = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    output.normal = float4(worldNormal, 1.0);
+    output.albedo = float4(albedoSample, AlbedoColor.a);
+    output.metallic_roughness_ao_ = float4(metallic, roughness, ao, 1.0);
+    output.emission = float4(emission, 1.0);
     output.entityID = input.entityID;
 
     return output;

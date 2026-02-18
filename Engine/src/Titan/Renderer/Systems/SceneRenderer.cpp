@@ -192,8 +192,8 @@ namespace Titan
                         auto [transform, terrainComp] =
                             terrainView.get<TransformComponent, TerrainRendererComponent>(entity);
                         if (terrainComp.texture)
-                            TerrainRenderer::DrawTerrain(terrainComp.texture, transform.GetTransform(),
-                                                         (uint32_t)entity);
+                            TerrainRenderer::DrawTerrain(terrainComp.texture, terrainComp.material,
+                                                         transform.GetTransform(), (uint32_t)entity);
                     }
                     TerrainRenderer::EndScene();
                     RenderCommand::EndRenderPass();
