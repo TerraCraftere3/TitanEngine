@@ -237,6 +237,9 @@ namespace Titan
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal static extern void SkyboxComponent_SetTimeOfDay(ulong entityID, float timeOfDay);
 
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        internal static extern float SkyboxComponent_GetTimeOfDay(ulong entityID);
+
         // Camera
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         internal static extern bool CameraComponent_GetPrimary(ulong entityID);

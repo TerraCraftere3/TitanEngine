@@ -403,6 +403,16 @@ namespace Titan
         return entity.GetComponent<SkyboxComponent>().normalSettings.Time;
     }
 
+    static void SkyboxComponent_SetTimeOfDay(UUID entityID, float timeOfDay)
+    {
+        Scene* scene = ScriptEngine::GetSceneContext();
+        TI_CORE_ASSERT(scene);
+        Entity entity = scene->GetEntityByUUID(entityID);
+        TI_CORE_ASSERT(entity);
+
+        entity.GetComponent<SkyboxComponent>().normalSettings.Time = timeOfDay;
+    }
+
     // ----------------------- Camera -----------------------
     static bool CameraComponent_GetPrimary(UUID entityID)
     {
@@ -1072,6 +1082,8 @@ namespace Titan
         TI_ADD_INTERNAL_CALL(SkyboxComponent_SetBottomColor);
         TI_ADD_INTERNAL_CALL(SkyboxComponent_GetTopColor);
         TI_ADD_INTERNAL_CALL(SkyboxComponent_GetBottomColor);
+        TI_ADD_INTERNAL_CALL(SkyboxComponent_GetTimeOfDay);
+        TI_ADD_INTERNAL_CALL(SkyboxComponent_SetTimeOfDay);
 
         TI_ADD_INTERNAL_CALL(CameraComponent_GetPrimary);
         TI_ADD_INTERNAL_CALL(CameraComponent_SetPrimary);
