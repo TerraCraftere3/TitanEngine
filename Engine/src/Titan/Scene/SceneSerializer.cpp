@@ -329,6 +329,18 @@ namespace Titan
             out << YAML::EndMap; // MeshRendererComponent
         }
 
+        if(entity.HasComponent<TerrainRendererComponent>())
+        {
+            out << YAML::Key << "TerrainRendererComponent";
+            out << YAML::BeginMap; // TerrainRendererComponent
+
+            auto& terrainRendererComponent = entity.GetComponent<TerrainRendererComponent>();
+            if (terrainRendererComponent.texture)
+                out << YAML::Key << "Texture" << YAML::Value << terrainRendererComponent.texture->GetInternalPath();
+
+            out << YAML::EndMap; // TerrainRendererComponent
+        }
+
         if (entity.HasComponent<DirectionalLightComponent>())
         {
             out << YAML::Key << "DirectionalLightComponent";
@@ -709,6 +721,18 @@ namespace Titan
                             }
                         }
                         matIndex++;
+                    }
+                }
+
+                auto terrainRendererComponent = entity["TerrainRendererComponent"];
+                if (terrainRendererComponent)
+                {
+                    auto& trc = deserializedEntity.AddComponent<TerrainRendererComponent>();
+                    if (terrainRendererComponent["Texture"])
+                    {
+                        trc.texture = Assets::Load<Texture2D>(
+                            Project::GetAssetDirectory() / terrainRendererComponent["Texture"].as<std::string>());
+                        trc.texture->SetInternalPath(terrainRendererComponent["Texture"].as<std::string>());
                     }
                 }
 

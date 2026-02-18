@@ -1,0 +1,8 @@
+ID: 15445204683913792265
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\rocky_terrain_02_ao_4k.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

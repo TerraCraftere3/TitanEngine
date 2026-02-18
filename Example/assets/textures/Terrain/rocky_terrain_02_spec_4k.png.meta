@@ -1,0 +1,8 @@
+ID: 4424620748388384106
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\rocky_terrain_02_spec_4k.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

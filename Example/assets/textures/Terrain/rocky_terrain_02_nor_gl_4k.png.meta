@@ -1,0 +1,8 @@
+ID: 962155278644995357
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\rocky_terrain_02_nor_gl_4k.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

@@ -98,6 +98,15 @@ namespace Titan
         MeshRendererComponent(const Ref<Mesh>& mesh) : MeshRef(mesh) {}
     };
 
+    struct TerrainRendererComponent
+    {
+        Ref<Texture2D> texture;
+
+        TerrainRendererComponent() = default;
+        TerrainRendererComponent(const TerrainRendererComponent&) = default;
+        TerrainRendererComponent(const Ref<Texture2D>& tex) : texture(tex) {}
+    };
+
     struct DirectionalLightComponent
     {
         glm::vec3 Direction;
@@ -290,10 +299,10 @@ namespace Titan
 
     using AllComponents =
         ComponentGroup<TransformComponent, SpriteRendererComponent, CircleRendererComponent, MeshRendererComponent,
-                       DirectionalLightComponent, SkyboxComponent, CameraComponent, PostFXComponent, ScriptComponent,
-                       RigidbodyComponent, CubeColliderComponent, SphereColliderComponent, Rigidbody2DComponent,
-                       BoxCollider2DComponent, CircleCollider2DComponent, AudioSourceComponent, AudioListenerComponent,
-                       LookAtComponent, RelationshipComponent>;
+                       TerrainRendererComponent, DirectionalLightComponent, SkyboxComponent, CameraComponent,
+                       PostFXComponent, ScriptComponent, RigidbodyComponent, CubeColliderComponent,
+                       SphereColliderComponent, Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
+                       AudioSourceComponent, AudioListenerComponent, LookAtComponent, RelationshipComponent>;
     namespace Utils
     {
         inline const char* SkyboxModeToString(SkyboxComponent::Mode mode)

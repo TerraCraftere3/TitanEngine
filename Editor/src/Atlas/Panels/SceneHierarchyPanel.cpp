@@ -120,6 +120,13 @@ namespace Titan
                 auto& mrc = quadEntity.AddComponent<MeshRendererComponent>();
                 mrc.MeshRef = Mesh::CreateQuad();
             }
+            ImGui::SeparatorText("Terrain");
+            if (ImGui::MenuItem("Create Terrain"))
+            {
+                Entity terrainEntity = m_Context->CreateEntity("Terrain");
+                auto& trc = terrainEntity.AddComponent<TerrainRendererComponent>();
+                trc.texture = Renderer2D::GetWhiteTexture();
+            }
             ImGui::SeparatorText("Lights");
             if (ImGui::MenuItem("Create Directional Light"))
             {
@@ -159,6 +166,7 @@ namespace Titan
                 ImGui::SeparatorText("Rendering");
                 DrawAddComponent<PostFXComponent>(m_SelectionContext, "Post Effects");
                 DrawAddComponent<MeshRendererComponent>(m_SelectionContext, "Mesh Renderer");
+                DrawAddComponent<TerrainRendererComponent>(m_SelectionContext, "Terrain Renderer");
                 DrawAddComponent<SpriteRendererComponent>(m_SelectionContext, "Sprite Renderer");
                 DrawAddComponent<CircleRendererComponent>(m_SelectionContext, "Circle Renderer");
 
@@ -638,6 +646,11 @@ namespace Titan
                 if (changed)
                     GeometryRenderer::ClearCache();
             });
+
+        DrawComponent<TerrainRendererComponent>(ICON_FA_MOUNTAIN " Terrain Renderer", entity, [](auto& component) {
+                DrawTextureSlot("Texture", component.texture);
+        });
+
         DrawComponent<DirectionalLightComponent>(ICON_FA_SUN " Directional Light", entity, [](auto& component)
                                                  { Component::DirectionControl("Direction", component.Direction); });
         DrawComponent<SkyboxComponent>(
