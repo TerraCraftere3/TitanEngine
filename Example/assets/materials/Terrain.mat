@@ -1,0 +1,4 @@
+Name: Material
+AlbedoColor: [1, 1, 1, 1]
+AlbedoTexture: textures\Terrain\Mountain Range Diffuse PNG.png
+UVRepeat: [1, 1]

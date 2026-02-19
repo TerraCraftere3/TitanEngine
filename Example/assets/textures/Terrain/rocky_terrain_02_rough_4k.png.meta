@@ -1,0 +1,8 @@
+ID: 11278556532684498934
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\rocky_terrain_02_rough_4k.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

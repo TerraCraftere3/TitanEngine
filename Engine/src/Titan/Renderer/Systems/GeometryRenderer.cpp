@@ -8,6 +8,7 @@
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Renderer/Systems/Renderer2D.h"
 #include "Titan/Scene/Assets.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -262,9 +263,10 @@ namespace Titan
         s_3DData.MaterialStorageBuffer = ShaderStorageBuffer::Create(sizeof(GPUMaterial) * s_3DData.MaxMaterials);
         s_3DData.InstanceSSBO = ShaderStorageBuffer::Create(sizeof(InstanceData) * s_3DData.MaxInstances);
 
-        s_3DData.Shader = Assets::Load<Shader>("resources/shader/RendererGeometry.slang");
+        auto shaderDir = Filesystem::GetExecutableDirectory() / "resources" / "shader";
+        s_3DData.Shader = Assets::Load<Shader>((shaderDir / "RendererGeometry.slang").string());
 #ifdef TI_BUILD_DEBUG
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererGeometry.slang");
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererGeometry.slang").string());
 #endif
 
         // Create pipeline state

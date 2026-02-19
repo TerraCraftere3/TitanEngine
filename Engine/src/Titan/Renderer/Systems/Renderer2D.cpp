@@ -7,6 +7,7 @@
 #include "Titan/Renderer/RHI/VertexArray.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Scene/Assets.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -179,14 +180,15 @@ namespace Titan
         s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
         // Shader
-        s_Data.CircleShader = Assets::Load<Shader>("resources/shader/RendererCircle.slang");
-        s_Data.QuadShader = Assets::Load<Shader>("resources/shader/RendererQuad.slang");
-        s_Data.LineShader = Assets::Load<Shader>("resources/shader/RendererLine.slang");
+        auto shaderDir = Filesystem::GetExecutableDirectory() / "resources" / "shader";
+        s_Data.CircleShader = Assets::Load<Shader>((shaderDir / "RendererCircle.slang").string());
+        s_Data.QuadShader = Assets::Load<Shader>((shaderDir / "RendererQuad.slang").string());
+        s_Data.LineShader = Assets::Load<Shader>((shaderDir / "RendererLine.slang").string());
 
 #ifdef TI_BUILD_DEBUG
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererCircle.slang");
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererQuad.slang");
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererLine.slang");
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererCircle.slang").string());
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererQuad.slang").string());
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererLine.slang").string());
 #endif
 
         s_Data.CamUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData));

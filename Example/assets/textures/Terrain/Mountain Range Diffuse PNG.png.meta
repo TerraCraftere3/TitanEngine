@@ -1,0 +1,8 @@
+ID: 5472740740455506326
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\Mountain Range Diffuse PNG.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

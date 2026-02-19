@@ -1,5 +1,5 @@
 Project:
   Name: Example Project
-  StartScene: scenes\Helmet.titan
+  StartScene: scenes\Terrain.titan
   AssetDirectory: Assets
   ScriptModulePath: scripts/Sandbox.dll

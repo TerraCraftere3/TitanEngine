@@ -1,0 +1,60 @@
+Scene: Untitled
+Entities:
+  - Entity: 8758640056969562893
+    TagComponent:
+      Tag: Post Processing
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    PostFXComponent:
+      FXAA:
+        Enabled: true
+  - Entity: 5779225809508732683
+    TagComponent:
+      Tag: Skybox
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyboxComponent:
+      Normal:
+        Time: 0
+      Mode: Normal
+  - Entity: 9915263884343406975
+    TagComponent:
+      Tag: Terrain
+    TransformComponent:
+      Translation: [0, -21.1, 0]
+      Rotation: [0, 0, 0]
+      Scale: [100, 100, 100]
+    TerrainRendererComponent:
+      Texture: textures\Terrain\Mountain Range Height Map PNG.png
+      Material: materials\Terrain.mat
+  - Entity: 6817584821935004973
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectionalLightComponent:
+      Direction: [-1, -1, -1]
+  - Entity: 3492609322408614207
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [-100, 30, -100]
+      Rotation: [3.0359218, -0.7853981, 3.1415927]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.27925268
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1000
+      Primary: true
+      FixedAspectRatio: false

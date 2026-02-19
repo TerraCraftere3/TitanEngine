@@ -533,10 +533,11 @@ namespace Titan
         if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
-        if (m_EditorProperties.EnableMultiViewports)
+        ImGui::SameLine();
+        ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
+
+        if (!m_EditorProperties.EnableMultiViewports)
         {
-            ImGui::SameLine();
-            ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
             ImGui::SameLine();
             ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[0].enableOverlay);
             ImGui::SameLine();

@@ -1,0 +1,8 @@
+ID: 8155760782970037905
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\rocky_terrain_02_diff_4k.png
+Properties:
+  WrapS: Repeat
+  WrapT: Repeat
+  MinFilter: MipmapLinear
+  MagFilter: Linear

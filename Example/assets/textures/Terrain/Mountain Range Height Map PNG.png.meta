@@ -1,0 +1,8 @@
+ID: 5151592106789550285
+Type: 1
+Source: ..\Example\Assets\textures\Terrain\Mountain Range Height Map PNG.png
+Properties:
+  WrapS: ClampToEdge
+  WrapT: ClampToEdge
+  MinFilter: MipmapLinear
+  MagFilter: Linear

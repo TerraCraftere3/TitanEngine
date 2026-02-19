@@ -24,9 +24,6 @@ namespace Titan
         static void Flush();
 
         static void DrawMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, int entityID = -1);
-
-    private:
-        static void FlushAndReset();
     };
 
 } // namespace Titan

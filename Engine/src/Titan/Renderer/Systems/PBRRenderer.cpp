@@ -8,6 +8,7 @@
 #include "Titan/Renderer/RHI/UniformBuffer.h"
 #include "Titan/Renderer/RenderCommand.h"
 #include "Titan/Scene/Assets.h"
+#include "Titan/Utils/PlatformUtils.h"
 
 namespace Titan
 {
@@ -32,9 +33,10 @@ namespace Titan
         s_PBRData.DefaultIrradiance = defaultAmbient->CreateIrradianceMap();
 
         // Shader
-        s_PBRData.Shader = Assets::Load<Shader>("resources/shader/RendererPBR.slang");
+        auto shaderDir = Filesystem::GetExecutableDirectory() / "resources" / "shader";
+        s_PBRData.Shader = Assets::Load<Shader>((shaderDir / "RendererPBR.slang").string());
 #ifdef TI_BUILD_DEBUG
-        Assets::AttachHotreloader<Shader>("resources/shader/RendererPBR.slang");
+        Assets::AttachHotreloader<Shader>((shaderDir / "RendererPBR.slang").string());
 #endif
 
         // Create pipeline
