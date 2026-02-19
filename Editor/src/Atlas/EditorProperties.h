@@ -6,6 +6,14 @@
 
 namespace Titan
 {
+    enum class EditorFramebufferView
+    {
+        Shaded = 0,
+        Albedo,
+        Normal,
+        Emission
+    };
+
     struct EditorProperties
     {
         // Panels
@@ -20,6 +28,7 @@ namespace Titan
         bool ShowLog = true;
 
         bool EnableMultiViewports = false;
+        EditorFramebufferView View;
 
         // Overlay settings per viewport
         OverlaySettings Overlays[4];

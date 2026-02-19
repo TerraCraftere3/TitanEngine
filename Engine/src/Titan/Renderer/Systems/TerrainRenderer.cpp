@@ -24,7 +24,8 @@ namespace Titan
         glm::vec2 UV1;
     };
 
-    struct TerrainLOD{
+    struct TerrainLOD
+    {
         float DistanceThreshold;
         uint32_t VertexDensity;
         Ref<VertexArray> VertexArray;
@@ -74,7 +75,8 @@ namespace Titan
 
         s_TerrainData.UniformBuffer = UniformBuffer::Create(sizeof(UniformBufferObject));
 
-        struct QuadCreationDescription{
+        struct QuadCreationDescription
+        {
             float DistanceThreshold;
             uint32_t VertexDensity;
         };
@@ -90,7 +92,7 @@ namespace Titan
         };
         // clang-format on
 
-        for(const auto& desc : quadDescriptions)
+        for (const auto& desc : quadDescriptions)
         {
             TerrainLOD lod;
             lod.DistanceThreshold = desc.DistanceThreshold;
@@ -100,12 +102,11 @@ namespace Titan
             auto quadMesh = QuadMeshGenerator::GenerateQuad(desc.VertexDensity, desc.VertexDensity, 1.0f, 1.0f);
             lod.VertexBuffer = VertexBuffer::Create(quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
             lod.VertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
-                                                    {ShaderDataType::Float3, "a_Normal"},
-                                                    {ShaderDataType::Float3, "a_Tangent"},
-                                                    {ShaderDataType::Float2, "a_TexCoord"}});
+                                         {ShaderDataType::Float3, "a_Normal"},
+                                         {ShaderDataType::Float3, "a_Tangent"},
+                                         {ShaderDataType::Float2, "a_TexCoord"}});
 
-            lod.VertexBuffer->SetData(quadMesh.Vertices.data(),
-                                                    quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
+            lod.VertexBuffer->SetData(quadMesh.Vertices.data(), quadMesh.Vertices.size() * sizeof(QuadMeshVertex));
             lod.VertexArray->AddVertexBuffer(lod.VertexBuffer);
 
             lod.IndexBuffer = IndexBuffer::Create(quadMesh.Indices.data(), quadMesh.Indices.size());
@@ -145,7 +146,8 @@ namespace Titan
         s_Textures = {};
     }
 
-    void TerrainRenderer::BeginScene(const glm::mat4& viewTransform, const glm::vec3& cameraPosition, PolygonMode polygonMode)
+    void TerrainRenderer::BeginScene(const glm::mat4& viewTransform, const glm::vec3& cameraPosition,
+                                     PolygonMode polygonMode)
     {
         s_TerrainData.Pipeline->SetPolygonMode(polygonMode);
         s_TerrainData.UBO.ViewProjection = viewTransform;
@@ -195,9 +197,9 @@ namespace Titan
         int subdivX = int(scale.x / subdivisionSize);
         int subdivZ = int(scale.z / subdivisionSize);
 
-        for(int z = 0; z < subdivZ; ++z)
+        for (int z = 0; z < subdivZ; ++z)
         {
-            for(int x = 0; x < subdivX; ++x)
+            for (int x = 0; x < subdivX; ++x)
             {
                 glm::mat4 subTransform = transform;
                 // Position the sub-quad in the correct location
@@ -215,13 +217,13 @@ namespace Titan
                 s_TerrainData.UBO.UV1 = glm::vec2(1.0f / subdivX, 1.0f / subdivZ);
 
                 s_TerrainData.UBO.Transform = subTransform;
-            
+
                 TerrainLOD* selectedLOD = nullptr;
                 uint32_t selectedLODIndex = 0;
-                for(size_t lodIndex = 0; lodIndex < s_TerrainData.LODs.size(); ++lodIndex)
+                for (size_t lodIndex = 0; lodIndex < s_TerrainData.LODs.size(); ++lodIndex)
                 {
                     auto& lod = s_TerrainData.LODs[lodIndex];
-                    if(glm::length(glm::vec3(subTransform[3]) - s_TerrainData.CameraPosition) < lod.DistanceThreshold)
+                    if (glm::length(glm::vec3(subTransform[3]) - s_TerrainData.CameraPosition) < lod.DistanceThreshold)
                     {
                         selectedLOD = &lod;
                         selectedLODIndex = static_cast<uint32_t>(lodIndex);
@@ -229,7 +231,8 @@ namespace Titan
                     }
                 }
 
-                if(!selectedLOD) return;
+                if (!selectedLOD)
+                    return;
                 s_TerrainData.UBO.LODIndex = selectedLODIndex;
                 s_TerrainData.Pipeline->SetVertexArray(selectedLOD->VertexArray);
                 s_TerrainData.UniformBuffer->SetData(&s_TerrainData.UBO, sizeof(UniformBufferObject));

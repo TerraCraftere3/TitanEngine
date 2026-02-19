@@ -547,4 +547,10 @@ namespace Titan
         return finalFB ? finalFB : d.finalFramebuffer;
     }
 
+    Ref<Framebuffer> SceneRenderer::GetGeometryFramebuffer()
+    {
+        auto& d = *m_Data;
+        return d.renderGraph ? d.renderGraph->GetFramebuffer("GeometryBuffer") : nullptr;
+    }
+
 } // namespace Titan

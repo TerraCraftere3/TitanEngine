@@ -30,6 +30,7 @@ namespace Titan
         void RenderSceneEditor(Ref<Scene> scene, EditorCamera& camera, OverlaySettings overlay = {});
         void Resize(uint32_t width, uint32_t height);
         Ref<Framebuffer> GetFramebuffer();
+        Ref<Framebuffer> GetGeometryFramebuffer();
 
     private:
         void SetupRenderGraph();

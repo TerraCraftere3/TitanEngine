@@ -64,9 +64,7 @@ Sampler2D roughnessMap : register(s5);
 [[vk::binding(6)]]
 Sampler2D aoMap : register(s6);
 
-[shader("vertex")]
-VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
-{
+[shader("vertex")] VertexOutput vertexMain(VertexInput input, uint instanceID : SV_InstanceID) {
     VertexOutput output;
 
     float3 normal = input.a_Normal;
@@ -106,8 +104,7 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
     return output;
 };
 
-[shader("fragment")]
-FragmentOutput fragmentMain(VertexOutput input)
+[shader("fragment")] FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
     float2 uv = input.texCoord;
@@ -121,11 +118,7 @@ FragmentOutput fragmentMain(VertexOutput input)
 
     // Reconstruct normal from tangent space
     float3 normal = normalize(normalSample * 2.0 - 1.0);
-    float3 worldNormal = normalize(
-        normal.x * input.tangent +
-        normal.y * input.bitangent +
-        normal.z * input.normal
-    );
+    float3 worldNormal = normalize(normal.x * input.tangent + normal.y * input.bitangent + normal.z * input.normal);
 
     // Output values from textures
     output.position = float4(input.worldPosition, 1.0);
@@ -135,7 +128,7 @@ FragmentOutput fragmentMain(VertexOutput input)
     output.albedo = float4(albedoSample * lodRGB, AlbedoColor.a);
 #else
     output.albedo = float4(albedoSample, AlbedoColor.a);
-    #endif
+#endif
     output.metallic_roughness_ao_ = float4(metallic, roughness, ao, 1.0);
     output.emission = float4(emission, 1.0);
     output.entityID = input.entityID;

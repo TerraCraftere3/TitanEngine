@@ -6,6 +6,36 @@
 
 namespace Titan
 {
+    std::string EditorFramebufferViewToString(EditorFramebufferView view)
+    {
+        switch (view)
+        {
+            case EditorFramebufferView::Shaded:
+                return "Shaded";
+            case EditorFramebufferView::Albedo:
+                return "Albedo";
+            case EditorFramebufferView::Normal:
+                return "Normal";
+            case EditorFramebufferView::Emission:
+                return "Emission";
+            default:
+                return "Unknown";
+        }
+    }
+
+    EditorFramebufferView StringToEditorFramebufferView(const std::string& str)
+    {
+        if (str == "Shaded")
+            return EditorFramebufferView::Shaded;
+        if (str == "Albedo")
+            return EditorFramebufferView::Albedo;
+        if (str == "Normal")
+            return EditorFramebufferView::Normal;
+        if (str == "Emission")
+            return EditorFramebufferView::Emission;
+        return EditorFramebufferView::Shaded; // Default
+    }
+
     bool LoadEditorProperties(EditorProperties& props, const std::filesystem::path& filepath)
     {
         if (!std::filesystem::exists(filepath))
@@ -36,6 +66,8 @@ namespace Titan
             // clang-format on
         }
 
+        if (data["View"])
+            props.View = StringToEditorFramebufferView(data["View"].as<std::string>());
         if (data["EnableMultiViewports"])
             props.EnableMultiViewports = data["EnableMultiViewports"].as<bool>();
 
@@ -90,6 +122,7 @@ namespace Titan
         out << YAML::Key << "ShowLog" << YAML::Value <<                      props.ShowLog;
         // clang-format on
         out << YAML::EndMap;
+        out << YAML::Key << "View" << YAML::Value << EditorFramebufferViewToString(props.View);
         out << YAML::Key << "EnableMultiViewports" << YAML::Value << props.EnableMultiViewports;
 
         out << YAML::Key << "Theme" << YAML::Value;

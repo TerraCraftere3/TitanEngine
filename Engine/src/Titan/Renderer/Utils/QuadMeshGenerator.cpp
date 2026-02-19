@@ -3,7 +3,8 @@
 
 namespace Titan
 {
-    QuadMeshData QuadMeshGenerator::GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width, float height, glm::vec2 UV0, glm::vec2 UV1)
+    QuadMeshData QuadMeshGenerator::GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width, float height,
+                                                 glm::vec2 UV0, glm::vec2 UV1)
     {
         QuadMeshData meshData;
 

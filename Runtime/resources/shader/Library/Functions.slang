@@ -60,8 +60,8 @@ float3 wavelengthToRGB(float wavelength)
     }
 
     // Intensity correction
-    float intensity = 1.5; // Adjust this value for brightness
-    return pow(color * intensity, float3(1/2.2)); // Gamma correction
+    float intensity = 1.5;                          // Adjust this value for brightness
+    return pow(color * intensity, float3(1 / 2.2)); // Gamma correction
 }
 
 Sampler2D GetBindlessTexture(uint2 handle);
