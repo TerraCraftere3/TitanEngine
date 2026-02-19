@@ -653,27 +653,27 @@ namespace Titan
                 case EditorFramebufferView::Albedo:
                     ImGui::Image(
                         m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(2)->GetNativeTexture(),
-                        size, ImVec2(0, 1), ImVec2(1, 0));
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
                     break;
                 case EditorFramebufferView::Normal:
                     ImGui::Image(
                         m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(1)->GetNativeTexture(),
-                        size, ImVec2(0, 1), ImVec2(1, 0));
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
                     break;
                 case EditorFramebufferView::Emission:
                     ImGui::Image(
                         m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(4)->GetNativeTexture(),
-                        size, ImVec2(0, 1), ImVec2(1, 0));
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
                     break;
                 case EditorFramebufferView::Shaded:
                     ImGui::Image(
-                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(), size,
-                        ImVec2(0, 1), ImVec2(1, 0));
+                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
                     break;
                 default:
                     ImGui::Image(
-                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(), size,
-                        ImVec2(0, 1), ImVec2(1, 0));
+                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
                     break;
             }
             HandleSceneDragDrop();

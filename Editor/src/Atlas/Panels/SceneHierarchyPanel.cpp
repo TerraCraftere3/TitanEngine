@@ -544,103 +544,106 @@ namespace Titan
                     ImGui::EndDragDropTarget();
                 }
                 int index = 0;
-                for (auto mat : component.MeshRef->GetMaterials())
+                if (component.MeshRef)
                 {
-                    ImGui::PushID(index);
-                    std::string label = mat->Name;
-
-                    if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
+                    for (auto mat : component.MeshRef->GetMaterials())
                     {
-                        // Name input
-                        char nameBuffer[256];
-                        strcpy_s(nameBuffer, sizeof(nameBuffer), mat->Name.c_str());
-                        if (ImGui::InputText("Name", nameBuffer, sizeof(nameBuffer)))
+                        ImGui::PushID(index);
+                        std::string label = mat->Name;
+
+                        if (ImGui::TreeNodeEx(label.c_str(), ImGuiTreeNodeFlags_Framed))
                         {
-                            mat->Name = nameBuffer;
-                            changed = true;
-                        }
-
-                        auto config = ImSettings();
-                        config.push<glm::vec4>().as_color().pop();
-                        auto response = ImResponse();
-                        ImReflect::Input("Diffuse", mat->AlbedoColor, config, response);
-                        changed |= response.get<glm::vec4>().is_changed();
-                        changed |= DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
-                        changed |= DrawTextureSlot("Emission Texture", mat->EmissionTexture);
-                        changed |= DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
-                        changed |= DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
-                        changed |= DrawTextureSlot("Normal Texture", mat->NormalTexture);
-                        changed |= DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
-                        auto config2 = ImSettings();
-                        config2.push<glm::vec2>().as_position().pop();
-                        auto response2 = ImResponse();
-                        ImReflect::Input("UV Repeat", mat->UVRepeat, config2, response2);
-                        changed |= response2.get<glm::vec2>().is_changed();
-
-                        // Save material button
-                        ImGui::Spacing();
-                        ImGui::Separator();
-                        ImGui::Spacing();
-
-                        if (ImGui::Button("Save Material"))
-                        {
-                            if (mat->InternalPath.empty())
+                            // Name input
+                            char nameBuffer[256];
+                            strcpy_s(nameBuffer, sizeof(nameBuffer), mat->Name.c_str());
+                            if (ImGui::InputText("Name", nameBuffer, sizeof(nameBuffer)))
                             {
-                                // Generate default path if not set
-                                auto meshPath = std::filesystem::path(component.MeshRef->GetInternalPath());
-                                auto materialDir = meshPath.parent_path() / "Materials";
-                                auto materialFileName =
-                                    meshPath.stem().string() + "_Mat" + std::to_string(index) + ".mat";
-                                mat->InternalPath = (materialDir / materialFileName).string();
-                                std::filesystem::create_directories(materialDir);
+                                mat->Name = nameBuffer;
+                                changed = true;
                             }
-                            mat->Save();
-                        }
 
-                        ImGui::SameLine();
+                            auto config = ImSettings();
+                            config.push<glm::vec4>().as_color().pop();
+                            auto response = ImResponse();
+                            ImReflect::Input("Diffuse", mat->AlbedoColor, config, response);
+                            changed |= response.get<glm::vec4>().is_changed();
+                            changed |= DrawTextureSlot("Diffuse Texture", mat->AlbedoTexture);
+                            changed |= DrawTextureSlot("Emission Texture", mat->EmissionTexture);
+                            changed |= DrawTextureSlot("Metallic Texture", mat->MetallicTexture);
+                            changed |= DrawTextureSlot("Roughness Texture", mat->RoughnessTexture);
+                            changed |= DrawTextureSlot("Normal Texture", mat->NormalTexture);
+                            changed |= DrawTextureSlot("Ambient Occlusion Texture", mat->AOTexture);
+                            auto config2 = ImSettings();
+                            config2.push<glm::vec2>().as_position().pop();
+                            auto response2 = ImResponse();
+                            ImReflect::Input("UV Repeat", mat->UVRepeat, config2, response2);
+                            changed |= response2.get<glm::vec2>().is_changed();
 
-                        if (ImGui::Button("Save As..."))
-                        {
-                            std::string filepath = FileDialogs::SaveFile("Material (*.mat)\0*.mat\0");
-                            if (!filepath.empty())
+                            // Save material button
+                            ImGui::Spacing();
+                            ImGui::Separator();
+                            ImGui::Spacing();
+
+                            if (ImGui::Button("Save Material"))
                             {
-                                // Ensure .mat extension
-                                if (filepath.find(".mat") == std::string::npos)
+                                if (mat->InternalPath.empty())
                                 {
-                                    filepath += ".mat";
+                                    // Generate default path if not set
+                                    auto meshPath = std::filesystem::path(component.MeshRef->GetInternalPath());
+                                    auto materialDir = meshPath.parent_path() / "Materials";
+                                    auto materialFileName =
+                                        meshPath.stem().string() + "_Mat" + std::to_string(index) + ".mat";
+                                    mat->InternalPath = (materialDir / materialFileName).string();
+                                    std::filesystem::create_directories(materialDir);
                                 }
-                                mat->InternalPath = filepath;
                                 mat->Save();
                             }
-                        }
 
-                        ImGui::SameLine();
+                            ImGui::SameLine();
 
-                        if (ImGui::Button("Load..."))
-                        {
-                            std::string filepath = FileDialogs::OpenFile("Material (*.mat)\0*.mat\0");
-                            if (!filepath.empty())
+                            if (ImGui::Button("Save As..."))
                             {
-                                auto loadedMat = Material3D::Create(filepath);
-                                if (loadedMat)
+                                std::string filepath = FileDialogs::SaveFile("Material (*.mat)\0*.mat\0");
+                                if (!filepath.empty())
                                 {
-                                    *mat = *loadedMat;
-                                    mat->SetInternalPath(filepath);
-                                    changed = true;
+                                    // Ensure .mat extension
+                                    if (filepath.find(".mat") == std::string::npos)
+                                    {
+                                        filepath += ".mat";
+                                    }
+                                    mat->InternalPath = filepath;
+                                    mat->Save();
                                 }
                             }
+
+                            ImGui::SameLine();
+
+                            if (ImGui::Button("Load..."))
+                            {
+                                std::string filepath = FileDialogs::OpenFile("Material (*.mat)\0*.mat\0");
+                                if (!filepath.empty())
+                                {
+                                    auto loadedMat = Material3D::Create(filepath);
+                                    if (loadedMat)
+                                    {
+                                        *mat = *loadedMat;
+                                        mat->SetInternalPath(filepath);
+                                        changed = true;
+                                    }
+                                }
+                            }
+
+                            if (!mat->InternalPath.empty())
+                            {
+                                ImGui::TextDisabled("Path: %s", mat->InternalPath.c_str());
+                            }
+
+                            ImGui::TreePop();
                         }
 
-                        if (!mat->InternalPath.empty())
-                        {
-                            ImGui::TextDisabled("Path: %s", mat->InternalPath.c_str());
-                        }
-
-                        ImGui::TreePop();
+                        ImGui::PopID();
+                        index++;
                     }
-
-                    ImGui::PopID();
-                    index++;
                 }
 
                 if (changed)
