@@ -183,7 +183,7 @@ namespace Titan
                 {
                     TI_PROFILE_SCOPE("Terrain");
                     RenderCommand::BeginRenderPass(fb, "Geometry Pass - Terrain (3D)");
-                    TerrainRenderer::BeginScene(d->viewProjection,
+                    TerrainRenderer::BeginScene(d->viewProjection, d->viewPosition,
                                                 d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
                     auto terrainView =
                         d->currentScene->GetAllEntitiesWith<TransformComponent, TerrainRendererComponent>();

@@ -3,7 +3,7 @@
 
 namespace Titan
 {
-    QuadMeshData QuadMeshGenerator::GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width, float height)
+    QuadMeshData QuadMeshGenerator::GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width, float height, glm::vec2 UV0, glm::vec2 UV1)
     {
         QuadMeshData meshData;
 
@@ -28,7 +28,7 @@ namespace Titan
                 vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 
                 // Texture coordinates
-                vertex.TexCoord = glm::vec2(u, v);
+                vertex.TexCoord = glm::vec2(UV0.x + u * (UV1.x - UV0.x), UV0.y + v * (UV1.y - UV0.y));
 
                 meshData.Vertices.push_back(vertex);
             }

@@ -7,8 +7,11 @@ cbuffer GlobalUBO : register(b0)
     column_major float4x4 u_ViewProjection; // 64 bytes
     column_major float4x4 u_Transform;      // 64 bytes
     uint32_t u_EntityID;                    // 4 bytes
+    uint32_t u_LODIndex;                    // 4 bytes
     float4 AlbedoColor;                     // 16 bytes
     float2 UVRepeat;                        // 8 bytes
+    float2 UV0;                             // 8 bytes
+    float2 UV1;                             // 8 bytes
 };
 
 struct VertexInput
@@ -68,11 +71,12 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 
     float3 normal = input.a_Normal;
     float3 tangent = input.a_Tangent;
+    float2 uv = (UV0 + input.a_TexCoord * UV1) * UVRepeat;
 
     // Sample height at current and neighboring positions
-    float height = heightMap.Sample(input.a_TexCoord).r;
-    float heightRight = heightMap.Sample(input.a_TexCoord + float2(0.01, 0.0)).r;
-    float heightUp = heightMap.Sample(input.a_TexCoord + float2(0.0, 0.01)).r;
+    float height = heightMap.Sample(uv).r;
+    float heightRight = heightMap.Sample(uv + float2(0.01, 0.0)).r;
+    float heightUp = heightMap.Sample(uv + float2(0.0, 0.01)).r;
 
     float3 displacedPosition = input.a_Position + normal * height;
 
@@ -96,7 +100,7 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 
     output.bitangent = cross(output.normal, output.tangent);
 
-    output.texCoord = input.a_TexCoord;
+    output.texCoord = uv;
     output.entityID = u_EntityID;
 
     return output;
@@ -106,9 +110,8 @@ VertexOutput vertexMain(VertexInput input, uint instanceID: SV_InstanceID)
 FragmentOutput fragmentMain(VertexOutput input)
 {
     FragmentOutput output;
+    float2 uv = input.texCoord;
 
-    // Sample texture maps
-    float2 uv = input.texCoord * UVRepeat;
     float3 albedoSample = albedoMap.Sample(uv).rgb * AlbedoColor.rgb;
     float3 normalSample = normalMap.Sample(uv).rgb;
     float metallic = metallicMap.Sample(uv).r;
@@ -127,7 +130,12 @@ FragmentOutput fragmentMain(VertexOutput input)
     // Output values from textures
     output.position = float4(input.worldPosition, 1.0);
     output.normal = float4(worldNormal, 1.0);
+#ifdef DEBUG_LOD
+    float3 lodRGB = wavelengthToRGB(380.0 + u_LODIndex * 40.0);
+    output.albedo = float4(albedoSample * lodRGB, AlbedoColor.a);
+#else
     output.albedo = float4(albedoSample, AlbedoColor.a);
+    #endif
     output.metallic_roughness_ao_ = float4(metallic, roughness, ao, 1.0);
     output.emission = float4(emission, 1.0);
     output.entityID = input.entityID;
