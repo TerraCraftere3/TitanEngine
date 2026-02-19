@@ -3,10 +3,10 @@
 #include "Panels/LogPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Renderer/Thumbnails.h"
+#include "Windows/ProjectConfigWindow.h"
 
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
-#include <Titan/FontAwesome7.h>
 #include <Titan/Project/Project.h>
 #include <Titan/Renderer/RenderCommand.h>
 #include <Titan/Renderer/Systems/GeometryRenderer.h>
@@ -19,6 +19,7 @@
 #include <Titan/Utils/Math.h>
 #include <Titan/Utils/PlatformUtils.h>
 #include <Titan/Utils/String.h>
+#include <Titan/Vendor/FontAwesome7.h>
 namespace Titan
 {
     EditorLayer::EditorLayer() : Layer("EditorLayer") {}
@@ -35,6 +36,9 @@ namespace Titan
         m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>();
         m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
         m_LogPanel = CreateScope<LogPanel>();
+
+        // Initialize windows
+        m_ProjectConfigWindow = CreateScope<ProjectConfigWindow>();
 
         NewScene();
         m_SceneHierarchyPanel->SetContext(m_ActiveScene);
@@ -175,12 +179,13 @@ namespace Titan
         if (m_EditorProperties.ShowContentBrowser)
             m_ContentBrowserPanel->OnImGuiRender(&m_EditorProperties.ShowContentBrowser,
                                                  &m_EditorProperties.ShowContentBrowserFile);
+        if (m_EditorProperties.ShowLog)
+            m_LogPanel->OnImGuiRender(&m_EditorProperties.ShowLog);
+
+        m_ProjectConfigWindow->OnImGuiRender();
 
         RenderStatisticsPanel(&m_EditorProperties.ShowStatistics);
         RenderViewport(&m_EditorProperties.ShowViewport);
-
-        if (m_EditorProperties.ShowLog)
-            m_LogPanel->OnImGuiRender(&m_EditorProperties.ShowLog);
     }
 
     void EditorLayer::OnEvent(Event& event)
@@ -312,6 +317,10 @@ namespace Titan
             if (ImGui::BeginMenu("Project"))
             {
                 ImGui::Text("Path: %s", std::filesystem::absolute(Project::GetProjectDirectory()).string().c_str());
+                if (ImGui::MenuItem("Open Config"))
+                {
+                    m_ProjectConfigWindow->GetOpenPtr()[0] = true;
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -524,10 +533,11 @@ namespace Titan
         if (ImGui::Button("S", ImVec2(buttonSize, buttonSize)))
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
-        if (m_EditorProperties.EnableMultiViewports)
+        ImGui::SameLine();
+        ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
+
+        if (!m_EditorProperties.EnableMultiViewports)
         {
-            ImGui::SameLine();
-            ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
             ImGui::SameLine();
             ImGui::Checkbox("Overlay", &m_EditorProperties.Overlays[0].enableOverlay);
             ImGui::SameLine();

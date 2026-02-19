@@ -118,4 +118,22 @@ namespace Titan
         return 0;
     }
 
+    void Process::RestartWithSameArgs()
+    {
+        char exePath[MAX_PATH];
+        GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+
+        STARTUPINFOA si{};
+        PROCESS_INFORMATION pi{};
+        si.cb = sizeof(si);
+
+        if (CreateProcessA(exePath, GetCommandLineA(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
+        {
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+        }
+
+        ExitProcess(0);
+    }
+
 } // namespace Titan

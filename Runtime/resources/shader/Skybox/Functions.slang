@@ -13,9 +13,15 @@ float3 skyColor(float3 rayDirection, float time)
     float3 sunDirection = normalize(float3(sin(timeScale * wrappedTime), cos(timeScale * wrappedTime), 1.0));
     float3 color = skyBackgroundColor(rayDirection, sunDirection);
 
-    // Smoothly fade to black below the horizon.
     float horizonFade = smoothstep(HORIZON_FADE_START, HORIZON_FADE_END, rayDirection.y);
-    float3 groundColor = float3(0.0, 0.0, 0.0);
+    float3 groundColor = float3(0.05, 0.05, 0.05);
     color = lerp(groundColor, color, horizonFade);
+
+    // Force gray below the horizon
+    if (rayDirection.y < HORIZON_FADE_START)
+    {
+        color = groundColor;
+    }
+
     return color;
 }

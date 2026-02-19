@@ -329,6 +329,34 @@ namespace Titan
             out << YAML::EndMap; // MeshRendererComponent
         }
 
+        if (entity.HasComponent<TerrainRendererComponent>())
+        {
+            out << YAML::Key << "TerrainRendererComponent";
+            out << YAML::BeginMap; // TerrainRendererComponent
+
+            auto& terrainRendererComponent = entity.GetComponent<TerrainRendererComponent>();
+            if (terrainRendererComponent.texture)
+                out << YAML::Key << "Texture" << YAML::Value << terrainRendererComponent.texture->GetInternalPath();
+
+            if (terrainRendererComponent.material)
+            {
+                // Generate a material file path based on terrain texture path
+                auto texturePath = std::filesystem::path(terrainRendererComponent.texture->GetInternalPath());
+                auto materialDir = texturePath.parent_path() / "Materials";
+                auto materialFileName = texturePath.stem().string() + "_Terrain.mat";
+                auto materialFilePath = materialDir / materialFileName;
+
+                // Save the material to disk
+                std::filesystem::create_directories(materialDir);
+                terrainRendererComponent.material->Save();
+
+                // Save just the path in the scene file
+                out << YAML::Key << "Material" << YAML::Value << terrainRendererComponent.material->GetInternalPath();
+            }
+
+            out << YAML::EndMap; // TerrainRendererComponent
+        }
+
         if (entity.HasComponent<DirectionalLightComponent>())
         {
             out << YAML::Key << "DirectionalLightComponent";
@@ -709,6 +737,26 @@ namespace Titan
                             }
                         }
                         matIndex++;
+                    }
+                }
+
+                auto terrainRendererComponent = entity["TerrainRendererComponent"];
+                if (terrainRendererComponent)
+                {
+                    auto& trc = deserializedEntity.AddComponent<TerrainRendererComponent>();
+                    if (terrainRendererComponent["Texture"])
+                    {
+                        trc.texture = Assets::Load<Texture2D>(Project::GetAssetDirectory() /
+                                                              terrainRendererComponent["Texture"].as<std::string>());
+                        trc.texture->SetInternalPath(terrainRendererComponent["Texture"].as<std::string>());
+                    }
+
+                    if (terrainRendererComponent["Material"])
+                    {
+                        trc.material = Material3D::Create(
+                            (Project::GetAssetDirectory() / terrainRendererComponent["Material"].as<std::string>())
+                                .string());
+                        trc.material->SetInternalPath(terrainRendererComponent["Material"].as<std::string>());
                     }
                 }
 

@@ -5,8 +5,10 @@ on:
     branches:
       - main
       - master
-      - 'feature/git-actions'
   pull_request:
+    branches:
+      - main
+      - master
 
 jobs:
   build-windows:
