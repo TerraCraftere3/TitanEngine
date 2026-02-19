@@ -150,7 +150,7 @@ namespace Titan
                                   if (!fb)
                                       return;
                                   RenderCommand::BeginRenderPass(fb, "Clear Pass (-)");
-                                  RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+                                  RenderCommand::Clear(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
                                   fb->ClearAttachment(1, -1); // Clear EntityID attachment
                                   RenderCommand::EndRenderPass();
                               });
@@ -166,7 +166,7 @@ namespace Titan
                 {
                     TI_PROFILE_SCOPE("Meshes");
                     RenderCommand::BeginRenderPass(fb, "Geometry Pass - Meshes (3D)");
-                    RenderCommand::Clear(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+                    RenderCommand::Clear(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
                     GeometryRenderer::BeginScene(d->viewProjection,
                                                  d->drawWireframe ? PolygonMode::Line : PolygonMode::Fill);
                     auto meshView = d->currentScene->GetAllEntitiesWith<TransformComponent, MeshRendererComponent>();
