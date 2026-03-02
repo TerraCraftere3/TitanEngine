@@ -34,6 +34,7 @@ For now there is no linux support
     - `Scene` contains code used by the ecs and scene renderer
     - `Scripting` contains the code for the C# API of the Engine
     - `Utils` contains small utilities like save dialogs, etc
+    - `Vendor` contains dependency specific code (e.g. custom yaml parsers for glm)
 - `Editor` contains the code for Atlas (The Editor)
   - `src/Atlas` contains the editor code
     - `Panels` contains the code for each panel (asset viewer, etc.)
