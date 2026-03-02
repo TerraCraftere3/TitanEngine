@@ -5,7 +5,11 @@ namespace Titan
 
     void Assets::Init() {}
 
-    void Assets::Shutdown() {}
+    void Assets::Shutdown()
+    {
+        AssetLibrary::Clear();
+        s_Hotreloaders.clear();
+    }
 
     AssetType Assets::GetTypeForFile(const std::filesystem::path& filePath)
     {

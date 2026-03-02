@@ -121,6 +121,7 @@ namespace Titan
         s_SBData.CubemapPipeline->Bind();
 
         RenderCommand::DrawArrays(36);
+        s_SBData.CubemapPipeline->ClearBindings();
     }
 
     void SkyboxRenderer::Render(const glm::vec3& topColor, const glm::vec3& bottomColor, glm::mat4 view,
@@ -137,6 +138,7 @@ namespace Titan
         s_SBData.ColorPipeline->Bind();
 
         RenderCommand::DrawArrays(36);
+        s_SBData.ColorPipeline->ClearBindings();
     }
 
     void SkyboxRenderer::Render(float time, glm::mat4 view, glm::mat4 projection)

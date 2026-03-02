@@ -73,6 +73,7 @@ namespace Titan
             s_PBRData.Pipeline->SetCubemap(s_PBRData.DefaultIrradiance, 7);
 
         FullscreenRenderer::Render(s_PBRData.Pipeline);
+        s_PBRData.Pipeline->ClearBindings();
     }
 
 } // namespace Titan

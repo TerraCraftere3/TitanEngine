@@ -238,6 +238,7 @@ namespace Titan
                 s_TerrainData.UniformBuffer->SetData(&s_TerrainData.UBO, sizeof(UniformBufferObject));
                 s_TerrainData.Pipeline->Bind();
                 RenderCommand::DrawIndexed(selectedLOD->IndexBuffer->GetCount());
+                s_TerrainData.Pipeline->ClearBindings();
             }
         };
     }
