@@ -13,7 +13,8 @@ namespace Titan
         static void Init();
         static void Shutdown();
 
-        static void BeginScene(const glm::mat4& viewTransform, const glm::vec3& cameraPosition, PolygonMode polygonMode = PolygonMode::Fill);
+        static void BeginScene(const glm::mat4& viewTransform, const glm::vec3& cameraPosition,
+                               PolygonMode polygonMode = PolygonMode::Fill);
         static void EndScene();
 
         static void DrawTerrain(const Ref<Texture2D>& heightMap, const Ref<Material3D>& material,

@@ -358,8 +358,6 @@ namespace Titan
             s_3DData.MaterialStorageBuffer->SetData(s_3DData.GPUMaterials.data(),
                                                     s_3DData.GPUMaterials.size() * sizeof(GPUMaterial));
         }
-        s_3DData.GPUMaterials.clear();
-        s_3DData.MaterialIndexMap.clear();
     }
 
     void GeometryRenderer::Flush()

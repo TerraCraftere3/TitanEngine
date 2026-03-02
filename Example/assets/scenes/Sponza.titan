@@ -7,6 +7,35 @@ Entities:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [0.01, 0.01, 0.01]
+    MeshRendererComponent:
+      Mesh: models\sponza.obj
+      Materials:
+        - ""
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Lion.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Background.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Unused.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_Vase_Plant.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Arch.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Bricks.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Ceiling.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Chain.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Column_A.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Column_B.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Column_C.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Details.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_A.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_C.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_D.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_E.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_F.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Fabric_G.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Flagpole.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Floor.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Plant.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Roof.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Vase.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Vase_Hanging.mat
+        - E:\Libraries\TitanEngine\Example\assets\materials\Sponza_Vase_Round.mat
   - Entity: 9145592106616404032
     TagComponent:
       Tag: Camera
@@ -33,12 +62,9 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     SkyboxComponent:
-      HDRI:
-        {}
-      Colorramp:
-        TopColor: [0.1, 0.3, 0.7]
-        BottomColor: [0.9, 0.9, 1]
-      Mode: Colorramp
+      Normal:
+        Time: 0
+      Mode: Normal
   - Entity: 15253948998495587324
     TagComponent:
       Tag: Post Processing

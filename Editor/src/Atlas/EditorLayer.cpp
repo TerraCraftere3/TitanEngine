@@ -5,6 +5,8 @@
 #include "Renderer/Thumbnails.h"
 #include "Windows/ProjectConfigWindow.h"
 
+#include <ImReflect.hpp>
+
 #include <Titan/Core/Application.h>
 #include <Titan/Core/Input.h>
 #include <Titan/Project/Project.h>
@@ -534,6 +536,9 @@ namespace Titan
             m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
         ImGui::SameLine();
+        ImReflect::Input("View", m_EditorProperties.View);
+
+        ImGui::SameLine();
         ImGui::Checkbox("Enable Multi Viewports", &m_EditorProperties.EnableMultiViewports);
 
         if (!m_EditorProperties.EnableMultiViewports)
@@ -574,15 +579,43 @@ namespace Titan
                     m_SubViewportImageSize[idx] = size;
 
                     ImGui::SetCursorScreenPos(pos);
-                    auto fb = m_SceneRenderers[idx]->GetFramebuffer();
-                    if (fb)
+                    switch (m_EditorProperties.View)
                     {
-                        ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), size, ImVec2(0, 1),
-                                     ImVec2(1, 0));
-                    }
-                    else
-                    {
-                        ImGui::Dummy(size);
+                        case EditorFramebufferView::Albedo:
+                            ImGui::Image(m_SceneRenderers[idx]
+                                             ->GetGeometryFramebuffer()
+                                             ->GetColorAttachmentTexture(2)
+                                             ->GetNativeTexture(),
+                                         size, ImVec2(0, 1), ImVec2(1, 0));
+                            break;
+                        case EditorFramebufferView::Normal:
+                            ImGui::Image(m_SceneRenderers[idx]
+                                             ->GetGeometryFramebuffer()
+                                             ->GetColorAttachmentTexture(1)
+                                             ->GetNativeTexture(),
+                                         size, ImVec2(0, 1), ImVec2(1, 0));
+                            break;
+                        case EditorFramebufferView::Emission:
+                            ImGui::Image(m_SceneRenderers[idx]
+                                             ->GetGeometryFramebuffer()
+                                             ->GetColorAttachmentTexture(4)
+                                             ->GetNativeTexture(),
+                                         size, ImVec2(0, 1), ImVec2(1, 0));
+                            break;
+                        case EditorFramebufferView::Shaded:
+                            ImGui::Image(m_SceneRenderers[idx]
+                                             ->GetFramebuffer()
+                                             ->GetColorAttachmentTexture(0)
+                                             ->GetNativeTexture(),
+                                         size, ImVec2(0, 1), ImVec2(1, 0));
+                            break;
+                        default:
+                            ImGui::Image(m_SceneRenderers[idx]
+                                             ->GetFramebuffer()
+                                             ->GetColorAttachmentTexture(0)
+                                             ->GetNativeTexture(),
+                                         size, ImVec2(0, 1), ImVec2(1, 0));
+                            break;
                     }
 
                     HandleSceneDragDrop();
@@ -615,13 +648,35 @@ namespace Titan
             m_SubViewportImagePos[0] = m_ViewportImagePos;
             m_SubViewportImageSize[0] = m_ViewportImageSize;
 
-            auto fb = m_SceneRenderers[0]->GetFramebuffer();
-            if (fb)
+            switch (m_EditorProperties.View)
             {
-                ImGui::Image(fb->GetColorAttachmentTexture(0)->GetNativeTexture(), m_ViewportImageSize, ImVec2(0, 1),
-                             ImVec2(1, 0));
-                HandleSceneDragDrop();
+                case EditorFramebufferView::Albedo:
+                    ImGui::Image(
+                        m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(2)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
+                    break;
+                case EditorFramebufferView::Normal:
+                    ImGui::Image(
+                        m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(1)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
+                    break;
+                case EditorFramebufferView::Emission:
+                    ImGui::Image(
+                        m_SceneRenderers[0]->GetGeometryFramebuffer()->GetColorAttachmentTexture(4)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
+                    break;
+                case EditorFramebufferView::Shaded:
+                    ImGui::Image(
+                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
+                    break;
+                default:
+                    ImGui::Image(
+                        m_SceneRenderers[0]->GetFramebuffer()->GetColorAttachmentTexture(0)->GetNativeTexture(),
+                        m_ViewportImageSize, ImVec2(0, 1), ImVec2(1, 0));
+                    break;
             }
+            HandleSceneDragDrop();
 
             m_SubViewportHovered[0] = ImGui::IsItemHovered();
             m_ActiveViewportIndex = 0;

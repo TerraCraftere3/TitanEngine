@@ -278,6 +278,12 @@ namespace Titan
 
     OpenGLTexture2D::~OpenGLTexture2D()
     {
+        // CRITICAL: Must make handle non-resident before deleting texture
+        // to avoid GPU driver state accumulation
+        if (m_HandleResident)
+        {
+            MakeHandleNonResident();
+        }
         glDeleteTextures(1, &m_RendererID);
     }
 

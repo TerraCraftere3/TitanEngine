@@ -42,6 +42,7 @@ namespace Titan
         pipeline->SetVertexArray(s_Data.FullscreenQuadVAO);
         pipeline->Bind();
         RenderCommand::DrawIndexed(6); // fullscreen quad has 6 indices
+        pipeline->ClearBindings();
     }
 
 } // namespace Titan

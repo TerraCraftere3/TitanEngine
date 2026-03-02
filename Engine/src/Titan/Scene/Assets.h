@@ -49,7 +49,11 @@ namespace Titan
             auto absPath = std::filesystem::absolute(path);
             auto it = s_Assets.find(absPath.string());
             if (it != s_Assets.end())
-                return std::static_pointer_cast<T>(it->second);
+            {
+                auto locked = it->second.lock();
+                if (locked)
+                    return std::static_pointer_cast<T>(locked);
+            }
             return nullptr;
         }
 
@@ -66,7 +70,7 @@ namespace Titan
         static void Add(const std::filesystem::path& path, const Ref<T>& asset, const AssetMeta& meta)
         {
             auto absPath = std::filesystem::absolute(path).string();
-            s_Assets[absPath] = asset;
+            s_Assets[absPath] = WeakRef<void>(std::static_pointer_cast<void>(asset));
             s_AssetMeta[absPath] = meta;
         }
 
@@ -85,7 +89,9 @@ namespace Titan
 
         static bool Exists(const std::filesystem::path& path)
         {
-            return s_Assets.contains(std::filesystem::absolute(path).string());
+            auto absPath = std::filesystem::absolute(path).string();
+            auto it = s_Assets.find(absPath);
+            return it != s_Assets.end() && !it->second.expired();
         }
 
         static bool ExistsMeta(const std::filesystem::path& path)
@@ -105,7 +111,7 @@ namespace Titan
         }
 
     private:
-        inline static std::unordered_map<std::string, Ref<void>> s_Assets;
+        inline static std::unordered_map<std::string, WeakRef<void>> s_Assets;
         inline static std::unordered_map<std::string, AssetMeta> s_AssetMeta;
     };
 

@@ -41,6 +41,9 @@ namespace Titan
 
     Scene::~Scene()
     {
+        // Clear renderer caches before destroying physics/registry
+        GeometryRenderer::ClearCache();  // Clears both mesh + material caches
+        
         delete m_PhysicsWorld;
         m_PhysicsWorld = nullptr;
 

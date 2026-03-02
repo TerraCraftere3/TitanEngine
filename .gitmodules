@@ -55,3 +55,6 @@
 [submodule "Vendor/libsndfile"]
 	path = Vendor/libsndfile
 	url = https://github.com/libsndfile/libsndfile
+[submodule "Vendor/cmake-scripts"]
+	path = Vendor/cmake-scripts
+	url = https://github.com/StableCoder/cmake-scripts

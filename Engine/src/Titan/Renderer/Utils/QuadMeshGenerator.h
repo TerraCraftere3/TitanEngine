@@ -32,6 +32,7 @@ namespace Titan
          * @return QuadMeshData containing vertices and indices
          */
         static QuadMeshData GenerateQuad(uint32_t verticesX, uint32_t verticesZ, float width = 1.0f,
-                                         float height = 1.0f, glm::vec2 UV0 = glm::vec2(0.0f), glm::vec2 UV1 = glm::vec2(1.0f));
+                                         float height = 1.0f, glm::vec2 UV0 = glm::vec2(0.0f),
+                                         glm::vec2 UV1 = glm::vec2(1.0f));
     };
 } // namespace Titan
